@@ -1,35 +1,34 @@
 # Lean-SDLC for Codex
 
-Lean-SDLC is a small set of Codex skills for taking a software project from a rough idea to verified implementation without losing the link between intent, tasks, code, tests, and documentation.
+Lean-SDLC is one Codex skill that routes software work from a rough idea to verified delivery while keeping intent, tasks, code, tests, and documentation connected.
 
-The basic flow is:
+The normal flow is:
 
 `idea -> scope -> architecture -> tasks -> implementation -> verification`
 
-Codex selects the relevant skill automatically. You can also request one directly, for example: `Use $lean-brainstorm to shape this idea.`
+You invoke one entry point, `$lean-sdlc`. It inspects the repository state and selects the smallest relevant workflow.
 
-Model routing is cost-aware: GPT-5.6 Sol handles decisions, while GPT-5.6 Luna handles clear bounded execution. Reasoning never drops below `low`, and difficult decision work escalates only when risk or ambiguity justifies it.
+## Workflows
 
-## Skills
-
-| Skill | Purpose |
+| Workflow | Meaning |
 | --- | --- |
-| `lean-sdlc-core` | Defines the shared lifecycle, repository structure, traceability rules, and document contracts used by the whole bundle. |
-| `lean-brainstorm` | Turns a rough idea into a clear project brief, scope, and first feature definitions. |
-| `lean-refine` | Removes ambiguity, splits oversized features, and defines how each feature will be proved. |
-| `lean-architecture` | Chooses the simplest defensible system structure, technology boundaries, and durable technical decisions. |
-| `lean-task-planning` | Converts approved features and decisions into small, traceable implementation tasks. |
-| `lean-execution` | Chooses how ready tasks should be executed: locally, by delegated agents, or in controlled batches. |
-| `lean-debugging` | Reproduces and isolates failures, identifies the root cause, and decides what project truth must change. |
-| `lean-implementation` | Implements an approved task while keeping code, tests, diagnostics, and documentation aligned. |
-| `lean-verification` | Checks completed work against acceptance criteria and evidence before a task is closed. |
-| `lean-traceability` | Audits and repairs links between scope, features, decisions, tasks, code, tests, and diagnostics. |
-| `lean-versioning` | Keeps project stage and version framing current as a delivery slice closes or the business context changes. |
-| `lean-doc-maintenance` | Removes stale documentation, repairs drift, and splits documents only when complexity justifies it. |
+| Brainstorm | Turn a rough idea into a brief, scope, and first small feature definitions. |
+| Refine | Remove ambiguity, split oversized features, and define acceptance and failure signals. |
+| Architecture | Choose the simplest defensible stack, boundaries, and durable technical decisions. |
+| Task planning | Convert approved features and decisions into small traceable tasks. |
+| Execution | Decide whether ready tasks should stay local or use bounded parallel workers. |
+| Debugging | Reproduce and isolate an uncertain failure before choosing a fix. |
+| Implementation | Execute one approved task without expanding its scope. |
+| Verification | Prove acceptance and documentation parity before closing work. |
+| Traceability | Resolve conflicts and broken links between intent, tasks, code, tests, and diagnostics. |
+| Versioning | Keep project stage, release promise, and exit criteria honest. |
+| Documentation maintenance | Apply approved cleanup and synchronization after the correct truth is known. |
+
+Model choice follows task shape: Sol handles high-leverage judgment, Terra handles ordinary engineering, and Luna handles mechanical repeatable work. Reasoning increases when ambiguity, risk, or failed proof justifies it.
 
 ## Install
 
-Requirements: Git and Codex.
+Requirements: Git, Python 3, and Codex.
 
 ```bash
 git clone https://github.com/laikrodiz/lean-sdlc.git
@@ -39,24 +38,45 @@ cd lean-sdlc
 
 Restart Codex after installation.
 
-The installer copies every bundled skill into `${CODEX_HOME:-$HOME/.codex}/skills`. It refuses to overwrite an existing installation. To replace an older version intentionally:
+The installer copies `lean-sdlc` into `${CODEX_HOME:-$HOME/.codex}/skills`. It refuses to overwrite an existing installation or leave legacy multi-skill installations active.
+
+To replace an older version intentionally:
 
 ```bash
 git pull
 ./scripts/install.sh --force
 ```
 
+The forced upgrade removes only the former Lean-SDLC skill directories and replaces them with the single dispatcher skill.
+
 ## Use
 
-Start with a plain request such as:
+For a new project:
 
 ```text
-Use Lean-SDLC to turn my project idea into a small, implementable plan.
+Use $lean-sdlc to initialize this repository and shape my project idea.
 ```
 
-For an existing project, ask Codex to use `$lean-sdlc-core` to set up or audit the repository. The other skills will guide the next stage when their work is needed.
+For existing work:
+
+```text
+Use $lean-sdlc to continue this project safely.
+```
+
+You can also state the outcome directly:
+
+```text
+Use $lean-sdlc to investigate why this test fails.
+Use $lean-sdlc to turn the approved feature into implementation tasks.
+Use $lean-sdlc to verify and close the active task.
+```
+
+Initialization creates only missing Lean-SDLC control files and keeps existing files unchanged. The bundled structural checker catches missing files, broken index paths, invalid task states, unknown task parents, and empty acceptance fields.
 
 ## Package contents
 
-- `skills/` contains only the Lean-SDLC Codex skills and their required metadata and references.
-- `scripts/install.sh` installs the complete bundle locally.
+- `skills/lean-sdlc/SKILL.md` is the single discoverable dispatcher.
+- `skills/lean-sdlc/references/` contains the workflow and repository rules loaded only when needed.
+- `skills/lean-sdlc/assets/AGENTS.md` is the concise project control-plane template.
+- `skills/lean-sdlc/scripts/` contains safe initialization and structural validation tools.
+- `scripts/install.sh` installs or upgrades the package.

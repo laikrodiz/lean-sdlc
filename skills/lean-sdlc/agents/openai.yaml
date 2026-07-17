@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lean SDLC"
+  short_description: "Route software work from idea to verified delivery"
+  default_prompt: "Use $lean-sdlc to select and run the correct workflow for this repository task."

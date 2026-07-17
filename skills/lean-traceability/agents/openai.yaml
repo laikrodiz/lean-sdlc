@@ -1,4 +1,0 @@
-interface:
-  display_name: "Lean Traceability"
-  short_description: "Repair links across docs, tasks, code, and proof"
-  default_prompt: "Use $lean-traceability to audit and repair the chain from scope to code."

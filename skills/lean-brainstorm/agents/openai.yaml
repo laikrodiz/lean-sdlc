@@ -1,4 +1,0 @@
-interface:
-  display_name: "Lean Brainstorm"
-  short_description: "Turn a rough idea into Lean-SDLC project truth"
-  default_prompt: "Use $lean-brainstorm to turn this rough idea into brief, scope, and first features."

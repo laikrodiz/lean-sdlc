@@ -1,4 +1,0 @@
-interface:
-  display_name: "Lean Task Planning"
-  short_description: "Convert scoped truth into atomic traceable tasks"
-  default_prompt: "Use $lean-task-planning to turn these approved features into lean tasks."

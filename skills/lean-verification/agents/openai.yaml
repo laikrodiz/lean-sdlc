@@ -1,4 +1,0 @@
-interface:
-  display_name: "Lean Verification"
-  short_description: "Prove acceptance before a task can close"
-  default_prompt: "Use $lean-verification to decide whether this task can close based on evidence."
