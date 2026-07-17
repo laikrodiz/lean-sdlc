@@ -97,5 +97,4 @@ Initialization creates only missing Lean-SDLC control files and keeps existing f
 - `skills/lean-sdlc/references/` contains the workflow and repository rules loaded only when needed.
 - `skills/lean-sdlc/assets/AGENTS.md` is the concise project control-plane template.
 - `skills/lean-sdlc/scripts/` contains safe initialization and structural validation tools.
-- `planning/tasks.csv` tracks changes to this package itself.
 - `scripts/install.sh` installs or upgrades the package.
