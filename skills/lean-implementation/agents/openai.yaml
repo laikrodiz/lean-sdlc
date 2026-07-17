@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lean Implementation"
+  short_description: "Execute scoped tasks without drifting from truth"
+  default_prompt: "Use $lean-implementation to execute this approved task and keep docs, tests, and diagnostics aligned."

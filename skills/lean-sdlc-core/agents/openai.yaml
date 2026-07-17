@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lean SDLC Core"
+  short_description: "Shared lifecycle and repo rules for Lean-SDLC"
+  default_prompt: "Use $lean-sdlc-core to set up or audit this repo against Lean-SDLC."

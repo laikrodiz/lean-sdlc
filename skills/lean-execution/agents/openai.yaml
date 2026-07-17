@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lean Execution"
+  short_description: "Choose local, delegated, or batch execution for ready tasks"
+  default_prompt: "Use $lean-execution to choose execution mode for these ready tasks and dispatch bounded work efficiently."

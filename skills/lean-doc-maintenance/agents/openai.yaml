@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lean Doc Maintenance"
+  short_description: "Keep Lean-SDLC docs small, current, and honest"
+  default_prompt: "Use $lean-doc-maintenance to reconcile and clean up this repo's planning docs."

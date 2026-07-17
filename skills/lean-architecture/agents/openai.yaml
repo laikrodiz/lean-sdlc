@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lean Architecture"
+  short_description: "Shape stack, boundaries, and durable decisions"
+  default_prompt: "Use $lean-architecture to choose the simplest defensible architecture for this scoped work."

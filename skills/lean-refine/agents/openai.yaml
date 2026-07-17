@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lean Refine"
+  short_description: "Tighten scope, features, proof, and diagnostics"
+  default_prompt: "Use $lean-refine to tighten these features and remove ambiguity before architecture or tasks."

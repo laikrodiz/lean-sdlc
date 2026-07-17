@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lean Debugging"
+  short_description: "Reproduce, isolate, and classify failures before fixing them"
+  default_prompt: "Use $lean-debugging to reproduce this issue, classify the root cause, and route the next step before code changes."

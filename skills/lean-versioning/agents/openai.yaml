@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lean Versioning"
+  short_description: "Keep stage and version framing current"
+  default_prompt: "Use $lean-versioning to refresh this project's stage and version framing."
