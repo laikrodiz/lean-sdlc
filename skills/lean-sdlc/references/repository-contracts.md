@@ -14,7 +14,7 @@ An initialized project uses:
 - `docs/decisions/DEC-xxx-*.md` when decisions exist
 - `planning/tasks.csv`
 
-Use [../assets/AGENTS.md](../assets/AGENTS.md) as the project control plane. Run `scripts/init_repo.py [repository]` to create missing control files without overwriting existing work.
+Use [../assets/AGENTS.md](../assets/AGENTS.md) as the project control plane. Run `scripts/init_repo.py [repository]` for the atomic bootstrap exception. It creates `planning/tasks.csv` with an active `BOOTSTRAP` task before other missing control files and never overwrites existing work.
 
 ## Project Brief and Scope
 
@@ -50,7 +50,7 @@ Create a decision for a durable chosen path that is costly to reverse or easy to
 
 Use these `planning/tasks.csv` columns:
 
-`task_id,title,status,parent_ref,depends_on,acceptance`
+`task_id,title,status,parent_ref,depends_on,owner,acceptance,proof,evidence`
 
 Allowed statuses are `planned`, `in_progress`, and `done`.
 
@@ -58,10 +58,18 @@ Rules:
 
 1. Insert new tasks directly below the header.
 2. Keep one intentional change per task.
-3. Link every task to one feature or decision.
-4. Define measurable acceptance before implementation.
-5. Keep the task open until evidence and documentation parity exist.
-6. State status transitions explicitly.
+3. Require one `in_progress` task before every repository file mutation.
+4. Link behavior to a feature, durable technical work to a decision, and non-behavior maintenance to `REPO`.
+5. Reserve `BOOTSTRAP` for the initializer's first control-plane task.
+6. Assign one writer; parallel writers require separate tasks and disjoint paths.
+7. Define measurable acceptance and proof before the first write.
+8. Record concise evidence before moving a task to `done`.
+9. Let only the main agent close tasks after verification.
+10. State status transitions explicitly.
+
+Read-only inspection does not require a task. Atomically inserting the row that authorizes upcoming work is the only routine pre-task file mutation. Initialization may create the ledger and its bootstrap row together because neither can exist first.
+
+A task creating a new feature or decision may reserve its future `FEAT-*` or `DEC-*` parent before the index entry exists. The before-write check accepts that reservation; the full closeout check requires the referenced parent to exist.
 
 ## Change Ownership
 

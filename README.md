@@ -24,7 +24,23 @@ You invoke one entry point, `$lean-sdlc`. It inspects the repository state and s
 | Versioning | Keep project stage, release promise, and exit criteria honest. |
 | Documentation maintenance | Apply approved cleanup and synchronization after the correct truth is known. |
 
-Model choice follows task shape: Sol handles high-leverage judgment, Terra handles ordinary engineering, and Luna handles mechanical repeatable work. Reasoning increases when ambiguity, risk, or failed proof justifies it.
+Model choice follows task shape: Sol handles high-leverage judgment, Terra handles ordinary engineering, and Luna handles mechanical repeatable work. Explicit user model and reasoning requests always take precedence.
+
+## Model and agent control
+
+- `strict` keeps the selected model for the complete task without delegation unless you request it. It is the default when you request a model or Max reasoning.
+- `lead` keeps the selected model for decisions and integration while allowing cheaper bounded support.
+- `economy` lets Lean-SDLC route automatically across available GPT-5.6 models.
+
+Lean-SDLC defaults to no subagents and at most two when independent work justifies their cost. It reuses a worker only while task, role, owned files, and assumptions remain stable. Workers return concise evidence to the main agent, which performs integration and closeout.
+
+Cache reuse is treated as a measured optimization. Instructions stay stable, variable task data stays at the end, and agents receive file references and incremental updates. Lean-SDLC never creates work merely to warm a cache.
+
+## Tracked changes
+
+Every repository file mutation requires one owned `in_progress` task with measurable acceptance and proof. This includes code, documentation, configuration, tests, generated files, and small maintenance edits. Read-only work needs no task. Atomically inserting the row that authorizes upcoming work is the only routine pre-task file mutation.
+
+Feature work links to `FEAT-*`, durable technical work links to `DEC-*`, and maintenance uses `REPO`. Initialization creates the ledger and active `TASK-000` atomically under the one-time `BOOTSTRAP` parent.
 
 ## Install
 
@@ -71,7 +87,7 @@ Use $lean-sdlc to turn the approved feature into implementation tasks.
 Use $lean-sdlc to verify and close the active task.
 ```
 
-Initialization creates only missing Lean-SDLC control files and keeps existing files unchanged. The bundled structural checker catches missing files, broken index paths, invalid task states, unknown task parents, and empty acceptance fields.
+Initialization creates only missing Lean-SDLC control files and keeps existing files unchanged. The bundled checker validates the active task before writes and catches missing files, broken index paths, invalid task states, unknown parents, missing owners, empty acceptance or proof, and completed tasks without evidence.
 
 ## Package contents
 
@@ -79,4 +95,5 @@ Initialization creates only missing Lean-SDLC control files and keeps existing f
 - `skills/lean-sdlc/references/` contains the workflow and repository rules loaded only when needed.
 - `skills/lean-sdlc/assets/AGENTS.md` is the concise project control-plane template.
 - `skills/lean-sdlc/scripts/` contains safe initialization and structural validation tools.
+- `planning/tasks.csv` tracks changes to this package itself.
 - `scripts/install.sh` installs or upgrades the package.

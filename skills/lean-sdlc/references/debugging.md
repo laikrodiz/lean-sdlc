@@ -11,8 +11,8 @@ Use Luna at `low` or `medium` for exact log and test collection, Terra at `high`
 3. Narrow the path until the likely fault surface is small.
 4. Classify the cause as behavior, decision, mapping, boundary, or implementation detail.
 5. Check whether an active task already covers the fix.
-6. If no task covers it, return to refinement or task planning before code.
-7. Update durable truth only when the diagnosis changes it.
+6. Read-only diagnosis may continue without a task. Before changing any repository file, activate the task or return to refinement or task planning.
+7. Update durable truth only when the diagnosis changes it and the active task covers that update.
 8. Keep transient findings in tests, logs, comments, or lower technical docs.
 9. Hand off to implementation only when cause, scope, acceptance, and proof are settled.
 

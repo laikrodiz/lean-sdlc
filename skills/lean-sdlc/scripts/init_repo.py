@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 from pathlib import Path
 
 
@@ -42,6 +43,10 @@ README = """# Project
 This repository uses Lean-SDLC. Start with `docs/PROJECT_BRIEF.md` and `docs/SCOPE.md`.
 """
 
+TASKS = """task_id,title,status,parent_ref,depends_on,owner,acceptance,proof,evidence
+TASK-000,Initialize Lean-SDLC,in_progress,BOOTSTRAP,,main,"Minimal Lean-SDLC control files exist without overwriting project work","Run lean_check.py --task TASK-000",
+"""
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -65,6 +70,29 @@ def main() -> int:
     skill_root = Path(__file__).resolve().parents[1]
     agents_template = (skill_root / "assets" / "AGENTS.md").read_text(encoding="utf-8")
 
+    tasks_path = root / "planning/tasks.csv"
+    task_created = False
+    if tasks_path.is_file():
+        with tasks_path.open(encoding="utf-8-sig", newline="") as handle:
+            reader = csv.DictReader(handle)
+            active_control_task = any(
+                (row.get("status") or "").strip() == "in_progress"
+                and (row.get("owner") or "").strip()
+                and (row.get("parent_ref") or "").strip() in {"BOOTSTRAP", "REPO"}
+                for row in reader
+            )
+        if not active_control_task:
+            raise SystemExit(
+                "Existing planning/tasks.csv needs an owned in_progress "
+                "BOOTSTRAP or REPO task before initialization can write files."
+            )
+    else:
+        tasks_path.parent.mkdir(parents=True, exist_ok=True)
+        with tasks_path.open("x", encoding="utf-8", newline="") as handle:
+            handle.write(TASKS)
+        print("created planning/tasks.csv with active TASK-000")
+        task_created = True
+
     files = {
         Path("AGENTS.md"): agents_template,
         Path("README.md"): README,
@@ -76,15 +104,12 @@ def main() -> int:
         Path("docs/DECISION_INDEX.csv"): (
             "decision_id,name,status,type,impact_scope,reversal_cost,scope_ref,file,date,notes\n"
         ),
-        Path("planning/tasks.csv"): (
-            "task_id,title,status,parent_ref,depends_on,acceptance\n"
-        ),
     }
 
-    for directory in ("docs/features", "docs/decisions", "planning"):
+    for directory in ("docs/features", "docs/decisions"):
         (root / directory).mkdir(parents=True, exist_ok=True)
 
-    created = 0
+    created = 1 if task_created else 0
     for relative_path, content in files.items():
         target = root / relative_path
         target.parent.mkdir(parents=True, exist_ok=True)

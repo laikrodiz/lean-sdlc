@@ -7,7 +7,7 @@ Use Sol at `high` for feature boundaries, acceptance, and scope. Terra may perfo
 ## Workflow
 
 1. Read the brief, scope, indexes, and active feature and decision files.
-2. Classify each planned edit as behavior, decision, boundary, mapping, or implementation detail.
+2. Classify each planned edit as behavior, decision, boundary, mapping, or implementation detail. Before the first edit, activate one task covering the refinement; it may reserve a future feature or decision id.
 3. Find contradictions between value, behavior, scope, exclusions, and chosen paths.
 4. Confirm each feature contains one independently valuable outcome and one coherent acceptance cluster.
 5. Split features whose parts can be delivered or deferred independently.
@@ -17,6 +17,6 @@ Use Sol at `high` for feature boundaries, acceptance, and scope. Terra may perfo
 9. Add measurable acceptance, a verification approach, and failure signals to every active feature.
 10. Create optional docs only when repeated shared pressure exists.
 
-Do not create tasks until active truth is small and testable. Route stable behavior needing technical choices to architecture; otherwise route approved truth to task planning.
+Do not create delivery implementation tasks until active truth is small and testable. Route stable behavior needing technical choices to architecture; otherwise route approved truth to task planning.
 
 Success means every active feature is small, business-grounded, provable, and diagnosable.

@@ -9,7 +9,7 @@ Use Sol at `high` because the output is small and the framing is high leverage.
 1. Read the current stage, version goal, deferrals, and exit criteria in `SCOPE.md`.
 2. Compare the framing with current users, outcomes, and evidence.
 3. Close a version only when its exit evidence exists or its promise has become invalid.
-4. Define the next small business promise and explicit deferrals.
+4. Before recording a version decision, activate a task linked to the relevant decision or `REPO`. Define the next small business promise and explicit deferrals.
 5. Change stage only when project maturity has genuinely changed.
 6. Create version-history files only when preserving prior business context has real value.
 7. Route approved propagation and cleanup to documentation maintenance.

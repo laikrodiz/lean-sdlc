@@ -1,6 +1,6 @@
 # Lean-SDLC Repository Rules
 
-For any request that may change project truth or code, investigate a failure, or close work, invoke `$lean-sdlc` first and let it select one primary lane. Read-only explanations and trivial non-behavior maintenance may use a fast path.
+For any request that may change a repository file, investigate a failure, or close work, invoke `$lean-sdlc` first and let it select one primary lane. Only read-only explanation and inspection may use a fast path.
 
 ## Authority and Reading Order
 
@@ -15,11 +15,12 @@ If these disagree, flag the conflict and route through traceability before close
 
 ## Required Gates
 
-1. No behavior or code change without one exact feature or decision parent.
-2. No implementation without an active task, measurable acceptance, and a proof path.
-3. Unknown failure cause enters debugging before implementation.
-4. No task moves to `done` without evidence, promised diagnostics, and document parity.
-5. State every task status transition explicitly.
+1. No repository file mutation without one `in_progress` task owned by the writer. Inserting that authorizing row into `planning/tasks.csv` is the only routine pre-task write.
+2. Use a feature or decision parent for delivery work, `REPO` for maintenance, and `BOOTSTRAP` only during initialization.
+3. No implementation without measurable acceptance and a proof path.
+4. Unknown failure cause enters debugging before implementation.
+5. No task moves to `done` without evidence, promised diagnostics, and document parity.
+6. State every task status transition explicitly.
 
 ## Change Ownership
 
@@ -32,6 +33,15 @@ If these disagree, flag the conflict and route through traceability before close
 - local mechanism → code, tests, or comments
 
 Split a statement until one owner wins. Keep one independently valuable outcome per feature and one intentional change per task.
+
+## Models and Agents
+
+- Explicit user model and reasoning requests override automatic routing.
+- Treat Max as single-model work unless the user permits delegation; Ultra permits multi-agent work.
+- Default to no subagents and at most two workers with separate tasks and paths.
+- Reuse a worker only while task, role, ownership, and assumptions remain stable.
+- Workers return to the main agent; workers do not hand off directly or close tasks.
+- Keep shared instructions stable, send task deltas, and never create work merely to warm a cache.
 
 ## Routing Boundaries
 

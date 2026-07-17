@@ -7,7 +7,7 @@ Use Sol at `high`. Raise to `xhigh` for security boundaries, concurrency, data m
 ## Workflow
 
 1. Read the brief, scope, and active features.
-2. Identify choices that are irreversible, costly, or likely to be re-litigated.
+2. Identify choices that are irreversible, costly, or likely to be re-litigated. Before recording a choice, activate its decision task; it may reserve the future decision id.
 3. Choose the simplest stack fitting deployment, operator skill, testability, diagnostics, maturity, and maintenance cost.
 4. Define only the modules and boundaries needed for safe implementation.
 5. Record major decisions with context and consequences.

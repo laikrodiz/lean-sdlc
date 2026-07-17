@@ -15,8 +15,8 @@ Use Terra at `medium` for link inventory. Use Sol at `medium` or `high` to choos
 7. Trace forward to code, tests, diagnostics, and evidence.
 8. Flag broken, contradictory, over-broad, or misrouted links.
 9. Decide which source owns the truth.
-10. Repair the smallest set needed for one coherent chain.
+10. Before repair, activate one task covering the affected chain. Repair the smallest set needed for one coherent chain.
 
-Do not turn a trace audit into broad rewriting. Once ownership and meaning are settled, route remaining mechanical synchronization to documentation maintenance.
+Read-only trace audits need no task. Do not turn an audit into broad rewriting. Once ownership and meaning are settled, route remaining mechanical synchronization to documentation maintenance.
 
 Success means the repository tells one coherent story from business why through evidence.

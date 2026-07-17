@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import re
 from pathlib import Path
 
 
@@ -51,9 +52,13 @@ TASK_COLUMNS = {
     "status",
     "parent_ref",
     "depends_on",
+    "owner",
     "acceptance",
+    "proof",
+    "evidence",
 }
 TASK_STATUSES = {"planned", "in_progress", "done"}
+SPECIAL_PARENTS = {"REPO", "BOOTSTRAP"}
 
 
 def parse_args() -> argparse.Namespace:
@@ -67,6 +72,11 @@ def parse_args() -> argparse.Namespace:
         help="Repository root (default: current directory)",
     )
     parser.add_argument("--task", help="Require and validate one task id")
+    parser.add_argument(
+        "--before-write",
+        action="store_true",
+        help="Require the selected task to be owned and in_progress before mutation",
+    )
     return parser.parse_args()
 
 
@@ -144,12 +154,14 @@ def main() -> int:
         raise SystemExit(f"Repository directory does not exist: {root}")
 
     errors: list[str] = []
-    for relative_path in REQUIRED_FILES:
+    required_files = ("planning/tasks.csv",) if args.before_write else REQUIRED_FILES
+    for relative_path in required_files:
         if not (root / relative_path).is_file():
             errors.append(f"missing required file: {relative_path}")
-    for relative_path in REQUIRED_DIRECTORIES:
-        if not (root / relative_path).is_dir():
-            errors.append(f"missing required directory: {relative_path}")
+    if not args.before_write:
+        for relative_path in REQUIRED_DIRECTORIES:
+            if not (root / relative_path).is_dir():
+                errors.append(f"missing required directory: {relative_path}")
 
     features = read_csv(
         root, "docs/FEATURE_INDEX.csv", FEATURE_COLUMNS, errors
@@ -170,9 +182,13 @@ def main() -> int:
     validate_index_paths(root, features, "docs/FEATURE_INDEX.csv", errors)
     validate_index_paths(root, decisions, "docs/DECISION_INDEX.csv", errors)
 
-    valid_parents = feature_ids | decision_ids
+    valid_parents = feature_ids | decision_ids | SPECIAL_PARENTS
+    tasks_by_id: dict[str, dict[str, str]] = {}
+    bootstrap_tasks = 0
     for number, task in enumerate(tasks, start=2):
         task_id = task.get("task_id", "") or f"row {number}"
+        if task.get("task_id", ""):
+            tasks_by_id[task_id] = task
         if not task.get("title", ""):
             errors.append(f"planning/tasks.csv:{number}: {task_id} has empty title")
         status = task.get("status", "")
@@ -181,15 +197,41 @@ def main() -> int:
         parent = task.get("parent_ref", "")
         if not parent:
             errors.append(f"planning/tasks.csv:{number}: {task_id} has no parent_ref")
-        elif parent not in valid_parents:
+        reserved_parent = bool(
+            args.before_write
+            and task_id == args.task
+            and status == "in_progress"
+            and re.fullmatch(r"(?:FEAT|DEC)-[A-Za-z0-9][A-Za-z0-9._-]*", parent)
+        )
+        if parent and parent not in valid_parents and not reserved_parent:
             errors.append(
                 f"planning/tasks.csv:{number}: {task_id} has unknown parent_ref {parent}"
             )
+        if parent == "BOOTSTRAP":
+            bootstrap_tasks += 1
+        if not task.get("owner", ""):
+            errors.append(f"planning/tasks.csv:{number}: {task_id} has empty owner")
         if not task.get("acceptance", ""):
             errors.append(f"planning/tasks.csv:{number}: {task_id} has empty acceptance")
+        if not task.get("proof", ""):
+            errors.append(f"planning/tasks.csv:{number}: {task_id} has empty proof")
+        if status == "done" and not task.get("evidence", ""):
+            errors.append(f"planning/tasks.csv:{number}: {task_id} is done without evidence")
+
+    if bootstrap_tasks > 1:
+        errors.append("planning/tasks.csv: more than one BOOTSTRAP task exists")
 
     if args.task and args.task not in task_ids:
         errors.append(f"requested task does not exist: {args.task}")
+    if args.before_write:
+        if not args.task:
+            errors.append("--before-write requires --task TASK-ID")
+        elif args.task in tasks_by_id:
+            selected = tasks_by_id[args.task]
+            if selected.get("status") != "in_progress":
+                errors.append(f"{args.task} must be in_progress before mutation")
+            if not selected.get("owner"):
+                errors.append(f"{args.task} must have an owner before mutation")
 
     if errors:
         print(f"Lean-SDLC check failed with {len(errors)} error(s):")

@@ -6,15 +6,16 @@ Use Luna at `low` to run checks and collect evidence, Terra at `high` to interpr
 
 ## Workflow
 
-1. Read the active task and linked feature or decision.
+1. Read the active task, owner, proof, and linked feature, decision, or maintenance parent.
 2. Compare implemented behavior with every acceptance point.
 3. Run promised tests, smoke paths, or alternative proof.
 4. Confirm promised diagnostics and failure signals exist and are useful.
 5. Check that features, decisions, indexes, and technical docs match reality at the correct level.
-6. Run `scripts/lean_check.py --task TASK-ID` for structural integrity when standard files exist.
-7. Keep the task open when acceptance, evidence, diagnostics, or parity is incomplete.
-8. Move the task to `done` only after all gates pass.
-9. State the resulting status and evidence explicitly.
+6. Record concise evidence in the task ledger.
+7. Run `scripts/lean_check.py --task TASK-ID` for structural integrity when standard files exist.
+8. Keep the task open when acceptance, evidence, diagnostics, or parity is incomplete.
+9. Let only the main agent move the task to `done` after all gates pass.
+10. State the resulting status and evidence explicitly.
 
 Route uncertain source-of-truth conflicts to traceability. Route settled mechanical cleanup to documentation maintenance before closeout.
 

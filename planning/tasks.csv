@@ -1,0 +1,2 @@
+task_id,title,status,parent_ref,depends_on,owner,acceptance,proof,evidence
+TASK-001,Enforce coordinated task-bound execution,done,REPO,,main,"Lean-SDLC enforces user model authority, task-before-write, bounded reusable agents, structured handoffs, and cache-aware delegation","Run skill validation, script tests, installer smoke test, routing forward-tests, and git diff checks","quick_validate passed; task-gate and initializer tests passed; installer copy matched source; fresh routing evaluations passed after ambiguity fixes; syntax, link, and diff checks passed"

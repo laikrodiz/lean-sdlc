@@ -6,15 +6,16 @@ Use Sol at `medium`; raise to `high` for cross-cutting dependencies. Luna may wr
 
 ## Workflow
 
-1. Confirm the feature fits exactly and the decision level is correct.
-2. Link every implementation task to one feature or decision.
-3. Keep one intentional change per task.
-4. Write one concise, observable acceptance statement.
+1. Create or select a task before every repository file mutation, including documentation, configuration, tests, generated files, and maintenance.
+2. Use a feature parent for behavior, a decision parent for durable technical choices, `REPO` for non-behavior maintenance, and `BOOTSTRAP` only for initialization. A task creating a feature or decision may reserve its future `FEAT-*` or `DEC-*` id, which must exist before closeout.
+3. Keep one intentional change and one writer per task.
+4. Record owner, concise observable acceptance, proof command or method, and evidence at closeout.
 5. Add dependencies only when sequencing truly matters.
 6. Put requirements and design detail in their authoritative docs rather than the task ledger.
 7. Insert new tasks directly below the CSV header.
-8. State task creation and status transitions explicitly.
-9. Stop if a task would hide new scope, an architecture choice, or several independent outcomes.
+8. Move the selected task to `in_progress` before its first write.
+9. State task creation and status transitions explicitly.
+10. Stop if a task would hide new scope, an architecture choice, or several independent outcomes.
 
 After planning, use execution routing when several ready tasks or delegation choices exist. For one obvious critical-path task, proceed to implementation.
 

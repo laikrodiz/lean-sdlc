@@ -1,6 +1,6 @@
 # Documentation Maintenance Workflow
 
-Use when the authoritative meaning is already known and approved documents need exact synchronization, movement, deletion, splitting, or index repair. Route uncertain ownership or contradictions to traceability, feature-boundary changes to refinement, and stage/version decisions to versioning.
+Use when the authoritative meaning is already known and approved documents need exact synchronization, movement, deletion, splitting, or index repair. Every maintenance write requires an active `REPO`, feature, or decision task. Route uncertain ownership or contradictions to traceability, feature-boundary changes to refinement, and stage/version decisions to versioning.
 
 Use Luna at `low` for exact synchronization and Terra at `high` for semantic cleanup. Use Sol only when cleanup exposes a new meaning decision, then route to its owning lane.
 

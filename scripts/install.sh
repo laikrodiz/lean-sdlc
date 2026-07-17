@@ -3,7 +3,7 @@ set -eu
 
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 SOURCE_SKILL="$ROOT_DIR/skills/lean-sdlc"
-DEST_ROOT="${CODEX_HOME:-$HOME/.codex}"
+DEST_ROOT="${LEAN_SDLC_INSTALL_ROOT:-${CODEX_HOME:-$HOME/.codex}}"
 DEST_DIR="$DEST_ROOT/skills"
 TARGET="$DEST_DIR/lean-sdlc"
 FORCE=0
