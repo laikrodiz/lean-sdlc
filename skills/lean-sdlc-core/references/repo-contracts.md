@@ -41,7 +41,7 @@ It must define:
 - delegation rule
 - rule: do not invent undocumented scope
 
-Use [agents-template.md](./agents-template.md) as the baseline shape.
+Use the copy-ready [AGENTS template](../assets/AGENTS.md) as the baseline shape.
 
 ## PROJECT_BRIEF.md
 
@@ -205,52 +205,3 @@ Run one level check before any feature or decision edit, task creation, or code 
 Exactly one owner should win.
 
 If a statement fits multiple owners, split it.
-
-## Required Sequence
-
-Treat the workflow as gates, not menu options:
-
-- use `lean-brainstorm` or `lean-refine` before new scope or behavior work
-- use `lean-task-planning` before code
-- choose execution mode before code: local, delegated, or batch
-- use `lean-debugging` when the work is diagnosis or a fix investigation
-- use `lean-implementation` only from an active task
-- use `lean-verification` before any task moves to `done`
-- use `lean-traceability` or `lean-doc-maintenance` after implementation bursts, debug bursts, or drift discovery
-
-## Proof-First Rule
-
-Before code starts:
-
-- define proof first
-- default to test-first when the behavior is testable at low cost
-- if full red/green TDD is awkward, write the explicit proof path anyway
-- do not treat a task as ready when proof is still vague
-
-## Debug Path
-
-When the work is debugging rather than fresh delivery:
-
-- reproduce first
-- isolate the failing path
-- classify the problem as behavior, decision, mapping, boundary, or implementation detail
-- update features or decisions only if durable truth changed
-- keep transient debug detail out of feature and decision files
-
-## Execution Mode
-
-Choose execution deliberately after planning and before code:
-
-- use local execution for one critical-path task
-- use delegated execution for two or more disjoint ready tasks
-- use batch execution when the ready disjoint queue is larger than three tasks
-- use `gpt-5.4-mini` with `medium`, `high`, or `xhigh` based on task difficulty
-
-## Functional vs Non-Functional Requirements
-
-Do not create separate FR or NFR documents by default.
-
-Use them as a review lens:
-
-- feature files carry behavior requirements
-- scope, decisions, architecture, risks, diagnostics, permissions, interfaces, data model, and test strategy carry cross-cutting constraints

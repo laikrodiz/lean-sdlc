@@ -9,17 +9,9 @@ description: Execute scoped Lean-SDLC tasks while staying inside feature, decisi
 
 Use this skill only after `planning/tasks.csv` exists, the active task is linked to a feature or decision, and the task already has clear, measurable acceptance.
 
-Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) first for lifecycle, parity, and anti-bloat rules.
+Follow the repository's `AGENTS.md`. Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) only when recovering context or resolving a shared contract.
 
 If the queue has several ready disjoint tasks, use [../lean-execution/SKILL.md](../lean-execution/SKILL.md) first instead of defaulting to local execution.
-
-## What This Skill Owns
-
-1. Executing approved tasks.
-2. Staying within scoped feature and decision boundaries.
-3. Updating docs when implementation changes truth.
-4. Keeping tests and diagnostics aligned with the code.
-5. Refusing undocumented feature invention.
 
 ## Required Workflow
 
@@ -49,13 +41,12 @@ If this diagnosis work is still the main job, use [../lean-debugging/SKILL.md](.
 
 ## Execution Checkpoints
 
-Follow the execution mode chosen earlier:
+Follow the chosen execution mode and shared [delegation policy](../lean-sdlc-core/references/delegation.md):
 
-1. If execution is local, keep the task local and finish the scoped slice cleanly.
-2. If execution is delegated, spawn the assigned `explorer` or `worker` with `gpt-5.4-mini`.
-3. Use `medium` for mechanical scans, `high` for ordinary analysis or routine scoped edits, and `xhigh` only for subtle failures or risky bounded work.
-4. Do not override the execution plan by habit; use local work only when the task is the immediate critical path or the write scope overlaps too heavily.
-5. The main agent must still integrate results and keep docs, tests, and diagnostics in parity.
+1. Keep critical-path or overlapping work local.
+2. Use the Luna execution profile for delegated edits only when acceptance, owned files, and proof are exact.
+3. Keep scope decisions, ambiguous implementation choices, integration, and closeout with the main agent.
+4. Keep docs, tests, and diagnostics in parity after integration.
 
 ## Refusal Rules
 
@@ -67,10 +58,9 @@ Follow the execution mode chosen earlier:
 6. Do not bundle several intentional changes under one task.
 7. Do not keep coding under an over-broad feature when the behavior clearly deserves a split.
 8. Do not turn feature or decision files into debug notes, implementation recipes, or hardware maps.
-9. Do not leave task status changes implicit; say them plainly.
-10. Do not leave docs stale when implementation changed truth.
-11. Do not keep piling into a god file when a split is the cleaner move.
-12. Do not stop at "fix applied"; hand off to verification and then to traceability or doc maintenance if drift is likely.
+9. Do not leave task status changes or documentation updates implicit.
+10. Do not keep piling into a mixed-responsibility file when a split is cleaner.
+11. Do not stop at "fix applied"; hand off to verification and reconcile likely drift.
 
 ## Outcome
 

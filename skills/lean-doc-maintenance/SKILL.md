@@ -11,16 +11,7 @@ Use this skill whenever repository truth needs explicit cleanup instead of anoth
 
 This is the default cleanup path after implementation bursts, debug bursts, or drift discovery when docs need repair before more work continues.
 
-Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) first for contracts, trigger rules, and file-split discipline.
-
-## What This Skill Owns
-
-1. Keeping docs in parity with actual project truth.
-2. Keeping feature and decision indexes aligned with their files.
-3. Spawning new docs only when triggered.
-4. Splitting large or mixed planning docs.
-5. Splitting over-broad features and writing missing decisions when reality now demands them.
-6. Removing stale language, stale scope, and stale stage or version labels.
+Follow the repository's `AGENTS.md`. Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) only when recovering context or resolving a shared contract.
 
 ## Maintenance Workflow
 
@@ -34,6 +25,8 @@ Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) first for contract
 8. Create triggered docs when the project now clearly needs them.
 9. Split large files before they become unreadable.
 10. Remove dead text that no longer matches current intent.
+
+Apply the shared [delegation policy](../lean-sdlc-core/references/delegation.md). Luna may perform exact mechanical edits. Keep source-of-truth, document ownership, feature split, and decision changes with the Sol decision profile.
 
 ## Rules
 

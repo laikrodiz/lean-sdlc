@@ -8,6 +8,8 @@ The basic flow is:
 
 Codex selects the relevant skill automatically. You can also request one directly, for example: `Use $lean-brainstorm to shape this idea.`
 
+Model routing is cost-aware: GPT-5.6 Sol handles decisions, while GPT-5.6 Luna handles clear bounded execution. Reasoning never drops below `low`, and difficult decision work escalates only when risk or ambiguity justifies it.
+
 ## Skills
 
 | Skill | Purpose |
@@ -58,4 +60,3 @@ For an existing project, ask Codex to use `$lean-sdlc-core` to set up or audit t
 
 - `skills/` contains only the Lean-SDLC Codex skills and their required metadata and references.
 - `scripts/install.sh` installs the complete bundle locally.
-

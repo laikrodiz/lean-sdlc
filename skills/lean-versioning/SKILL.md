@@ -9,14 +9,7 @@ description: Manage Lean-SDLC stage and version framing so the project keeps a c
 
 Use this skill whenever the project framing itself needs to move, not just the task list.
 
-Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) first and re-read [../lean-sdlc-core/references/lifecycle.md](../lean-sdlc-core/references/lifecycle.md).
-
-## What This Skill Owns
-
-1. Stage transitions.
-2. Version framing and exit criteria.
-3. Refreshing business context for the next delivery slice.
-4. Detecting stale labels such as outdated `MVP` framing.
+Follow the repository's `AGENTS.md` and read [the lifecycle reference](../lean-sdlc-core/references/lifecycle.md). Open the core only when recovering context or resolving a shared contract.
 
 ## Workflow
 
@@ -25,6 +18,8 @@ Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) first and re-read 
 3. If the version is complete, define the next version promise and what is deferred.
 4. If the stage is wrong, propose the correct stage and why.
 5. Create `docs/versions/V-*.md` only when version history now deserves its own files.
+
+Use the Sol decision profile from the shared [delegation policy](../lean-sdlc-core/references/delegation.md) for version and stage decisions.
 
 ## Pressure Tests
 

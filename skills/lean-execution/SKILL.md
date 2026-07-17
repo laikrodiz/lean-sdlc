@@ -9,15 +9,7 @@ description: Choose execution mode for ready Lean-SDLC tasks and dispatch work l
 
 Use this skill after tasks are ready and before code starts.
 
-Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) first for required sequence, delegation policy, and proof-first rules.
-
-## What This Skill Owns
-
-1. Choosing execution mode: local, delegated, or batch.
-2. Deciding when workers are mandatory.
-3. Assigning token-aware delegate models and reasoning effort.
-4. Setting worker ownership boundaries.
-5. Defining review checkpoints before closeout.
+Follow the repository's `AGENTS.md`. Read the shared [delegation policy](../lean-sdlc-core/references/delegation.md) before dispatching work. Open the core only when recovering context or resolving a shared contract.
 
 ## Execution Modes
 
@@ -31,18 +23,14 @@ Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) first for required
 ## Dispatch Rules
 
 1. If one ready task blocks the next main step, keep it local.
-2. If two or more ready tasks are disjoint in write scope, spawn workers in parallel.
+2. If two or more substantial tasks have disjoint write scope, consider workers in parallel.
 3. If the work is diagnosis and still unbounded, spawn an explorer first and do not send a worker yet.
-4. If the ready queue is larger than three disjoint tasks, use a checkpointed batch.
-5. Do not delegate vague work or overlapping write scopes.
+4. Use a checkpointed batch only when it saves meaningful time or main-agent context.
+5. Keep quick tasks local and never delegate vague or overlapping work.
 
 ## Delegate Profiles
 
-Use `gpt-5.4-mini` by default and choose the lowest effort that still fits:
-
-1. `medium` for mechanical scan work, file inventory, and short summaries.
-2. `high` for ordinary analysis, bounded triage, and routine scoped edits.
-3. `xhigh` for subtle failures, risky bounded edits, architecture tradeoffs, and cross-artifact contradictions.
+Use the profiles and availability fallback in the shared delegation policy. Sol owns decisions. Luna executes bounded implementation. Keep `low` as the minimum effort.
 
 ## Worker Prompt Rules
 
@@ -52,7 +40,8 @@ Every worker assignment must include:
 2. the owned files or boundary,
 3. proof expectations,
 4. a reminder not to touch unrelated work,
-5. a reminder not to revert concurrent changes.
+5. a reminder not to revert concurrent changes,
+6. the smallest useful context and a concise return contract.
 
 ## Review Checkpoints
 
@@ -68,8 +57,8 @@ After worker output:
 
 1. Do not dispatch before tasks are clean.
 2. Do not dispatch when parent truth is still fuzzy.
-3. Do not keep everything local by habit when the queue is clearly parallel.
-4. Do not burn `xhigh` on grep-grade work.
+3. Do not spawn when delegation overhead is likely to exceed the work.
+4. Do not give delegates full history without a demonstrated need.
 
 ## Outcome
 

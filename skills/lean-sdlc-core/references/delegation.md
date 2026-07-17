@@ -1,93 +1,62 @@
 # Lean-SDLC Delegation Policy
 
-## Purpose
+Use sub-agents only after the task, ownership boundary, and proof target are clear.
 
-Use sub-agents as a planned execution mode after task truth is clean.
+## Model Profiles
 
-Do not delegate vague work. Do not delegate the whole problem. Do not keep everything local by habit either.
+| Work | Model | Effort |
+| --- | --- | --- |
+| Planning, architecture, task slicing, root-cause classification, reconciliation, and final verification decisions | `gpt-5.6-sol` | `low` by default; raise to `high` or `xhigh` only for material ambiguity or risk |
+| Bounded implementation with exact acceptance, owned files, and a proof path | `gpt-5.6-luna` | `xhigh` |
+| Mechanical search, inventory, extraction, and concise summaries | `gpt-5.6-luna` | `low` |
 
-## Delegate Profiles
+Never select `none` or `minimal`. Keep `low` as the minimum effort.
 
-Use `gpt-5.4-mini` everywhere by default, then choose reasoning effort by task shape:
+Sol owns decisions. Luna executes clear, repeatable work. Luna must not own scope, architecture, root-cause classification, acceptance changes, or final closeout.
 
-- `medium` for file inventory, simple search, straightforward trace lookup, and short summaries
-- `high` for ordinary analysis, bounded triage, routine worker edits, and most explorer tasks
-- `xhigh` for subtle failures, cross-artifact contradictions, architecture tradeoffs, and risky bounded edits
+Before dispatch, use only models exposed by the current Codex surface. When Luna is unavailable, use `gpt-5.6-terra` at the same effort. When neither Luna nor Terra is available, use the current GPT-5.6 model at the lowest safe effort or keep the work local. Never fall back to an older model silently.
 
-Do not spend `xhigh` on grep-grade work. Do not spend local context on work a mini worker can handle cleanly.
+## Cost Gate
 
-## Agent Types
+Delegate only when parallel work saves meaningful wall time or keeps substantial supporting context out of the main agent.
 
-Use `explorer` for:
+Keep work local when:
 
-- bounded repo questions,
-- traceability audits,
-- ambiguity checks,
-- test-log or failure summarization,
-- architecture alternatives.
+1. the next main step blocks on the result,
+2. the task is a quick read or one-step edit,
+3. ownership overlaps current work,
+4. explaining and rechecking the task costs as much as doing it,
+5. the task still contains a decision the main agent must make.
 
-Use `worker` for:
+Several disjoint tasks make delegation possible. They do not make it mandatory.
 
-- bounded implementation with explicit file ownership,
-- disjoint test additions,
-- isolated doc maintenance,
-- independent refactor slices.
+## Agent Roles
 
-## Spawn Triggers
+Use an explorer for bounded evidence collection: repository questions, trace inventory, logs, ambiguity scans, or option research.
 
-Spawn an `explorer` when:
+Use a worker for bounded execution: implementation, tests, isolated documentation edits, or independent refactor slices.
 
-1. a bounded question can be answered independently,
-2. the answer is useful but not on the immediate critical path,
-3. a quick parallel read can reduce main-agent context.
+The main agent keeps user dialogue, scope, decisions, integration, and closeout.
 
-Spawn a `worker` when:
+## Context Budget
 
-1. the write scope is clear and disjoint,
-2. the task materially advances the active work,
-3. the main agent can continue non-overlapping work while it runs.
+Give each delegate the smallest useful context:
 
-## Mandatory Dispatch Rules
+1. Prefer no history or the smallest recent-turn fork supported by the current surface.
+2. Pass the exact task, owned paths, acceptance, proof command, and relevant source files.
+3. Avoid copying the complete project history or every Lean-SDLC document.
+4. Reuse an existing delegate for corrections when practical instead of spawning a replacement.
 
-1. If one ready task blocks the next main-agent step, do it locally.
-2. If two or more ready tasks are disjoint in write scope, spawn workers in parallel.
-3. If the work is diagnosis and still unbounded, spawn an explorer before any worker edit.
-4. If the ready queue is larger than three disjoint tasks, use batch execution with checkpoints.
+## Assignment Contract
 
-## Do Not Spawn When
+Every assignment must state:
 
-Do not spawn when:
+1. exact deliverable,
+2. owned files or read boundary,
+3. acceptance and proof expectations,
+4. forbidden unrelated work,
+5. required concise return: result, changed files, evidence, and blockers.
 
-1. the very next main-agent step is blocked on the result,
-2. the task is too vague to assign cleanly,
-3. the write scope overlaps heavily with ongoing local work,
-4. the task is trivial enough to do faster directly.
+## Integration
 
-## Prompt Shape
-
-Delegation prompts must include:
-
-1. the exact question or deliverable,
-2. the ownership boundary,
-3. the expected output form,
-4. a reminder not to redo unrelated work,
-5. a reminder to accommodate concurrent work instead of reverting it.
-
-## Merge Rules
-
-The main agent remains responsible for:
-
-- user dialogue,
-- scope control,
-- final decisions,
-- final integration,
-- final parity of docs, tasks, code, tests, and diagnostics.
-
-Delegated output must be reconciled into repository truth in the same session.
-
-After worker output, run a lightweight review pass for:
-
-- acceptance fit
-- scope creep
-- missing proof
-- missing doc parity
+Review delegate output for acceptance fit, scope creep, proof, and documentation parity. Reconcile accepted output into repository truth before closeout.

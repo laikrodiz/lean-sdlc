@@ -9,15 +9,7 @@ description: Turn a rough idea into the first Lean-SDLC project truth using Socr
 
 Use this skill when the project is still an idea dump and no stable truth exists yet.
 
-Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) first for shared lifecycle and contract rules.
-
-## What This Skill Owns
-
-1. Socratic questioning at project start.
-2. Occam cuts on early scope.
-3. First draft of project brief and scope.
-4. Initial feature candidates with separate feature files.
-5. Initial stage and version framing.
+Follow the repository's `AGENTS.md`. Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) only when setting up Lean-SDLC, recovering context, or resolving a shared contract.
 
 ## Workflow
 

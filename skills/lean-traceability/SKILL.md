@@ -11,15 +11,7 @@ Use this skill when the chain of intent is breaking or needs explicit repair.
 
 This is the default review path after implementation or debugging bursts when parent truth may have drifted.
 
-Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) first for authority order, reading order, and repository contracts.
-
-## What This Skill Owns
-
-1. Checking that work traces back to business intent.
-2. Finding drift between feature files, decision files, indexes, tasks, code, tests, and diagnostics.
-3. Repairing missing or broken links.
-4. Checking that features and decisions are written at the right abstraction level.
-5. Helping resume cleanly after context loss.
+Follow the repository's `AGENTS.md`. Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) only when recovering context or resolving a shared contract.
 
 ## Audit Workflow
 
@@ -36,12 +28,7 @@ Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) first for authorit
 
 ## Delegation Checkpoints
 
-This skill benefits from parallel bounded reads:
-
-1. Spawn `explorer` agents with `gpt-5.4-mini` for separate trace paths or drift checks.
-2. Use `xhigh` when the contradiction is subtle or spans several artifacts.
-3. Use lower effort for straightforward link inventory.
-4. Keep final reconciliation and source-of-truth decisions in the main agent.
+Apply the shared [delegation policy](../lean-sdlc-core/references/delegation.md). Luna explorers may inventory independent trace paths when the cost gate passes. Keep reconciliation and source-of-truth decisions with the Sol decision profile.
 
 ## Common Failures
 

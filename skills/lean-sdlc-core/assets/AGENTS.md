@@ -77,9 +77,12 @@ Use this order unless the repo is only being read:
 ## 8. Execution Mode
 
 1. Use local execution for one critical-path task.
-2. Use delegated execution for two or more disjoint ready tasks.
-3. Use batch execution when the ready disjoint queue is larger than three tasks.
-4. Use `gpt-5.4-mini` with `medium`, `high`, or `xhigh` based on task difficulty.
+2. Delegate substantial disjoint tasks only when parallel work saves meaningful time or main-agent context.
+3. Use `gpt-5.6-sol` at `low` for decisions; raise effort only for material ambiguity or risk.
+4. Use `gpt-5.6-luna` at `xhigh` for bounded implementation with exact ownership, acceptance, and proof.
+5. Use Luna at `low` for mechanical inventory and summaries.
+6. Use `gpt-5.6-terra` at the same effort when Luna is unavailable. Never fall back below GPT-5.6 or below `low` effort silently.
+7. Give delegates the smallest useful context and require concise evidence-based returns.
 
 ## 9. Before Done
 

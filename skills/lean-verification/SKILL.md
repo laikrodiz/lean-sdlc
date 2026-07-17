@@ -9,14 +9,7 @@ description: Prove Lean-SDLC task completion against acceptance, tests, and diag
 
 Use this skill after implementation and before task closeout.
 
-Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) first for proof, diagnostics, and parity rules.
-
-## What This Skill Owns
-
-1. Checking acceptance against written feature truth.
-2. Reviewing verification evidence.
-3. Confirming diagnostics or failure signals behave as expected.
-4. Deciding whether a task can close or must reopen.
+Follow the repository's `AGENTS.md`. Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) only when recovering context or resolving a shared contract.
 
 ## Verification Workflow
 
@@ -38,12 +31,7 @@ Proof should be test-first when practical. When that is not practical, the alter
 
 ## Delegation Checkpoints
 
-Use sub-agents when verification has independent sidecar questions:
-
-1. Spawn an `explorer` with `gpt-5.4-mini` for bounded log review, test-failure summarization, or parallel drift checks.
-2. Use `xhigh` when the evidence is ambiguous or the failure mode is subtle.
-3. Use lower effort for short summaries or mechanical scan work.
-4. Keep the final close, fail, or reopen decision in the main agent.
+Apply the shared [delegation policy](../lean-sdlc-core/references/delegation.md). Luna explorers may collect bounded logs, test results, or drift evidence when the cost gate passes. Keep the final close, fail, or reopen decision with the Sol decision profile.
 
 ## Refusal Rules
 

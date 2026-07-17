@@ -9,17 +9,7 @@ description: Tighten Lean-SDLC project truth by removing ambiguity, splitting cl
 
 Use this skill after `lean-brainstorm` and before architecture or task planning.
 
-Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) first for repository contracts and trigger rules.
-
-## What This Skill Owns
-
-1. Tightening scope boundaries.
-2. Splitting feature files into clean units.
-3. Tightening decision files into durable chosen paths.
-4. Removing contradictions and fuzzy language.
-5. Defining acceptance, verification, and diagnostics at feature level.
-6. Using functional and non-functional requirements as a review lens without spawning a second requirements system.
-7. Identifying which optional docs are justified.
+Follow the repository's `AGENTS.md`. Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) only when recovering context or resolving a shared contract.
 
 ## Workflow
 
@@ -61,12 +51,7 @@ If the answer points downward, move the detail out of the decision file.
 
 ## Delegation Checkpoints
 
-Use sub-agents when they reduce context instead of multiplying it:
-
-1. Spawn an `explorer` with `gpt-5.4-mini` for parallel contradiction scans or feature-boundary audits.
-2. Use `xhigh` when the refinement question is non-trivial and changes scope shape.
-3. Use `medium` or `high` for simple inventory or lookup work.
-4. Keep final feature splits and scope decisions in the main agent.
+Apply the shared [delegation policy](../lean-sdlc-core/references/delegation.md). Delegate bounded inventory only when the cost gate passes. Keep feature splits, acceptance changes, and scope decisions with the Sol decision profile.
 
 ## Trigger Checks
 
@@ -96,9 +81,8 @@ Put durable cross-cutting choices mostly in decisions and triggered technical do
 2. Do not write architecture prose when the real issue is unclear scope.
 3. Do not create tasks until the active features are small and testable.
 4. Do not keep vague placeholders such as "handle edge cases later" without saying which ones are deferred.
-5. Do not accept feature files that read like capability areas, subsystems, or release buckets.
-6. Do not accept decision files that read like implementation recipes, debug logs, or tuning diaries.
-7. Do not let implementation start when refine work is still obviously pending.
+5. Do not accept decision files that read like recipes or debug logs.
+6. Do not let implementation start while refinement is incomplete.
 
 ## Outcome
 

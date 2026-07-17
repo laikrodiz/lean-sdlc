@@ -9,16 +9,7 @@ description: Shape a Lean-SDLC project into a small, defensible technical form b
 
 Use this skill after active features are stable enough to deserve technical shaping.
 
-Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) first for lifecycle, trigger, and repository contract rules.
-
-## What This Skill Owns
-
-1. Minimal system shape.
-2. Language, framework, and runtime selection.
-3. Major module and boundary definition.
-4. Key technical flows.
-5. Durable decisions and consequences.
-6. Triggered technical docs such as `ARCHITECTURE.md`, `INTERFACES.md`, or `DATA_MODEL.md`.
+Follow the repository's `AGENTS.md`. Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) only when recovering context or resolving a shared contract.
 
 ## Workflow
 
@@ -33,11 +24,7 @@ Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) first for lifecycl
 
 ## Delegation Checkpoints
 
-Use sub-agents selectively:
-
-1. Spawn an `explorer` with `gpt-5.4-mini` and usually `xhigh` to compare architecture options or inspect bounded technical unknowns in parallel.
-2. Use lower effort for simple framework or file-layout inventory work.
-3. Keep stack choice, boundary decisions, and final tradeoff calls in the main agent.
+Apply the shared [delegation policy](../lean-sdlc-core/references/delegation.md). Explorers may collect bounded option evidence when the cost gate passes. Keep stack, boundary, and tradeoff decisions with the Sol decision profile; start at `low` and escalate only for material ambiguity or risk.
 
 ## Stack Selection Rules
 

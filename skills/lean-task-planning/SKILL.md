@@ -9,14 +9,7 @@ description: Convert approved Lean-SDLC feature or decision work into atomic, tr
 
 Use this skill after feature truth and architecture truth are stable enough for execution planning.
 
-Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) first for the task contract and non-negotiables.
-
-## What This Skill Owns
-
-1. Converting approved feature or decision work into atomic tasks.
-2. Keeping `planning/tasks.csv` lean and parseable.
-3. Enforcing `parent_ref` linkage to `FEAT-xxx` or `DEC-xxx`.
-4. Writing clear, measurable one-line acceptance criteria for each task.
+Follow the repository's `AGENTS.md`. Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) only when recovering context or resolving a shared contract.
 
 ## Planning Rules
 
@@ -37,7 +30,7 @@ This is the required path before code.
 
 After planning, route through [../lean-execution/SKILL.md](../lean-execution/SKILL.md) to choose local, delegated, or batch execution.
 
-## What A Good Task Looks Like
+## Task Quality Gate
 
 1. One clear outcome.
 2. One parent feature or decision.
@@ -45,20 +38,10 @@ After planning, route through [../lean-execution/SKILL.md](../lean-execution/SKI
 4. Minimal dependency surface.
 5. No hidden extra scope.
 6. A clearly stated status when it enters the ledger or changes state.
-7. One intentional change only.
-8. A parent feature or decision that matches the exact behavior or chosen path being changed.
-9. No parent abuse just because the right doc has not been cleaned up yet.
+7. No architecture work hidden under a behavior task.
+8. No macro-feature or wrong-level parent used for convenience.
 
-## What A Bad Task Looks Like
-
-1. It bundles multiple features.
-2. It reads like a mini-spec.
-3. It has vague or unmeasurable acceptance such as "works better".
-4. It hides architecture work that should be a decision.
-5. It depends on half the board.
-6. It mixes several code changes that should be tracked separately.
-7. It is attached to a macro-feature that should have been split first.
-8. It attaches implementation detail to a decision or feature that does not really own it.
+Use the Sol decision profile from the shared [delegation policy](../lean-sdlc-core/references/delegation.md) when task slicing requires judgment.
 
 ## Outcome
 

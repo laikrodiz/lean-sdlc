@@ -36,8 +36,3 @@ Preferred sequence:
   Use when the project is stuck in stale stage or version framing.
 - `lean-doc-maintenance`
   Use when documentation drift, file growth, or stale planning artifacts need cleanup.
-
-## Companion Skills
-
-- `cad`
-  Use for script-driven CAD generation, inspection, and validation. It supports CAD artifacts inside a project, while Lean-SDLC still owns scope, decisions, tasks, proof, and documentation parity.

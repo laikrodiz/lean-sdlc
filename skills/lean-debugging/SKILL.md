@@ -9,15 +9,7 @@ description: Reproduce, isolate, and classify failing behavior before deciding w
 
 Use this skill when the job is to understand a failure before changing code or parent docs.
 
-Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) first for required sequence, proof-first rules, and abstraction hygiene.
-
-## What This Skill Owns
-
-1. Reproducing the failure.
-2. Isolating the failing path.
-3. Classifying the root cause at the right level.
-4. Deciding whether the next step is task planning, implementation, traceability, or doc maintenance.
-5. Keeping transient debug detail out of durable requirement truth.
+Follow the repository's `AGENTS.md`. Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) only when recovering context or resolving a shared contract.
 
 ## Workflow
 
@@ -39,12 +31,7 @@ Open [../lean-sdlc-core/SKILL.md](../lean-sdlc-core/SKILL.md) first for required
 
 ## Delegation Checkpoints
 
-Use sub-agents only for bounded sidecar diagnosis:
-
-1. Spawn an `explorer` with `gpt-5.4-mini` for log triage, trace scans, or isolated codebase questions.
-2. Use `xhigh` when the failure mode is subtle or spans several artifacts.
-3. Use `medium` or `high` for short inventory or mechanical scan work.
-4. Keep root-cause classification and next-step choice in the main agent.
+Apply the shared [delegation policy](../lean-sdlc-core/references/delegation.md). Luna explorers may collect bounded logs, traces, or inventory when the cost gate passes. Keep root-cause classification and next-step decisions with the Sol decision profile.
 
 ## Refusal Rules
 
