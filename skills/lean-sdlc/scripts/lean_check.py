@@ -57,7 +57,7 @@ TASK_COLUMNS = {
     "proof",
     "evidence",
 }
-TASK_STATUSES = {"planned", "in_progress", "done"}
+TASK_STATUSES = {"Planned", "In Progress", "Done"}
 SPECIAL_PARENTS = {"REPO", "BOOTSTRAP"}
 
 
@@ -75,7 +75,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--before-write",
         action="store_true",
-        help="Require the selected task to be owned and in_progress before mutation",
+        help="Require the selected task to be owned and In Progress before mutation",
     )
     return parser.parse_args()
 
@@ -193,14 +193,17 @@ def main() -> int:
             errors.append(f"planning/tasks.csv:{number}: {task_id} has empty title")
         status = task.get("status", "")
         if status not in TASK_STATUSES:
-            errors.append(f"planning/tasks.csv:{number}: {task_id} has invalid status {status!r}")
+            errors.append(
+                f"planning/tasks.csv:{number}: {task_id} has invalid status {status!r}; "
+                "expected Planned, In Progress, or Done"
+            )
         parent = task.get("parent_ref", "")
         if not parent:
             errors.append(f"planning/tasks.csv:{number}: {task_id} has no parent_ref")
         reserved_parent = bool(
             args.before_write
             and task_id == args.task
-            and status == "in_progress"
+            and status == "In Progress"
             and re.fullmatch(r"(?:FEAT|DEC)-[A-Za-z0-9][A-Za-z0-9._-]*", parent)
         )
         if parent and parent not in valid_parents and not reserved_parent:
@@ -215,8 +218,8 @@ def main() -> int:
             errors.append(f"planning/tasks.csv:{number}: {task_id} has empty acceptance")
         if not task.get("proof", ""):
             errors.append(f"planning/tasks.csv:{number}: {task_id} has empty proof")
-        if status == "done" and not task.get("evidence", ""):
-            errors.append(f"planning/tasks.csv:{number}: {task_id} is done without evidence")
+        if status == "Done" and not task.get("evidence", ""):
+            errors.append(f"planning/tasks.csv:{number}: {task_id} is Done without evidence")
 
     if bootstrap_tasks > 1:
         errors.append("planning/tasks.csv: more than one BOOTSTRAP task exists")
@@ -228,8 +231,8 @@ def main() -> int:
             errors.append("--before-write requires --task TASK-ID")
         elif args.task in tasks_by_id:
             selected = tasks_by_id[args.task]
-            if selected.get("status") != "in_progress":
-                errors.append(f"{args.task} must be in_progress before mutation")
+            if selected.get("status") != "In Progress":
+                errors.append(f"{args.task} must be In Progress before mutation")
             if not selected.get("owner"):
                 errors.append(f"{args.task} must have an owner before mutation")
 

@@ -38,9 +38,11 @@ Cache reuse is treated as a measured optimization. Instructions stay stable, var
 
 ## Tracked changes
 
-Every repository file mutation requires one owned `in_progress` task with measurable acceptance and proof. This includes code, documentation, configuration, tests, generated files, and small maintenance edits. Read-only work needs no task. Atomically inserting the row that authorizes upcoming work is the only routine pre-task file mutation.
+Every repository file mutation requires one owned `In Progress` task with measurable acceptance and proof. This includes code, documentation, configuration, tests, generated files, and small maintenance edits. Read-only work needs no task. Atomically inserting the row that authorizes upcoming work is the only routine pre-task file mutation.
 
 Feature work links to `FEAT-*`, durable technical work links to `DEC-*`, and maintenance uses `REPO`. Initialization creates the ledger and active `TASK-000` atomically under the one-time `BOOTSTRAP` parent.
+
+When upgrading an existing ledger, replace `planned`, `in_progress`, and `done` with `Planned`, `In Progress`, and `Done`.
 
 ## Install
 

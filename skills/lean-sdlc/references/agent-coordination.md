@@ -29,11 +29,11 @@ Do not chain worker handoffs. Every worker returns to the main agent, which reco
 
 ## Write Ownership
 
-- Every writing agent must own one `in_progress` task.
+- Every writing agent must own one `In Progress` task.
 - One task has one writer at a time.
 - Parallel writers require separate tasks and disjoint paths.
 - Read-only explorers may work without a task because they cannot mutate repository state.
-- Workers may report completion but must not move a task to `done`; the main agent verifies and closes it.
+- Workers may report completion but must not move a task to `Done`; the main agent verifies and closes it.
 
 ## Assignment Contract
 

@@ -31,9 +31,9 @@ Failure indicators:
 2. Implementation starts before an uncertain failure is diagnosed.
 3. Documentation maintenance decides scope, feature boundaries, or version meaning.
 4. A read-only request triggers repository initialization or lifecycle ceremony.
-5. A file changes before an owned task becomes `in_progress`.
+5. A file changes before an owned task becomes `In Progress`.
 6. An explicit model request is silently downgraded or delegated without permission.
-7. A worker hands work directly to another worker or marks a task `done`.
+7. A worker hands work directly to another worker or marks a task `Done`.
 8. A new agent is spawned where an existing same-task agent could receive a small delta.
 9. Cache preservation is claimed as guaranteed or used to justify unnecessary work.
 10. A handoff relies on another skill being discovered implicitly.

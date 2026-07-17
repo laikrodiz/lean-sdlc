@@ -44,7 +44,7 @@ This repository uses Lean-SDLC. Start with `docs/PROJECT_BRIEF.md` and `docs/SCO
 """
 
 TASKS = """task_id,title,status,parent_ref,depends_on,owner,acceptance,proof,evidence
-TASK-000,Initialize Lean-SDLC,in_progress,BOOTSTRAP,,main,"Minimal Lean-SDLC control files exist without overwriting project work","Run lean_check.py --task TASK-000",
+TASK-000,Initialize Lean-SDLC,In Progress,BOOTSTRAP,,main,"Minimal Lean-SDLC control files exist without overwriting project work","Run lean_check.py --task TASK-000",
 """
 
 
@@ -76,14 +76,14 @@ def main() -> int:
         with tasks_path.open(encoding="utf-8-sig", newline="") as handle:
             reader = csv.DictReader(handle)
             active_control_task = any(
-                (row.get("status") or "").strip() == "in_progress"
+                (row.get("status") or "").strip() == "In Progress"
                 and (row.get("owner") or "").strip()
                 and (row.get("parent_ref") or "").strip() in {"BOOTSTRAP", "REPO"}
                 for row in reader
             )
         if not active_control_task:
             raise SystemExit(
-                "Existing planning/tasks.csv needs an owned in_progress "
+                "Existing planning/tasks.csv needs an owned In Progress "
                 "BOOTSTRAP or REPO task before initialization can write files."
             )
     else:

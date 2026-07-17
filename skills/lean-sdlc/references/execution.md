@@ -12,9 +12,9 @@ Use Terra at `medium` or Sol at `low` for straightforward routing. Read [model-r
 
 Unknown diagnosis goes to debugging before a worker receives implementation. Keep quick work local. Delegation must save meaningful wall time or main-agent context after assignment, cache-write, review, and integration costs.
 
-Default to no workers and at most two when parallelism is justified. Reuse an agent only for the same task, role, paths, and assumptions. Every writing worker owns one `in_progress` task; parallel writers require separate tasks and disjoint paths.
+Default to no workers and at most two when parallelism is justified. Reuse an agent only for the same task, role, paths, and assumptions. Every writing worker owns one `In Progress` task; parallel writers require separate tasks and disjoint paths.
 
-Use the assignment and return contracts in the coordination reference. Workers return only to the main agent and never mark tasks `done`.
+Use the assignment and return contracts in the coordination reference. Workers return only to the main agent and never mark tasks `Done`.
 
 After execution, review scope and evidence, then route to verification. Use traceability for uncertain truth and documentation maintenance only for approved cleanup.
 

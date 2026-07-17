@@ -13,7 +13,7 @@ Use Sol at `medium`; raise to `high` for cross-cutting dependencies. Luna may wr
 5. Add dependencies only when sequencing truly matters.
 6. Put requirements and design detail in their authoritative docs rather than the task ledger.
 7. Insert new tasks directly below the CSV header.
-8. Move the selected task to `in_progress` before its first write.
+8. Move the selected task to `In Progress` before its first write.
 9. State task creation and status transitions explicitly.
 10. Stop if a task would hide new scope, an architecture choice, or several independent outcomes.
 

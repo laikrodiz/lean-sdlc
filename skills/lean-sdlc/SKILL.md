@@ -42,7 +42,7 @@ Choose the earliest unresolved lane. Do not mechanically run every lane. End by 
 2. Use a feature, decision, `REPO`, or one-time `BOOTSTRAP` parent appropriate to the change.
 3. Do not implement without measurable acceptance and an explicit proof path.
 4. Route unknown causes through debugging before implementation.
-5. Do not move work to `done` without evidence and documentation parity.
+5. Do not move work to `Done` without evidence and documentation parity.
 6. Reconcile conflicting truth before closeout.
 
 Use the fast path only for read-only explanation and inspection. Create a small `REPO` task even for a trivial maintenance write.

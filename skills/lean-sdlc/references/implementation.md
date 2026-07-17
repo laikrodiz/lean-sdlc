@@ -1,6 +1,6 @@
 # Implementation Workflow
 
-Use only when the cause and scope are known and an approved task is `in_progress`, owned by the writer, and has measurable acceptance and a proof path. Return to debugging when the cause is uncertain and to refinement when intended behavior is uncertain.
+Use only when the cause and scope are known and an approved task is `In Progress`, owned by the writer, and has measurable acceptance and a proof path. Return to debugging when the cause is uncertain and to refinement when intended behavior is uncertain.
 
 Use Terra at `high` for ordinary engineering. Use Luna at `low` or `medium` for exact mechanical edits with strong automated proof. Use Sol at `high` or `xhigh` for complex or risky implementation.
 
@@ -17,6 +17,6 @@ Use Terra at `high` for ordinary engineering. Use Luna at `low` or `medium` for 
 9. Avoid opportunistic refactors and additional behavior.
 10. Hand off to verification with explicit evidence.
 
-Stop when there is no owned task, its status is not `in_progress`, acceptance is vague, proof is undefined, the feature is too broad, or implementation reveals a new durable choice. Repair the appropriate parent truth before continuing.
+Stop when there is no owned task, its status is not `In Progress`, acceptance is vague, proof is undefined, the feature is too broad, or implementation reveals a new durable choice. Repair the appropriate parent truth before continuing.
 
 Success means the change is small, scoped, test-backed, diagnosable, and traceable to the written why.

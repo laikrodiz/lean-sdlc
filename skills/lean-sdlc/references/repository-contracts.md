@@ -52,18 +52,18 @@ Use these `planning/tasks.csv` columns:
 
 `task_id,title,status,parent_ref,depends_on,owner,acceptance,proof,evidence`
 
-Allowed statuses are `planned`, `in_progress`, and `done`.
+Allowed statuses are `Planned`, `In Progress`, and `Done`.
 
 Rules:
 
 1. Insert new tasks directly below the header.
 2. Keep one intentional change per task.
-3. Require one `in_progress` task before every repository file mutation.
+3. Require one `In Progress` task before every repository file mutation.
 4. Link behavior to a feature, durable technical work to a decision, and non-behavior maintenance to `REPO`.
 5. Reserve `BOOTSTRAP` for the initializer's first control-plane task.
 6. Assign one writer; parallel writers require separate tasks and disjoint paths.
 7. Define measurable acceptance and proof before the first write.
-8. Record concise evidence before moving a task to `done`.
+8. Record concise evidence before moving a task to `Done`.
 9. Let only the main agent close tasks after verification.
 10. State status transitions explicitly.
 

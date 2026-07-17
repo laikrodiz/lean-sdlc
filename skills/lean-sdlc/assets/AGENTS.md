@@ -15,11 +15,11 @@ If these disagree, flag the conflict and route through traceability before close
 
 ## Required Gates
 
-1. No repository file mutation without one `in_progress` task owned by the writer. Inserting that authorizing row into `planning/tasks.csv` is the only routine pre-task write.
+1. No repository file mutation without one `In Progress` task owned by the writer. Inserting that authorizing row into `planning/tasks.csv` is the only routine pre-task write.
 2. Use a feature or decision parent for delivery work, `REPO` for maintenance, and `BOOTSTRAP` only during initialization.
 3. No implementation without measurable acceptance and a proof path.
 4. Unknown failure cause enters debugging before implementation.
-5. No task moves to `done` without evidence, promised diagnostics, and document parity.
+5. No task moves to `Done` without evidence, promised diagnostics, and document parity.
 6. State every task status transition explicitly.
 
 ## Change Ownership
