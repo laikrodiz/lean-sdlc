@@ -8,13 +8,13 @@ Explicit user model and reasoning requests override automatic routing.
 
 Use these modes:
 
-- `strict`: keep the selected model and reasoning level for the complete task; do not delegate unless the user asks. Requested workers inherit that model and reasoning level unless the user approves another route.
+- `strict`: keep the selected model and reasoning level for the complete task and work locally unless the user explicitly requests same-model subagents. Use when the user requires the entire task to stay on that model.
 - `lead`: keep the selected model for decisions, integration, verification, and final output; allow cheaper workers only for bounded support.
 - `economy`: route automatically across Sol, Terra, and Luna.
 
-When the user names a model or reasoning level without granting delegation, use `strict`. Treat Max as `strict` by default. Treat Ultra or an explicit request for parallel agents as permission for multi-agent work. Never silently lower an explicit model or reasoning request. If the requested model is unavailable, stop and explain the closest available options.
+Naming a model or reasoning level does not decide orchestration. Preserve the requested model and reasoning for main-agent work. Default to no subagents. When the user explicitly enables subagents for the thread, use `lead` unless the user requests `strict` or `economy`. Never silently lower an explicit model or reasoning request. If the requested model is unavailable, stop and explain the closest available options.
 
-The main agent keeps the selected model throughout the turn. A different model requires a subagent. Same-model workers are also allowed when the user requests them or automatic routing permits them, subject to [agent-coordination.md](agent-coordination.md).
+The main agent keeps the selected model throughout the turn. A different model requires a subagent. Same-model workers are also allowed after explicit thread permission, subject to [agent-coordination.md](agent-coordination.md).
 
 ## Baseline Roles
 

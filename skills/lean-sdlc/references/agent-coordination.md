@@ -1,24 +1,25 @@
 # Agent Coordination
 
-Use subagents only when their expected benefit exceeds assignment cost, cache-write cost, review cost, and integration risk.
+Default to no subagents. When the user explicitly enables them for the thread, use assisted orchestration until the user revokes permission.
 
 ## Delegation Gate
 
+With thread permission, use one bounded explorer or worker when substantial independent work benefits from context isolation, parallelism, or specialized execution. Use two only for independent scopes.
+
 Keep work local when:
 
-1. the next main step blocks on the result,
+1. permission is absent or revoked,
 2. the task is a quick read or one-step edit,
 3. ownership overlaps current work,
-4. explaining and rechecking costs about as much as doing it,
-5. the task still contains a decision the main agent must make.
+4. explaining and rechecking costs about as much as doing it.
 
-Use read-only explorers for bounded evidence collection. Use workers for approved execution with exact ownership and proof. Keep user dialogue, scope, decisions, integration, closeout, and final output with the main agent.
+A result needed by the main agent may still be delegated when evidence collection is substantial; keep only small immediate prerequisites local. Use read-only explorers for bounded evidence collection and workers for approved execution with exact ownership and proof. Delegate evidence collection around unresolved decisions while the main agent keeps user dialogue, scope, decisions, integration, closeout, and final output.
 
 ## Agent Lifecycle
 
-1. Default to no subagents.
-2. Use one worker for one substantial bounded task.
-3. Use at most two workers by default, only with disjoint tasks and paths.
+1. Do not use subagents without explicit thread permission.
+2. With permission, use one agent for one substantial bounded task.
+3. Use at most two agents, only for independent tasks or evidence scopes; writing agents also require disjoint paths.
 4. Keep spawn depth at one. Do not let workers spawn workers.
 5. Reuse an existing agent when task id, role, owned paths, and assumptions remain unchanged.
 6. Send reused agents only the new evidence or correction.

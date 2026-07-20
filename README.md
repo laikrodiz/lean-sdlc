@@ -28,11 +28,11 @@ Model choice follows task shape: Sol handles high-leverage judgment, Terra handl
 
 ## Model and agent control
 
-- `strict` keeps the selected model for the complete task without delegation unless you request it. It is the default when you request a model or Max reasoning.
+- `strict` keeps the selected model for the complete task and works locally unless you explicitly request same-model subagents.
 - `lead` keeps the selected model for decisions and integration while allowing cheaper bounded support.
 - `economy` lets Lean-SDLC route automatically across available GPT-5.6 models.
 
-Lean-SDLC defaults to no subagents and at most two when independent work justifies their cost. It reuses a worker only while task, role, owned files, and assumptions remain stable. Workers return concise evidence to the main agent, which performs integration and closeout.
+Model and reasoning choice do not enable or disable subagents. Lean-SDLC defaults to local work. You may enable subagents for a thread; permission remains active until you revoke it. With permission, Lean-SDLC uses one bounded agent for substantial independent work and at most two for independent scopes. It reuses a worker only while task, role, owned files, and assumptions remain stable. Workers return concise evidence to the main agent, which performs decisions, integration, verification, and closeout.
 
 Cache reuse is treated as a measured optimization. Instructions stay stable, variable task data stays at the end, and agents receive file references and incremental updates. Lean-SDLC never creates work merely to warm a cache.
 
@@ -87,6 +87,7 @@ You can also state the outcome directly:
 Use $lean-sdlc to investigate why this test fails.
 Use $lean-sdlc to turn the approved feature into implementation tasks.
 Use $lean-sdlc to verify and close the active task.
+Use $lean-sdlc. You may use subagents in this thread.
 ```
 
 Initialization creates only missing Lean-SDLC control files and keeps existing files unchanged. The bundled checker validates the active task before writes and catches missing files, broken index paths, invalid task states, unknown parents, missing owners, empty acceptance or proof, and completed tasks without evidence.

@@ -11,10 +11,12 @@ Keep software work linked from intent through evidence without turning documenta
 
 1. Read repository `AGENTS.md` when present.
 2. Identify the user's requested outcome and whether the work changes behavior, durable decisions, code, or completion state.
-3. If any repository file may change, find or create its task before the first write.
-4. Inspect only enough project truth to select one primary workflow.
-5. Open the matching workflow reference below and follow it.
-6. State the selected lane briefly when it affects what happens next.
+3. Detect whether the user explicitly enabled subagents for this thread. Keep that permission until the user revokes it.
+4. If any repository file may change, find or create its task before the first write.
+5. Inspect only enough project truth to select one primary workflow.
+6. Open the matching workflow reference below and follow it.
+7. For substantial work, read [references/model-routing.md](references/model-routing.md) and [references/agent-coordination.md](references/agent-coordination.md) before deciding whether work stays local or uses subagents.
+8. State the selected lane briefly when it affects what happens next.
 
 For a new or unadapted repository, read [references/repository-contracts.md](references/repository-contracts.md), then use [scripts/init_repo.py](scripts/init_repo.py) for the atomic bootstrap exception. It creates the task ledger and authorizing bootstrap row in one control operation, then creates missing control files without overwriting existing work.
 
@@ -53,8 +55,8 @@ Open only what the active lane needs:
 
 - [references/repository-contracts.md](references/repository-contracts.md): files, schemas, ownership, and abstraction rules.
 - [references/lifecycle.md](references/lifecycle.md): stage, version, and iteration framing.
-- [references/model-routing.md](references/model-routing.md): model choice and user-selected model authority.
-- [references/agent-coordination.md](references/agent-coordination.md): delegation, reuse, handoffs, cache discipline, and integration.
+- [references/model-routing.md](references/model-routing.md): model choice, user-selected model authority, and orchestration mode.
+- [references/agent-coordination.md](references/agent-coordination.md): thread permission, delegation, reuse, handoffs, cache discipline, and integration.
 - [assets/AGENTS.md](assets/AGENTS.md): concise repository control-plane template.
 - [references/trigger-evals.md](references/trigger-evals.md): maintainer cases for checking routing reliability.
 

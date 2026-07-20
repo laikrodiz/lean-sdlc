@@ -37,8 +37,9 @@ Split a statement until one owner wins. Keep one independently valuable outcome 
 ## Models and Agents
 
 - Explicit user model and reasoning requests override automatic routing.
-- Treat Max as single-model work unless the user permits delegation; Ultra permits multi-agent work.
-- Default to no subagents and at most two workers with separate tasks and paths.
+- Model and reasoning choice do not decide orchestration.
+- Default to no subagents. When the user explicitly enables them for the thread, use one bounded agent for substantial independent work and at most two for independent scopes.
+- Delegate bounded evidence collection while the main agent keeps decisions, integration, verification, and closeout.
 - Reuse a worker only while task, role, ownership, and assumptions remain stable.
 - Workers return to the main agent; workers do not hand off directly or close tasks.
 - Keep shared instructions stable, send task deltas, and never create work merely to warm a cache.

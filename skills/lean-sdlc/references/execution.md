@@ -10,9 +10,9 @@ Use Terra at `medium` or Sol at `low` for straightforward routing. Read [model-r
 2. Delegated: one substantial bounded task benefits from isolated execution, or two tasks have disjoint write scope and exact proof paths.
 3. Batch: a larger disjoint queue benefits from explicit integration checkpoints.
 
-Unknown diagnosis goes to debugging before a worker receives implementation. Keep quick work local. Delegation must save meaningful wall time or main-agent context after assignment, cache-write, review, and integration costs.
+Unknown diagnosis goes to debugging before a worker receives implementation. Keep quick work local. Delegation must save meaningful wall time or main-agent context after assignment, review, and integration costs.
 
-Default to no workers and at most two when parallelism is justified. Reuse an agent only for the same task, role, paths, and assumptions. Every writing worker owns one `In Progress` task; parallel writers require separate tasks and disjoint paths.
+Default to no workers. When the user has enabled subagents for the thread, use one worker for a substantial isolated task when assignment and integration cost less than local execution. Use at most two for independent scopes. Reuse an agent only for the same task, role, paths, and assumptions. Every writing worker owns one `In Progress` task; parallel writers require separate tasks and disjoint paths.
 
 Use the assignment and return contracts in the coordination reference. Workers return only to the main agent and never mark tasks `Done`.
 
