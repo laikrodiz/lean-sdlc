@@ -13,8 +13,9 @@ An initialized project uses:
 - `docs/features/FEAT-xxx-*.md` when features exist
 - `docs/decisions/DEC-xxx-*.md` when decisions exist
 - `planning/tasks.csv`
+- `.codex/hooks.json`
 
-Use [../assets/AGENTS.md](../assets/AGENTS.md) as the project control plane. Run `scripts/init_repo.py [repository]` for the atomic bootstrap exception. It creates `planning/tasks.csv` with an active `BOOTSTRAP` task before other missing control files and never overwrites existing work.
+Use [../assets/AGENTS.md](../assets/AGENTS.md) as the project control plane. Run `scripts/init_repo.py [repository]` for the atomic bootstrap exception. It creates `planning/tasks.csv` with an active `BOOTSTRAP` task before other missing control files, preserves existing project files, and adds the Lean-SDLC owner hook to existing hook configuration.
 
 ## Project Brief and Scope
 
@@ -50,24 +51,26 @@ Create a decision for a durable chosen path that is costly to reverse or easy to
 
 Use these `planning/tasks.csv` columns:
 
-`task_id,title,status,parent_ref,depends_on,owner,acceptance,proof,evidence`
+`Task ID,Title,Status,Parent,Dependencies,Owner,Acceptance Criteria,Proof,Evidence`
 
 Allowed statuses are `Planned`, `In Progress`, and `Done`.
 
 Rules:
 
-1. Insert new tasks directly below the header.
+1. Use `scripts/tasks.py` for every create, claim, update, migration, and close operation. Never edit the CSV directly.
 2. Keep one intentional change per task.
 3. Require one `In Progress` task before every repository file mutation.
 4. Link behavior to a feature, durable technical work to a decision, and non-behavior maintenance to `REPO`.
 5. Reserve `BOOTSTRAP` for the initializer's first control-plane task.
-6. Assign one writer; parallel writers require separate tasks and disjoint paths.
+6. Assign one owning thread; its stable numeric `Owner` comes from the Codex session id. Subagents share the parent thread owner.
 7. Define measurable acceptance and proof before the first write.
 8. Record concise evidence before moving a task to `Done`.
-9. Let only the main agent close tasks after verification.
+9. Let only the owning thread close tasks after verification. Another thread may close one only after a direct user request and must record the override.
 10. State status transitions explicitly.
 
-Read-only inspection does not require a task. Atomically inserting the row that authorizes upcoming work is the only routine pre-task file mutation. Initialization may create the ledger and its bootstrap row together because neither can exist first.
+Read-only inspection does not require a task. The task command serializes writers with a short lock, reads the latest ledger while locked, changes only the requested fields, then uses an atomic file replacement. IDs are assigned while the lock is held. Initialization may create the ledger and its bootstrap row together because neither can exist first.
+
+`Planned` tasks are unowned. Claiming sets the thread owner and moves the task to `In Progress`. The owner persists when the task reaches `Done`. Owner ids coordinate work; they are not a security boundary.
 
 A task creating a new feature or decision may reserve its future `FEAT-*` or `DEC-*` parent before the index entry exists. The before-write check accepts that reservation; the full closeout check requires the referenced parent to exist.
 

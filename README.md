@@ -38,11 +38,28 @@ Cache reuse is treated as a measured optimization. Instructions stay stable, var
 
 ## Tracked changes
 
-Every repository file mutation requires one owned `In Progress` task with measurable acceptance and proof. This includes code, documentation, configuration, tests, generated files, and small maintenance edits. Read-only work needs no task. Atomically inserting the row that authorizes upcoming work is the only routine pre-task file mutation.
+Every repository file mutation requires one owned `In Progress` task with measurable acceptance and proof. This includes code, documentation, configuration, tests, generated files, and small maintenance edits. Read-only work needs no task.
+
+`planning/tasks.csv` stays a readable overview with these columns:
+
+`Task ID, Title, Status, Parent, Dependencies, Owner, Acceptance Criteria, Proof, Evidence`
+
+Agents never edit it directly. The bundled task command serializes concurrent writers, assigns IDs under the lock, changes one task, and replaces the file atomically. `Planned` tasks are unowned. Claiming a task assigns the stable numeric owner of the Codex thread. Only that thread can close it; another thread needs a direct user request and records the override reason.
 
 Feature work links to `FEAT-*`, durable technical work links to `DEC-*`, and maintenance uses `REPO`. Initialization creates the ledger and active `TASK-000` atomically under the one-time `BOOTSTRAP` parent.
 
-When upgrading an existing ledger, replace `planned`, `in_progress`, and `done` with `Planned`, `In Progress`, and `Done`.
+For an existing lowercase ledger, keep an owned task `In Progress` and migrate it atomically:
+
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/lean-sdlc/scripts/tasks.py" \
+  --repo . migrate --task TASK-123 --owner OWNER
+```
+
+Then rerun the initializer so the project receives the owner hook:
+
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/lean-sdlc/scripts/init_repo.py" .
+```
 
 ## Install
 
@@ -90,12 +107,14 @@ Use $lean-sdlc to verify and close the active task.
 Use $lean-sdlc. You may use subagents in this thread.
 ```
 
-Initialization creates only missing Lean-SDLC control files and keeps existing files unchanged. The bundled checker validates the active task before writes and catches missing files, broken index paths, invalid task states, unknown parents, missing owners, empty acceptance or proof, and completed tasks without evidence.
+Initialization creates missing Lean-SDLC control files and merges one project-local owner hook into `.codex/hooks.json`. Review and trust that hook in Codex, close the bootstrap task, then restart or resume the task. The hook derives the same short owner from the Codex session after startup, resume, clear, and compaction; subagents inherit the parent session owner.
+
+The bundled checker validates the active task and owner before writes and catches missing files, broken index paths, invalid task states, unknown parents, missing owners, empty acceptance or proof, and completed tasks without evidence.
 
 ## Package contents
 
 - `skills/lean-sdlc/SKILL.md` is the single discoverable dispatcher.
 - `skills/lean-sdlc/references/` contains the workflow and repository rules loaded only when needed.
 - `skills/lean-sdlc/assets/AGENTS.md` is the concise project control-plane template.
-- `skills/lean-sdlc/scripts/` contains safe initialization and structural validation tools.
+- `skills/lean-sdlc/scripts/` contains safe initialization, task mutation, owner hook, and structural validation tools.
 - `scripts/install.sh` installs or upgrades the package.

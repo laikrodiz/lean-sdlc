@@ -11,10 +11,10 @@ Use Luna at `low` to run checks and collect evidence, Terra at `high` to interpr
 3. Run promised tests, smoke paths, or alternative proof.
 4. Confirm promised diagnostics and failure signals exist and are useful.
 5. Check that features, decisions, indexes, and technical docs match reality at the correct level.
-6. Record concise evidence in the task ledger.
+6. Record concise evidence by closing through `scripts/tasks.py close`.
 7. Run `scripts/lean_check.py --task TASK-ID` for structural integrity when standard files exist.
 8. Keep the task open when acceptance, evidence, diagnostics, or parity is incomplete.
-9. Let only the main agent move the task to `Done` after all gates pass.
+9. Let only the owning thread move the task to `Done` after all gates pass. Another thread may use `--user-override` only after a direct user request and must supply `--override-reason`.
 10. State the resulting status and evidence explicitly.
 
 Route uncertain source-of-truth conflicts to traceability. Route settled mechanical cleanup to documentation maintenance before closeout.

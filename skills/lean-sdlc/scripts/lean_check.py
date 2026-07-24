@@ -17,6 +17,7 @@ REQUIRED_FILES = (
     "docs/FEATURE_INDEX.csv",
     "docs/DECISION_INDEX.csv",
     "planning/tasks.csv",
+    ".codex/hooks.json",
 )
 REQUIRED_DIRECTORIES = (
     "docs/features",
@@ -46,17 +47,18 @@ DECISION_COLUMNS = {
     "date",
     "notes",
 }
-TASK_COLUMNS = {
-    "task_id",
-    "title",
-    "status",
-    "parent_ref",
-    "depends_on",
-    "owner",
-    "acceptance",
-    "proof",
-    "evidence",
-}
+TASK_COLUMN_ORDER = (
+    "Task ID",
+    "Title",
+    "Status",
+    "Parent",
+    "Dependencies",
+    "Owner",
+    "Acceptance Criteria",
+    "Proof",
+    "Evidence",
+)
+TASK_COLUMNS = set(TASK_COLUMN_ORDER)
 TASK_STATUSES = {"Planned", "In Progress", "Done"}
 SPECIAL_PARENTS = {"REPO", "BOOTSTRAP"}
 
@@ -72,6 +74,7 @@ def parse_args() -> argparse.Namespace:
         help="Repository root (default: current directory)",
     )
     parser.add_argument("--task", help="Require and validate one task id")
+    parser.add_argument("--owner", help="Require the selected task to have this owner")
     parser.add_argument(
         "--before-write",
         action="store_true",
@@ -93,10 +96,20 @@ def read_csv(
     try:
         with path.open(encoding="utf-8-sig", newline="") as handle:
             reader = csv.DictReader(handle)
-            columns = set(reader.fieldnames or [])
+            fieldnames = list(reader.fieldnames or [])
+            columns = set(fieldnames)
             missing = sorted(required_columns - columns)
             if missing:
                 errors.append(f"{relative_path}: missing columns: {', '.join(missing)}")
+                return []
+            if (
+                relative_path == "planning/tasks.csv"
+                and fieldnames != list(TASK_COLUMN_ORDER)
+            ):
+                errors.append(
+                    f"{relative_path}: columns must be exactly: "
+                    f"{', '.join(TASK_COLUMN_ORDER)}"
+                )
                 return []
             return [
                 {key: (value or "").strip() for key, value in row.items() if key is not None}
@@ -177,7 +190,7 @@ def main() -> int:
     decision_ids = collect_ids(
         decisions, "decision_id", "docs/DECISION_INDEX.csv", errors
     )
-    task_ids = collect_ids(tasks, "task_id", "planning/tasks.csv", errors)
+    task_ids = collect_ids(tasks, "Task ID", "planning/tasks.csv", errors)
 
     validate_index_paths(root, features, "docs/FEATURE_INDEX.csv", errors)
     validate_index_paths(root, decisions, "docs/DECISION_INDEX.csv", errors)
@@ -186,20 +199,20 @@ def main() -> int:
     tasks_by_id: dict[str, dict[str, str]] = {}
     bootstrap_tasks = 0
     for number, task in enumerate(tasks, start=2):
-        task_id = task.get("task_id", "") or f"row {number}"
-        if task.get("task_id", ""):
+        task_id = task.get("Task ID", "") or f"row {number}"
+        if task.get("Task ID", ""):
             tasks_by_id[task_id] = task
-        if not task.get("title", ""):
+        if not task.get("Title", ""):
             errors.append(f"planning/tasks.csv:{number}: {task_id} has empty title")
-        status = task.get("status", "")
+        status = task.get("Status", "")
         if status not in TASK_STATUSES:
             errors.append(
                 f"planning/tasks.csv:{number}: {task_id} has invalid status {status!r}; "
                 "expected Planned, In Progress, or Done"
             )
-        parent = task.get("parent_ref", "")
+        parent = task.get("Parent", "")
         if not parent:
-            errors.append(f"planning/tasks.csv:{number}: {task_id} has no parent_ref")
+            errors.append(f"planning/tasks.csv:{number}: {task_id} has no parent")
         reserved_parent = bool(
             args.before_write
             and task_id == args.task
@@ -208,17 +221,22 @@ def main() -> int:
         )
         if parent and parent not in valid_parents and not reserved_parent:
             errors.append(
-                f"planning/tasks.csv:{number}: {task_id} has unknown parent_ref {parent}"
+                f"planning/tasks.csv:{number}: {task_id} has unknown parent {parent}"
             )
         if parent == "BOOTSTRAP":
             bootstrap_tasks += 1
-        if not task.get("owner", ""):
+        owner = task.get("Owner", "")
+        if status == "Planned" and owner:
+            errors.append(
+                f"planning/tasks.csv:{number}: {task_id} is Planned but already has an owner"
+            )
+        if status in {"In Progress", "Done"} and not owner:
             errors.append(f"planning/tasks.csv:{number}: {task_id} has empty owner")
-        if not task.get("acceptance", ""):
+        if not task.get("Acceptance Criteria", ""):
             errors.append(f"planning/tasks.csv:{number}: {task_id} has empty acceptance")
-        if not task.get("proof", ""):
+        if not task.get("Proof", ""):
             errors.append(f"planning/tasks.csv:{number}: {task_id} has empty proof")
-        if status == "Done" and not task.get("evidence", ""):
+        if status == "Done" and not task.get("Evidence", ""):
             errors.append(f"planning/tasks.csv:{number}: {task_id} is Done without evidence")
 
     if bootstrap_tasks > 1:
@@ -229,12 +247,14 @@ def main() -> int:
     if args.before_write:
         if not args.task:
             errors.append("--before-write requires --task TASK-ID")
+        if not args.owner:
+            errors.append("--before-write requires --owner OWNER")
         elif args.task in tasks_by_id:
             selected = tasks_by_id[args.task]
-            if selected.get("status") != "In Progress":
+            if selected.get("Status") != "In Progress":
                 errors.append(f"{args.task} must be In Progress before mutation")
-            if not selected.get("owner"):
-                errors.append(f"{args.task} must have an owner before mutation")
+            if selected.get("Owner") != args.owner:
+                errors.append(f"{args.task} is not owned by {args.owner}")
 
     if errors:
         print(f"Lean-SDLC check failed with {len(errors)} error(s):")

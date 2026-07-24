@@ -12,13 +12,13 @@ Keep software work linked from intent through evidence without turning documenta
 1. Read repository `AGENTS.md` when present.
 2. Identify the user's requested outcome and whether the work changes behavior, durable decisions, code, or completion state.
 3. Detect whether the user explicitly enabled subagents for this thread. Keep that permission until the user revokes it.
-4. If any repository file may change, find or create its task before the first write.
+4. If any repository file may change, use the thread `Owner` from the Lean-SDLC lifecycle message to create or claim its task through [scripts/tasks.py](scripts/tasks.py) before the first write.
 5. Inspect only enough project truth to select one primary workflow.
 6. Open the matching workflow reference below and follow it.
 7. For substantial work, read [references/model-routing.md](references/model-routing.md) and [references/agent-coordination.md](references/agent-coordination.md) before deciding whether work stays local or uses subagents.
 8. State the selected lane briefly when it affects what happens next.
 
-For a new or unadapted repository, read [references/repository-contracts.md](references/repository-contracts.md), then use [scripts/init_repo.py](scripts/init_repo.py) for the atomic bootstrap exception. It creates the task ledger and authorizing bootstrap row in one control operation, then creates missing control files without overwriting existing work.
+For a new or unadapted repository, read [references/repository-contracts.md](references/repository-contracts.md), then use [scripts/init_repo.py](scripts/init_repo.py) for the atomic bootstrap exception. It creates the task ledger and authorizing bootstrap row in one control operation, adds the project owner hook, then creates missing control files without replacing existing project files. Review and trust the hook, close `TASK-000` as owner `bootstrap`, and restart or resume Codex before normal work.
 
 ## Route One Primary Lane
 
@@ -40,7 +40,7 @@ Choose the earliest unresolved lane. Do not mechanically run every lane. End by 
 
 ## Hard Gates
 
-1. Do not mutate any repository file without one active task owned by the writer. The atomic insertion of that authorizing task row is the only routine pre-task write.
+1. Do not mutate any repository file without one active task owned by the current thread. Create, claim, update, migrate, and close tasks only through [scripts/tasks.py](scripts/tasks.py); never edit `planning/tasks.csv` directly.
 2. Use a feature, decision, `REPO`, or one-time `BOOTSTRAP` parent appropriate to the change.
 3. Do not implement without measurable acceptance and an explicit proof path.
 4. Route unknown causes through debugging before implementation.
@@ -60,7 +60,7 @@ Open only what the active lane needs:
 - [assets/AGENTS.md](assets/AGENTS.md): concise repository control-plane template.
 - [references/trigger-evals.md](references/trigger-evals.md): maintainer cases for checking routing reliability.
 
-Run [scripts/lean_check.py](scripts/lean_check.py) with `--before-write --task TASK-ID` before the first mutation, then run it again before closeout. Treat it as a structural check; semantic acceptance and evidence still require judgment.
+Run [scripts/lean_check.py](scripts/lean_check.py) with `--before-write --task TASK-ID --owner OWNER` before the first mutation, then run it again before closeout. Treat it as a structural check; semantic acceptance and evidence still require judgment.
 
 ## Outcome
 

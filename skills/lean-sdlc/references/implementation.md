@@ -10,7 +10,7 @@ Use Terra at `high` for ordinary engineering. Use Luna at `low` or `medium` for 
 2. Trace delivery work to one feature or decision; allow `REPO` only for non-behavior maintenance.
 3. Confirm the parent still fits the intended change exactly.
 4. Re-read acceptance, proof, verification approach, and diagnostics.
-5. Run `lean_check.py --before-write --task TASK-ID` when the standard ledger exists.
+5. Run `lean_check.py --before-write --task TASK-ID --owner OWNER` when the standard ledger exists.
 6. Declare touched boundaries.
 7. Implement only the approved slice.
 8. Keep tests, diagnostics, and changed documentation in parity.

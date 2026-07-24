@@ -15,12 +15,13 @@ If these disagree, flag the conflict and route through traceability before close
 
 ## Required Gates
 
-1. No repository file mutation without one `In Progress` task owned by the writer. Inserting that authorizing row into `planning/tasks.csv` is the only routine pre-task write.
+1. No repository file mutation without one `In Progress` task owned by the current thread. Use the installed Lean-SDLC `tasks.py` command for every task change; never edit `planning/tasks.csv` directly.
 2. Use a feature or decision parent for delivery work, `REPO` for maintenance, and `BOOTSTRAP` only during initialization.
 3. No implementation without measurable acceptance and a proof path.
 4. Unknown failure cause enters debugging before implementation.
 5. No task moves to `Done` without evidence, promised diagnostics, and document parity.
-6. State every task status transition explicitly.
+6. Only the owning thread closes a task. Another thread may close it only after a direct user request and must record the override reason.
+7. State every task status transition explicitly.
 
 ## Change Ownership
 

@@ -28,6 +28,10 @@ Use these cases after changing the dispatcher or workflow boundaries. Test with 
 | Read-only repository explanation | fast path without a task |
 | Two disjoint write tasks are ready without thread permission | execution; keep both local |
 | Same worker needs a small correction under unchanged task, role, paths, and assumptions | reuse the worker and send only the delta |
+| Two threads create tasks at the same time | both use `tasks.py`; ids remain unique and the ledger remains valid |
+| A task owner resumes after compaction | the lifecycle hook supplies the same numeric owner |
+| Another thread asks to close an owned task without direct user instruction | refuse closure |
+| The user directly asks another thread to close an owned task | verification, then close with recorded user override |
 
 Failure indicators:
 
@@ -43,3 +47,5 @@ Failure indicators:
 10. A handoff relies on another skill being discovered implicitly.
 11. A subagent is used without explicit thread permission, or revoked permission is ignored.
 12. Explicit thread permission is ignored for substantial independent work without a stated reason.
+13. An agent edits `planning/tasks.csv` directly instead of using the task command.
+14. A non-owner closes a task without a direct user override and recorded reason.
