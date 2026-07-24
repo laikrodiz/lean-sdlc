@@ -1,0 +1,18 @@
+{
+  "description": "Project-local Lean-SDLC lifecycle hooks.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CODEX_HOME:-$HOME/.codex}/skills/lean-sdlc/scripts/session_owner.py\"",
+            "commandWindows": "py -3 \"%USERPROFILE%\\.codex\\skills\\lean-sdlc\\scripts\\session_owner.py\"",
+            "timeout": 3
+          }
+        ]
+      }
+    ]
+  }
+}
