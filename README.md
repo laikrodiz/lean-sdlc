@@ -40,16 +40,16 @@ Assisted mode is the default. The lead keeps decisions and integration, while tw
 
 At most two additional temporary agents may handle genuinely independent work. `focused mode` keeps only the lead and sidecars. `solo mode` runs the same workflow with the lead alone.
 
-Reasoning never uses `low`. Sol owns high-leverage decisions, Terra `high` is the general engineering worker, and Luna `xhigh` handles narrow mechanical work and sidecars when that model is available. Explicit user model requests remain authoritative.
+Reasoning never uses `low`. Every spawn explicitly sets its model, reasoning effort, and non-full-history context. Sol owns high-leverage decisions, Terra `high` is the general engineering worker, and sidecars use Luna `xhigh` when exposed or explicit Terra `high` otherwise. Sidecars return operation evidence; the lead decides task disposition. Explicit user model requests remain authoritative.
 
 ## Install
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-Install the immutable `v1.1.0` release:
+Install the immutable `v1.1.1` release:
 
 ```bash
-codex plugin marketplace add laikrodiz/lean-sdlc --ref v1.1.0
+codex plugin marketplace add laikrodiz/lean-sdlc --ref v1.1.1
 codex plugin add lean-sdlc@lean-sdlc
 ```
 

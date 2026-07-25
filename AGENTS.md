@@ -38,7 +38,8 @@ Resolve contradictions before closeout.
 - Solo mode: lead only; run the same checks and operations locally.
 - The lead alone owns decisions, integration, task state, and user communication. Child agents never spawn agents.
 - Sidecars do not edit source or `tasks.csv`. Parallel writers require separate tasks and disjoint paths.
-- Never use `low` reasoning. Prefer Sol for decisions, Terra `high` for general engineering, and Luna `xhigh` for narrow mechanical work and sidecars when available.
+- Never use `low` reasoning. Every spawn explicitly sets an available model, reasoning effort, and non-full-history context; omission or lead-profile inheritance is a routing failure.
+- Prefer Sol for decisions and Terra `high` for general engineering. Sidecars use Luna `xhigh` when exposed, otherwise explicitly Terra `high`, and report evidence while the lead decides task disposition.
 - Explicit user model and reasoning requests override routing. A request that all work use one model applies to every agent or forces Solo mode when unavailable.
 
 ## Operations

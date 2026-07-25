@@ -56,6 +56,8 @@ Use Assisted mode by default, Focused mode when the user asks for focused work, 
 
 Use the Verifier sidecar at coherent checkpoints. Use the Operator sidecar only for learned or guided operations. Spawn temporary agents conservatively, at depth one, with no more than two active in addition to sidecars.
 
+Before every spawn, explicitly set the available model, reasoning effort, and a non-full-history context according to [model-routing.md](references/model-routing.md) and [agent-coordination.md](references/agent-coordination.md). Never inherit the lead profile accidentally.
+
 ## Result
 
 Leave one compact chain:

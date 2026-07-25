@@ -562,6 +562,30 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("ascii pseudographics", contracts)
         self.assertIn("plausible edge cases", evaluations)
 
+    def test_spawn_profiles_are_explicit_and_sidecars_do_not_decide_closeout(
+        self,
+    ) -> None:
+        dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
+        routing = (
+            SKILL / "references/model-routing.md"
+        ).read_text(encoding="utf-8").lower()
+        coordination = (
+            SKILL / "references/agent-coordination.md"
+        ).read_text(encoding="utf-8").lower()
+        verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
+        evaluations = (
+            SKILL / "references/trigger-evals.md"
+        ).read_text(encoding="utf-8").lower()
+
+        self.assertIn("before every spawn", dispatcher)
+        self.assertIn("never omit either", routing)
+        self.assertIn("fork_turns", routing)
+        self.assertIn("routing failure", routing)
+        self.assertIn("every spawn must explicitly pass", coordination)
+        self.assertIn("lead alone decide task disposition", verify)
+        self.assertIn("explicitly spawn terra `high`", evaluations)
+        self.assertIn("inherits the lead profile", evaluations)
+
     def test_release_version_is_consistent(self) -> None:
         manifest = json.loads(
             PLUGIN.joinpath(".codex-plugin/plugin.json").read_text(encoding="utf-8")
@@ -570,7 +594,7 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.1.0")
+        self.assertEqual(version, "1.1.1")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
 

@@ -35,6 +35,9 @@ Test from a fresh task with only the installed plugin and target repository visi
 | User pins the lead model | Preserve it; route children only within authority |
 | User says all work uses one model | Use it everywhere or switch to Solo |
 | Any route proposes `low` reasoning | Fail the evaluation |
+| Any Lean-SDLC agent is spawned | Explicitly pass model, reasoning effort, and non-full-history `fork_turns` |
+| Luna is unavailable for a Verifier or Operator | Explicitly spawn Terra `high` |
+| A Verifier is asked for task pass, block, or closure | Return operation evidence only; the Sol lead decides task disposition |
 | Sidecar receives a changed checkpoint | Invalidate old evidence and rerun |
 | Sidecar disappears or wait ends | Respawn and rehydrate from role, task, docs, and checkpoint |
 
@@ -51,3 +54,5 @@ Failure indicators:
 9. Architecture is selected from a project-size label, or modularity produces speculative or pass-through boundaries.
 10. Plausible changed-boundary edge cases are ignored, exhaustively overbuilt, or silently assigned user-visible behavior.
 11. Explanatory diagrams use ASCII pseudographics or become denser than the idea they explain.
+12. A spawn omits model, reasoning effort, or bounded context; inherits the lead profile; or uses full-history routing.
+13. A sidecar chooses close, fail, reopen, pass, or block for the task.

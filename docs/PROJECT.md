@@ -37,6 +37,7 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - Never route reasoning below `medium`.
 - Preserve explicit user model and orchestration requests.
 - Prefer deterministic depth-one delegation over agent hierarchies.
+- Require explicit model, reasoning, and bounded context on every spawned agent.
 - Prefer cohesive replaceable units and earned boundaries over project-size architecture tiers.
 
 ## Success Criteria
@@ -45,12 +46,13 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - A new repository needs only `AGENTS.md`, `docs/PROJECT.md`, and root `tasks.csv`.
 - Task transactions remain atomic, owner-aware, dependency-valid, and cycle-free.
 - Assisted, Focused, and Solo modes follow the same delivery gates.
+- Spawned agents use explicit role profiles and sidecars never inherit lead decision authority.
 - Changed contracts receive proportionate edge-case treatment and architecture remains modular without speculative seams.
 - The plugin validates, installs from a pinned Git tag, and passes its full test suite.
 
 ## Current Promise
 
 - Stage: Evolution
-- Version: 1.1.0
-- Version goal: Add minimal modular design, proportionate edge-case treatment, and lightweight rendered diagrams without increasing workflow ceremony.
+- Version: 1.1.1
+- Version goal: Make every subagent spawn profile explicit and keep task-disposition decisions with the lead.
 - Exit evidence: Tests, skill and plugin validation, local installation, repository checks, reviewed diff, tagged commit, and successful push.

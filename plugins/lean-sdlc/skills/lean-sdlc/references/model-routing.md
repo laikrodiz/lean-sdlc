@@ -8,11 +8,11 @@ An explicit user model or reasoning request pins the lead. A request that all wo
 
 Model choice and orchestration mode are independent.
 
-## Floor and roles
+## Profiles
 
 Never use `low` reasoning.
 
-| Work | Preferred model | Reasoning |
+| Work | Required model | Reasoning |
 | --- | --- | --- |
 | Routing, integration, and ordinary closeout | GPT-5.6 Sol | `medium` |
 | Product, scope, architecture, subtle diagnosis, or consequential closeout | GPT-5.6 Sol | `high` |
@@ -21,7 +21,18 @@ Never use `low` reasoning.
 | Narrow mechanical implementation with exact proof | GPT-5.6 Luna | `xhigh` |
 | Verifier and Operator sidecars | GPT-5.6 Luna | `xhigh` |
 
-When Luna is unavailable, use Terra `high`. When a temporary task needs broader engineering judgment, prefer Terra `high` from the start. Use only models exposed by the current surface.
+When Luna is unavailable, explicitly use Terra `high`. When a temporary task needs broader engineering judgment, use Terra `high` from the start. Use only models exposed by the current surface.
+
+## Spawn contract
+
+Before every spawn:
+
+1. Apply explicit user model authority, then resolve the role profile against models exposed by the spawn surface.
+2. Pass the model and reasoning effort explicitly. For collaboration `spawn_agent`, set `model` and `reasoning_effort`; never omit either or rely on parent, configured, or automatic defaults.
+3. Set `fork_turns` to `none` or a bounded positive count so the explicit profile can apply. Never use or imply full-history inheritance for a routed child.
+4. If neither the required model nor its documented fallback is exposed, keep the work with the lead or use Solo mode.
+
+An omitted model, omitted reasoning effort, inherited lead profile, or incompatible full-history fork is a routing failure.
 
 ## Lane defaults
 
