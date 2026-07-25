@@ -19,6 +19,7 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - atomic private task-ledger transactions;
 - controlled lead, sidecar, and temporary-agent roles;
 - learned project-specific operational procedures;
+- minimal modular engineering, plausible edge-case treatment, and lightweight rendered diagrams;
 - structural validation, tests, packaging, and installation guidance.
 
 ### Out or Deferred
@@ -36,6 +37,7 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - Never route reasoning below `medium`.
 - Preserve explicit user model and orchestration requests.
 - Prefer deterministic depth-one delegation over agent hierarchies.
+- Prefer cohesive replaceable units and earned boundaries over project-size architecture tiers.
 
 ## Success Criteria
 
@@ -43,11 +45,12 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - A new repository needs only `AGENTS.md`, `docs/PROJECT.md`, and root `tasks.csv`.
 - Task transactions remain atomic, owner-aware, dependency-valid, and cycle-free.
 - Assisted, Focused, and Solo modes follow the same delivery gates.
+- Changed contracts receive proportionate edge-case treatment and architecture remains modular without speculative seams.
 - The plugin validates, installs from a pinned Git tag, and passes its full test suite.
 
 ## Current Promise
 
 - Stage: Evolution
-- Version: 1.0.0
-- Version goal: Ship the simplified plugin, six-lane workflow, controlled multi-agent strategy, and root task ledger.
+- Version: 1.1.0
+- Version goal: Add minimal modular design, proportionate edge-case treatment, and lightweight rendered diagrams without increasing workflow ceremony.
 - Exit evidence: Tests, skill and plugin validation, local installation, repository checks, reviewed diff, tagged commit, and successful push.

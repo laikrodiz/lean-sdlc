@@ -9,11 +9,12 @@ Use Sol `high` for framing. Escalate to `xhigh` only when the business risk or a
 3. Separate observable behavior from technical choices.
 4. Make in-scope, deferred, constrained, and non-goal boundaries explicit.
 5. Split unrelated outcomes that can be delivered or deferred independently.
-6. Replace vague success with observable acceptance and failure signals.
-7. Keep stage and version as honest current context, with a small promise and exit evidence.
-8. Challenge stale assumptions and oversized promises.
-9. Before recording changes, start one task that owns the shaping update.
-10. Update `docs/PROJECT.md`; create an optional `docs/features/FEAT-*.md` only when behavior needs durable detail beyond the project file.
+6. Surface plausible boundary and failure cases that affect visible behavior; propose `Handle`, `Reject`, `Defer`, or `Impossible by invariant` and put settled cases in acceptance.
+7. Replace vague success with observable acceptance and failure signals.
+8. Keep stage and version as honest current context, with a small promise and exit evidence.
+9. Challenge stale assumptions and oversized promises.
+10. Before recording changes, start one task that owns the shaping update.
+11. Update `docs/PROJECT.md`; create an optional `docs/features/FEAT-*.md` only when behavior needs durable detail beyond the project file.
 
 Do not choose a stack or create delivery tasks while behavior remains ambiguous.
 

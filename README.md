@@ -15,6 +15,12 @@ It bundles one skill, `$lean-sdlc`, with six lanes:
 
 The router enters the earliest unresolved lane and may continue through later gates in the same task. It does not run every lane mechanically.
 
+## Engineering style
+
+Lean-SDLC builds the smallest cohesive units that can be understood, tested, and replaced through narrow contracts. Architecture grows from real responsibility, change, state, I/O, failure, or replacement pressure instead of project-size labels or speculative abstractions.
+
+Changed boundaries receive a short plausible edge-case scan with explicit `Handle`, `Reject`, `Defer`, or `Impossible by invariant` treatment. Useful visual explanations use compact Mermaid diagrams, mappings use tables, and simple relationships stay in prose.
+
 ## What it adds to a project
 
 Initialization creates only three Lean-SDLC control files:
@@ -40,10 +46,10 @@ Reasoning never uses `low`. Sol owns high-leverage decisions, Terra `high` is th
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-Install the immutable `v1.0.0` release:
+Install the immutable `v1.1.0` release:
 
 ```bash
-codex plugin marketplace add laikrodiz/lean-sdlc --ref v1.0.0
+codex plugin marketplace add laikrodiz/lean-sdlc --ref v1.1.0
 codex plugin add lean-sdlc@lean-sdlc
 ```
 

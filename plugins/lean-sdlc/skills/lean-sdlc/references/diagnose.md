@@ -8,10 +8,11 @@ Use Terra `high` for ordinary diagnosis. Use Sol `high` or `xhigh` for subtle, h
 2. Reproduce it, or state the precise reason reproduction is unavailable.
 3. Narrow the path until the likely fault surface is small.
 4. Separate evidence from hypotheses.
-5. Classify the cause as behavior, durable decision, boundary, operation, or implementation.
-6. Read-only diagnosis needs no task. Start or claim a task before changing any repository file.
-7. Add the smallest failing test or equivalent evidence when practical.
-8. Hand off to Deliver only after cause, scope, acceptance, and proof are settled.
+5. Locate the owning contract or module and prefer one root-cause fix there over patches in its callers.
+6. Classify the cause as behavior, durable decision, boundary, operation, or implementation.
+7. Read-only diagnosis needs no task. Start or claim a task before changing any repository file.
+8. Add the smallest failing test or equivalent evidence when practical.
+9. Hand off to Deliver only after cause, scope, acceptance, and proof are settled.
 
 A confident explanation without reproduction or equivalent evidence remains a hypothesis.
 

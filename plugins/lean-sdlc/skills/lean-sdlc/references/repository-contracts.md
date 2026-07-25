@@ -32,6 +32,10 @@ Keep `docs/PROJECT.md` short:
 
 Put implementation mechanisms in code, tests, or technical docs. Put repeatable operational procedures in `docs/OPERATIONS.md`.
 
+## Visual explanations
+
+Use a diagram only when flow, state, ownership, sequence, or dependencies become materially easier to understand. Prefer small Mermaid diagrams with one concept, short labels, a clear direction, and minimal semantic accents. Split dense views; use tables for mappings and prose for simple relationships. Never use ASCII pseudographics. Code, contracts, and repository truth remain authoritative.
+
 ## Task ledger
 
 Use exactly:

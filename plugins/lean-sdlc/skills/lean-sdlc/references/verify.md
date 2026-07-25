@@ -8,12 +8,15 @@ Use Luna `xhigh` or Terra `high` to execute and summarize checks. Use Sol `mediu
 2. Compare the delivered behavior with every acceptance point.
 3. Have the Verifier run the promised checks against that exact checkpoint; run them locally in Solo mode.
 4. For artifact or operational work, have the Operator confirm artifact identity, target, result, and smoke signal.
-5. Inspect the diff for unrelated change and stale documentation.
-6. Trace changed behavior or durable choices back to `docs/PROJECT.md` and any optional owning document.
-7. Resolve contradictions in the authoritative source, then synchronize only affected representations.
-8. Keep the task open when acceptance, evidence, diagnostics, dependencies, or parity is incomplete.
-9. Run the structural checker.
-10. Let the owning lead close through `tasks.py close` with concise evidence. Use a recorded direct-user override only when the user explicitly requests it.
+5. Inspect the diff for unrelated change, stale documentation, oversized units, pass-through modules, speculative seams, and boundaries that always change together.
+6. Check change locality: a meaningful unit can be tested or replaced through its contract without unrelated repository surgery.
+7. Confirm every material changed-boundary edge case has an explicit disposition and that accepted behavior has proof.
+8. When documentation includes diagrams, confirm the Mermaid view is small, readable, useful, and consistent with repository truth.
+9. Trace changed behavior or durable choices back to `docs/PROJECT.md` and any optional owning document.
+10. Resolve contradictions in the authoritative source, then synchronize only affected representations.
+11. Keep the task open when acceptance, evidence, diagnostics, dependencies, or parity is incomplete.
+12. Run the structural checker.
+13. Let the owning lead close through `tasks.py close` with concise evidence. Use a recorded direct-user override only when the user explicitly requests it.
 
 Any source change after the verified checkpoint invalidates its prior result.
 

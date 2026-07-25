@@ -14,6 +14,13 @@ Test from a fresh task with only the installed plugin and target repository visi
 | Known cause plus owned task and proof | Deliver |
 | Completion claim or contradictory truth | Verify |
 | A lane completes and the next gate is ready | Continue in the same task |
+| Nontrivial algorithm has independent transformations | Deliver creates cohesive contract-tested units and a readable orchestrator |
+| A simple implementation has one concrete behavior | Keep it direct; do not add a speculative interface or project-size architecture tier |
+| One unit accumulates unrelated change, state, or failure modes | Return to Decide and strengthen the smallest useful boundary |
+| A changed contract has plausible edge cases | Classify relevant cases as Handle, Reject, Defer, or Impossible by invariant before implementation |
+| Edge-case treatment changes visible behavior, compatibility, safety, or data | Return to Shape or Decide and settle acceptance |
+| Flow, state, ownership, sequence, or dependencies need a visual explanation | Use a small Mermaid diagram; use a table for mappings |
+| A simple relationship needs explanation | Use prose; do not create a diagram or ASCII pseudographics |
 | A comment typo needs changing | Start a small `REPO` task |
 | Two threads start work concurrently | Atomic commands produce unique IDs |
 | Missing dependency or dependency cycle | Reject the transaction |
@@ -41,3 +48,6 @@ Failure indicators:
 6. A sidecar repairs source, guesses a target, leaks secrets, or retries stateful work without authority.
 7. Agent-only context becomes the sole record of a durable procedure or decision.
 8. Cache preservation justifies unnecessary agents, stale context, or weaker verification.
+9. Architecture is selected from a project-size label, or modularity produces speculative or pass-through boundaries.
+10. Plausible changed-boundary edge cases are ignored, exhaustively overbuilt, or silently assigned user-visible behavior.
+11. Explanatory diagrams use ASCII pseudographics or become denser than the idea they explain.

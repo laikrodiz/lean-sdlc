@@ -42,6 +42,14 @@ Do not stop merely because one lane completed. Stop when user authority, require
 
 Read-only inspection needs no task. Small writes still use a small `REPO` task.
 
+## Engineering Discipline
+
+Build the smallest cohesive units that can be understood, tested, and replaced independently. Give each real responsibility a narrow input, output, and failure contract; keep orchestration legible; and strengthen boundaries only under observed change, state, I/O, failure, or replacement pressure. Avoid project-size tiers, speculative interfaces, and pass-through modules.
+
+When behavior or a module contract changes, scan only plausible edge cases and classify them as `Handle`, `Reject`, `Defer`, or `Impossible by invariant`. Settle user-visible, compatibility, safety, or data consequences before implementation.
+
+Use diagrams only when they materially clarify flow, state, ownership, sequence, or dependencies. Prefer small Mermaid diagrams with short labels and minimal accents; use tables for mappings and prose for simple relationships. Never use ASCII pseudographics.
+
 ## Orchestration
 
 Use Assisted mode by default, Focused mode when the user asks for focused work, and Solo mode when the user asks for one agent or no subagents. Keep the lead responsible for user dialogue, decisions, task state, integration, and closeout.

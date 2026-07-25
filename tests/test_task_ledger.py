@@ -538,6 +538,42 @@ class PackageContractTests(unittest.TestCase):
         self.assertNotIn("GPT-5.4", policy)
         self.assertNotRegex(policy, r"\|\s*`?low`?\s*\|")
 
+    def test_minimal_modularity_edge_cases_and_diagrams_are_explicit(self) -> None:
+        dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
+        decide = (SKILL / "references/decide.md").read_text(encoding="utf-8").lower()
+        deliver = (SKILL / "references/deliver.md").read_text(encoding="utf-8").lower()
+        verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
+        contracts = (
+            SKILL / "references/repository-contracts.md"
+        ).read_text(encoding="utf-8").lower()
+        evaluations = (
+            SKILL / "references/trigger-evals.md"
+        ).read_text(encoding="utf-8").lower()
+
+        self.assertIn("smallest cohesive units", dispatcher)
+        self.assertIn("project-size", decide)
+        self.assertIn("readable orchestrator", deliver)
+        self.assertIn("handle", deliver)
+        self.assertIn("reject", deliver)
+        self.assertIn("defer", deliver)
+        self.assertIn("impossible by invariant", deliver)
+        self.assertIn("change locality", verify)
+        self.assertIn("mermaid", contracts)
+        self.assertIn("ascii pseudographics", contracts)
+        self.assertIn("plausible edge cases", evaluations)
+
+    def test_release_version_is_consistent(self) -> None:
+        manifest = json.loads(
+            PLUGIN.joinpath(".codex-plugin/plugin.json").read_text(encoding="utf-8")
+        )
+        version = manifest["version"]
+        readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
+        project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
+
+        self.assertEqual(version, "1.1.0")
+        self.assertIn(f"`v{version}`", readme)
+        self.assertIn(f"- Version: {version}", project)
+
 
 if __name__ == "__main__":
     unittest.main()
