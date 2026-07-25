@@ -1,0 +1,29 @@
+# Plan
+
+Use Plan when approved work needs a task, dependencies, ownership, or an execution shape.
+
+Use Sol `medium`; use `high` for cross-cutting dependencies or integration risk.
+
+## Task transaction
+
+1. Use `tasks.py plan` for future unowned work.
+2. Use `tasks.py start` for immediate work, or `tasks.py start TASK-ID` to claim a Planned task.
+3. Use `tasks.py update` for corrections and `tasks.py close` only after Verify.
+4. Never edit `tasks.csv` directly.
+5. Keep one intentional change, observable acceptance, and explicit proof per task.
+6. Add dependencies only when sequencing is real. A task cannot close before its dependencies.
+7. Keep requirements and design detail in their owning documents rather than the ledger.
+
+Task transactions themselves are exempt from the task-before-write rule; otherwise the rule would be circular.
+
+## Execution shape
+
+- Keep quick, coupled, or critical-path work with the lead.
+- Reuse sidecars for checkpoint verification and repeatable operations.
+- Use one temporary agent when a substantial bounded scope saves context or wall time after handoff and integration cost.
+- Use two only for independent scopes. Parallel writers need separate tasks and disjoint paths.
+- In Focused mode, use no temporary agents. In Solo mode, use no subagents.
+
+Read [agent-coordination.md](agent-coordination.md) before delegation.
+
+Ready means ownership, boundaries, dependencies, acceptance, proof, and integration responsibility are unambiguous.

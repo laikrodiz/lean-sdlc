@@ -1,120 +1,94 @@
 # Lean-SDLC for Codex
 
-Lean-SDLC is one Codex skill that routes software work from a rough idea to verified delivery while keeping intent, tasks, code, tests, and documentation connected.
+Lean-SDLC is one installable Codex plugin that keeps a software repository tied to clear intent, owned work, and proof without turning process into a second product.
 
-The normal flow is:
+It bundles one skill, `$lean-sdlc`, with six lanes:
 
-`idea -> scope -> architecture -> tasks -> implementation -> verification`
-
-You invoke one entry point, `$lean-sdlc`. It inspects the repository state and selects the smallest relevant workflow.
-
-## Workflows
-
-| Workflow | Meaning |
+| Lane | Meaning |
 | --- | --- |
-| Brainstorm | Turn a rough idea into a brief, scope, and first small feature definitions. |
-| Refine | Remove ambiguity, split oversized features, and define acceptance and failure signals. |
-| Architecture | Choose the simplest defensible stack, boundaries, and durable technical decisions. |
-| Task planning | Convert approved features and decisions into small traceable tasks. |
-| Execution | Decide whether ready tasks should stay local or use bounded parallel workers. |
-| Debugging | Reproduce and isolate an uncertain failure before choosing a fix. |
-| Implementation | Execute one approved task without expanding its scope. |
-| Verification | Prove acceptance and documentation parity before closing work. |
-| Traceability | Resolve conflicts and broken links between intent, tasks, code, tests, and diagnostics. |
-| Versioning | Keep project stage, release promise, and exit criteria honest. |
-| Documentation maintenance | Apply approved cleanup and synchronization after the correct truth is known. |
+| Shape | Clarify the problem, user, scope, version promise, and observable success. |
+| Decide | Record only durable technical choices that are costly to reverse or easy to forget. |
+| Plan | Create small owned tasks and choose the cheapest safe execution shape. |
+| Diagnose | Reproduce or bound an uncertain failure before selecting a fix. |
+| Deliver | Implement one approved slice and keep affected documentation in sync. |
+| Verify | Prove acceptance, reconcile repository truth, and close the task with evidence. |
 
-Model choice follows task shape: Sol handles high-leverage judgment, Terra handles ordinary engineering, and Luna handles mechanical repeatable work. Explicit user model and reasoning requests always take precedence.
+The router enters the earliest unresolved lane and may continue through later gates in the same task. It does not run every lane mechanically.
 
-## Model and agent control
+## What it adds to a project
 
-- `strict` keeps the selected model for the complete task and works locally unless you explicitly request same-model subagents.
-- `lead` keeps the selected model for decisions and integration while allowing cheaper bounded support.
-- `economy` lets Lean-SDLC route automatically across available GPT-5.6 models.
+Initialization creates only three Lean-SDLC control files:
 
-Model and reasoning choice do not enable or disable subagents. Lean-SDLC defaults to local work. You may enable subagents for a thread; permission remains active until you revoke it. With permission, Lean-SDLC uses one bounded agent for substantial independent work and at most two for independent scopes. It reuses a worker only while task, role, owned files, and assumptions remain stable. Workers return concise evidence to the main agent, which performs decisions, integration, verification, and closeout.
+- `AGENTS.md` — durable repository rules;
+- `docs/PROJECT.md` — problem, scope, current promise, and success;
+- `tasks.csv` — a private, human-readable task overview.
 
-Cache reuse is treated as a measured optimization. Instructions stay stable, variable task data stays at the end, and agents receive file references and incremental updates. Lean-SDLC never creates work merely to warm a cache.
+It also creates or extends `.gitignore` with `/tasks.csv` and `/.tasks.lock`. Feature, decision, and operations documents are optional. They appear only when durable shared knowledge justifies them. The ledger may be changed only through the bundled atomic task command.
 
-## Tracked changes
+## Agents
 
-Every repository file mutation requires one owned `In Progress` task with measurable acceptance and proof. This includes code, documentation, configuration, tests, generated files, and small maintenance edits. Read-only work needs no task.
+Assisted mode is the default. The lead keeps decisions and integration, while two lazy sidecars can be reused within the active task:
 
-`planning/tasks.csv` stays a readable overview with these columns:
+- Verifier runs checks and returns compact evidence.
+- Operator repeats learned build, package, deploy, flash, and smoke procedures.
 
-`Task ID, Title, Status, Parent, Dependencies, Owner, Acceptance Criteria, Proof, Evidence`
+At most two additional temporary agents may handle genuinely independent work. `focused mode` keeps only the lead and sidecars. `solo mode` runs the same workflow with the lead alone.
 
-Agents never edit it directly. The bundled task command serializes concurrent writers, assigns IDs under the lock, changes one task, and replaces the file atomically. `Planned` tasks are unowned. Claiming a task assigns the stable numeric owner of the Codex thread. Only that thread can close it; another thread needs a direct user request and records the override reason.
-
-Feature work links to `FEAT-*`, durable technical work links to `DEC-*`, and maintenance uses `REPO`. Initialization creates the ledger and active `TASK-000` atomically under the one-time `BOOTSTRAP` parent.
-
-For an existing lowercase ledger, keep an owned task `In Progress` and migrate it atomically:
-
-```bash
-python3 "${CODEX_HOME:-$HOME/.codex}/skills/lean-sdlc/scripts/tasks.py" \
-  --repo . migrate --task TASK-123 --owner OWNER
-```
-
-Then rerun the initializer so the project receives the owner hook:
-
-```bash
-python3 "${CODEX_HOME:-$HOME/.codex}/skills/lean-sdlc/scripts/init_repo.py" .
-```
+Reasoning never uses `low`. Sol owns high-leverage decisions, Terra `high` is the general engineering worker, and Luna `xhigh` handles narrow mechanical work and sidecars when that model is available. Explicit user model requests remain authoritative.
 
 ## Install
 
-Requirements: Git, Python 3, and Codex.
+Requirements: Git, Python 3, and Codex with plugin support.
+
+Install the immutable `v1.0.0` release:
 
 ```bash
-git clone https://github.com/laikrodiz/lean-sdlc.git
-cd lean-sdlc
-./scripts/install.sh
+codex plugin marketplace add laikrodiz/lean-sdlc --ref v1.0.0
+codex plugin add lean-sdlc@lean-sdlc
 ```
 
-Restart Codex after installation.
+Restart Codex, review and trust the plugin hook, then begin a new task.
 
-The installer copies `lean-sdlc` into `${CODEX_HOME:-$HOME/.codex}/skills`. It refuses to overwrite an existing installation or leave legacy multi-skill installations active.
-
-To replace an older version intentionally:
+If an older standalone copy exists, move it outside the skills directory after the plugin installs:
 
 ```bash
-git pull
-./scripts/install.sh --force
+mkdir -p "${CODEX_HOME:-$HOME/.codex}/legacy-skills"
+mv "${CODEX_HOME:-$HOME/.codex}/skills/lean-sdlc" \
+  "${CODEX_HOME:-$HOME/.codex}/legacy-skills/lean-sdlc"
 ```
-
-The forced upgrade removes only the former Lean-SDLC skill directories and replaces them with the single dispatcher skill.
 
 ## Use
 
-For a new project:
+For a new repository:
 
 ```text
-Use $lean-sdlc to initialize this repository and shape my project idea.
+Use $lean-sdlc to initialize this repository and shape the project.
 ```
+
+Codex verifies and closes the one-time bootstrap task. Restart or resume afterward so the plugin hook supplies the stable numeric owner for normal work.
 
 For existing work:
 
 ```text
-Use $lean-sdlc to continue this project safely.
+Use $lean-sdlc to continue the project safely.
+Use $lean-sdlc to investigate this failing test.
+Use $lean-sdlc in focused mode to implement the active task.
+Use $lean-sdlc in solo mode and verify the change.
 ```
 
-You can also state the outcome directly:
+After upgrading an older Lean-SDLC project, ask:
 
 ```text
-Use $lean-sdlc to investigate why this test fails.
-Use $lean-sdlc to turn the approved feature into implementation tasks.
-Use $lean-sdlc to verify and close the active task.
-Use $lean-sdlc. You may use subagents in this thread.
+Use $lean-sdlc to upgrade this repository to the current contract.
 ```
 
-Initialization creates missing Lean-SDLC control files and merges one project-local owner hook into `.codex/hooks.json`. Review and trust that hook in Codex, close the bootstrap task, then restart or resume the task. The hook derives the same short owner from the Codex session after startup, resume, clear, and compaction; subagents inherit the parent session owner.
+That migration moves `planning/tasks.csv` to root `tasks.csv` under the active task lock.
 
-The bundled checker validates the active task and owner before writes and catches missing files, broken index paths, invalid task states, unknown parents, missing owners, empty acceptance or proof, and completed tasks without evidence.
+## Package layout
 
-## Package contents
-
-- `skills/lean-sdlc/SKILL.md` is the single discoverable dispatcher.
-- `skills/lean-sdlc/references/` contains the workflow and repository rules loaded only when needed.
-- `skills/lean-sdlc/assets/AGENTS.md` is the concise project control-plane template.
-- `skills/lean-sdlc/scripts/` contains safe initialization, task mutation, owner hook, and structural validation tools.
-- `scripts/install.sh` installs or upgrades the package.
+- `.agents/plugins/marketplace.json` exposes the repository marketplace.
+- `plugins/lean-sdlc/.codex-plugin/plugin.json` defines the versioned plugin.
+- `plugins/lean-sdlc/hooks/hooks.json` provides the stable task owner at session start and after compaction.
+- `plugins/lean-sdlc/skills/lean-sdlc/SKILL.md` is the single dispatcher.
+- `plugins/lean-sdlc/skills/lean-sdlc/references/` contains the six lanes and shared policies.
+- `plugins/lean-sdlc/skills/lean-sdlc/scripts/` contains initialization, task transactions, owner generation, and structural checks.

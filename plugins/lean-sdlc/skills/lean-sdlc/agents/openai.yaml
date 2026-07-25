@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lean SDLC"
+  short_description: "Keep repository work scoped, owned, and verified"
+  default_prompt: "Use $lean-sdlc to route and complete this repository task with an owned task and verifiable evidence."

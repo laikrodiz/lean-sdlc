@@ -1,0 +1,32 @@
+{
+  "name": "lean-sdlc",
+  "version": "1.0.0",
+  "description": "Keep software repositories tied to clear intent, owned work, and verified evidence.",
+  "author": {
+    "name": "laikrodiz",
+    "url": "https://github.com/laikrodiz"
+  },
+  "homepage": "https://github.com/laikrodiz/lean-sdlc",
+  "repository": "https://github.com/laikrodiz/lean-sdlc",
+  "skills": "./skills/",
+  "keywords": [
+    "software-development",
+    "planning",
+    "verification",
+    "multi-agent"
+  ],
+  "interface": {
+    "displayName": "Lean-SDLC",
+    "shortDescription": "Keep repository work scoped, owned, and verified.",
+    "longDescription": "A compact software delivery workflow with six routed lanes, an atomic human-readable task ledger, controlled agent roles, learned operations, and evidence-based closeout.",
+    "developerName": "laikrodiz",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Lean-SDLC workflow",
+      "Task ledger",
+      "Lifecycle owner hook"
+    ],
+    "websiteURL": "https://github.com/laikrodiz/lean-sdlc",
+    "defaultPrompt": "Use $lean-sdlc to route and complete this repository task with an owned task and verifiable evidence."
+  }
+}

@@ -1,0 +1,35 @@
+# Model Routing
+
+Choose models by ambiguity and failure cost. Count retries, review, and integration in total cost.
+
+## User authority
+
+An explicit user model or reasoning request pins the lead. A request that all work use that model applies to every agent; use Solo mode when the same model cannot be supplied to children. Never silently reduce the requested model or reasoning. Explain any unavailable-model substitution.
+
+Model choice and orchestration mode are independent.
+
+## Floor and roles
+
+Never use `low` reasoning.
+
+| Work | Preferred model | Reasoning |
+| --- | --- | --- |
+| Routing, integration, and ordinary closeout | GPT-5.6 Sol | `medium` |
+| Product, scope, architecture, subtle diagnosis, or consequential closeout | GPT-5.6 Sol | `high` |
+| Security, concurrency, migrations, irreversible choices, or unusually subtle diagnosis | GPT-5.6 Sol | `xhigh` |
+| General implementation or exploration | GPT-5.6 Terra | `high` |
+| Narrow mechanical implementation with exact proof | GPT-5.6 Luna | `xhigh` |
+| Verifier and Operator sidecars | GPT-5.6 Luna | `xhigh` |
+
+When Luna is unavailable, use Terra `high`. When a temporary task needs broader engineering judgment, prefer Terra `high` from the start. Use only models exposed by the current surface.
+
+## Lane defaults
+
+- Shape: Sol `high`.
+- Decide: Sol `high`, or `xhigh` for high-risk irreversible choices.
+- Plan: Sol `medium`, or `high` for cross-cutting dependencies.
+- Diagnose: Terra `high`; Sol `high/xhigh` owns difficult root-cause decisions.
+- Deliver: Terra `high`; Luna `xhigh` for exact mechanical changes; Sol for risky implementation.
+- Verify: Luna `xhigh` or Terra `high` collects proof; Sol `medium/high` decides completion.
+
+Keep stable role instructions unchanged within an active task. Put volatile task data last to support prompt-cache reuse, but never create work or preserve stale context merely for a possible cache hit.
