@@ -17,6 +17,7 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - one Lean-SDLC dispatcher skill;
 - minimal repository initialization and migration;
 - atomic private task-ledger transactions;
+- a human-monitorable ledger with durable `Context` values and labeled child reports;
 - deterministic lead, Executor, Researcher, Verifier, and Operator roles under one canonical policy;
 - one lazily spawned child thread per role and lead Codex task, reused across repository tasks and inquiries;
 - one named Luna Max custom-agent profile for child execution;
@@ -41,6 +42,9 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 
 - Use shell and Python standard library only.
 - Keep task state human-readable and safe for concurrent Codex tasks.
+- Use `Context` values `Project`, `FEAT-*`, `DEC-*`, and `Bootstrap` for durable project truth.
+- Require one visible lead assignment before every child handoff and one final-result report after child work.
+- Do not send periodic child progress updates.
 - Keep `tasks.csv` private to each working copy.
 - Never route reasoning below `high`.
 - Preserve explicit user model and orchestration requests.

@@ -31,13 +31,15 @@ Initialization creates only three Lean-SDLC control files:
 
 It also creates or extends `.gitignore` with `/tasks.csv` and `/.tasks.lock`. Feature, decision, and operations documents are optional. They appear only when durable shared knowledge justifies them. The ledger may be changed only through the bundled atomic task command.
 
+Each ledger row uses `Context` to name durable project truth. Use `Project`, `FEAT-*`, `DEC-*`, or `Bootstrap`. Dependencies keep task sequencing.
+
 ## Agents
 
-All child-agent rules live in one editable policy: `references/subagents.md`. Before delivery or the first delegated read-only operation, Codex must state:
-
-`Mode | Required sidecars | Executor action | Reason`
+All child-agent rules live in one editable policy: `references/subagents.md`. Before delegation, Codex tells the user the mode, child action, active task or inquiry, and reason in one or two short sentences.
 
 Assisted mode is the default. The user-selected lead keeps architecture, interfaces, task setting, integration, and closeout. Each lead Codex task lazily creates at most one `executor`, `researcher`, `verifier`, and `operator` thread. Codex reuses each role across repository tasks and inquiries. Task identifiers stay inside handoffs and returns. Codex gives one durable task beyond the direct fast path to Executor. Executor performs local implementation and fast targeted checks. Executor returns one task checkpoint. The lead reviews architecture, scope, and diff once per returned checkpoint. Corrections return as concise deltas to the same Executor.
+
+Before every child handoff, the lead tells the user the role, task or inquiry, intended result, and proof. This visible assignment provides startup visibility. After work finishes or blocks, the child sends one labeled final-result report. Children send no periodic progress updates. Internal handoffs use labeled multiline fields. User-facing orchestration uses normal prose.
 
 Verifier independently reruns acceptance-defining proof against the exact checkpoint. It adds risk-based regression and skips Executor-only targeted checks. It normally runs the full suite once. Operator runs guided or recorded build, package, CI, deploy, flash, runtime, and smoke operations. Verifier consumes Operator evidence instead of repeating the operation. Researcher is read-only and handles substantial multi-source, multi-repository, large-document, data, log, or noisy evidence collection. `focused mode` keeps triggered sidecars, including Researcher when its trigger applies, and disables Executor. `solo mode` runs the same contracts locally.
 

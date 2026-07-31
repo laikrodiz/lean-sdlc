@@ -29,7 +29,7 @@ from task_ledger import (
 )
 
 
-DEFINITION_FIELDS = ("title", "parent", "dependencies", "acceptance", "proof")
+DEFINITION_FIELDS = ("title", "context", "dependencies", "acceptance", "proof")
 
 
 def add_definition_arguments(
@@ -38,7 +38,7 @@ def add_definition_arguments(
     required: bool,
 ) -> None:
     command.add_argument("--title", required=required)
-    command.add_argument("--parent", required=required)
+    command.add_argument("--context", required=required)
     command.add_argument("--dependencies", default="" if required else None)
     command.add_argument("--acceptance", required=required)
     command.add_argument("--proof", required=required)
@@ -109,7 +109,7 @@ def new_task(
             "Task ID": task_id,
             "Title": clean(args.title or "", "Title"),
             "Status": status,
-            "Parent": clean(args.parent or "", "Parent"),
+            "Context": clean(args.context or "", "Context"),
             "Dependencies": (args.dependencies or "").strip(),
             "Owner": owner,
             "Acceptance Criteria": clean(
@@ -151,7 +151,7 @@ def start_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
 
 
 def require_owner(task: dict[str, str], supplied: str) -> str:
-    allow_bootstrap = task.get("Parent") == "BOOTSTRAP"
+    allow_bootstrap = task.get("Context") == "Bootstrap"
     owner = thread_owner(supplied, allow_bootstrap=allow_bootstrap)
     actual = task.get("Owner", "")
     if actual != owner:
@@ -179,7 +179,7 @@ def update_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
 
     changes = {
         "Title": args.title,
-        "Parent": args.parent,
+        "Context": args.context,
         "Dependencies": args.dependencies,
         "Acceptance Criteria": args.acceptance,
         "Proof": args.proof,
@@ -209,7 +209,7 @@ def close_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
 
     supplied_owner = thread_owner(
         args.owner,
-        allow_bootstrap=task.get("Parent") == "BOOTSTRAP",
+        allow_bootstrap=task.get("Context") == "Bootstrap",
     )
     actual_owner = task.get("Owner", "")
     if actual_owner != supplied_owner:

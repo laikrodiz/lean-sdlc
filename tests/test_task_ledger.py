@@ -24,7 +24,7 @@ CONFIGURE_CODEX = SCRIPTS / "configure_codex.py"
 LUNA_PROFILE = SKILL / "assets/lean_sdlc_luna.toml"
 PLUGIN_HOOKS = PLUGIN / "hooks/hooks.json"
 HEADER = (
-    "Task ID,Title,Status,Parent,Dependencies,Owner,"
+    "Task ID,Title,Status,Context,Dependencies,Owner,"
     "Acceptance Criteria,Proof,Evidence\n"
 )
 
@@ -82,8 +82,8 @@ class TaskLedgerTests(unittest.TestCase):
                     "start" if number % 2 else "plan",
                     "--title",
                     f"Task {number}",
-                    "--parent",
-                    "REPO",
+                    "--context",
+                    "Project",
                     "--acceptance",
                     "Row exists",
                     "--proof",
@@ -127,8 +127,8 @@ class TaskLedgerTests(unittest.TestCase):
                 "plan",
                 "--title",
                 "Initial title",
-                "--parent",
-                "REPO",
+                "--context",
+                "Project",
                 "--acceptance",
                 "Done",
                 "--proof",
@@ -186,7 +186,7 @@ class TaskLedgerTests(unittest.TestCase):
             repository = Path(directory)
             write_ledger(
                 repository,
-                "TASK-001,Owned work,In Progress,REPO,,11111111,"
+                "TASK-001,Owned work,In Progress,Project,,11111111,"
                 "Done,Run checks,\n",
             )
             denied = task(
@@ -228,8 +228,8 @@ class TaskLedgerTests(unittest.TestCase):
                 "plan",
                 "--title",
                 "First",
-                "--parent",
-                "REPO",
+                "--context",
+                "Project",
                 "--acceptance",
                 "Done",
                 "--proof",
@@ -244,8 +244,8 @@ class TaskLedgerTests(unittest.TestCase):
                 "12345678",
                 "--title",
                 "Second",
-                "--parent",
-                "REPO",
+                "--context",
+                "Project",
                 "--dependencies",
                 "TASK-000",
                 "--acceptance",
@@ -282,8 +282,8 @@ class TaskLedgerTests(unittest.TestCase):
                 "plan",
                 "--title",
                 "Missing dependency",
-                "--parent",
-                "REPO",
+                "--context",
+                "Project",
                 "--dependencies",
                 "TASK-999",
                 "--acceptance",
@@ -327,13 +327,44 @@ class TaskLedgerTests(unittest.TestCase):
             self.assertFalse(legacy.exists())
             self.assertFalse(planning.exists())
 
+    def test_previous_root_header_upgrade_maps_parent_to_context(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            old_header = (
+                "Task ID,Title,Status,Parent,Dependencies,Owner,"
+                "Acceptance Criteria,Proof,Evidence\n"
+            )
+            repository.joinpath("tasks.csv").write_text(
+                old_header
+                + "TASK-001,Upgrade,In Progress,REPO,,11111111,"
+                "Readable,Inspect,\n",
+                encoding="utf-8",
+            )
+
+            result = task(
+                repository,
+                "upgrade",
+                "--task",
+                "TASK-001",
+                "--owner",
+                "11111111",
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            root_ledger = repository / "tasks.csv"
+            self.assertEqual(
+                root_ledger.read_text(encoding="utf-8").splitlines()[0],
+                HEADER.strip(),
+            )
+            self.assertEqual(read_rows(repository)[0]["Context"], "Project")
+            self.assertFalse(repository.joinpath(".tasks.lock").exists())
+
     def test_checker_rejects_manual_dependency_cycle(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             repository = Path(directory)
             write_ledger(
                 repository,
-                "TASK-001,One,Planned,REPO,TASK-002,,Done,Check,\n"
-                "TASK-002,Two,Planned,REPO,TASK-001,,Done,Check,\n",
+                "TASK-001,One,Planned,Project,TASK-002,,Done,Check,\n"
+                "TASK-002,Two,Planned,Project,TASK-001,,Done,Check,\n",
             )
             checked = run(str(CHECK), str(repository), "--task", "TASK-001")
             self.assertNotEqual(checked.returncode, 0)
@@ -674,7 +705,10 @@ class PackageContractTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
 
         self.assertIn("sole authority", dispatcher)
-        self.assertIn("mode | required sidecars | executor action | reason", dispatcher)
+        self.assertIn(
+            "tell the user the mode, child action, active task or inquiry, and reason in one or two short sentences",
+            dispatcher,
+        )
         self.assertIn("mandatory sidecar triggers", subagents)
         self.assertIn("executor trigger and loop", subagents)
         self.assertIn("lead authority", subagents)
@@ -687,7 +721,9 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("at most one child thread for each role during one lead codex task", subagents)
         self.assertIn("task_name=executor", subagents)
         self.assertIn("normal repository task transition never justifies another child", subagents)
-        self.assertIn("role | context reset reason | replacement action", subagents)
+        self.assertIn("role: verifier", subagents)
+        self.assertIn("context reset reason:", subagents)
+        self.assertIn("replacement action:", subagents)
         self.assertIn("never use an arbitrary counter", subagents)
         self.assertIn("separate owned tasks with disjoint paths", subagents)
         self.assertIn("researcher", subagents)
@@ -709,6 +745,11 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("agent_type=lean_sdlc_luna", subagents)
         self.assertIn("omit direct `model` and `reasoning_effort`", subagents)
         self.assertIn("without `agent_type`", subagents)
+        self.assertIn("before every child handoff, the lead tells the user", subagents)
+        self.assertIn("do not depend on child commentary for startup visibility", subagents)
+        self.assertIn("the child sends no periodic progress updates", subagents)
+        self.assertIn("the child sends this final-result report after work finishes or blocks", subagents)
+        self.assertIn("resolve shorthand tool names before delegation", verify)
         self.assertEqual(root_agents, template_agents)
 
         policy_documents = [ROOT / "README.md", ROOT / "docs/PROJECT.md", *SKILL.rglob("*.md")]
@@ -780,10 +821,9 @@ class PackageContractTests(unittest.TestCase):
             self.assertIn(phrase, verify)
 
         self.assertIn("run one state-changing operation at a time", operations)
-        self.assertIn(
-            "role | inquiry | question | decision informed | source priority | scope | stop condition | return format",
-            subagents,
-        )
+        self.assertIn("role: researcher", subagents)
+        self.assertIn("inquiry: inquiry identifier", subagents)
+        self.assertIn("decision informed:", subagents)
         self.assertIn(
             "evidence collection spans multiple sources, repositories, large documents, data, logs, or noisy output",
             evaluations,

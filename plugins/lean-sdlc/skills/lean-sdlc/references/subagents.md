@@ -20,23 +20,31 @@ Keep at most one child thread for each role during one lead Codex task. Spawn `e
 
 Keep repository task identifiers in handoffs and returns. Do not derive child names from task identifiers, features, versions, workstreams, descriptions, or counters. A normal repository task transition never justifies another child.
 
-Replace a role thread only when it is unavailable, repeatedly uses stale assumptions after an explicit correction, the user requests clean context, or a required tool, permission, or runtime change needs another session. Before replacement, announce:
+Replace a role thread only when it is unavailable, repeatedly uses stale assumptions after an explicit correction, the user requests clean context, or a required tool, permission, or runtime change needs another session. Before replacement, announce these labeled fields:
 
-`Role | Context reset reason | Replacement action`
+```text
+Role: Verifier
+Context reset reason: The required tool changed.
+Replacement action: Spawn a new Verifier and rehydrate the checkpoint.
+```
 
 Use the canonical role name again when the platform permits it. When the platform requires a unique replacement name, use the active task identifier and state this constraint. Never use an arbitrary counter.
 
 ## Orchestration Gate
 
-Before Deliver or the first delegated read-only operation, state:
+Before Deliver or the first delegated read-only operation, tell the user the mode, child action, active task or inquiry, and reason. Use one or two short sentences.
 
-`Mode | Required sidecars | Executor action | Reason`
+Example:
+
+> Using Assisted mode. Executor will handle TASK-018, and Verifier will check the result because the change spans code and policy.
 
 Apply the gate again only when task or inquiry scope, mode, proof, or available agents materially changes. Skipping a mandatory sidecar, skipping a required Executor handoff, or sending multiple durable tasks in one handoff is a workflow failure.
 
 ## Lead authority
 
 Before delegating Executor, the lead settles the outcome, architecture, interfaces, invariants, paths, acceptance, proof, and stop conditions. The lead creates and owns the durable task. It runs the before-write gate, integrates the result, and decides whether to correct, continue, or close.
+
+Before every child handoff, the lead tells the user the role, task or inquiry, intended result, and proof. This visible assignment is the intention report. Do not depend on child commentary for startup visibility.
 
 Before delegating read-only work, the lead settles the inquiry, source priority, scope, return format, and stop condition. A read-only inquiry needs no task.
 
@@ -60,11 +68,31 @@ Keep one writing Executor active per lead. Reuse `executor` across repository ta
 
 Send:
 
-`Role | Task | Outcome | Architecture | Interfaces and invariants | Allowed paths | Acceptance | Proof | Stop conditions`
+```text
+Role: Executor
+Task: TASK-ID
+Outcome: One observable result.
+Architecture: Settled implementation boundary.
+Interfaces and invariants: Lead-defined contracts.
+Allowed paths: Related repository paths.
+Acceptance: Observable acceptance criteria.
+Proof: Exact targeted checks.
+Stop conditions: Decisions that require the lead.
+```
+
+The child sends no periodic progress updates.
 
 Executor may iterate within that task until targeted development checks pass while scope remains unchanged. It returns:
 
-`Done or Blocked | Files changed | Targeted checks | Task checkpoint | Deviation or decision needed`
+```text
+Result: Done or Blocked
+Files changed: Paths changed by the child.
+Targeted checks: Checks run by the child.
+Task checkpoint: Exact checkpoint identity.
+Deviation or decision needed: A required lead decision, or None.
+```
+
+The child sends this final-result report after work finishes or blocks.
 
 The lead reviews architecture, scope, and diff once per returned checkpoint. Corrections return as a concise delta to the same Executor. Only an accepted checkpoint may unlock another durable task.
 
@@ -134,19 +162,48 @@ After a Codex update, run one bounded profile smoke test before the first requir
 
 For a Researcher, send:
 
-`Role | Inquiry | Question | Decision informed | Source priority | Scope | Stop condition | Return format`
+```text
+Role: Researcher
+Inquiry: Inquiry identifier.
+Question: Question to answer.
+Decision informed: Lead decision affected by evidence.
+Source priority: Required source order.
+Scope: Read-only evidence boundary.
+Stop condition: Evidence limit.
+Return format: Cited findings and conflicts.
+```
 
 Require:
 
-`Cited findings | Conflicts | Unknowns | Decision impact | Sources`
+```text
+Cited findings: Evidence with sources.
+Conflicts: Conflicting evidence, or None.
+Unknowns: Unresolved facts, or None.
+Decision impact: Effect on the lead decision.
+Sources: Source references.
+```
 
 For another sidecar, send:
 
-`Role | Task | Trigger | Checkpoint | Scope | Allowed writes | Expected result | Stop conditions`
+```text
+Role: Verifier
+Task: TASK-ID
+Trigger: Proof checkpoint reached.
+Checkpoint: Exact source fingerprint.
+Scope: Acceptance and risk regression.
+Allowed writes: None.
+Expected result: Independent evidence.
+Stop conditions: Changed checkpoint or missing proof.
+```
 
 Require:
 
-`Status | Evidence or artifacts | Issue or risk | Next`
+```text
+Status: Operation status.
+Evidence or artifacts: Exact evidence or artifact references.
+Issue or risk: Bounded issue or risk.
+Next: Required lead action, or None.
+```
 
 Status describes the delegated operation or deliverable, never task disposition. Reference files and saved logs instead of pasting large output. Preserve exact decisions supplied by the lead, commands, fingerprints, failures, and evidence; omit exploration chatter.
 

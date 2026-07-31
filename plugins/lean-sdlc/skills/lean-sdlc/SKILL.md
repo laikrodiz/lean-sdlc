@@ -12,7 +12,7 @@ Keep repository intent, work, implementation, and proof coherent with the smalle
 1. Read repository `AGENTS.md`.
 2. Read [references/repository-contracts.md](references/repository-contracts.md).
 3. Identify the requested outcome, current repository truth, active task, and orchestration mode.
-4. For a new repository, run [scripts/init_repo.py](scripts/init_repo.py), verify the minimal contract, close `TASK-000` as owner `bootstrap`, then ask the user to restart or resume so the scoped plugin hook supplies the stable numeric owner. For an older ledger, run [scripts/tasks.py](scripts/tasks.py) `upgrade` under its owned active task.
+4. For a new repository, run [scripts/init_repo.py](scripts/init_repo.py), verify the minimal contract, close `TASK-000` as owner `bootstrap`, then ask the user to restart or resume so the scoped plugin hook supplies the stable numeric owner. For an older ledger, run [scripts/tasks.py](scripts/tasks.py) `upgrade` under its owned active task. The upgrade maps old `Parent` values to new `Context` values.
 5. Select the earliest unresolved lane below. Continue through later gates in the same task when their inputs are ready.
 6. Before Plan, Deliver, Verify, or any child-agent use, read the canonical [Subagent Policy](references/subagents.md). For substantial decision work, read [references/model-routing.md](references/model-routing.md). Read [references/operations.md](references/operations.md) before build, package, deploy, flash, runtime, or smoke work.
 
@@ -41,7 +41,7 @@ Do not stop merely because one lane completed. Stop when user authority, require
 8. Only the owning task closes work. A different task may close it only after a direct user request using the recorded override.
 9. Each task is one independently accepted repository state; local implementation steps stay transient.
 
-Read-only inspection needs no task. Small writes still use a small `REPO` task.
+Read-only inspection needs no task. Small writes still use a small `Project` task.
 
 ## Engineering Discipline
 
@@ -57,9 +57,7 @@ Apply the applicable ASD-STE100 Issue 9 rules to generated English technical pro
 
 ## Subagent Gate
 
-Before Deliver or the first delegated read-only operation, apply [references/subagents.md](references/subagents.md) and state:
-
-`Mode | Required sidecars | Executor action | Reason`
+Before Deliver or the first delegated read-only operation, apply [references/subagents.md](references/subagents.md). Tell the user the mode, child action, active task or inquiry, and reason in one or two short sentences.
 
 That policy is the sole authority for child roles, triggers, profiles, spawn payloads, handoffs, reuse, and failure conditions. The lead owns architecture, task state, acceptance, integration, and closeout. Keep one lazily spawned thread per role for each lead Codex task. Reuse it across repository tasks and inquiries. In Assisted mode, one ready durable task beyond the direct fast path uses Executor; lead review and checkpoint verification precede another task.
 

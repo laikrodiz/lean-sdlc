@@ -34,13 +34,27 @@ Do not store secrets. Redact tokens, passwords, keys, authorization headers, con
 
 ## Run contract
 
-Request:
+Request these labeled fields on separate lines:
 
-`Task | operation | checkpoint | exact target | expected signal`
+```text
+Task: TASK-ID
+Operation: Operation name.
+Checkpoint: Exact source fingerprint.
+Exact target: Target identifier.
+Expected signal: Observable success signal.
+```
 
-Return:
+Return these labeled fields on separate lines:
 
-`Status | source fingerprint | artifact path or hash | target | signal | saved failure log | next`
+```text
+Status: Operation status.
+Source fingerprint: Exact source fingerprint.
+Artifact path or hash: Artifact reference, or None.
+Target: Target identifier.
+Signal: Observed success or failure signal.
+Saved failure log: Temporary log reference, or None.
+Next: Required lead action, or None.
+```
 
 Run one state-changing operation at a time for the same `task + operation + target`. Never guess a target, silently change a procedure, or retry a state-changing failure without authority and a recorded recovery rule.
 

@@ -10,8 +10,8 @@ from pathlib import Path
 sys.dont_write_bytecode = True
 
 from task_ledger import (
-    PARENT_PATTERN,
-    SPECIAL_PARENTS,
+    CONTEXT_PATTERN,
+    SPECIAL_CONTEXTS,
     TASK_COLUMNS,
     TASK_STATUSES,
     THREAD_OWNER_PATTERN,
@@ -46,14 +46,14 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def parent_document_exists(root: Path, parent: str) -> bool:
-    folder = "features" if parent.startswith("FEAT-") else "decisions"
+def context_document_exists(root: Path, context: str) -> bool:
+    folder = "features" if context.startswith("FEAT-") else "decisions"
     directory = root / "docs" / folder
     if not directory.is_dir():
         return False
     return any(
         path.is_file()
-        and (path.stem == parent or path.name.startswith(f"{parent}-"))
+        and (path.stem == context or path.name.startswith(f"{context}-"))
         for path in directory.iterdir()
     )
 
@@ -116,27 +116,27 @@ def main() -> int:
                 "expected Planned, In Progress, or Done"
             )
 
-        parent = task.get("Parent", "")
-        if parent == "BOOTSTRAP":
+        context = task.get("Context", "")
+        if context == "Bootstrap":
             bootstrap_tasks += 1
-        if not parent:
-            errors.append(f"tasks.csv:{number}: {task_id} has no parent")
-        elif parent not in SPECIAL_PARENTS and not PARENT_PATTERN.fullmatch(parent):
-            errors.append(f"tasks.csv:{number}: {task_id} has invalid parent {parent}")
+        if not context:
+            errors.append(f"tasks.csv:{number}: {task_id} has no context")
+        elif context not in SPECIAL_CONTEXTS and not CONTEXT_PATTERN.fullmatch(context):
+            errors.append(f"tasks.csv:{number}: {task_id} has invalid context {context}")
         elif (
-            PARENT_PATTERN.fullmatch(parent)
+            CONTEXT_PATTERN.fullmatch(context)
             and status != "In Progress"
-            and not parent_document_exists(root, parent)
+            and not context_document_exists(root, context)
         ):
             errors.append(
-                f"tasks.csv:{number}: {task_id} has no document for parent {parent}"
+                f"tasks.csv:{number}: {task_id} has no document for context {context}"
             )
 
         owner = task.get("Owner", "")
         if status == "Planned" and owner:
             errors.append(f"tasks.csv:{number}: {task_id} is Planned but already owned")
         if status == "In Progress":
-            valid_bootstrap = parent == "BOOTSTRAP" and owner == "bootstrap"
+            valid_bootstrap = context == "Bootstrap" and owner == "bootstrap"
             if not valid_bootstrap and not THREAD_OWNER_PATTERN.fullmatch(owner):
                 errors.append(
                     f"tasks.csv:{number}: {task_id} has invalid active owner "
@@ -153,7 +153,7 @@ def main() -> int:
             errors.append(f"tasks.csv:{number}: {task_id} is Done without evidence")
 
     if bootstrap_tasks > 1:
-        errors.append("tasks.csv: more than one BOOTSTRAP task exists")
+        errors.append("tasks.csv: more than one Bootstrap task exists")
 
     if args.task and args.task not in tasks_by_id:
         errors.append(f"requested task does not exist: {args.task}")

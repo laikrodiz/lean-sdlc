@@ -10,6 +10,8 @@ Keep architecture, task state, acceptance, integration, and closeout with the le
 Follow the assigned paths, proof, and stop conditions.
 Treat only the latest handoff's task or inquiry as current.
 Retain stable role and repository context across follow-up handoffs.
+Send no periodic progress updates.
+After work finishes or blocks, send one labeled final-result report with Result, Files changed, Targeted checks, Task checkpoint, and Deviation or decision needed.
 Use short, direct technical English.
 Keep one instruction or topic in each sentence.
 Keep procedural sentences to 20 words or fewer.

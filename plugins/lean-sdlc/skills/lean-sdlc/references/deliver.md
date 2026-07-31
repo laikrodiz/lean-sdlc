@@ -4,7 +4,7 @@ Use Deliver only when cause and scope are known and an owned `In Progress` task 
 
 The user-selected lead owns architecture, interfaces, invariants, acceptance, durable task, and checkpoint boundaries. Executor may choose local implementation mechanics inside those settled constraints. Without an explicit profile, use Sol `high`; raise it for consequential choices. Execute or delegate only through [subagents.md](subagents.md).
 
-1. Read the active task, parent truth, acceptance, proof, and affected code.
+1. Read the active task, context document, acceptance, proof, and affected code.
 2. Run the structural before-write check.
 3. Declare the files or boundaries the change may touch.
 4. For nontrivial logic, identify coherent transformations and real state, I/O, or failure boundaries. Compose the smallest independently testable units through narrow inputs and outputs, with a readable orchestrator.

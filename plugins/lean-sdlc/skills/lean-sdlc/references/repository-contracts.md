@@ -40,7 +40,9 @@ Use a diagram only when flow, state, ownership, sequence, or dependencies become
 
 Use exactly:
 
-`Task ID,Title,Status,Parent,Dependencies,Owner,Acceptance Criteria,Proof,Evidence`
+`Task ID,Title,Status,Context,Dependencies,Owner,Acceptance Criteria,Proof,Evidence`
+
+Context values are `Project`, `FEAT-*`, `DEC-*`, and `Bootstrap`. Context identifies durable project truth. Dependencies keep task sequencing.
 
 Rules:
 
@@ -50,8 +52,10 @@ Rules:
 4. `update` may correct Planned work without an owner and In Progress work only as its owner.
 5. `close` belongs to the owner after verification. A direct user request may override with a recorded reason.
 6. Separate dependencies with spaces, semicolons, or quoted commas. Every dependency must exist, cycles are invalid, and dependencies must be Done before close.
-7. Use `REPO` unless a durable `FEAT-*` or `DEC-*` document owns the change. An active task may reserve the document it creates. Use `BOOTSTRAP` once.
+7. Use `Project` unless a durable `FEAT-*` or `DEC-*` document owns the change. An active task may reserve the document it creates. Use `Bootstrap` once.
 8. Task transactions are the formal exception to task-before-write.
+
+`tasks.py upgrade` accepts the previous `Parent` header and the older planning header. It maps `REPO` to `Project` and `BOOTSTRAP` to `Bootstrap`, then atomically writes one root CSV under the existing lock.
 
 The command serializes writers with a short root lock, reads the latest ledger under that lock, validates dependencies, changes one transaction, and replaces the file atomically. Owner IDs coordinate threads; they are not a security boundary.
 

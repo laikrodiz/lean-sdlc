@@ -22,16 +22,17 @@ Test from a fresh task with only the installed plugin and target repository visi
 | Edge-case treatment changes visible behavior, compatibility, safety, or data | Return to Shape or Decide and settle acceptance |
 | Flow, state, ownership, sequence, or dependencies need a visual explanation | Use a small Mermaid diagram; use a table for mappings |
 | A simple relationship needs explanation | Use prose; do not create a diagram or ASCII pseudographics |
-| A comment typo needs changing | Start a small `REPO` task |
+| A comment typo needs changing | Start a small `Project` task |
 | Two threads start work concurrently | Atomic commands produce unique IDs |
 | Missing dependency or dependency cycle | Reject the transaction |
 | Another task tries to close owned work | Refuse without direct user override |
-| Mutation reaches Plan or Deliver | State `Mode | Required sidecars | Executor action | Reason` |
+| Mutation reaches Plan or Deliver | Tell the user the mode, child action, active task or inquiry, and reason in one or two short sentences |
+| A child handoff is ready | Lead tells the user the role, task or inquiry, intended result, and proof before sending it |
 | A role reaches its first trigger in one lead Codex task | Lazily spawn its fixed `executor`, `researcher`, `verifier`, or `operator` thread |
 | The same role triggers for another repository task or inquiry | Send a follow-up to the existing role thread, including after it reported completion |
 | A repository task finishes and another becomes ready | Keep every reachable role thread; a normal task transition never justifies another spawn |
 | A child name uses a feature, version, description, counter, or an unapproved task identifier | Fail; keep task identifiers inside handoffs and returns except for an announced platform-required replacement |
-| A role thread is unavailable, repeatedly stale after correction, reset by the user, or incompatible with a required tool, permission, or runtime | Announce `Role | Context reset reason | Replacement action`, then replace and rehydrate it |
+| A role thread is unavailable, repeatedly stale after correction, reset by the user, or incompatible with a required tool, permission, or runtime | Announce labeled `Role`, `Context reset reason`, and `Replacement action` fields, then replace and rehydrate it |
 | A reachable role thread already exists | Do not spawn another child for that role |
 | Code, configuration, schema, generated artifact, or observable behavior reaches a proof checkpoint | Must reuse or start Verifier |
 | Promised proof has multiple commands or noisy output | Must reuse or start Verifier |

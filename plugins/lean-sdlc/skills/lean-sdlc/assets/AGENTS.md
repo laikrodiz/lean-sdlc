@@ -21,7 +21,8 @@ Resolve contradictions before closeout.
 - Allowed statuses are `Planned`, `In Progress`, and `Done`.
 - `Planned` is unowned. `In Progress` and `Done` retain the stable 8-digit task owner supplied by the plugin hook.
 - Only the owner closes a task. A different task may close it only after a direct user request and must record the override reason.
-- Use `FEAT-*` for documented behavior, `DEC-*` for a documented durable choice, `REPO` for other project work, and `BOOTSTRAP` only for initialization.
+- Use `FEAT-*` for documented behavior, `DEC-*` for a documented durable choice, `Project` for other project work, and `Bootstrap` only for initialization.
+- Use `Context` to identify durable project truth. Dependencies keep task sequencing.
 - Each task is one independently accepted repository state and remains resumable from repository truth and its ledger row after compaction.
 - Split independently accepted and independently proved work. Keep inseparable coding steps transient.
 
@@ -35,7 +36,10 @@ Resolve contradictions before closeout.
 
 ## Subagent Gate
 
-- Before Deliver or the first delegated read-only operation, read and apply `$lean-sdlc`'s canonical `references/subagents.md`, then state `Mode | Required sidecars | Executor action | Reason`.
+- Before Deliver or the first delegated read-only operation, read and apply `$lean-sdlc`'s canonical `references/subagents.md`. Tell the user the mode, child action, active task or inquiry, and reason in one or two short sentences.
+- Before every child handoff, tell the user the role, task or inquiry, intended result, and proof.
+- After child work finishes or blocks, require one labeled final-result report. Do not send periodic child progress updates.
+- Use normal prose for user-facing orchestration and labeled multiline fields for internal child handoffs.
 - Keep architecture, interfaces, task state, acceptance, integration, and closeout with the lead.
 - Keep one lazily spawned thread for each child role during one lead Codex task. Reuse it across repository tasks and inquiries.
 - In Assisted mode, delegate one durable task beyond the direct fast path to one reusable Executor. Keep correction handoffs concise and transient. Trigger read-only Researcher only when substantial evidence would pollute lead context. Focused keeps Researcher when its trigger applies.

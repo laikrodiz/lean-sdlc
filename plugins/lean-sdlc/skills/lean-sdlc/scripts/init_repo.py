@@ -47,7 +47,7 @@ BOOTSTRAP_TASK = {
     "Task ID": "TASK-000",
     "Title": "Initialize Lean-SDLC",
     "Status": "In Progress",
-    "Parent": "BOOTSTRAP",
+    "Context": "Bootstrap",
     "Dependencies": "",
     "Owner": "bootstrap",
     "Acceptance Criteria": (
@@ -135,13 +135,13 @@ def initialize(root: Path) -> int:
         active_control_task = any(
             row.get("Status") == "In Progress"
             and row.get("Owner")
-            and row.get("Parent") in {"BOOTSTRAP", "REPO"}
+            and row.get("Context") in {"Bootstrap", "Project"}
             for row in rows
         )
         if (missing or missing_ignore) and not active_control_task:
             raise SystemExit(
                 "Missing control files require an owned In Progress "
-                "BOOTSTRAP or REPO task."
+                "Bootstrap or Project task."
             )
 
     created = 1 if task_created else 0

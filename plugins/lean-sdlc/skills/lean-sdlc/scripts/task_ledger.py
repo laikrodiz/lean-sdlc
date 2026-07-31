@@ -19,7 +19,7 @@ TASK_COLUMNS = (
     "Task ID",
     "Title",
     "Status",
-    "Parent",
+    "Context",
     "Dependencies",
     "Owner",
     "Acceptance Criteria",
@@ -37,12 +37,25 @@ LEGACY_COLUMNS = (
     "proof",
     "evidence",
 )
+PREVIOUS_COLUMNS = (
+    "Task ID",
+    "Title",
+    "Status",
+    "Parent",
+    "Dependencies",
+    "Owner",
+    "Acceptance Criteria",
+    "Proof",
+    "Evidence",
+)
 LEGACY_TO_CURRENT = dict(zip(LEGACY_COLUMNS, TASK_COLUMNS))
+PREVIOUS_TO_CURRENT = dict(zip(PREVIOUS_COLUMNS, TASK_COLUMNS))
 TASK_ID_PATTERN = re.compile(r"TASK-(\d+)$")
 THREAD_OWNER_PATTERN = re.compile(r"\d{8}$")
-PARENT_PATTERN = re.compile(r"(?:FEAT|DEC)-[A-Za-z0-9][A-Za-z0-9._-]*$")
+CONTEXT_PATTERN = re.compile(r"(?:FEAT|DEC)-[A-Za-z0-9][A-Za-z0-9._-]*$")
 TASK_STATUSES = {"Planned", "In Progress", "Done"}
-SPECIAL_PARENTS = {"REPO", "BOOTSTRAP"}
+SPECIAL_CONTEXTS = {"Project", "Bootstrap"}
+LEGACY_CONTEXTS = {"REPO": "Project", "BOOTSTRAP": "Bootstrap"}
 LOCK_TIMEOUT_SECONDS = 10
 STALE_LOCK_SECONDS = 60
 
@@ -157,6 +170,7 @@ def read_ledger(
             accepted = [list(TASK_COLUMNS)]
             if allow_legacy:
                 accepted.append(list(LEGACY_COLUMNS))
+                accepted.append(list(PREVIOUS_COLUMNS))
             if columns not in accepted:
                 raise TaskError(
                     "unexpected task header; expected: " + ", ".join(TASK_COLUMNS)
@@ -184,10 +198,21 @@ def current_rows(
 ) -> list[dict[str, str]]:
     if columns == list(TASK_COLUMNS):
         return rows
-    return [
-        {new: row.get(old, "") for old, new in LEGACY_TO_CURRENT.items()}
-        for row in rows
-    ]
+    if columns == list(LEGACY_COLUMNS):
+        mapping = LEGACY_TO_CURRENT
+    elif columns == list(PREVIOUS_COLUMNS):
+        mapping = PREVIOUS_TO_CURRENT
+    else:
+        raise TaskError("cannot migrate unsupported task header")
+
+    migrated: list[dict[str, str]] = []
+    for row in rows:
+        converted = {new: row.get(old, "") for old, new in mapping.items()}
+        converted["Context"] = LEGACY_CONTEXTS.get(
+            converted["Context"], converted["Context"]
+        )
+        migrated.append(converted)
+    return migrated
 
 
 def write_ledger(path: Path, rows: list[dict[str, str]]) -> None:
