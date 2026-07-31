@@ -61,7 +61,7 @@ Before Deliver or the first delegated read-only operation, apply [references/sub
 
 `Mode | Required sidecars | Executor action | Reason`
 
-That policy is the sole authority for child roles, triggers, profiles, spawn payloads, handoffs, reuse, and failure conditions. The lead owns architecture, task state, acceptance, integration, and closeout. In Assisted mode, ready work beyond the direct fast path uses one reusable Executor, one settled execution unit at a time; lead review and checkpoint verification precede the next unit.
+That policy is the sole authority for child roles, triggers, profiles, spawn payloads, handoffs, reuse, and failure conditions. The lead owns architecture, task state, acceptance, integration, and closeout. In Assisted mode, one ready durable task beyond the direct fast path uses one reusable Executor; lead review and checkpoint verification precede another task.
 
 ## Result
 

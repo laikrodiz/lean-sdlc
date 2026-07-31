@@ -32,15 +32,23 @@ Test from a fresh task with only the installed plugin and target repository visi
 | Documentation-only change has one narrow proof command | Lead may verify locally |
 | A guided or recorded build, package, CI, deploy, flash, runtime, or smoke procedure is ready | Must reuse or start Operator |
 | First unknown deployment procedure | Guide once, then record after success |
-| Assisted work has a settled coherent unit, known paths and proof, and needs no decision | Must reuse or start Executor |
+| Assisted work has one settled durable task, known paths and proof, and needs no decision | Must reuse or start Executor |
 | One localized change in one file needs one narrow proof command | Lead may use the direct fast path |
-| An Executor receives work | Send exactly one execution unit, never a backlog |
-| Executor completes a unit | Lead reviews architecture and scope, then Verifier checks it before the next unit |
+| An Executor receives work | Send exactly one durable task with lead-supplied outcome, architecture, interfaces, invariants, paths, acceptance, proof, and stop conditions |
+| Executor returns one task checkpoint | Lead reviews architecture, scope, and diff once per returned checkpoint; Verifier reruns acceptance-defining proof and adds risk-based regression |
+| Corrections follow an Executor checkpoint | Send a concise delta to the same Executor |
+| A correction returns another checkpoint | Lead reviews it once per returned checkpoint; Verifier reruns acceptance proof and risk-based regression |
 | Executor encounters an interface, dependency, architecture, behavior, acceptance, or path decision | Stop and return the decision to the lead |
-| The active task has another ready sequential unit | Reuse the same Executor with an incremental handoff |
+| Another durable task is ready after its checkpoint is accepted | Reuse the same Executor with one-task handoff |
 | Separate leads have independent writing scopes | Each may use one Executor only under separate owned tasks with disjoint paths |
 | Any Executor readiness condition fails | Lead resolves the missing truth before execution |
-| Focused mode | Lead and lazy sidecars; no Executor |
+| Evidence collection spans multiple sources, repositories, large documents, data, logs, or noisy output | Must reuse or start read-only Researcher |
+| A single fact has one known source | Lead handles it without Researcher |
+| Researcher receives an inquiry | Lead supplies question, decision informed, source priority, scope, stop condition, and return format |
+| Researcher returns findings | Return cited findings, conflicts, unknowns, and decision impact |
+| Researcher inquiry is read-only and no task exists | Run the inquiry without a task; start one before recording findings |
+| Researcher findings require repository writes | Lead starts or uses an owned task before recording them |
+| Focused mode | Lead and triggered sidecars, including Researcher when its trigger applies; no Executor |
 | Solo mode or “no subagents” | Lead only |
 | User pins the lead model | Preserve it and all lead decision authority; route children only within that authority |
 | User says all work uses one model | Use it everywhere or switch to Solo |
@@ -50,6 +58,9 @@ Test from a fresh task with only the installed plugin and target repository visi
 | The Luna profile is absent, unexposed, rejected, or the user explicitly chooses lower child latency | Announce and directly spawn Terra `xhigh` without `agent_type` |
 | Any route proposes Terra `high` | Fail the evaluation |
 | A Verifier is asked for task pass, block, or closure | Return operation evidence only; the lead decides task disposition |
+| Verifier receives an Executor checkpoint | Rerun acceptance-defining proof, add risk-based regression, and skip Executor-only checks |
+| Verifier receives Operator evidence | Consume the evidence instead of repeating the operation |
+| The full suite is promised | Run it once under Verifier unless evidence conflicts |
 | Sidecar receives a changed checkpoint | Invalidate old evidence and rerun |
 | Sidecar disappears or wait ends | Respawn and rehydrate from role, task, docs, and checkpoint |
 
@@ -59,15 +70,17 @@ Failure indicators:
 2. The dispatcher runs all lanes mechanically or stops at every lane boundary.
 3. Unknown causes enter Deliver.
 4. A child decides scope, architecture, interfaces, acceptance, task state, integration, or closeout, or spawns another child.
-5. An Executor receives multiple units, a backlog, unresolved decisions, or work outside explicit paths.
-6. A sidecar repairs source, guesses a target, leaks secrets, or retries stateful work without authority.
-7. Agent-only context becomes the sole record of a durable procedure or decision.
-8. Cache preservation justifies unnecessary agents, stale context, or weaker verification.
-9. Architecture is selected from a project-size label, or modularity produces speculative or pass-through boundaries.
-10. Plausible changed-boundary edge cases are ignored, exhaustively overbuilt, or silently assigned user-visible behavior.
-11. Explanatory diagrams use ASCII pseudographics or become denser than the idea they explain.
-12. A primary Luna spawn omits `agent_type=lean_sdlc_luna`, adds direct model or reasoning fields, inherits an automatic model, or uses full-history routing.
-13. A sidecar chooses close, fail, reopen, pass, or block for the task.
-14. Deliver begins without the Orchestration Gate, a mandatory sidecar is skipped, or a ready Assisted execution unit beyond the direct fast path stays with the lead.
-15. Any Luna child bypasses the named profile or uses reasoning below `max`, any Terra child uses reasoning below `xhigh`, or a fallback is silent.
-16. The next unit starts before the lead reviews and Verifier checks the prior checkpoint.
+5. An Executor receives multiple durable tasks, a backlog, unresolved decisions, or work outside explicit paths.
+6. A Researcher edits repository files, makes durable decisions, or collects evidence outside the lead's scope.
+7. A sidecar repairs source, guesses a target, leaks secrets, or retries stateful work without authority.
+8. Agent-only context becomes the sole record of a durable procedure or decision.
+9. Cache preservation justifies unnecessary agents, stale context, or weaker verification.
+10. Architecture is selected from a project-size label, or modularity produces speculative or pass-through boundaries.
+11. Plausible changed-boundary edge cases are ignored, exhaustively overbuilt, or silently assigned user-visible behavior.
+12. Explanatory diagrams use ASCII pseudographics or become denser than the idea they explain.
+13. A primary Luna spawn omits `agent_type=lean_sdlc_luna`, adds direct model or reasoning fields, inherits an automatic model, or uses full-history routing.
+14. A sidecar chooses close, fail, reopen, pass, or block for the task.
+15. Deliver begins without the Orchestration Gate, a mandatory sidecar is skipped, or a ready Assisted durable task beyond the direct fast path stays with the lead.
+16. Any Luna child bypasses the named profile or uses reasoning below `max`, any Terra child uses reasoning below `xhigh`, or a fallback is silent.
+17. A durable task starts before the lead reviews and Verifier checks the prior accepted checkpoint.
+18. Verifier repeats Executor-only targeted checks blindly or repeats an Operator operation.

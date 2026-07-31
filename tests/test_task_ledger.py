@@ -683,11 +683,9 @@ class PackageContractTests(unittest.TestCase):
             subagents,
         )
         self.assertIn("delegation is mandatory", subagents)
-        self.assertIn("never send a backlog or multiple execution units", subagents)
-        self.assertIn("only an accepted result may unlock the next execution unit", subagents)
-        self.assertIn("sequential executor works under the lead-owned task", subagents)
         self.assertIn("one writing executor active per lead", subagents)
         self.assertIn("separate owned tasks with disjoint paths", subagents)
+        self.assertIn("researcher", subagents)
         self.assertIn("before every spawn", subagents)
         self.assertIn("fork_turns", subagents)
         self.assertIn("routing failure", subagents)
@@ -698,9 +696,8 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("must reuse or start verifier", evaluations)
         self.assertIn("must reuse or start operator", evaluations)
         self.assertIn("must reuse or start executor", evaluations)
+        self.assertIn("must reuse or start read-only researcher", evaluations)
         self.assertIn("directly spawn terra `xhigh`", evaluations)
-        self.assertIn("one execution unit, never a backlog", evaluations)
-        self.assertIn("before the next unit", evaluations)
         self.assertIn("inherits an automatic model", evaluations)
         self.assertIn("agent_type=lean_sdlc_luna", subagents)
         self.assertIn("omit direct `model` and `reasoning_effort`", subagents)
@@ -723,6 +720,92 @@ class PackageContractTests(unittest.TestCase):
                     f"{document}: {line}",
                 )
 
+    def test_role_contracts_separate_execution_research_proof_and_operations(
+        self,
+    ) -> None:
+        subagents = (
+            SKILL / "references/subagents.md"
+        ).read_text(encoding="utf-8").lower()
+        deliver = (SKILL / "references/deliver.md").read_text(encoding="utf-8").lower()
+        verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
+        operations = (
+            SKILL / "references/operations.md"
+        ).read_text(encoding="utf-8").lower()
+        evaluations = (
+            SKILL / "references/trigger-evals.md"
+        ).read_text(encoding="utf-8").lower()
+        profile = tomllib.loads(LUNA_PROFILE.read_text(encoding="utf-8"))
+        root_agents = ROOT.joinpath("AGENTS.md").read_text(encoding="utf-8").lower()
+
+        for phrase in [
+            "executor receives exactly one durable task from the lead",
+            "performs local implementation and fast targeted development checks",
+            "returns one task checkpoint",
+            "lead reviews architecture, scope, and diff once per returned checkpoint",
+            "corrections return as a concise delta to the same executor",
+            "researcher is read-only and never edits repository files",
+            "the lead evaluates sources and retains every decision",
+            "use the researcher contract locally in solo",
+            "if findings require repository writes, the lead starts or uses an owned task before recording them",
+            "reuse the same researcher while its task or inquiry and assumptions remain stable",
+            "verifier independently reruns acceptance-defining proof",
+            "skips executor-only targeted checks",
+            "verifier consumes operator evidence instead of repeating the operation",
+            "operator sidecar: runs guided or recorded build, package, ci, deploy, flash, runtime, and smoke operations",
+        ]:
+            self.assertIn(phrase, subagents)
+
+        for phrase in [
+            "one durable task with one outcome",
+            "after executor returns one task checkpoint",
+            "send a concise correction delta to the same executor",
+        ]:
+            self.assertIn(phrase, deliver)
+
+        for phrase in [
+            "independently rerun acceptance-defining proof against the exact checkpoint",
+            "add risk-based regression",
+            "skip executor-only targeted checks",
+            "run the full suite once under verifier unless evidence conflicts",
+            "consume operator evidence instead of repeating the operation",
+            "avoid repeating child commands except in solo mode or to resolve conflicting evidence",
+        ]:
+            self.assertIn(phrase, verify)
+
+        self.assertIn("run one state-changing operation at a time", operations)
+        self.assertIn(
+            "role | inquiry | question | decision informed | source priority | scope | stop condition | return format",
+            subagents,
+        )
+        self.assertIn(
+            "evidence collection spans multiple sources, repositories, large documents, data, logs, or noisy output",
+            evaluations,
+        )
+        self.assertIn("a single fact has one known source", evaluations)
+        self.assertIn("researcher receives an inquiry", evaluations)
+        self.assertIn("researcher returns findings", evaluations)
+        self.assertIn("researcher inquiry is read-only and no task exists", evaluations)
+        self.assertIn("researcher findings require repository writes", evaluations)
+        self.assertIn("including researcher when its trigger applies", evaluations)
+        self.assertIn("a correction returns another checkpoint", evaluations)
+        self.assertIn("once per returned checkpoint", evaluations)
+        self.assertIn(
+            "keep architecture, interfaces, task state, acceptance, integration, and closeout with the lead.",
+            root_agents,
+        )
+        self.assertIn(
+            "delegate one durable task beyond the direct fast path to one reusable executor.",
+            root_agents,
+        )
+        self.assertIn(
+            "trigger read-only researcher only when substantial evidence would pollute lead context.",
+            root_agents,
+        )
+        self.assertEqual(profile["model"], "gpt-5.6-luna")
+        self.assertEqual(profile["model_reasoning_effort"], "max")
+        self.assertIn("Researcher", profile["description"])
+        self.assertIn("Use that role: Executor, Researcher, Verifier, or Operator.", profile["developer_instructions"])
+
     def test_luna_profile_and_technical_english_rules_are_packaged(self) -> None:
         profile = tomllib.loads(LUNA_PROFILE.read_text(encoding="utf-8"))
         configure = CONFIGURE_CODEX.read_text(encoding="utf-8")
@@ -739,6 +822,7 @@ class PackageContractTests(unittest.TestCase):
         self.assertEqual(profile["name"], "lean_sdlc_luna")
         self.assertEqual(profile["model"], "gpt-5.6-luna")
         self.assertEqual(profile["model_reasoning_effort"], "max")
+        self.assertIn("Executor, Researcher, Verifier, or Operator", profile["description"])
         self.assertIn("agent_type=lean_sdlc_luna", subagents)
         self.assertIn("gpt-5.6-terra", subagents)
         self.assertIn("reasoning_effort=xhigh", subagents)

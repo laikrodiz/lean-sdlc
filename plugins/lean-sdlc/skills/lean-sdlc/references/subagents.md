@@ -5,13 +5,14 @@ This file is the canonical policy for every Lean-SDLC child agent. Other referen
 ## Roles and modes
 
 - Lead: owns user dialogue, behavior, architecture, interfaces, task state, acceptance, proof, integration, and closeout. Preserve the user-selected lead profile.
-- Executor: a reusable task-scoped child that completes one settled execution unit at a time.
-- Verifier sidecar: runs checks and returns evidence.
-- Operator sidecar: runs guided or recorded operations and compresses their output.
+- Executor: receives exactly one durable task, performs local implementation and fast targeted development checks, and returns one task checkpoint.
+- Researcher sidecar: gathers substantial read-only evidence and returns cited findings.
+- Verifier sidecar: independently reruns acceptance-defining proof and risk-based regression against one checkpoint.
+- Operator sidecar: runs guided or recorded build, package, CI, deploy, flash, runtime, and smoke operations.
 
-Assisted is the default mode: required sidecars run lazily, and a ready execution unit beyond the direct fast path must use Executor. Focused keeps required sidecars and disables Executor. Solo disables every child; the lead follows the same execution, check, and operation contracts locally.
+Assisted is the default mode. Required sidecars run lazily. A ready durable task beyond the direct fast path must use Executor. Focused keeps triggered sidecars, including Researcher when its trigger applies, and disables Executor. Solo disables every child. The lead follows the same implementation, proof, research, and operation contracts locally.
 
-The user's mode remains active for the task until changed. An explicit user profile pins the lead. When the user says all work must use one profile, apply it to every child or use Solo when it cannot be supplied.
+The user's mode remains active for the task or inquiry until changed. An explicit user profile pins the lead. When the user says all work must use one profile, apply it to every child or use Solo when it cannot be supplied.
 
 ## Orchestration Gate
 
@@ -19,13 +20,15 @@ Before Deliver or the first delegated read-only operation, state:
 
 `Mode | Required sidecars | Executor action | Reason`
 
-Apply the gate again only when task scope, mode, proof, or available agents materially changes. Skipping a mandatory sidecar, skipping a required Executor handoff, or sending multiple execution units in one handoff is a workflow failure.
+Apply the gate again only when task or inquiry scope, mode, proof, or available agents materially changes. Skipping a mandatory sidecar, skipping a required Executor handoff, or sending multiple durable tasks in one handoff is a workflow failure.
 
 ## Lead authority
 
-Before delegating, the lead settles the observable outcome, architecture, interfaces and invariants, dependencies, allowed paths, acceptance, proof, and stop conditions. The lead creates and owns the durable task, runs the before-write gate, reviews every return for architectural and scope compliance, integrates the result, and decides whether to correct, continue, or close.
+Before delegating Executor, the lead settles the outcome, architecture, interfaces, invariants, paths, acceptance, proof, and stop conditions. The lead creates and owns the durable task. It runs the before-write gate, integrates the result, and decides whether to correct, continue, or close.
 
-A sequential Executor works under the lead-owned task and never edits `tasks.csv`. Its execution units are transient checkpoints, not ledger rows. Separate leads may each use one writing Executor only under separate owned tasks with disjoint paths.
+Before delegating read-only work, the lead settles the inquiry, source priority, scope, return format, and stop condition. A read-only inquiry needs no task.
+
+Executor receives exactly one durable task from the lead and never edits `tasks.csv`. It performs local implementation and fast targeted development checks. It returns one task checkpoint. The lead reviews architecture, scope, and diff once per returned checkpoint. Corrections return as a concise delta to the same Executor. Separate leads may each use one writing Executor only under separate owned tasks with disjoint paths.
 
 Executor may choose local implementation mechanics inside the settled boundaries. It must stop and return when work exposes a missing architecture decision, interface or dependency change, public behavior change, acceptance change, path conflict, or work outside the allowed scope.
 
@@ -33,29 +36,41 @@ Executor may choose local implementation mechanics inside the settled boundaries
 
 In Assisted mode, spawn or reuse Executor when every condition is true:
 
-1. an owned task and its before-write gate are active;
+1. an owned durable task and its before-write gate are active;
 2. behavior, architecture, interfaces, and acceptance are settled;
-3. the next unit has one coherent outcome and explicit allowed paths;
+3. the task has one coherent outcome and explicit allowed paths;
 4. its proof is known;
 5. it needs no user or lead decision.
 
 A localized change in one file followed by one narrow proof command may stay with the lead. When any readiness condition is missing, the lead resolves the missing truth before execution. For ready work beyond that fast path, delegation is mandatory.
 
-Keep one writing Executor active per lead. Reuse the same named Executor for the task while its role, repository, architecture, and assumptions remain stable. Give it enough related work to justify the handoff: one observable outcome, one architecture and invariant set, one related path group, and one proof surface. Never send a backlog or multiple execution units.
+Keep one writing Executor active per lead. Reuse the same named Executor for the task while its role, repository, architecture, and assumptions remain stable. Give it one observable outcome, one architecture and invariant set, one related path group, one acceptance set, one proof surface, and one stop condition. Never send several durable tasks or an internal backlog.
 
 Send:
 
-`Role | Task | Checkpoint | Outcome | Architecture | Interfaces and invariants | Allowed paths | Proof | Stop conditions`
+`Role | Task | Outcome | Architecture | Interfaces and invariants | Allowed paths | Acceptance | Proof | Stop conditions`
 
-Executor may iterate within that unit until its proof passes while scope remains unchanged. It returns:
+Executor may iterate within that task until targeted development checks pass while scope remains unchanged. It returns:
 
-`Done or Blocked | Files changed | Proof result | Deviation or decision needed`
+`Done or Blocked | Files changed | Targeted checks | Task checkpoint | Deviation or decision needed`
 
-After every return, the lead reviews architecture and scope, then applies the Verifier checkpoint. Only an accepted result may unlock the next execution unit.
+The lead reviews architecture, scope, and diff once per returned checkpoint. Corrections return as a concise delta to the same Executor. Only an accepted checkpoint may unlock another durable task.
 
 ## Mandatory sidecar triggers
 
-Spawn a sidecar only when its first command is ready. Reuse the same named sidecar while task, role, repository, and assumptions remain stable.
+Spawn a sidecar only when its first command is ready. Reuse the same named sidecar while its task or inquiry, role, repository, and assumptions remain stable.
+
+### Researcher
+
+In Assisted or Focused mode, spawn or reuse Researcher when substantial multi-source, multi-repository, large-document, data, log, or noisy evidence collection would pollute lead context.
+Keep one known-source fact with the lead.
+Use the Researcher contract locally in Solo.
+The lead supplies the question, decision informed, source priority, scope, stop condition, and return format.
+Researcher is read-only and never edits repository files.
+Researcher returns cited findings, conflicts, unknowns, and decision impact.
+The lead evaluates sources and retains every decision.
+If findings require repository writes, the lead starts or uses an owned task before recording them.
+Reuse the same Researcher while its task or inquiry and assumptions remain stable.
 
 ### Verifier
 
@@ -64,7 +79,7 @@ In Assisted or Focused mode, spawn or reuse Verifier when either condition is tr
 1. code, configuration, schema, generated artifacts, or observable behavior changed and reached a coherent proof checkpoint;
 2. promised proof requires multiple commands or produces output worth isolating and compressing.
 
-A documentation-only change with one narrow proof command may stay with the lead. Verifier runs tests, lint, type checks, structural checks, and diff inspection. It returns operation pass/fail and exact evidence. It never repairs source or chooses task disposition.
+A documentation-only change with one narrow proof command may stay with the lead. Verifier independently reruns acceptance-defining proof against the exact task checkpoint. It adds risk-based regression and skips Executor-only targeted checks. The full suite normally runs once under Verifier. The lead avoids repeating child commands except in Solo mode or to resolve conflicting evidence. Verifier consumes Operator evidence instead of repeating the operation. It returns operation pass/fail and exact evidence. It never repairs source or chooses task disposition.
 
 ### Operator
 
@@ -83,8 +98,9 @@ Run `scripts/configure_codex.py` before the first assisted task. It registers `l
 | Verifier | `lean_sdlc_luna`, which pins GPT-5.6 Luna `max` | GPT-5.6 Terra `xhigh` |
 | Operator | `lean_sdlc_luna`, which pins GPT-5.6 Luna `max` | GPT-5.6 Terra `xhigh` |
 | Executor | `lean_sdlc_luna`, which pins GPT-5.6 Luna `max` | GPT-5.6 Terra `xhigh` |
+| Researcher | `lean_sdlc_luna`, which pins GPT-5.6 Luna `max` | GPT-5.6 Terra `xhigh` |
 
-The profile receives the Executor, Verifier, or Operator role through the spawn handoff. Use Luna only through `lean_sdlc_luna` at `max`. Use Terra only at `xhigh`, and only when the Luna profile is unavailable, unexposed, rejected, or when the user explicitly chooses the lower-latency fallback. Announce the substitution. Keep architecture, task setting, integration, and other consequential decisions with the lead.
+The profile receives the Executor, Researcher, Verifier, or Operator role through the spawn handoff. Use Luna only through `lean_sdlc_luna` at `max`. Use Terra only at `xhigh`, and only when the Luna profile is unavailable, unexposed, rejected, or when the user explicitly chooses the lower-latency fallback. Announce the substitution. Keep architecture, task setting, integration, and other consequential decisions with the lead.
 
 ## Spawn protocol
 
@@ -102,7 +118,15 @@ Full-history inheritance is forbidden. The primary Luna route requires the named
 
 After a Codex update, run one bounded profile smoke test before the first required Luna handoff. Confirm the child reports Luna `max`. If the route fails, announce the failure and use the Terra fallback.
 
-For a sidecar, send:
+For a Researcher, send:
+
+`Role | Inquiry | Question | Decision informed | Source priority | Scope | Stop condition | Return format`
+
+Require:
+
+`Cited findings | Conflicts | Unknowns | Decision impact | Sources`
+
+For another sidecar, send:
 
 `Role | Task | Trigger | Checkpoint | Scope | Allowed writes | Expected result | Stop conditions`
 
@@ -118,7 +142,7 @@ The lead reviews and consumes every return before integration or closeout.
 
 - Only the lead spawns, steers, or redirects children.
 - Depth is one. Children never spawn or hand work directly to another child.
-- Sidecars do not edit source or `tasks.csv`; expected temporary and build artifacts are allowed.
+- Sidecars do not edit source or `tasks.csv`; Researcher never edits repository files; expected temporary and build artifacts are allowed.
 - Executor edits only the assigned paths under the active lead-owned task.
 - Children stop when scope, assumptions, checkpoint identity, or authority becomes unclear.
 
@@ -132,8 +156,8 @@ The lead reviews and consumes every return before integration or closeout.
 
 ## Reuse, context, and loss recovery
 
-Keep stable role instructions, tools, profiles, architecture, and invariants unchanged during a task. Put volatile unit data last and send only incremental deltas to a reused child.
+Keep stable role instructions, tools, profiles, architecture, and invariants unchanged during a task or inquiry. Put volatile data last and send only incremental deltas.
 
-Agent lifetime is not durable. A wait timeout may only end the wait, and a child may disappear. Store durable knowledge in repository documents. Rehydrate a replacement from its role, active task, relevant repository procedure, current checkpoint, and latest unresolved result.
+Agent lifetime is not durable. A wait timeout may only end the wait, and a child may disappear. Store durable knowledge in repository documents. Rehydrate a replacement from its role, task or inquiry, relevant procedure, checkpoint, and latest unresolved result.
 
 Treat prompt-cache reuse as best effort. Never preserve stale context, create unnecessary agents, or weaken verification for a possible cache hit.

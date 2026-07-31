@@ -17,10 +17,13 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - one Lean-SDLC dispatcher skill;
 - minimal repository initialization and migration;
 - atomic private task-ledger transactions;
-- deterministic lead, Executor, and sidecar roles under one canonical policy;
+- deterministic lead, Executor, Researcher, Verifier, and Operator roles under one canonical policy;
 - one named Luna Max custom-agent profile for child execution;
 - a standard-library configurator that installs the profile and its multi-agent metadata;
-- lead-directed execution in one settled, verified unit at a time;
+- lead-directed execution with one durable task and one reviewed checkpoint at a time;
+- independent Verifier proof and risk-based regression without blind repetition of Executor checks;
+- read-only Researcher evidence collection for substantial multi-source or noisy inquiries;
+- Operator-owned stateful operations with Verifier consumption of recorded evidence;
 - applicable ASD-STE100 Issue 9 rules for generated English technical prose;
 - learned project-specific operational procedures;
 - minimal modular engineering, plausible edge-case treatment, and lightweight rendered diagrams;
@@ -53,8 +56,8 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - A new repository needs only `AGENTS.md`, `docs/PROJECT.md`, and root `tasks.csv`.
 - Task transactions remain atomic, owner-aware, dependency-valid, and cycle-free.
 - Assisted, Focused, and Solo modes follow the same delivery gates.
-- Assisted mode delegates each settled execution unit beyond the direct fast path to one reusable Executor.
-- The lead reviews and Verifier checks each returned unit before another begins.
+- Assisted mode delegates each settled durable task beyond the direct fast path to one reusable Executor.
+- The lead reviews every returned task checkpoint and Verifier checks each accepted checkpoint before another task begins.
 - Spawned Luna agents use the named Max profile, Terra High is never routed, and children never inherit lead decision authority.
 - Generated English technical prose follows applicable ASD-STE100 Issue 9 rules without unsupported certification claims.
 - Changed contracts receive proportionate edge-case treatment and architecture remains modular without speculative seams.
@@ -64,5 +67,5 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 
 - Stage: Evolution
 - Version: 1.4.0
-- Version goal: Preserve lead decision authority while making named Luna Max execution deterministic and technical English controlled.
+- Version goal: Preserve lead decision authority while making named Luna Max execution, research, proof, and technical English controlled.
 - Exit evidence: Tests, skill and plugin validation, local installation, repository checks, reviewed diff, tagged commit, and successful push.

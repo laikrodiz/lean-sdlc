@@ -26,5 +26,5 @@ All child profiles, fallbacks, and spawn parameters are defined only in [subagen
 - Decide: lead.
 - Plan: lead.
 - Diagnose: lead owns causal and repair decisions; bounded evidence collection may use a child.
-- Deliver: lead defines and accepts each execution unit; execution follows [subagents.md](subagents.md).
+- Deliver: lead defines and accepts each durable task; execution follows [subagents.md](subagents.md).
 - Verify: lead decides completion; child proof collection follows [subagents.md](subagents.md).
