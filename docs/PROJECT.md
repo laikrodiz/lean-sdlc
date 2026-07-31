@@ -18,7 +18,10 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - minimal repository initialization and migration;
 - atomic private task-ledger transactions;
 - deterministic lead, Executor, and sidecar roles under one canonical policy;
+- one named Luna Max custom-agent profile for child execution;
+- a standard-library configurator that installs the profile and its multi-agent metadata;
 - lead-directed execution in one settled, verified unit at a time;
+- applicable ASD-STE100 Issue 9 rules for generated English technical prose;
 - learned project-specific operational procedures;
 - minimal modular engineering, plausible edge-case treatment, and lightweight rendered diagrams;
 - structural validation, tests, packaging, and installation guidance.
@@ -38,8 +41,10 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - Never route reasoning below `high`.
 - Preserve explicit user model and orchestration requests.
 - Prefer deterministic depth-one delegation over agent hierarchies.
-- Require explicit model, reasoning, and bounded context on every spawned agent.
-- Use Luna Max for child execution and Terra XHigh only as an explicit availability or latency fallback.
+- Route primary Luna children through the named `lean_sdlc_luna` profile.
+- Use direct Terra XHigh only when the Luna profile is unavailable, unexposed, or rejected.
+- Apply ASD-STE100 sentence limits, active voice, consistent terms, condition-first instructions, and applicable spelling rules.
+- Preserve exact code, commands, paths, identifiers, protocol fields, quotations, and required domain terms.
 - Prefer cohesive replaceable units and earned boundaries over project-size architecture tiers.
 
 ## Success Criteria
@@ -50,13 +55,14 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - Assisted, Focused, and Solo modes follow the same delivery gates.
 - Assisted mode delegates each settled execution unit beyond the direct fast path to one reusable Executor.
 - The lead reviews and Verifier checks each returned unit before another begins.
-- Spawned agents use explicit role profiles, every Luna child uses Max, Terra High is never routed, and children never inherit lead decision authority.
+- Spawned Luna agents use the named Max profile, Terra High is never routed, and children never inherit lead decision authority.
+- Generated English technical prose follows applicable ASD-STE100 Issue 9 rules without unsupported certification claims.
 - Changed contracts receive proportionate edge-case treatment and architecture remains modular without speculative seams.
 - The plugin validates, installs from a pinned Git tag, and passes its full test suite.
 
 ## Current Promise
 
 - Stage: Evolution
-- Version: 1.3.0
-- Version goal: Preserve lead decision authority while making one-unit Luna Max execution deterministic.
+- Version: 1.4.0
+- Version goal: Preserve lead decision authority while making named Luna Max execution deterministic and technical English controlled.
 - Exit evidence: Tests, skill and plugin validation, local installation, repository checks, reviewed diff, tagged commit, and successful push.

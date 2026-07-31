@@ -36,7 +36,7 @@ Resolve contradictions before closeout.
 - Before Deliver or the first delegated read-only operation, read and apply `$lean-sdlc`'s canonical `references/subagents.md`, then state `Mode | Required sidecars | Executor action | Reason`.
 - Keep architecture, interfaces, task state, acceptance, integration, and closeout with the lead.
 - In Assisted mode, send each ready unit beyond the direct fast path to one reusable Executor. Send one unit at a time; lead review and Verifier proof must accept it before the next.
-- Treat a skipped mandatory handoff, oversized assignment, child-owned decision, implicit spawn profile, or child-created agent as a workflow failure.
+- Treat a skipped mandatory handoff, oversized assignment, child-owned decision, incorrect spawn route, or child-created agent as a workflow failure.
 
 ## Operations
 
@@ -49,3 +49,20 @@ Learn project-specific build, package, deploy, flash, runtime, and smoke procedu
 - Use small Mermaid diagrams for useful visual explanations, tables for mappings, and prose for simple relationships. Never use ASCII pseudographics.
 
 Prefer the smallest defensible solution. Avoid project-size architecture tiers, speculative abstractions, and pass-through modules. Create optional documents only when durable shared pressure justifies them.
+
+## Technical English
+
+Apply the applicable ASD-STE100 Issue 9 rules to generated English technical prose.
+
+- Use short, direct sentences. Use active voice.
+- State one instruction or topic in each sentence.
+- Keep procedural sentences to 20 words or fewer.
+- Keep descriptive sentences to 25 words or fewer.
+- Use one term for one meaning.
+- State conditions before actions.
+- Explain a necessary abbreviation at its first use.
+- Use American English spelling unless project rules require another spelling.
+- Avoid idioms, unnecessary synonyms, and vague pronouns.
+- Preserve code, commands, paths, identifiers, protocol fields, quotations, and required domain terms.
+
+Preserve technical meaning and safety. Do not claim certified or full controlled-dictionary compliance without an ASD-STE100 checker.

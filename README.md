@@ -41,20 +41,28 @@ Assisted mode is the default. The user-selected lead keeps architecture, interfa
 
 Verifier is mandatory for code or behavior checkpoints and multi-command or noisy proof. Operator is mandatory when a guided or recorded build, package, CI, deploy, flash, runtime, or smoke operation is ready. `focused mode` keeps the lead and mandatory sidecars while disabling Executor. `solo mode` runs the same workflow with the lead alone.
 
-Every child normally uses Luna `max`. Terra `xhigh` is an explicit fallback when Luna Max is unavailable or the user chooses lower child latency. Every spawn specifies model, reasoning, and bounded context.
+Every primary child uses the named `lean_sdlc_luna` profile. The profile pins Luna `max`. The spawn supplies the Executor, Verifier, or Operator role in its handoff. Primary Luna spawns use `agent_type=lean_sdlc_luna`. They omit direct model and reasoning fields. They also use non-full-history context. Terra `xhigh` is the direct fallback when the profile is unavailable, unexposed, or rejected. The lead announces the fallback before it spawns Terra.
+
+Lean-SDLC applies the applicable ASD-STE100 Issue 9 rules to generated English technical prose. It uses active voice and one term for one meaning. It limits procedural sentences to 20 words. It limits descriptive sentences to 25 words. It puts a condition before its action. It preserves exact code, commands, paths, identifiers, protocol fields, quotations, and required domain terms. It does not claim certified or full controlled-dictionary compliance without an ASD-STE100 checker.
 
 ## Install
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-Install the immutable `v1.3.0` release:
+Install the immutable `v1.4.0` release:
 
 ```bash
-codex plugin marketplace add laikrodiz/lean-sdlc --ref v1.3.0
+git clone --depth 1 --branch v1.4.0 https://github.com/laikrodiz/lean-sdlc.git
+cd lean-sdlc
+python3 plugins/lean-sdlc/skills/lean-sdlc/scripts/configure_codex.py
+python3 plugins/lean-sdlc/skills/lean-sdlc/scripts/configure_codex.py --check
+codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc
 ```
 
-Restart Codex, review and trust the plugin hook, then begin a new task.
+The configurator registers the Luna profile and enables the required Multi-Agent V2 route. It keeps unrelated settings. It backs up changed owned files with a `.bak` suffix. Use `--codex-home` for an alternate Codex home.
+
+Restart Codex after installation. Review and trust the plugin hook. Then begin a new task.
 
 If an older standalone copy exists, move it outside the skills directory after the plugin installs:
 
@@ -99,4 +107,4 @@ That migration moves `planning/tasks.csv` to root `tasks.csv` under the active t
 - `plugins/lean-sdlc/skills/lean-sdlc/SKILL.md` is the single dispatcher.
 - `plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md` is the canonical child-agent policy.
 - `plugins/lean-sdlc/skills/lean-sdlc/references/` also contains the six lanes and other shared policies.
-- `plugins/lean-sdlc/skills/lean-sdlc/scripts/` contains initialization, task transactions, owner generation, and structural checks.
+- `plugins/lean-sdlc/skills/lean-sdlc/scripts/` contains initialization, task transactions, profile configuration, owner generation, and structural checks.

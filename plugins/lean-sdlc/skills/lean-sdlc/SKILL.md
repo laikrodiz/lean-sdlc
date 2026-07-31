@@ -50,6 +50,10 @@ When behavior or a module contract changes, scan only plausible edge cases and c
 
 Use diagrams only when they materially clarify flow, state, ownership, sequence, or dependencies. Prefer small Mermaid diagrams with short labels and minimal accents; use tables for mappings and prose for simple relationships. Never use ASCII pseudographics.
 
+## Technical English
+
+Apply the applicable ASD-STE100 Issue 9 rules to generated English technical prose. Use active voice. Put one instruction or topic in each sentence. Keep procedural sentences to 20 words or fewer. Keep descriptive sentences to 25 words or fewer. Use one term for one meaning. Put a condition before its action. Explain a necessary abbreviation at its first use. Use American English spelling unless project rules require another spelling. Avoid idioms, unnecessary synonyms, and vague pronouns. Preserve exact code, commands, paths, identifiers, protocol fields, quotations, and required domain terms. Preserve technical meaning and safety. Do not claim certified or full controlled-dictionary compliance without an ASD-STE100 checker.
+
 ## Subagent Gate
 
 Before Deliver or the first delegated read-only operation, apply [references/subagents.md](references/subagents.md) and state:

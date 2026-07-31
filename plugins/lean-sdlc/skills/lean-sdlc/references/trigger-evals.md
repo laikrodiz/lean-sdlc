@@ -44,9 +44,9 @@ Test from a fresh task with only the installed plugin and target repository visi
 | User pins the lead model | Preserve it and all lead decision authority; route children only within that authority |
 | User says all work uses one model | Use it everywhere or switch to Solo |
 | Any route proposes `low` reasoning | Fail the evaluation |
-| Any Lean-SDLC agent is spawned | Explicitly pass model, reasoning effort, and non-full-history `fork_turns` |
-| Luna is selected for any child | Use Luna `max` |
-| Luna `max` is unavailable or the user explicitly chooses lower child latency | Announce and explicitly spawn Terra `xhigh` |
+| Any primary Luna child is spawned | Use `agent_type=lean_sdlc_luna`, omit direct model and reasoning fields, and use non-full-history `fork_turns` |
+| Luna is selected for any child | Route through the named profile that pins Luna `max` |
+| The Luna profile is absent, unexposed, rejected, or the user explicitly chooses lower child latency | Announce and directly spawn Terra `xhigh` without `agent_type` |
 | Any route proposes Terra `high` | Fail the evaluation |
 | A Verifier is asked for task pass, block, or closure | Return operation evidence only; the lead decides task disposition |
 | Sidecar receives a changed checkpoint | Invalidate old evidence and rerun |
@@ -65,8 +65,8 @@ Failure indicators:
 9. Architecture is selected from a project-size label, or modularity produces speculative or pass-through boundaries.
 10. Plausible changed-boundary edge cases are ignored, exhaustively overbuilt, or silently assigned user-visible behavior.
 11. Explanatory diagrams use ASCII pseudographics or become denser than the idea they explain.
-12. A spawn omits model, reasoning effort, or bounded context; inherits the lead profile without explicit user authority; or uses full-history routing.
+12. A primary Luna spawn omits `agent_type=lean_sdlc_luna`, adds direct model or reasoning fields, inherits an automatic model, or uses full-history routing.
 13. A sidecar chooses close, fail, reopen, pass, or block for the task.
 14. Deliver begins without the Orchestration Gate, a mandatory sidecar is skipped, or a ready Assisted execution unit beyond the direct fast path stays with the lead.
-15. Any Luna child uses reasoning below `max`, any Terra child uses reasoning below `xhigh`, or a fallback is silent.
+15. Any Luna child bypasses the named profile or uses reasoning below `max`, any Terra child uses reasoning below `xhigh`, or a fallback is silent.
 16. The next unit starts before the lead reviews and Verifier checks the prior checkpoint.

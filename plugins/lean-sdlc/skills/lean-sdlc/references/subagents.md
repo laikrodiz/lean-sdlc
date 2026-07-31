@@ -76,25 +76,31 @@ For an unknown first operation, the lead, user, or bounded Executor guides the e
 
 Never use `low` reasoning. Never silently reduce a requested or required profile.
 
+Run `scripts/configure_codex.py` before the first assisted task. It registers `lean_sdlc_luna`. It also enables Multi-Agent V2 under the `agents` tool namespace. It exposes agent types and direct fallback controls. Restart Codex after configuration. Do not patch the model catalog.
+
 | Child role | Required profile | Compatibility fallback |
 | --- | --- | --- |
-| Verifier | GPT-5.6 Luna `max` | GPT-5.6 Terra `xhigh` |
-| Operator | GPT-5.6 Luna `max` | GPT-5.6 Terra `xhigh` |
-| Executor | GPT-5.6 Luna `max` | GPT-5.6 Terra `xhigh` |
+| Verifier | `lean_sdlc_luna`, which pins GPT-5.6 Luna `max` | GPT-5.6 Terra `xhigh` |
+| Operator | `lean_sdlc_luna`, which pins GPT-5.6 Luna `max` | GPT-5.6 Terra `xhigh` |
+| Executor | `lean_sdlc_luna`, which pins GPT-5.6 Luna `max` | GPT-5.6 Terra `xhigh` |
 
-Use Luna only at `max`. Use Terra only at `xhigh`, and only when Luna Max is unavailable or the user explicitly chooses the lower-latency fallback. Announce the substitution. Keep architecture, task setting, integration, and other consequential decisions with the lead.
+The profile receives the Executor, Verifier, or Operator role through the spawn handoff. Use Luna only through `lean_sdlc_luna` at `max`. Use Terra only at `xhigh`, and only when the Luna profile is unavailable, unexposed, rejected, or when the user explicitly chooses the lower-latency fallback. Announce the substitution. Keep architecture, task setting, integration, and other consequential decisions with the lead.
 
 ## Spawn protocol
 
 Before every spawn:
 
 1. resolve the trigger, role, mode, user authority, and exposed models;
-2. explicitly pass `model` and `reasoning_effort`; never rely on parent, configured, or automatic defaults;
-3. set `fork_turns` to `none` for sidecars and normally for Executor;
-4. use a bounded positive `fork_turns` for Executor only when those exact recent turns are required;
-5. keep the work with the lead when neither the required profile nor its fallback is exposed.
+2. use `agent_type=lean_sdlc_luna` for the primary Luna route;
+3. omit direct `model` and `reasoning_effort` fields for the primary Luna route because the named profile pins them;
+4. set `fork_turns` to `none` for sidecars and normally for Executor;
+5. use a bounded positive `fork_turns` for Executor only when those exact recent turns are required;
+6. announce the failure and directly spawn `gpt-5.6-terra` at `xhigh` without `agent_type` when the Luna profile is absent, unexposed, or rejected;
+7. keep the work with the lead when neither the required profile nor the Terra fallback is exposed.
 
-Full-history inheritance is forbidden. An omitted model, omitted reasoning effort, inherited lead profile, silent effort downgrade, or incompatible fork is a routing failure.
+Full-history inheritance is forbidden. The primary Luna route requires the named profile. The Terra fallback requires direct `model=gpt-5.6-terra` and `reasoning_effort=xhigh`. An automatic model default, inherited lead profile, silent fallback, effort downgrade, or incompatible fork is a routing failure.
+
+After a Codex update, run one bounded profile smoke test before the first required Luna handoff. Confirm the child reports Luna `max`. If the route fails, announce the failure and use the Terra fallback.
 
 For a sidecar, send:
 

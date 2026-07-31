@@ -7,6 +7,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -19,6 +20,8 @@ TASKS = SCRIPTS / "tasks.py"
 CHECK = SCRIPTS / "lean_check.py"
 INIT = SCRIPTS / "init_repo.py"
 OWNER_HOOK = SCRIPTS / "session_owner.py"
+CONFIGURE_CODEX = SCRIPTS / "configure_codex.py"
+LUNA_PROFILE = SKILL / "assets/lean_sdlc_luna.toml"
 PLUGIN_HOOKS = PLUGIN / "hooks/hooks.json"
 HEADER = (
     "Task ID,Title,Status,Parent,Dependencies,Owner,"
@@ -40,6 +43,12 @@ def run(*arguments: str, input_text: str | None = None) -> subprocess.CompletedP
 
 def task(repository: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
     return run(str(TASKS), "--repo", str(repository), *arguments)
+
+
+def configure_codex(
+    codex_home: Path, *arguments: str
+) -> subprocess.CompletedProcess[str]:
+    return run(str(CONFIGURE_CODEX), "--codex-home", str(codex_home), *arguments)
 
 
 def write_ledger(repository: Path, body: str, *, legacy_path: bool = False) -> Path:
@@ -605,10 +614,13 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("must reuse or start verifier", evaluations)
         self.assertIn("must reuse or start operator", evaluations)
         self.assertIn("must reuse or start executor", evaluations)
-        self.assertIn("explicitly spawn terra `xhigh`", evaluations)
+        self.assertIn("directly spawn terra `xhigh`", evaluations)
         self.assertIn("one execution unit, never a backlog", evaluations)
         self.assertIn("before the next unit", evaluations)
-        self.assertIn("inherits the lead profile", evaluations)
+        self.assertIn("inherits an automatic model", evaluations)
+        self.assertIn("agent_type=lean_sdlc_luna", subagents)
+        self.assertIn("omit direct `model` and `reasoning_effort`", subagents)
+        self.assertIn("without `agent_type`", subagents)
         self.assertEqual(root_agents, template_agents)
 
         policy_documents = [ROOT / "README.md", ROOT / "docs/PROJECT.md", *SKILL.rglob("*.md")]
@@ -627,6 +639,40 @@ class PackageContractTests(unittest.TestCase):
                     f"{document}: {line}",
                 )
 
+    def test_luna_profile_and_technical_english_rules_are_packaged(self) -> None:
+        profile = tomllib.loads(LUNA_PROFILE.read_text(encoding="utf-8"))
+        configure = CONFIGURE_CODEX.read_text(encoding="utf-8")
+        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
+        policy = "\n".join(
+            path.read_text(encoding="utf-8")
+            for path in [
+                ROOT / "AGENTS.md",
+                SKILL / "SKILL.md",
+                SKILL / "references/subagents.md",
+            ]
+        ).lower()
+
+        self.assertEqual(profile["name"], "lean_sdlc_luna")
+        self.assertEqual(profile["model"], "gpt-5.6-luna")
+        self.assertEqual(profile["model_reasoning_effort"], "max")
+        self.assertIn("agent_type=lean_sdlc_luna", subagents)
+        self.assertIn("gpt-5.6-terra", subagents)
+        self.assertIn("reasoning_effort=xhigh", subagents)
+        self.assertNotIn("model_catalog_json", configure)
+        for phrase in [
+            "asd-ste100 issue 9",
+            "active voice",
+            "20 words or fewer",
+            "25 words or fewer",
+            "one term for one meaning",
+            "conditions before actions",
+            "american english spelling",
+            "idioms, unnecessary synonyms, and vague pronouns",
+            "preserve code, commands, paths, identifiers, protocol fields, quotations",
+            "certified or full controlled-dictionary compliance",
+        ]:
+            self.assertIn(phrase, policy)
+
     def test_release_version_is_consistent(self) -> None:
         manifest = json.loads(
             PLUGIN.joinpath(".codex-plugin/plugin.json").read_text(encoding="utf-8")
@@ -635,9 +681,210 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.3.0")
+        self.assertEqual(version, "1.4.0")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
+
+
+class CodexConfigurationTests(unittest.TestCase):
+    def assert_v2_configuration(self, config: dict[str, object]) -> None:
+        features = config["features"]
+        self.assertIsInstance(features, dict)
+        self.assertTrue(features["multi_agent"])
+        multi_agent_v2 = features["multi_agent_v2"]
+        self.assertIsInstance(multi_agent_v2, dict)
+        expected = {
+            "enabled": True,
+            "tool_namespace": "agents",
+            "hide_spawn_agent_metadata": False,
+            "expose_spawn_agent_model_overrides": True,
+            "wait_agent_enabled": True,
+        }
+        for key, value in expected.items():
+            self.assertEqual(multi_agent_v2[key], value)
+
+    def test_configuration_creation_enables_luna_profile(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            codex_home = Path(directory) / "codex"
+            configured = configure_codex(codex_home)
+            self.assertEqual(configured.returncode, 0, configured.stderr)
+
+            config = tomllib.loads(
+                codex_home.joinpath("config.toml").read_text(encoding="utf-8")
+            )
+            self.assert_v2_configuration(config)
+            self.assertEqual(
+                config["agents"]["lean_sdlc_luna"]["config_file"],
+                "agents/lean_sdlc_luna.toml",
+            )
+            self.assertEqual(
+                codex_home.joinpath("agents/lean_sdlc_luna.toml").read_text(
+                    encoding="utf-8"
+                ),
+                LUNA_PROFILE.read_text(encoding="utf-8"),
+            )
+
+    def test_legacy_agent_boolean_converts_to_profile_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            codex_home = Path(directory)
+            config_path = codex_home / "config.toml"
+            config_path.write_text(
+                "[agents]\nlean_sdlc_luna = false\nmax_threads = 3\n",
+                encoding="utf-8",
+            )
+
+            configured = configure_codex(codex_home)
+            self.assertEqual(configured.returncode, 0, configured.stderr)
+            content = config_path.read_text(encoding="utf-8")
+            self.assertNotIn("lean_sdlc_luna = false", content)
+            self.assertIn("max_threads = 3", content)
+            self.assertIn("[agents.lean_sdlc_luna]", content)
+            self.assertIsInstance(
+                tomllib.loads(content)["agents"]["lean_sdlc_luna"], dict
+            )
+
+    def test_legacy_v2_boolean_converts_to_configured_table(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            codex_home = Path(directory)
+            config_path = codex_home / "config.toml"
+            config_path.write_text(
+                "[features]\nmulti_agent_v2 = false\nkeep = true\n",
+                encoding="utf-8",
+            )
+
+            configured = configure_codex(codex_home)
+            self.assertEqual(configured.returncode, 0, configured.stderr)
+            content = config_path.read_text(encoding="utf-8")
+            self.assertNotIn("multi_agent_v2 = false", content)
+            self.assertIn("keep = true", content)
+            self.assertIn("[features.multi_agent_v2]", content)
+            self.assert_v2_configuration(tomllib.loads(content))
+
+    def test_existing_tables_update_in_place(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            codex_home = Path(directory)
+            config_path = codex_home / "config.toml"
+            original = (
+                'title = "Personal"\n\n'
+                "[features]\n"
+                "multi_agent = false # old value\n"
+                "keep = true\n\n"
+                "[features.multi_agent_v2]\n"
+                "enabled = false\n"
+                'tool_namespace = "collaboration"\n'
+                "hide_spawn_agent_metadata = true\n"
+                "expose_spawn_agent_model_overrides = false\n"
+                "wait_agent_enabled = false\n"
+                'custom_v2 = "kept"\n\n'
+                "[agents.lean_sdlc_luna]\n"
+                'description = "old"\n'
+                'config_file = "old.toml"\n'
+                'custom = "kept"\n'
+            )
+            config_path.write_text(original, encoding="utf-8")
+
+            configured = configure_codex(codex_home)
+            self.assertEqual(configured.returncode, 0, configured.stderr)
+            content = config_path.read_text(encoding="utf-8")
+            self.assertIn('title = "Personal"', content)
+            self.assertIn("multi_agent = true # old value", content)
+            self.assertIn("keep = true", content)
+            self.assertIn('custom_v2 = "kept"', content)
+            self.assertIn('custom = "kept"', content)
+            self.assert_v2_configuration(tomllib.loads(content))
+            self.assertEqual(
+                config_path.with_name("config.toml.bak").read_text(encoding="utf-8"),
+                original,
+            )
+
+    def test_configuration_is_idempotent(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            codex_home = Path(directory)
+            first = configure_codex(codex_home)
+            self.assertEqual(first.returncode, 0, first.stderr)
+            before = {
+                path.relative_to(codex_home): path.read_bytes()
+                for path in codex_home.rglob("*")
+                if path.is_file()
+            }
+
+            second = configure_codex(codex_home)
+            self.assertEqual(second.returncode, 0, second.stderr)
+            self.assertIn("kept", second.stdout)
+            after = {
+                path.relative_to(codex_home): path.read_bytes()
+                for path in codex_home.rglob("*")
+                if path.is_file()
+            }
+            self.assertEqual(after, before)
+
+    def test_check_mode_reports_missing_and_valid_configuration(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            codex_home = Path(directory) / "codex"
+            missing = configure_codex(codex_home, "--check")
+            self.assertNotEqual(missing.returncode, 0)
+            self.assertFalse(codex_home.exists())
+
+            configured = configure_codex(codex_home)
+            self.assertEqual(configured.returncode, 0, configured.stderr)
+            before = {
+                path.relative_to(codex_home): path.read_bytes()
+                for path in codex_home.rglob("*")
+                if path.is_file()
+            }
+            checked = configure_codex(codex_home, "--check")
+            self.assertEqual(checked.returncode, 0, checked.stderr)
+            self.assertIn("is configured", checked.stdout)
+            after = {
+                path.relative_to(codex_home): path.read_bytes()
+                for path in codex_home.rglob("*")
+                if path.is_file()
+            }
+            self.assertEqual(after, before)
+
+    def test_existing_owned_profile_is_backed_up_before_installation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            codex_home = Path(directory)
+            profile_path = codex_home / "agents/lean_sdlc_luna.toml"
+            profile_path.parent.mkdir()
+            original = (
+                'name = "lean_sdlc_luna"\n'
+                'description = "old profile"\n'
+                'developer_instructions = "old"\n'
+            )
+            profile_path.write_text(original, encoding="utf-8")
+
+            configured = configure_codex(codex_home)
+            self.assertEqual(configured.returncode, 0, configured.stderr)
+            self.assertEqual(
+                profile_path.with_name("lean_sdlc_luna.toml.bak").read_text(
+                    encoding="utf-8"
+                ),
+                original,
+            )
+            self.assertEqual(
+                profile_path.read_text(encoding="utf-8"),
+                LUNA_PROFILE.read_text(encoding="utf-8"),
+            )
+
+    def test_unrelated_configuration_is_preserved(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            codex_home = Path(directory)
+            config_path = codex_home / "config.toml"
+            unrelated = (
+                'model = "gpt-5.6-sol"\n'
+                "[mcp_servers.example]\n"
+                'command = "example"\n\n'
+                '[projects."/work"]\n'
+                'trust_level = "trusted"\n'
+            )
+            config_path.write_text(unrelated, encoding="utf-8")
+
+            configured = configure_codex(codex_home)
+            self.assertEqual(configured.returncode, 0, configured.stderr)
+            content = config_path.read_text(encoding="utf-8")
+            self.assertTrue(content.startswith(unrelated))
+            tomllib.loads(content)
 
 
 if __name__ == "__main__":
