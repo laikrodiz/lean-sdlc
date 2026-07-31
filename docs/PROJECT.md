@@ -74,6 +74,6 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 ## Current Promise
 
 - Stage: Evolution
-- Version: 1.6.0
-- Version goal: Release human-monitorable child work and the clearer task Context schema.
+- Version: 1.7.0
+- Version goal: Release the principal-lead hierarchy, two modes, and Fast-service Luna role contracts.
 - Exit evidence: Tests, skill and plugin validation, local installation, accepted checkpoints, repository checks, tagged commit, and successful push.
