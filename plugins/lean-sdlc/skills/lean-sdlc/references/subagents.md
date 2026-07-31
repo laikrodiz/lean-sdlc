@@ -18,19 +18,32 @@ The user's mode remains active for the task or inquiry until changed. An explici
 
 ## Role instance lifecycle
 
-Keep at most one child thread for each role during one lead Codex task. Spawn `executor`, `maintainer`, `verifier`, or `researcher` lazily after its trigger. Reuse that role thread through follow-up handoffs across repository tasks and inquiries, including after it reports completion.
+Keep at most one child thread for each role during one lead Codex task. Spawn the mapped human identity lazily after its trigger. Reuse that role thread through follow-up handoffs across repository tasks and inquiries, including after it reports completion.
 
 Keep repository task identifiers in handoffs and returns. Do not derive child names from task identifiers, features, versions, workstreams, descriptions, or counters. A normal repository task transition never justifies another child.
 
-Replace a role thread only when it is unavailable, repeatedly uses stale assumptions after an explicit correction, the user requests clean context, or a required tool, permission, or runtime change needs another session. Before replacement, announce these labeled fields:
+Use one stable human-readable identity for each standard role during one lead Codex task:
+
+| Role | Display identity | Task name |
+| --- | --- | --- |
+| Executor | Executor David | `executor_david` |
+| Maintainer | Maintainer Emily | `maintainer_emily` |
+| Verifier | Verifier Michael | `verifier_michael` |
+| Researcher | Researcher Sarah | `researcher_sarah` |
+
+The role defines authority. The first name distinguishes the thread. Reuse each identity across repository tasks and follow-up handoffs. Keep one reachable child per role.
+
+Use `task_name=executor_david`, `task_name=maintainer_emily`, `task_name=verifier_michael`, or `task_name=researcher_sarah` for standard child threads. Additional roles use `responsibility_firstname` with an unused common American first name. Never use a task identifier, feature, version, description, or counter in a child name.
+
+Replace a role thread only when it is unavailable, repeatedly uses stale assumptions after an explicit correction, the user requests clean context, or a required tool, permission, or runtime change needs another session. If the current name is unavailable, choose another unused common American first name, keep the role prefix, announce the new identity and reset reason, and keep the replacement stable. Before replacement, announce these labeled fields:
 
 ```text
-Role: Verifier
+Role: Verifier Michael
 Context reset reason: The required tool changed.
-Replacement action: Spawn a new Verifier and rehydrate the checkpoint.
+Replacement action: Use an unused first name with the Verifier role prefix and rehydrate the checkpoint.
 ```
 
-Use the canonical role name again when the platform permits it. When the platform requires a unique replacement name, use the active task identifier and state this constraint. Never use an arbitrary counter.
+Use the role prefix and a common American first name when the platform requires a unique replacement name. State the constraint. Never use an arbitrary counter or a task identifier.
 
 ## Orchestration Gate
 
@@ -38,15 +51,21 @@ Before Deliver or the first delegated read-only operation, tell the user the mod
 
 Example:
 
-> Using Assisted mode. Executor will handle TASK-018, and Verifier will check the result because the change spans code and policy.
+> Using Assisted mode. Executor David will handle TASK-018, and Verifier Michael will check the result because the change spans code and policy.
 
 Apply the gate again only when task or inquiry scope, mode, proof, or available agents materially changes. Skipping a mandatory sidecar, skipping a required Executor handoff, or sending multiple durable tasks in one handoff is a workflow failure.
+
+Each child writes a short plain-language commentary message inside its own agent task at four material phases: work started; implementation or evidence complete with proof starting; blocked; and final result. The start message states the role, assignment, and planned proof. Keep commentary compact and separate from the lead's mailbox report. Do not add periodic chatter beyond the existing heartbeat limits.
 
 ## Lead authority
 
 Before delegating Executor, the lead settles the outcome, architecture, interfaces, invariants, paths, acceptance, proof, and stop conditions. The lead creates and owns the durable task. It runs the before-write gate, integrates the result, and decides whether to correct, continue, or close.
 
-Before every child handoff, the lead tells the user the role, task or inquiry, intended result, and proof. This visible assignment is the intention report. Do not depend on child commentary for startup visibility.
+Before creating that task, the lead applies the intent and visible-plan contract in [Plan](plan.md). Discussion or proposal requests do not grant implementation authority. Explicit implementation wording or clear confirmation to proceed against a recoverable agreed proposal permits Plan and Deliver. If authority is ambiguous, remain read-only.
+
+Keep `tasks.csv` as the only durable task plan. Each durable plan item maps to one task, exactly once. Implementation steps and correction handoffs remain transient. A one-item plan is valid.
+
+Before every child handoff, the lead tells the user the role, stable human identity, task or inquiry, intended result, and proof. This visible assignment is the intention report. Do not depend on child commentary for startup visibility.
 
 Before every Executor handoff, the lead also shows this concise architecture brief:
 
@@ -70,6 +89,8 @@ Before delegating read-only work, the lead settles the inquiry, source priority,
 
 Executor receives exactly one durable task and one settled decision envelope from the lead. It never edits `tasks.csv`. It chooses only local implementation mechanics inside the envelope. It returns one task checkpoint. The lead reviews architecture, scope, diff, and contract alignment once per returned checkpoint. Corrections return as a concise delta to the same Executor. Separate leads may each use one writing Executor only under separate owned tasks with disjoint paths.
 
+Executor cannot start until the visible plan exists and its task matches one durable plan item. The lead must show the plan before the Executor handoff.
+
 Executor may choose local implementation mechanics inside the settled boundaries. It must stop and return when work exposes a missing architecture decision, interface or dependency change, public behavior change, acceptance change, path conflict, or work outside the allowed scope.
 
 ## Executor trigger and loop
@@ -77,20 +98,22 @@ Executor may choose local implementation mechanics inside the settled boundaries
 In Assisted mode, spawn or reuse Executor when every condition is true:
 
 1. an owned durable task and its before-write gate are active;
-2. behavior, architecture, interfaces, and acceptance are settled;
-3. the task has one coherent outcome and explicit allowed paths;
-4. its proof is known;
-5. it needs no user or lead decision.
+2. the lead has shown a concise visible plan and the task matches one durable plan item;
+3. behavior, architecture, interfaces, and acceptance are settled;
+4. the task has one coherent outcome and explicit allowed paths;
+5. its proof is known;
+6. it needs no user or lead decision.
 
 A localized change in one file followed by one narrow proof command may stay with the lead. When any readiness condition is missing, the lead resolves the missing truth before execution. For ready work beyond that fast path, delegation is mandatory.
 
-Keep one writing Executor active per lead. Reuse `executor` across repository tasks while its lead Codex task remains active. Give it one observable outcome, one settled decision envelope, one related path group, one acceptance set, one proof surface, and one stop condition. Never send several durable tasks or an internal backlog.
+Keep one writing Executor active per lead. Reuse `executor_david` across repository tasks while its lead Codex task remains active. Give it one observable outcome, one settled decision envelope, one related path group, one acceptance set, one proof surface, and one stop condition. Never send several durable tasks or an internal backlog.
 
 Send:
 
 ```text
-Role: Executor
+Role: Executor David
 Task: TASK-ID
+Task name: executor_david
 Outcome: One observable result.
 Architecture: Settled implementation boundary.
 Interfaces and invariants: Lead-defined contracts.
@@ -132,7 +155,7 @@ Researcher is read-only and never edits repository files.
 Researcher returns cited findings, conflicts, unknowns, and decision impact.
 The lead evaluates sources and retains every decision.
 If findings require repository writes, the lead starts or uses an owned task before recording them.
-Reuse `researcher` across read-only inquiries. Send the current inquiry and changed assumptions in each handoff.
+Reuse `researcher_sarah` across read-only inquiries. Send the current inquiry and changed assumptions in each handoff.
 
 ### Maintainer
 
@@ -143,8 +166,9 @@ Maintainer replays the exact procedure. Maintainer reports commands, inputs, tar
 Maintainer receives this handoff:
 
 ```text
-Role: Maintainer
+Role: Maintainer Emily
 Task: TASK-ID
+Task name: maintainer_emily
 Trigger: Guided or recorded operation is ready.
 Checkpoint: Exact source fingerprint.
 Scope: One operation and target.
@@ -183,10 +207,10 @@ Before every spawn:
 
 1. resolve the trigger, role, mode, user authority, and exposed models;
 2. check for the existing fixed role thread and use a follow-up handoff when it is reachable;
-3. use `task_name=executor`, `maintainer`, `verifier`, or `researcher` for a standard role;
-4. use an approved concise lowercase snake_case responsibility name for an additional role;
+3. use `task_name=executor_david`, `task_name=maintainer_emily`, `task_name=verifier_michael`, or `task_name=researcher_sarah` for the mapped standard role;
+4. use an approved concise lowercase snake_case responsibility name in the form `responsibility_firstname` with an unused common American first name for an additional role;
 5. reject vague names, counters, feature names, task identifiers, and duplicate responsibilities;
-6. show the additional role name and authority before its spawn;
+6. show the additional role name and authority before its spawn, together with the human identity and task name;
 7. apply the same one-thread lifecycle, depth-one limit, explicit profile, Fast-service rule, bounded authority, handoff, and reporting contract to an additional role;
 8. use `agent_type=lean_sdlc_luna` for the primary Luna route;
 9. set `service_tier=priority` for Fast service on the primary Luna route;
@@ -203,8 +227,9 @@ After a Codex update, run one bounded profile smoke test before the first requir
 For a Researcher, send:
 
 ```text
-Role: Researcher
+Role: Researcher Sarah
 Inquiry: Inquiry identifier.
+Task name: researcher_sarah
 Question: Question to answer.
 Decision informed: Lead decision affected by evidence.
 Source priority: Required source order.
@@ -226,8 +251,9 @@ Sources: Source references.
 For another sidecar, send:
 
 ```text
-Role: Verifier
+Role: Verifier Michael
 Task: TASK-ID
+Task name: verifier_michael
 Trigger: Proof checkpoint reached.
 Checkpoint: Exact source fingerprint.
 Scope: Acceptance and risk regression.

@@ -42,8 +42,12 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 
 - Use shell and Python standard library only.
 - Keep task state human-readable and safe for concurrent Codex tasks.
+- Keep discussion and proposal requests read-only until the user authorizes implementation explicitly or confirms proceeding against an agreed recoverable proposal.
+- Apply the canonical Plan contract before task creation and implementation.
+- Keep `tasks.csv` as the only durable task plan. Map each durable plan item to exactly one task, and keep implementation steps transient.
 - Use `Context` values `Project`, `FEAT-*`, `DEC-*`, and `Bootstrap` for durable project truth.
 - Require one visible lead assignment before every child handoff and one final-result report after child work.
+- Use stable human child identities with role prefixes and common American first names. Require short child-task commentary at material phases while keeping lead reports compact.
 - Require a concise architecture brief before every Executor handoff and a lead sign-off after every Executor checkpoint.
 - Report child phase changes sparsely and bound silent-command heartbeats to two at two-minute intervals.
 - Do not send unbounded child progress updates.
@@ -74,6 +78,6 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 ## Current Promise
 
 - Stage: Evolution
-- Version: 1.7.0
-- Version goal: Release the principal-lead hierarchy, two modes, and Fast-service Luna role contracts.
+- Version: 1.8.0
+- Version goal: Release intentional planning and human-monitorable children with visible plans and short material-phase commentary.
 - Exit evidence: Tests, skill and plugin validation, local installation, accepted checkpoints, repository checks, tagged commit, and successful push.

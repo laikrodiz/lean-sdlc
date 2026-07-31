@@ -1,6 +1,6 @@
 ---
 name: lean-sdlc
-description: Run Lean-SDLC when the user explicitly invokes Lean-SDLC or `$lean-sdlc`, or when a repository AGENTS.md requires Lean-SDLC for planning, diagnosis, mutation, verification, or closeout. Route the work through Shape, Decide, Plan, Diagnose, Deliver, or Verify; enforce an owned task before repository writes; and use controlled agents and evidence-based completion. Do not invoke implicitly for read-only work outside a Lean-SDLC repository.
+description: Run Lean-SDLC when the user explicitly invokes Lean-SDLC or `$lean-sdlc`, or when a repository AGENTS.md requires Lean-SDLC for planning, diagnosis, mutation, verification, or closeout. Require explicit implementation authority and the visible Plan contract before task creation or implementation. Route the work through Shape, Decide, Plan, Diagnose, Deliver, or Verify; enforce an owned task before repository writes; and use controlled agents and evidence-based completion. Do not invoke implicitly for read-only work outside a Lean-SDLC repository.
 ---
 
 # Lean-SDLC
@@ -12,9 +12,11 @@ Keep repository intent, work, implementation, and proof coherent with the smalle
 1. Read repository `AGENTS.md`.
 2. Read [references/repository-contracts.md](references/repository-contracts.md).
 3. Identify the requested outcome, current repository truth, active task, and orchestration mode.
-4. For a new repository, run [scripts/init_repo.py](scripts/init_repo.py), verify the minimal contract, close `TASK-000` as owner `bootstrap`, then ask the user to restart or resume so the scoped plugin hook supplies the stable numeric owner. For an older ledger, run [scripts/tasks.py](scripts/tasks.py) `upgrade` under its owned active task. The upgrade maps old `Parent` values to new `Context` values.
-5. Select the earliest unresolved lane below. Continue through later gates in the same task when their inputs are ready.
-6. Before Plan, Deliver, Verify, or any child-agent use, read the canonical [Subagent Policy](references/subagents.md). For substantial decision work, read [references/model-routing.md](references/model-routing.md). Read [references/operations.md](references/operations.md) before build, package, deploy, flash, runtime, or smoke work.
+4. Before creating a task or changing files, determine whether the user authorized implementation. Discussion or proposal requests remain read-only. Brainstorming requests use the same read-only path. Explicit implementation wording, or clear confirmation to proceed against a recoverable agreed proposal, permits Plan and Deliver. If authority is ambiguous, remain read-only.
+5. Before task creation and implementation, apply the intent and visible-plan contract in [references/plan.md](references/plan.md). Use natural prose for the outcome, important constraints, and exclusions. Show a concise visible plan with measurable, observable completion conditions and proof. A one-item plan is valid.
+6. For a new repository, run [scripts/init_repo.py](scripts/init_repo.py), verify the minimal contract, close `TASK-000` as owner `bootstrap`, then ask the user to restart or resume so the scoped plugin hook supplies the stable numeric owner. For an older ledger, run [scripts/tasks.py](scripts/tasks.py) `upgrade` under its owned active task. The upgrade maps old `Parent` values to new `Context` values.
+7. Select the earliest unresolved lane below. Continue through later gates in the same task when their inputs are ready.
+8. Before Plan, Deliver, Verify, or any child-agent use, read the canonical [Subagent Policy](references/subagents.md). For substantial decision work, read [references/model-routing.md](references/model-routing.md). Read [references/operations.md](references/operations.md) before build, package, deploy, flash, runtime, or smoke work.
 
 ## Route
 
@@ -27,7 +29,7 @@ Keep repository intent, work, implementation, and proof coherent with the smalle
 | Cause, scope, acceptance, proof, and owned task are ready | [Deliver](references/deliver.md) |
 | Completion is claimed, truth conflicts, or a task may close | [Verify](references/verify.md) |
 
-Do not stop merely because one lane completed. Stop when user authority, required truth, or evidence is missing.
+Discussion or proposal requests stay outside Plan and Deliver until the user gives implementation authority. Do not stop merely because one lane completed. Stop when authority, required truth, or evidence is missing.
 
 ## Hard Gates
 
@@ -40,6 +42,7 @@ Do not stop merely because one lane completed. Stop when user authority, require
 7. Verify acceptance, documentation parity, and the relevant repository state before `tasks.py close`.
 8. Only the owning task closes work. A different task may close it only after a direct user request using the recorded override.
 9. Each task is one independently accepted repository state; local implementation steps stay transient.
+10. Keep `tasks.csv` as the only durable task plan. Each durable plan item maps to one task. Each durable item includes observable completion conditions and proof. Do not start Executor until the visible plan exists and its task matches one durable item.
 
 Read-only inspection needs no task. Small writes still use a small `Project` task.
 
@@ -59,7 +62,7 @@ Apply the applicable ASD-STE100 Issue 9 rules to generated English technical pro
 
 Before Deliver or the first delegated read-only operation, apply [references/subagents.md](references/subagents.md). Tell the user the mode, child action, active task or inquiry, and reason in one or two short sentences.
 
-That policy is the sole authority for child roles, triggers, profiles, spawn payloads, handoffs, reuse, and failure conditions. The user-selected lead acts as principal engineer and owns product intent, architecture, interfaces, invariants, task boundaries, integration, acceptance, and closeout. Assisted mode uses every triggered role, including Executor. Solo mode uses lead-only execution under the same contracts. Keep one lazily spawned thread per role for each lead Codex task. Reuse it across repository tasks and inquiries. Lead review and checkpoint verification precede another task.
+That policy is the sole authority for child roles, triggers, profiles, spawn payloads, handoffs, reuse, and failure conditions. Standard child identities are Executor David / `executor_david`, Maintainer Emily / `maintainer_emily`, Verifier Michael / `verifier_michael`, and Researcher Sarah / `researcher_sarah`. Each child writes short plain-language commentary inside its own agent task at material phases. The user-selected lead acts as principal engineer and owns product intent, architecture, interfaces, invariants, task boundaries, integration, acceptance, and closeout. Assisted mode uses every triggered role, including Executor. Solo mode uses lead-only execution under the same contracts. Keep one lazily spawned thread per role for each lead Codex task. Reuse it across repository tasks and inquiries. Lead review and checkpoint verification precede another task.
 
 ## Result
 

@@ -10,6 +10,11 @@ Keep architecture, task state, acceptance, integration, and closeout with the le
 Follow the assigned paths, proof, and stop conditions.
 Treat only the latest handoff's task or inquiry as current.
 Retain stable role and repository context across follow-up handoffs.
+Use the stable human identity and snake-case task name supplied in the handoff.
+Standard identities are Executor David / `executor_david`, Maintainer Emily / `maintainer_emily`, Verifier Michael / `verifier_michael`, and Researcher Sarah / `researcher_sarah`.
+Write a short plain-language commentary message inside your own agent task at work start, implementation or evidence complete with proof starting, blocked state, and final result.
+The start message states your role, assignment, and planned proof.
+Keep commentary compact and material. Do not add periodic chatter beyond the existing heartbeat limits.
 Report only material phase changes: work started, implementation or evidence complete with proof starting, blocked, and final result.
 For a silent command, send at most two brief heartbeats at two-minute intervals.
 Keep logs bounded.

@@ -688,6 +688,66 @@ class PackageContractTests(unittest.TestCase):
             evaluations,
         )
 
+    def test_implementation_authority_and_visible_plan_gate_are_explicit(self) -> None:
+        dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
+        plan = (SKILL / "references/plan.md").read_text(encoding="utf-8").lower()
+        shape = (SKILL / "references/shape.md").read_text(encoding="utf-8").lower()
+        deliver = (SKILL / "references/deliver.md").read_text(encoding="utf-8").lower()
+        subagents = (
+            SKILL / "references/subagents.md"
+        ).read_text(encoding="utf-8").lower()
+        evaluations = (
+            SKILL / "references/trigger-evals.md"
+        ).read_text(encoding="utf-8").lower()
+        root_agents = ROOT.joinpath("AGENTS.md").read_text(encoding="utf-8").lower()
+        template_agents = (
+            SKILL / "assets/AGENTS.md"
+        ).read_text(encoding="utf-8").lower()
+
+        for phrase in [
+            "require the information, not fixed labels",
+            "use natural prose for the outcome, important constraints, and exclusions",
+            "only the plan needs visible structure",
+            "before creating a task or implementing work",
+            "natural intent confirmation",
+            "concise visible plan",
+            "define each durable plan item in natural prose",
+            "observable completion condition and verification method",
+            "the verification method is its proof",
+            "each durable item includes observable completion conditions and proof",
+            "a one-item plan is valid",
+            "only durable task plan",
+        ]:
+            self.assertIn(phrase, plan)
+
+        self.assertIn("explicit implementation authority", dispatcher + shape + deliver)
+        self.assertIn("discussion or proposal requests remain read-only", shape + deliver)
+        self.assertIn("clear confirmation to proceed against a recoverable agreed proposal", dispatcher + shape + subagents)
+        self.assertIn("if authority is ambiguous, remain read-only", dispatcher + shape + subagents)
+        self.assertIn("each durable plan item maps to one task", subagents)
+        self.assertIn("implementation steps and correction handoffs remain transient", plan + subagents)
+
+        self.assertIn(
+            "executor cannot start until the visible plan exists",
+            subagents,
+        )
+        self.assertIn(
+            "the task matches one durable plan item",
+            plan + subagents + deliver,
+        )
+        self.assertIn("discussion or proposal request", evaluations)
+        self.assertIn("ambiguous implementation authority", evaluations)
+        self.assertIn("i am thinking about x; what do you think?", evaluations)
+        self.assertIn("implement the agreed x proposal", evaluations)
+        self.assertIn(
+            "perform a natural restatement and show the visible plan before task creation",
+            evaluations,
+        )
+        self.assertIn('"proceed" when no agreed proposal is recoverable', evaluations)
+        self.assertIn("one-item visible plan", evaluations)
+        self.assertIn("executor trigger", evaluations)
+        self.assertEqual(root_agents, template_agents)
+
     def test_subagent_policy_is_canonical_deterministic_and_explicit(
         self,
     ) -> None:
@@ -725,7 +785,7 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("delegation is mandatory", subagents)
         self.assertIn("one writing executor active per lead", subagents)
         self.assertIn("at most one child thread for each role during one lead codex task", subagents)
-        self.assertIn("task_name=executor", subagents)
+        self.assertIn("task_name=executor_david", subagents)
         self.assertIn("normal repository task transition never justifies another child", subagents)
         self.assertIn("role: verifier", subagents)
         self.assertIn("context reset reason:", subagents)
@@ -783,6 +843,104 @@ class PackageContractTests(unittest.TestCase):
                     f"{document}: {line}",
                 )
 
+    def test_child_identities_replacements_and_commentary_are_human_monitorable(
+        self,
+    ) -> None:
+        subagents = (
+            SKILL / "references/subagents.md"
+        ).read_text(encoding="utf-8").lower()
+        evaluations = (
+            SKILL / "references/trigger-evals.md"
+        ).read_text(encoding="utf-8").lower()
+        deliver = (SKILL / "references/deliver.md").read_text(encoding="utf-8").lower()
+        plan = (SKILL / "references/plan.md").read_text(encoding="utf-8").lower()
+        verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
+        dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
+        profile = tomllib.loads(LUNA_PROFILE.read_text(encoding="utf-8"))
+        developer = profile["developer_instructions"].lower()
+        root_agents = ROOT.joinpath("AGENTS.md").read_text(encoding="utf-8").lower()
+        template_agents = (
+            SKILL / "assets/AGENTS.md"
+        ).read_text(encoding="utf-8").lower()
+        readme = ROOT.joinpath("README.md").read_text(encoding="utf-8").lower()
+        project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8").lower()
+
+        for identity in [
+            "executor david",
+            "`executor_david`",
+            "maintainer emily",
+            "`maintainer_emily`",
+            "verifier michael",
+            "`verifier_michael`",
+            "researcher sarah",
+            "`researcher_sarah`",
+        ]:
+            self.assertIn(identity, subagents)
+            self.assertIn(identity, developer)
+
+        for phrase in [
+            "the role defines authority",
+            "the first name distinguishes the thread",
+            "one reachable child per role",
+            "another unused common american first name",
+            "keep the role prefix",
+            "announce the new identity and reset reason",
+            "never use a task identifier, feature, version, description, or counter in a child name",
+            "each child writes a short plain-language commentary message inside its own agent task",
+            "work started; implementation or evidence complete with proof starting; blocked; and final result",
+            "the start message states the role, assignment, and planned proof",
+            "do not add periodic chatter beyond the existing heartbeat limits",
+        ]:
+            self.assertIn(phrase, subagents)
+
+        for phrase in [
+            "standard child identity",
+            "a replacement is required and the current name is unavailable",
+            "a child starts work",
+            "a child reaches a material phase",
+            "i am thinking about x; what do you think?",
+            "implement the agreed x proposal",
+            '"proceed" when no agreed proposal is recoverable',
+        ]:
+            self.assertIn(phrase, evaluations)
+
+        self.assertIn("standard child identities are executor david", dispatcher)
+        self.assertIn("inside your own agent task", developer)
+        self.assertIn("use stable child identities", root_agents)
+        self.assertIn("short plain-language commentary", root_agents)
+        self.assertEqual(root_agents, template_agents)
+        self.assertIn(
+            "at most one `executor_david`, `maintainer_emily`, `verifier_michael`, and `researcher_sarah` thread",
+            readme,
+        )
+        self.assertIn("reuse `executor_david` across repository tasks", subagents)
+        self.assertIn("reuse `researcher_sarah` across read-only inquiries", subagents)
+        self.assertNotIn("reuse `executor`", subagents)
+        self.assertNotIn("reuse `researcher`", subagents)
+        self.assertIn("task identifiers stay inside handoffs and returns", evaluations)
+        self.assertNotIn(
+            "except for an announced platform-required replacement",
+            evaluations,
+        )
+        for document in [
+            subagents,
+            deliver,
+            plan,
+            verify,
+            readme,
+            project,
+            root_agents,
+            template_agents,
+            developer,
+        ]:
+            for generic_name in [
+                "`executor`",
+                "`maintainer`",
+                "`verifier`",
+                "`researcher`",
+            ]:
+                self.assertNotIn(generic_name, document)
+
     def test_role_contracts_separate_execution_research_proof_and_operations(
         self,
     ) -> None:
@@ -810,7 +968,7 @@ class PackageContractTests(unittest.TestCase):
             "the lead evaluates sources and retains every decision",
             "use the researcher contract locally in solo",
             "if findings require repository writes, the lead starts or uses an owned task before recording them",
-            "reuse `researcher` across read-only inquiries",
+            "reuse `researcher_sarah` across read-only inquiries",
             "verifier independently reruns acceptance-defining proof",
             "skips executor-only targeted checks",
             "verifier consumes maintainer evidence instead of repeating the operation",
@@ -919,9 +1077,13 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.7.0")
+        self.assertEqual(version, "1.8.0")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
+        self.assertIn(
+            "- Version goal: Release intentional planning and human-monitorable children",
+            project,
+        )
 
 
 class CodexConfigurationTests(unittest.TestCase):

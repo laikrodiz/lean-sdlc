@@ -37,9 +37,13 @@ Each ledger row uses `Context` to name durable project truth. Use `Project`, `FE
 
 All child-agent rules live in one editable policy: `references/subagents.md`. Before delegation, Codex tells the user the mode, child action, active task or inquiry, and reason in one or two short sentences.
 
-Assisted mode is the default. The user-selected lead acts as principal engineer and owns product intent, architecture, interfaces, invariants, task boundaries, integration, and task disposition. Each lead Codex task lazily creates at most one `executor`, `maintainer`, `verifier`, and `researcher` thread. Codex reuses each role across repository tasks and inquiries. Task identifiers stay inside handoffs and returns. Codex gives one durable task beyond the direct fast path to Executor. Executor receives a settled decision envelope and chooses only local mechanics. The lead reviews architecture, scope, diff, and contract alignment once per returned checkpoint.
+Assisted mode is the default. The user-selected lead acts as principal engineer and owns product intent, architecture, interfaces, invariants, task boundaries, integration, and task disposition. Each lead Codex task lazily creates at most one `executor_david`, `maintainer_emily`, `verifier_michael`, and `researcher_sarah` thread. Codex reuses each role across repository tasks and inquiries. Task identifiers stay inside handoffs and returns. Codex gives one durable task beyond the direct fast path to Executor. Executor receives a settled decision envelope and chooses only local mechanics. The lead reviews architecture, scope, diff, and contract alignment once per returned checkpoint.
 
 Before every child handoff, the lead tells the user the role, task or inquiry, intended result, and proof. This visible assignment provides startup visibility. Children report only material phase changes. Silent commands may receive at most two brief heartbeats at two-minute intervals. Internal handoffs use labeled multiline fields. User-facing orchestration uses normal prose.
+
+Standard child identities are Executor David / `executor_david`, Maintainer Emily / `maintainer_emily`, Verifier Michael / `verifier_michael`, and Researcher Sarah / `researcher_sarah`. Each child writes short plain-language commentary inside its own agent task at work start, implementation or evidence completion with proof starting, blocked state, and final result. Lead reports stay compact.
+
+Discussion and proposal requests remain read-only. Explicit implementation wording or clear confirmation to proceed against an agreed recoverable proposal permits Plan and Deliver. Before task creation and implementation, the lead applies the natural intent and visible-plan contract in `references/plan.md`. A one-item plan is valid. `tasks.csv` is the only durable task plan, and each durable item maps to one task while implementation steps remain transient.
 
 Before every Executor handoff, the lead shows a concise architecture brief with the task, decision, boundaries and invariants, non-goals, and proof. After each checkpoint, the lead inspects the diff and contract alignment, then signs off with architecture alignment, deviation, and next action. Verifier receives acceptance and the exact checkpoint, then independently reruns proof. Maintainer replays guided or recorded build, package, CI, deploy, flash, runtime, and smoke procedures without repairing source. Researcher receives a question and source boundary without a preferred answer. Assisted mode uses every triggered role. Solo mode uses lead-only execution under the same contracts.
 
@@ -51,10 +55,10 @@ Lean-SDLC applies the applicable ASD-STE100 Issue 9 rules to generated English t
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-Install the immutable `v1.7.0` release:
+Install the immutable `v1.8.0` release:
 
 ```bash
-git clone --depth 1 --branch v1.7.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.8.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 python3 plugins/lean-sdlc/skills/lean-sdlc/scripts/configure_codex.py
 python3 plugins/lean-sdlc/skills/lean-sdlc/scripts/configure_codex.py --check

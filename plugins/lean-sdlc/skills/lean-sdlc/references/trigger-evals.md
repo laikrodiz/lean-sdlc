@@ -7,6 +7,17 @@ Test from a fresh task with only the installed plugin and target repository visi
 | Explicit `$lean-sdlc` or “Lean-SDLC” | Trigger the skill |
 | Read-only work outside a Lean-SDLC repository | Do not trigger implicitly |
 | Repository `AGENTS.md` requires Lean-SDLC for a mutation | Trigger the skill |
+| Discussion or proposal request | Remain read-only; do not enter Plan or Deliver |
+| Brainstorming request | Use the same read-only path |
+| Explicit implementation wording or clear confirmation to proceed against a recoverable agreed proposal | Permit Plan and Deliver after the intent and plan gate |
+| Ambiguous implementation authority | Remain read-only and request confirmation |
+| "I am thinking about X; what do you think?" | Stay read-only |
+| "Implement the agreed X proposal" | Perform a natural restatement and show the visible plan before task creation |
+| "Proceed" when no agreed proposal is recoverable | Stay read-only and request a concrete implementation instruction |
+| Task creation or implementation is requested | Lead naturally restates outcome, important constraints, and exclusions, then shows a concise visible plan |
+| Visible plan item | Include measurable, observable completion conditions and proof; map each durable item to one task |
+| One-item visible plan | Accept the plan and continue when its outcome, completion conditions, and proof are clear |
+| Executor trigger | Wait until the visible plan exists and the assigned task matches one durable plan item |
 | Rough idea, fuzzy behavior, or stale version promise | Shape |
 | A large synthesizer-clone request contains several independently verifiable outcomes | Create several independently verifiable tasks and start only the nearest ready task |
 | Stable intent needs database, boundary, or migration choice | Decide |
@@ -29,10 +40,15 @@ Test from a fresh task with only the installed plugin and target repository visi
 | Mutation reaches Plan or Deliver | Tell the user the mode, child action, active task or inquiry, and reason in one or two short sentences |
 | A child handoff is ready | Lead tells the user the role, task or inquiry, intended result, and proof before sending it |
 | An Executor handoff is ready | Lead shows `Task`, `Product or architecture decision`, `Boundaries and invariants`, `Non-goals`, and `Proof` before sending it |
-| A role reaches its first trigger in one lead Codex task | Lazily spawn its fixed `executor`, `maintainer`, `verifier`, or `researcher` thread |
+| Standard child identity | Use Executor David / `executor_david`, Maintainer Emily / `maintainer_emily`, Verifier Michael / `verifier_michael`, or Researcher Sarah / `researcher_sarah` |
+| A standard child identity remains reachable | Reuse the same role and first-name identity across repository tasks |
+| A replacement is required and the current name is unavailable | Keep the role prefix, choose another unused common American first name, announce the new identity and reset reason, and keep it stable |
+| A child starts work | Write a short plain-language commentary inside its own agent task stating role, assignment, and planned proof |
+| A child reaches a material phase | Write commentary for work started, implementation or evidence complete with proof starting, blocked, or final result |
+| A role reaches its first trigger in one lead Codex task | Lazily spawn its mapped human identity thread |
 | The same role triggers for another repository task or inquiry | Send a follow-up to the existing role thread, including after it reported completion |
 | A repository task finishes and another becomes ready | Keep every reachable role thread; a normal task transition never justifies another spawn |
-| A child name uses a feature, version, description, counter, or an unapproved task identifier | Fail; keep task identifiers inside handoffs and returns except for an announced platform-required replacement |
+| A child name uses a feature, version, description, counter, or an unapproved task identifier | Fail; task identifiers stay inside handoffs and returns |
 | A role thread is unavailable, repeatedly stale after correction, reset by the user, or incompatible with a required tool, permission, or runtime | Announce labeled `Role`, `Context reset reason`, and `Replacement action` fields, then replace and rehydrate it |
 | A reachable role thread already exists | Do not spawn another child for that role |
 | Code, configuration, schema, generated artifact, or observable behavior reaches a proof checkpoint | Must reuse or start Verifier |
@@ -81,22 +97,29 @@ Test from a fresh task with only the installed plugin and target repository visi
 Failure indicators:
 
 1. Work changes files before an owned task exists.
-2. The dispatcher runs all lanes mechanically or stops at every lane boundary.
-3. Unknown causes enter Deliver.
-4. A child decides scope, architecture, interfaces, acceptance, task state, integration, or closeout, or spawns another child.
-5. An Executor receives multiple durable tasks, a backlog, unresolved decisions, or work outside explicit paths.
-6. A Researcher edits repository files, makes durable decisions, or collects evidence outside the lead's scope.
-7. A sidecar repairs source, guesses a target, leaks secrets, or retries stateful work without authority.
-8. Agent-only context becomes the sole record of a durable procedure or decision.
-9. Cache preservation justifies unnecessary agents, stale context, or weaker verification.
-10. Architecture is selected from a project-size label, or modularity produces speculative or pass-through boundaries.
-11. Plausible changed-boundary edge cases are ignored, exhaustively overbuilt, or silently assigned user-visible behavior.
-12. Explanatory diagrams use ASCII pseudographics or become denser than the idea they explain.
-13. A primary Luna spawn omits `agent_type=lean_sdlc_luna`, adds direct model or reasoning fields, inherits an automatic model, or uses full-history routing.
-14. A sidecar chooses close, fail, reopen, pass, or block for the task.
-15. Deliver begins without the Orchestration Gate, a mandatory sidecar is skipped, or a ready Assisted durable task beyond the direct fast path stays with the lead.
-16. Any Luna child bypasses the named profile or uses reasoning below `max`, any Terra child uses reasoning below `xhigh`, or a fallback is silent.
-17. A durable task starts before the lead reviews and Verifier checks the prior accepted checkpoint.
-18. Verifier repeats Executor-only targeted checks blindly or repeats a Maintainer operation.
-19. A lead creates a second reachable child for one role or replaces a role because a repository task changed.
-20. A child name uses an arbitrary counter such as `V1` or `V11`.
+2. Implementation starts without explicit user authority, or ambiguous authority is treated as approval.
+3. The lead creates a task or changes files before the natural intent restatement and concise visible plan.
+4. A durable plan item lacks observable completion conditions or proof, maps to several tasks, or is omitted from `tasks.csv`.
+5. Executor starts before the visible plan exists or its task matches the selected durable item.
+6. A standard child uses a generic role-only name, a task identifier, a feature, a version, a description, or a counter.
+7. A replacement changes the role prefix, reuses an occupied first name, or fails to announce the new identity and reset reason.
+8. A child omits its own task commentary at a required material phase or sends periodic chatter beyond heartbeat limits.
+9. The dispatcher runs all lanes mechanically or stops at every lane boundary.
+10. Unknown causes enter Deliver.
+11. A child decides scope, architecture, interfaces, acceptance, task state, integration, or closeout, or spawns another child.
+12. An Executor receives multiple durable tasks, a backlog, unresolved decisions, or work outside explicit paths.
+13. A Researcher edits repository files, makes durable decisions, or collects evidence outside the lead's scope.
+14. A sidecar repairs source, guesses a target, leaks secrets, or retries stateful work without authority.
+15. Agent-only context becomes the sole record of a durable procedure or decision.
+16. Cache preservation justifies unnecessary agents, stale context, or weaker verification.
+17. Architecture is selected from a project-size label, or modularity produces speculative or pass-through boundaries.
+18. Plausible changed-boundary edge cases are ignored, exhaustively overbuilt, or silently assigned user-visible behavior.
+19. Explanatory diagrams use ASCII pseudographics or become denser than the idea they explain.
+20. A primary Luna spawn omits `agent_type=lean_sdlc_luna`, adds direct model or reasoning fields, inherits an automatic model, or uses full-history routing.
+21. A sidecar chooses close, fail, reopen, pass, or block for the task.
+22. Deliver begins without the Orchestration Gate, a mandatory sidecar is skipped, or a ready Assisted durable task beyond the direct fast path stays with the lead.
+23. Any Luna child bypasses the named profile or uses reasoning below `max`, any Terra child uses reasoning below `xhigh`, or a fallback is silent.
+24. A durable task starts before the lead reviews and Verifier checks the prior accepted checkpoint.
+25. Verifier repeats Executor-only targeted checks blindly or repeats a Maintainer operation.
+26. A lead creates a second reachable child for one role or replaces a role because a repository task changed.
+27. A child name uses an arbitrary counter such as `V1` or `V11`.

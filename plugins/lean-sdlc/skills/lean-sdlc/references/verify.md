@@ -8,7 +8,7 @@ Apply the mandatory Verifier trigger and explicit profile from [subagents.md](su
 2. Require exact proof commands or a recorded procedure. Resolve shorthand tool names before delegation.
 3. Have the lead inspect the delivered task checkpoint for architecture, invariant, interface, path, and scope compliance.
 4. Compare the delivered behavior with every acceptance point.
-5. Reuse the existing `verifier` thread, or spawn it lazily. Have Verifier independently rerun acceptance-defining proof against the exact checkpoint and add risk-based regression.
+5. Reuse the existing `verifier_michael` thread, or spawn it lazily. Have Verifier independently rerun acceptance-defining proof against the exact checkpoint and add risk-based regression.
 6. Have the Verifier skip Executor-only targeted checks. Run the full suite once under Verifier unless evidence conflicts.
 7. Have the Maintainer apply its canonical operation contract for artifact or operational work.
 8. Have the Verifier consume Maintainer evidence instead of repeating the operation.
