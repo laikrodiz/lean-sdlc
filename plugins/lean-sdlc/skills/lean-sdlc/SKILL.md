@@ -54,9 +54,9 @@ Use diagrams only when they materially clarify flow, state, ownership, sequence,
 
 Before Deliver or the first delegated read-only operation, apply [references/subagents.md](references/subagents.md) and state:
 
-`Mode | Required sidecars | Eligible Workers | Reason`
+`Mode | Required sidecars | Executor action | Reason`
 
-That policy is the sole authority for child roles, triggers, profiles, spawn payloads, handoffs, reuse, and failure conditions. Skipping a required sidecar or spawning an ineligible Worker is a workflow failure.
+That policy is the sole authority for child roles, triggers, profiles, spawn payloads, handoffs, reuse, and failure conditions. The lead owns architecture, task state, acceptance, integration, and closeout. In Assisted mode, ready work beyond the direct fast path uses one reusable Executor, one settled execution unit at a time; lead review and checkpoint verification precede the next unit.
 
 ## Result
 

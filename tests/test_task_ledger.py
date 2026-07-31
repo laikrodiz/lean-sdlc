@@ -534,6 +534,7 @@ class PackageContractTests(unittest.TestCase):
             ROOT / "README.md",
             SKILL / "assets/AGENTS.md",
             SKILL / "references/model-routing.md",
+            SKILL / "references/subagents.md",
         ]
         policy = "\n".join(path.read_text(encoding="utf-8") for path in policy_files)
         self.assertNotIn("GPT-5.4", policy)
@@ -580,25 +581,51 @@ class PackageContractTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
 
         self.assertIn("sole authority", dispatcher)
-        self.assertIn("mode | required sidecars | eligible workers | reason", dispatcher)
+        self.assertIn("mode | required sidecars | executor action | reason", dispatcher)
         self.assertIn("mandatory sidecar triggers", subagents)
-        self.assertIn("worker eligibility", subagents)
+        self.assertIn("executor trigger and loop", subagents)
+        self.assertIn("lead authority", subagents)
+        self.assertIn(
+            "a localized change in one file followed by one narrow proof command",
+            subagents,
+        )
+        self.assertIn("delegation is mandatory", subagents)
+        self.assertIn("never send a backlog or multiple execution units", subagents)
+        self.assertIn("only an accepted result may unlock the next execution unit", subagents)
+        self.assertIn("sequential executor works under the lead-owned task", subagents)
+        self.assertIn("one writing executor active per lead", subagents)
+        self.assertIn("separate owned tasks with disjoint paths", subagents)
         self.assertIn("before every spawn", subagents)
         self.assertIn("fork_turns", subagents)
         self.assertIn("routing failure", subagents)
         self.assertIn("gpt-5.6 luna `max`", subagents)
-        self.assertIn("gpt-5.6 terra `high`", subagents)
+        self.assertIn("gpt-5.6 terra `xhigh`", subagents)
+        self.assertIn("user-selected lead", subagents)
         self.assertIn("lead alone decide task disposition", verify)
         self.assertIn("must reuse or start verifier", evaluations)
         self.assertIn("must reuse or start operator", evaluations)
-        self.assertIn("explicitly spawn terra `high`", evaluations)
+        self.assertIn("must reuse or start executor", evaluations)
+        self.assertIn("explicitly spawn terra `xhigh`", evaluations)
+        self.assertIn("one execution unit, never a backlog", evaluations)
+        self.assertIn("before the next unit", evaluations)
         self.assertIn("inherits the lead profile", evaluations)
         self.assertEqual(root_agents, template_agents)
 
-        for document in [ROOT / "README.md", *SKILL.rglob("*.md")]:
+        policy_documents = [ROOT / "README.md", ROOT / "docs/PROJECT.md", *SKILL.rglob("*.md")]
+        policy = "\n".join(
+            document.read_text(encoding="utf-8").lower()
+            for document in policy_documents
+        )
+        self.assertNotIn("gpt-5.6 terra `high`", policy)
+        self.assertNotIn("explicitly spawn terra `high`", policy)
+
+        for document in policy_documents:
             for line in document.read_text(encoding="utf-8").splitlines():
-                if "luna" in line.lower():
-                    self.assertNotIn("xhigh", line.lower(), f"{document}: {line}")
+                self.assertNotIn(
+                    "luna `xhigh`",
+                    line.lower(),
+                    f"{document}: {line}",
+                )
 
     def test_release_version_is_consistent(self) -> None:
         manifest = json.loads(
@@ -608,7 +635,7 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.2.0")
+        self.assertEqual(version, "1.3.0")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
 

@@ -2,7 +2,7 @@
 
 Use Deliver only when cause and scope are known and an owned `In Progress` task has measurable acceptance and proof.
 
-Use Terra `high` for general implementation. Use Sol `high` or `xhigh` when implementation itself carries major decision or failure risk. Delegate only through the profiles and eligibility rules in [subagents.md](subagents.md).
+The user-selected lead owns architecture, interfaces, invariants, acceptance, and execution-unit boundaries. Executor may choose local implementation mechanics inside those settled constraints. Without an explicit profile, use Sol `high`; raise it for consequential choices. Execute or delegate only through [subagents.md](subagents.md).
 
 1. Read the active task, parent truth, acceptance, proof, and affected code.
 2. Run the structural before-write check.
@@ -11,13 +11,15 @@ Use Terra `high` for general implementation. Use Sol `high` or `xhigh` when impl
 5. Keep direct code when extraction would create pass-through pieces. Avoid speculative interfaces, factories, configuration, and future-proofing.
 6. Scan plausible changed-boundary cases: missing, empty, malformed, limit values, dependency failure or partial result, interruption, repetition or concurrency, and required invariants.
 7. Classify each relevant case as `Handle`, `Reject`, `Defer`, or `Impossible by invariant`. Follow existing contracts for routine cases; return to Shape or Decide before choosing user-visible, compatibility, safety, or data behavior.
-8. Implement the smallest approved slice.
-9. Keep affected tests, diagnostics, project truth, decisions, and technical documentation in sync.
-10. Avoid opportunistic refactors and speculative compatibility.
-11. Stop and return to Shape, Decide, or Diagnose when implementation exposes missing truth.
-12. At each coherent checkpoint, apply the Verifier trigger in [subagents.md](subagents.md).
-13. For build, package, deploy, flash, runtime, or smoke work, apply the Operator trigger in [subagents.md](subagents.md) and procedure rules in [operations.md](operations.md).
-14. Hand the checkpoint and compact evidence to Verify.
+8. Define one execution unit with one outcome, settled architecture and invariants, related allowed paths, explicit proof, and stop conditions.
+9. Apply the Executor trigger. In Assisted mode, delegate a ready unit beyond the direct fast path to the reusable Executor; otherwise execute it locally.
+10. Keep affected tests, diagnostics, project truth, decisions, and technical documentation in sync.
+11. Avoid opportunistic refactors and speculative compatibility.
+12. Stop and return to Shape, Decide, or Diagnose when implementation exposes missing truth.
+13. After the unit returns, inspect its diff for architecture, scope, and contract compliance, then apply the Verifier trigger.
+14. Accept or correct the unit before defining the next one. Never send multiple units or an unresolved backlog to Executor.
+15. For build, package, deploy, flash, runtime, or smoke work, apply the Operator trigger and procedure rules in [operations.md](operations.md).
+16. Hand the accepted checkpoint and compact evidence to Verify.
 
 Documentation-only delivery follows the same task and proof gates. Synchronize settled truth; do not make new product or architecture decisions while cleaning documents.
 

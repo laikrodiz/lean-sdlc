@@ -33,8 +33,10 @@ Resolve contradictions before closeout.
 
 ## Subagent Gate
 
-- Before Deliver or the first delegated read-only operation, read and apply `$lean-sdlc`'s canonical `references/subagents.md`, then state `Mode | Required sidecars | Eligible Workers | Reason`.
-- Treat a skipped mandatory sidecar, an ineligible Worker, child-owned task disposition, implicit spawn profile, or child-created agent as a workflow failure.
+- Before Deliver or the first delegated read-only operation, read and apply `$lean-sdlc`'s canonical `references/subagents.md`, then state `Mode | Required sidecars | Executor action | Reason`.
+- Keep architecture, interfaces, task state, acceptance, integration, and closeout with the lead.
+- In Assisted mode, send each ready unit beyond the direct fast path to one reusable Executor. Send one unit at a time; lead review and Verifier proof must accept it before the next.
+- Treat a skipped mandatory handoff, oversized assignment, child-owned decision, implicit spawn profile, or child-created agent as a workflow failure.
 
 ## Operations
 

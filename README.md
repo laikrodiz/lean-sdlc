@@ -35,20 +35,22 @@ It also creates or extends `.gitignore` with `/tasks.csv` and `/.tasks.lock`. Fe
 
 All child-agent rules live in one editable policy: `references/subagents.md`. Before delivery or the first delegated read-only operation, Codex must state:
 
-`Mode | Required sidecars | Eligible Workers | Reason`
+`Mode | Required sidecars | Executor action | Reason`
 
-Assisted mode is the default. Verifier is mandatory for code or behavior checkpoints and multi-command or noisy proof. Operator is mandatory when a guided or recorded build, package, CI, deploy, flash, runtime, or smoke operation is ready. Workers are allowed only for bounded independent deliverables with explicit ownership, settled decisions, known proof, and a net context or time saving. One Worker is normal; a second requires disjoint work.
+Assisted mode is the default. The user-selected lead keeps architecture, interfaces, task setting, integration, and closeout. When the next settled unit exceeds one localized change in one file plus one narrow check, Codex must give exactly that unit to one reusable Executor. The lead reviews every return and Verifier checks the checkpoint before another unit starts.
 
-`focused mode` keeps the lead and mandatory sidecars. `solo mode` runs the same workflow with the lead alone. Every Luna child uses Luna `max`; unavailable Luna profiles fall back explicitly to Terra `high`. Every spawn specifies model, reasoning, and bounded context. The lead retains decisions, integration, task state, and closeout.
+Verifier is mandatory for code or behavior checkpoints and multi-command or noisy proof. Operator is mandatory when a guided or recorded build, package, CI, deploy, flash, runtime, or smoke operation is ready. `focused mode` keeps the lead and mandatory sidecars while disabling Executor. `solo mode` runs the same workflow with the lead alone.
+
+Every child normally uses Luna `max`. Terra `xhigh` is an explicit fallback when Luna Max is unavailable or the user chooses lower child latency. Every spawn specifies model, reasoning, and bounded context.
 
 ## Install
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-Install the immutable `v1.2.0` release:
+Install the immutable `v1.3.0` release:
 
 ```bash
-codex plugin marketplace add laikrodiz/lean-sdlc --ref v1.2.0
+codex plugin marketplace add laikrodiz/lean-sdlc --ref v1.3.0
 codex plugin add lean-sdlc@lean-sdlc
 ```
 

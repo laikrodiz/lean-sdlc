@@ -2,7 +2,7 @@
 
 Use Plan when approved work needs a task, dependencies, ownership, or an execution shape.
 
-Use Sol `medium`; use `high` for cross-cutting dependencies or integration risk.
+The user-selected lead owns planning. Without an explicit profile, use Sol `high`; use `xhigh` or `max` for unusually risky dependencies or integration choices.
 
 ## Task transaction
 
@@ -18,6 +18,8 @@ Task transactions themselves are exempt from the task-before-write rule; otherwi
 
 ## Execution shape
 
-Before Deliver, apply the [Subagent Policy](subagents.md) and state its one-line Orchestration Gate. Its mandatory sidecar triggers and complete Worker eligibility test determine the execution shape.
+Before Deliver, apply the [Subagent Policy](subagents.md) and state its one-line Orchestration Gate. The lead settles architecture, interfaces, invariants, allowed paths, acceptance, proof, and stop conditions before issuing one execution unit.
+
+Execution units are transient checkpoints under the lead-owned task; never add ledger rows for sequential Executor handoffs. Parallel writers require separate owned tasks and disjoint paths.
 
 Ready means ownership, boundaries, dependencies, acceptance, proof, and integration responsibility are unambiguous.

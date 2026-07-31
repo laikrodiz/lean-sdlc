@@ -4,12 +4,12 @@ This file is the canonical policy for every Lean-SDLC child agent. Other referen
 
 ## Roles and modes
 
-- Lead: owns user dialogue, scope, decisions, task state, integration, and closeout.
+- Lead: owns user dialogue, behavior, architecture, interfaces, task state, acceptance, proof, integration, and closeout. Preserve the user-selected lead profile.
+- Executor: a reusable task-scoped child that completes one settled execution unit at a time.
 - Verifier sidecar: runs checks and returns evidence.
 - Operator sidecar: runs guided or recorded operations and compresses their output.
-- Worker: produces one bounded deliverable under explicit ownership.
 
-Assisted is the default mode: required sidecars run lazily and eligible Workers may be used. Focused keeps required sidecars and disables Workers. Solo disables every child; the lead follows the same check and operation contracts locally.
+Assisted is the default mode: required sidecars run lazily, and a ready execution unit beyond the direct fast path must use Executor. Focused keeps required sidecars and disables Executor. Solo disables every child; the lead follows the same execution, check, and operation contracts locally.
 
 The user's mode remains active for the task until changed. An explicit user profile pins the lead. When the user says all work must use one profile, apply it to every child or use Solo when it cannot be supplied.
 
@@ -17,9 +17,41 @@ The user's mode remains active for the task until changed. An explicit user prof
 
 Before Deliver or the first delegated read-only operation, state:
 
-`Mode | Required sidecars | Eligible Workers | Reason`
+`Mode | Required sidecars | Executor action | Reason`
 
-Apply the gate again only when task scope, mode, proof, or available agents materially changes. Skipping a mandatory sidecar trigger or spawning a Worker outside its eligibility gate is a workflow failure.
+Apply the gate again only when task scope, mode, proof, or available agents materially changes. Skipping a mandatory sidecar, skipping a required Executor handoff, or sending multiple execution units in one handoff is a workflow failure.
+
+## Lead authority
+
+Before delegating, the lead settles the observable outcome, architecture, interfaces and invariants, dependencies, allowed paths, acceptance, proof, and stop conditions. The lead creates and owns the durable task, runs the before-write gate, reviews every return for architectural and scope compliance, integrates the result, and decides whether to correct, continue, or close.
+
+A sequential Executor works under the lead-owned task and never edits `tasks.csv`. Its execution units are transient checkpoints, not ledger rows. Separate leads may each use one writing Executor only under separate owned tasks with disjoint paths.
+
+Executor may choose local implementation mechanics inside the settled boundaries. It must stop and return when work exposes a missing architecture decision, interface or dependency change, public behavior change, acceptance change, path conflict, or work outside the allowed scope.
+
+## Executor trigger and loop
+
+In Assisted mode, spawn or reuse Executor when every condition is true:
+
+1. an owned task and its before-write gate are active;
+2. behavior, architecture, interfaces, and acceptance are settled;
+3. the next unit has one coherent outcome and explicit allowed paths;
+4. its proof is known;
+5. it needs no user or lead decision.
+
+A localized change in one file followed by one narrow proof command may stay with the lead. When any readiness condition is missing, the lead resolves the missing truth before execution. For ready work beyond that fast path, delegation is mandatory.
+
+Keep one writing Executor active per lead. Reuse the same named Executor for the task while its role, repository, architecture, and assumptions remain stable. Give it enough related work to justify the handoff: one observable outcome, one architecture and invariant set, one related path group, and one proof surface. Never send a backlog or multiple execution units.
+
+Send:
+
+`Role | Task | Checkpoint | Outcome | Architecture | Interfaces and invariants | Allowed paths | Proof | Stop conditions`
+
+Executor may iterate within that unit until its proof passes while scope remains unchanged. It returns:
+
+`Done or Blocked | Files changed | Proof result | Deviation or decision needed`
+
+After every return, the lead reviews architecture and scope, then applies the Verifier checkpoint. Only an accepted result may unlock the next execution unit.
 
 ## Mandatory sidecar triggers
 
@@ -38,34 +70,19 @@ A documentation-only change with one narrow proof command may stay with the lead
 
 In Assisted or Focused mode, spawn or reuse Operator when a build, package, CI, deploy, flash, runtime, or smoke operation is ready and its procedure is guided or recorded under [operations.md](operations.md).
 
-For an unknown first operation, the lead, user, or bounded Worker guides the exact attempt while Operator observes. Operator never invents a procedure, target, retry, or recovery rule. It returns operation status, artifacts, target, signals, and bounded logs. It never repairs source or chooses task disposition.
-
-## Worker eligibility
-
-Spawn a Worker only in Assisted mode and only when every condition is true:
-
-1. the deliverable is independent and bounded;
-2. owned files, interfaces, or outputs are explicit;
-3. acceptance and proof are known;
-4. no unresolved product, architecture, safety, or integration decision is delegated;
-5. assignment plus integration costs less context or wall time than lead execution.
-
-One Worker is the normal limit. A second is allowed only for independent scopes with disjoint outputs. Parallel writers require separate owned tasks and disjoint paths. Keep quick, coupled, critical-path, or explanation-heavy work with the lead.
-
-Workers never own user communication, task state, cross-scope integration, or closeout.
+For an unknown first operation, the lead, user, or bounded Executor guides the exact attempt while Operator observes. Operator never invents a procedure, target, retry, or recovery rule. It returns operation status, artifacts, target, signals, and bounded logs. It never repairs source or chooses task disposition.
 
 ## Profiles
 
 Never use `low` reasoning. Never silently reduce a requested or required profile.
 
-| Child work | Required profile | Fallback |
+| Child role | Required profile | Compatibility fallback |
 | --- | --- | --- |
-| Verifier | GPT-5.6 Luna `max` | GPT-5.6 Terra `high` |
-| Operator | GPT-5.6 Luna `max` | GPT-5.6 Terra `high` |
-| Narrow mechanical Worker with exact proof | GPT-5.6 Luna `max` | GPT-5.6 Terra `high` |
-| Worker requiring broad engineering judgment | GPT-5.6 Terra `high` | Keep with lead |
+| Verifier | GPT-5.6 Luna `max` | GPT-5.6 Terra `xhigh` |
+| Operator | GPT-5.6 Luna `max` | GPT-5.6 Terra `xhigh` |
+| Executor | GPT-5.6 Luna `max` | GPT-5.6 Terra `xhigh` |
 
-Use Luna only at `max`. Use the fallback only when the required profile is unavailable on the current spawn surface, and make the substitution explicit.
+Use Luna only at `max`. Use Terra only at `xhigh`, and only when Luna Max is unavailable or the user explicitly chooses the lower-latency fallback. Announce the substitution. Keep architecture, task setting, integration, and other consequential decisions with the lead.
 
 ## Spawn protocol
 
@@ -73,17 +90,17 @@ Before every spawn:
 
 1. resolve the trigger, role, mode, user authority, and exposed models;
 2. explicitly pass `model` and `reasoning_effort`; never rely on parent, configured, or automatic defaults;
-3. set `fork_turns` to `none` for sidecars and normally for Workers;
-4. use a bounded positive `fork_turns` for a Worker only when those exact recent turns are required;
+3. set `fork_turns` to `none` for sidecars and normally for Executor;
+4. use a bounded positive `fork_turns` for Executor only when those exact recent turns are required;
 5. keep the work with the lead when neither the required profile nor its fallback is exposed.
 
 Full-history inheritance is forbidden. An omitted model, omitted reasoning effort, inherited lead profile, silent effort downgrade, or incompatible fork is a routing failure.
 
-Send:
+For a sidecar, send:
 
 `Role | Task | Trigger | Checkpoint | Scope | Allowed writes | Expected result | Stop conditions`
 
-Return:
+Require:
 
 `Status | Evidence or artifacts | Issue or risk | Next`
 
@@ -96,7 +113,7 @@ The lead reviews and consumes every return before integration or closeout.
 - Only the lead spawns, steers, or redirects children.
 - Depth is one. Children never spawn or hand work directly to another child.
 - Sidecars do not edit source or `tasks.csv`; expected temporary and build artifacts are allowed.
-- Workers edit only their assigned scope. A writing Worker must own a separate active task and disjoint paths.
+- Executor edits only the assigned paths under the active lead-owned task.
 - Children stop when scope, assumptions, checkpoint identity, or authority becomes unclear.
 
 ## Checkpoint barrier
@@ -109,7 +126,7 @@ The lead reviews and consumes every return before integration or closeout.
 
 ## Reuse, context, and loss recovery
 
-Keep stable role instructions, tools, and profiles unchanged during a task. Put volatile task data last and send only incremental deltas to a reused child.
+Keep stable role instructions, tools, profiles, architecture, and invariants unchanged during a task. Put volatile unit data last and send only incremental deltas to a reused child.
 
 Agent lifetime is not durable. A wait timeout may only end the wait, and a child may disappear. Store durable knowledge in repository documents. Rehydrate a replacement from its role, active task, relevant repository procedure, current checkpoint, and latest unresolved result.
 

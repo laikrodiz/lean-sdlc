@@ -17,7 +17,8 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - one Lean-SDLC dispatcher skill;
 - minimal repository initialization and migration;
 - atomic private task-ledger transactions;
-- deterministic lead, sidecar, and Worker roles under one canonical policy;
+- deterministic lead, Executor, and sidecar roles under one canonical policy;
+- lead-directed execution in one settled, verified unit at a time;
 - learned project-specific operational procedures;
 - minimal modular engineering, plausible edge-case treatment, and lightweight rendered diagrams;
 - structural validation, tests, packaging, and installation guidance.
@@ -34,10 +35,11 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - Use shell and Python standard library only.
 - Keep task state human-readable and safe for concurrent Codex tasks.
 - Keep `tasks.csv` private to each working copy.
-- Never route reasoning below `medium`.
+- Never route reasoning below `high`.
 - Preserve explicit user model and orchestration requests.
 - Prefer deterministic depth-one delegation over agent hierarchies.
 - Require explicit model, reasoning, and bounded context on every spawned agent.
+- Use Luna Max for child execution and Terra XHigh only as an explicit availability or latency fallback.
 - Prefer cohesive replaceable units and earned boundaries over project-size architecture tiers.
 
 ## Success Criteria
@@ -46,14 +48,15 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - A new repository needs only `AGENTS.md`, `docs/PROJECT.md`, and root `tasks.csv`.
 - Task transactions remain atomic, owner-aware, dependency-valid, and cycle-free.
 - Assisted, Focused, and Solo modes follow the same delivery gates.
-- Mandatory sidecar triggers and strict Worker eligibility make delegation predictable.
-- Spawned agents use explicit role profiles, every Luna child uses Max, and children never inherit lead decision authority.
+- Assisted mode delegates each settled execution unit beyond the direct fast path to one reusable Executor.
+- The lead reviews and Verifier checks each returned unit before another begins.
+- Spawned agents use explicit role profiles, every Luna child uses Max, Terra High is never routed, and children never inherit lead decision authority.
 - Changed contracts receive proportionate edge-case treatment and architecture remains modular without speculative seams.
 - The plugin validates, installs from a pinned Git tag, and passes its full test suite.
 
 ## Current Promise
 
 - Stage: Evolution
-- Version: 1.2.0
-- Version goal: Make subagent triggering deterministic and keep every child-agent rule in one canonical policy.
+- Version: 1.3.0
+- Version goal: Preserve lead decision authority while making one-unit Luna Max execution deterministic.
 - Exit evidence: Tests, skill and plugin validation, local installation, repository checks, reviewed diff, tagged commit, and successful push.
