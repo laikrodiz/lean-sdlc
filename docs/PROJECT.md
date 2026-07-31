@@ -18,14 +18,14 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - minimal repository initialization and migration;
 - atomic private task-ledger transactions;
 - a human-monitorable ledger with durable `Context` values and labeled child reports;
-- deterministic lead, Executor, Researcher, Verifier, and Operator roles under one canonical policy;
+- deterministic principal-engineer lead with Executor, Maintainer, Verifier, and Researcher roles under one canonical policy;
 - one lazily spawned child thread per role and lead Codex task, reused across repository tasks and inquiries;
 - one named Luna Max custom-agent profile for child execution;
 - a standard-library configurator that installs the profile and its multi-agent metadata;
 - lead-directed execution with one durable task and one reviewed checkpoint at a time;
 - independent Verifier proof and risk-based regression without blind repetition of Executor checks;
 - read-only Researcher evidence collection for substantial multi-source or noisy inquiries;
-- Operator-owned stateful operations with Verifier consumption of recorded evidence;
+- Maintainer-owned stateful operations with Verifier consumption of recorded evidence;
 - applicable ASD-STE100 Issue 9 rules for generated English technical prose;
 - learned project-specific operational procedures;
 - minimal modular engineering, plausible edge-case treatment, and lightweight rendered diagrams;
@@ -44,13 +44,15 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - Keep task state human-readable and safe for concurrent Codex tasks.
 - Use `Context` values `Project`, `FEAT-*`, `DEC-*`, and `Bootstrap` for durable project truth.
 - Require one visible lead assignment before every child handoff and one final-result report after child work.
-- Do not send periodic child progress updates.
+- Require a concise architecture brief before every Executor handoff and a lead sign-off after every Executor checkpoint.
+- Report child phase changes sparsely and bound silent-command heartbeats to two at two-minute intervals.
+- Do not send unbounded child progress updates.
 - Keep `tasks.csv` private to each working copy.
 - Never route reasoning below `high`.
 - Preserve explicit user model and orchestration requests.
 - Prefer deterministic depth-one delegation over agent hierarchies.
-- Route primary Luna children through the named `lean_sdlc_luna` profile.
-- Use direct Terra XHigh only when the Luna profile is unavailable, unexposed, or rejected.
+- Route primary Luna children through the named `lean_sdlc_luna` profile at `service_tier=fast`.
+- Retry Luna Max without `service_tier` when fast is unavailable or rejected. Use direct Terra XHigh without `service_tier` only when Luna is unavailable.
 - Apply ASD-STE100 sentence limits, active voice, consistent terms, condition-first instructions, and applicable spelling rules.
 - Preserve exact code, commands, paths, identifiers, protocol fields, quotations, and required domain terms.
 - Prefer cohesive replaceable units and earned boundaries over project-size architecture tiers.
@@ -60,11 +62,11 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - Codex reliably triggers Lean-SDLC when explicitly invoked or required by repository rules.
 - A new repository needs only `AGENTS.md`, `docs/PROJECT.md`, and root `tasks.csv`.
 - Task transactions remain atomic, owner-aware, dependency-valid, and cycle-free.
-- Assisted, Focused, and Solo modes follow the same delivery gates.
-- Assisted mode delegates each settled durable task beyond the direct fast path to one reusable Executor.
+- Assisted mode uses every triggered role, including Executor.
+- Solo mode uses lead-only execution under the same delivery gates.
 - Normal repository task transitions reuse existing role threads and never create numbered replacements.
 - The lead reviews every returned task checkpoint and Verifier checks each accepted checkpoint before another task begins.
-- Spawned Luna agents use the named Max profile, Terra High is never routed, and children never inherit lead decision authority.
+- Spawned Luna agents use the named profile and fast tier when available, Terra High is never routed, and children never inherit lead decision authority.
 - Generated English technical prose follows applicable ASD-STE100 Issue 9 rules without unsupported certification claims.
 - Changed contracts receive proportionate edge-case treatment and architecture remains modular without speculative seams.
 - The plugin validates, installs from a pinned Git tag, and passes its full test suite.

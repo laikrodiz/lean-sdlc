@@ -6,7 +6,7 @@ Use Sol `high`. Use `xhigh` for security, concurrency, migrations, irreversible 
 
 1. Read `docs/PROJECT.md` and the behavior the choice serves.
 2. Identify the exact decision, constraints, reversal cost, and failure cost.
-3. Compare only viable options using maturity, testability, diagnostics, operator skill, and maintenance cost.
+3. Compare only viable options using maturity, testability, diagnostics, maintainer skill, and maintenance cost.
 4. Choose boundaries from responsibility and observed pressure rather than project-size buckets.
 5. Stop at the first boundary that holds: direct code, cohesive function, module, package or component, then a separate process or service only for operational isolation.
 6. Strengthen a boundary for a distinct transformation, state, I/O or failure mode, separate change reason, useful contract test, or current replacement need.

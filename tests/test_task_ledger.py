@@ -712,6 +712,12 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("mandatory sidecar triggers", subagents)
         self.assertIn("executor trigger and loop", subagents)
         self.assertIn("lead authority", subagents)
+        self.assertIn("acts as principal engineer", subagents)
+        self.assertIn("product or architecture decision", subagents)
+        self.assertIn("boundaries and invariants", subagents)
+        self.assertIn("non-goals", subagents)
+        self.assertIn("architecture alignment", subagents)
+        self.assertIn("decision reopened", subagents)
         self.assertIn(
             "a localized change in one file followed by one narrow proof command",
             subagents,
@@ -735,7 +741,7 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("user-selected lead", subagents)
         self.assertIn("lead alone decide task disposition", verify)
         self.assertIn("must reuse or start verifier", evaluations)
-        self.assertIn("must reuse or start operator", evaluations)
+        self.assertIn("must reuse or start maintainer", evaluations)
         self.assertIn("must reuse or start executor", evaluations)
         self.assertIn("must reuse or start read-only researcher", evaluations)
         self.assertIn("send a follow-up to the existing role thread", evaluations)
@@ -743,11 +749,16 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("directly spawn terra `xhigh`", evaluations)
         self.assertIn("inherits an automatic model", evaluations)
         self.assertIn("agent_type=lean_sdlc_luna", subagents)
-        self.assertIn("omit direct `model` and `reasoning_effort`", subagents)
-        self.assertIn("without `agent_type`", subagents)
+        self.assertIn("service_tier=fast", subagents)
+        self.assertIn("retry luna max without `service_tier`", subagents)
+        self.assertIn("without `service_tier` or `agent_type`", subagents)
+        self.assertIn("approved concise lowercase snake_case responsibility name", subagents)
+        self.assertIn("reject vague names, counters, feature names, task identifiers", subagents)
+        self.assertIn("show the additional role name and authority before its spawn", subagents)
         self.assertIn("before every child handoff, the lead tells the user", subagents)
         self.assertIn("do not depend on child commentary for startup visibility", subagents)
-        self.assertIn("the child sends no periodic progress updates", subagents)
+        self.assertIn("the child reports only material phase changes", subagents)
+        self.assertIn("at most two heartbeats per command", subagents)
         self.assertIn("the child sends this final-result report after work finishes or blocks", subagents)
         self.assertIn("resolve shorthand tool names before delegation", verify)
         self.assertEqual(root_agents, template_agents)
@@ -757,6 +768,8 @@ class PackageContractTests(unittest.TestCase):
             document.read_text(encoding="utf-8").lower()
             for document in policy_documents
         )
+        self.assertNotIn("operator", policy)
+        self.assertNotIn("focused", policy)
         self.assertNotIn("gpt-5.6 terra `high`", policy)
         self.assertNotIn("explicitly spawn terra `high`", policy)
 
@@ -786,10 +799,10 @@ class PackageContractTests(unittest.TestCase):
         root_agents = ROOT.joinpath("AGENTS.md").read_text(encoding="utf-8").lower()
 
         for phrase in [
-            "executor receives exactly one durable task from the lead",
-            "performs local implementation and fast targeted development checks",
+            "executor receives exactly one durable task and one settled decision envelope from the lead",
+            "chooses only local implementation mechanics inside the envelope",
             "returns one task checkpoint",
-            "lead reviews architecture, scope, and diff once per returned checkpoint",
+            "lead reviews architecture, scope, diff, and contract alignment once per returned checkpoint",
             "corrections return as a concise delta to the same executor",
             "researcher is read-only and never edits repository files",
             "the lead evaluates sources and retains every decision",
@@ -798,8 +811,13 @@ class PackageContractTests(unittest.TestCase):
             "reuse `researcher` across read-only inquiries",
             "verifier independently reruns acceptance-defining proof",
             "skips executor-only targeted checks",
-            "verifier consumes operator evidence instead of repeating the operation",
-            "operator sidecar: runs guided or recorded build, package, ci, deploy, flash, runtime, and smoke operations",
+            "verifier consumes maintainer evidence instead of repeating the operation",
+            "maintainer replays the exact procedure",
+            "maintainer never repairs source",
+            "verifier receives acceptance and the exact checkpoint",
+            "without targeting a desired verdict",
+            "researcher receives a question and source boundary",
+            "without a preferred answer",
         ]:
             self.assertIn(phrase, subagents)
 
@@ -815,12 +833,13 @@ class PackageContractTests(unittest.TestCase):
             "add risk-based regression",
             "skip executor-only targeted checks",
             "run the full suite once under verifier unless evidence conflicts",
-            "consume operator evidence instead of repeating the operation",
+            "consume maintainer evidence instead of repeating the operation",
             "avoid repeating child commands except in solo mode or to resolve conflicting evidence",
         ]:
             self.assertIn(phrase, verify)
 
         self.assertIn("run one state-changing operation at a time", operations)
+        self.assertIn("maintainer trigger", operations)
         self.assertIn("role: researcher", subagents)
         self.assertIn("inquiry: inquiry identifier", subagents)
         self.assertIn("decision informed:", subagents)
@@ -833,7 +852,9 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("researcher returns findings", evaluations)
         self.assertIn("researcher inquiry is read-only and no task exists", evaluations)
         self.assertIn("researcher findings require repository writes", evaluations)
-        self.assertIn("including researcher when its trigger applies", evaluations)
+        self.assertIn("solo mode", evaluations)
+        self.assertIn("concise lowercase snake_case responsibility name", evaluations)
+        self.assertIn("additional role name is vague", evaluations)
         self.assertIn("a correction returns another checkpoint", evaluations)
         self.assertIn("once per returned checkpoint", evaluations)
         self.assertIn(
@@ -851,7 +872,7 @@ class PackageContractTests(unittest.TestCase):
         self.assertEqual(profile["model"], "gpt-5.6-luna")
         self.assertEqual(profile["model_reasoning_effort"], "max")
         self.assertIn("Researcher", profile["description"])
-        self.assertIn("Use that role: Executor, Researcher, Verifier, or Operator.", profile["developer_instructions"])
+        self.assertIn("Use that role: Executor, Maintainer, Verifier, or Researcher.", profile["developer_instructions"])
 
     def test_luna_profile_and_technical_english_rules_are_packaged(self) -> None:
         profile = tomllib.loads(LUNA_PROFILE.read_text(encoding="utf-8"))
@@ -869,7 +890,7 @@ class PackageContractTests(unittest.TestCase):
         self.assertEqual(profile["name"], "lean_sdlc_luna")
         self.assertEqual(profile["model"], "gpt-5.6-luna")
         self.assertEqual(profile["model_reasoning_effort"], "max")
-        self.assertIn("Executor, Researcher, Verifier, or Operator", profile["description"])
+        self.assertIn("Executor, Maintainer, Verifier, or Researcher", profile["description"])
         self.assertIn("agent_type=lean_sdlc_luna", subagents)
         self.assertIn("gpt-5.6-terra", subagents)
         self.assertIn("reasoning_effort=xhigh", subagents)

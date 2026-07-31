@@ -59,7 +59,7 @@ Apply the applicable ASD-STE100 Issue 9 rules to generated English technical pro
 
 Before Deliver or the first delegated read-only operation, apply [references/subagents.md](references/subagents.md). Tell the user the mode, child action, active task or inquiry, and reason in one or two short sentences.
 
-That policy is the sole authority for child roles, triggers, profiles, spawn payloads, handoffs, reuse, and failure conditions. The lead owns architecture, task state, acceptance, integration, and closeout. Keep one lazily spawned thread per role for each lead Codex task. Reuse it across repository tasks and inquiries. In Assisted mode, one ready durable task beyond the direct fast path uses Executor; lead review and checkpoint verification precede another task.
+That policy is the sole authority for child roles, triggers, profiles, spawn payloads, handoffs, reuse, and failure conditions. The user-selected lead acts as principal engineer and owns product intent, architecture, interfaces, invariants, task boundaries, integration, acceptance, and closeout. Assisted mode uses every triggered role, including Executor. Solo mode uses lead-only execution under the same contracts. Keep one lazily spawned thread per role for each lead Codex task. Reuse it across repository tasks and inquiries. Lead review and checkpoint verification precede another task.
 
 ## Result
 

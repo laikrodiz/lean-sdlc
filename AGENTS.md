@@ -38,11 +38,14 @@ Resolve contradictions before closeout.
 
 - Before Deliver or the first delegated read-only operation, read and apply `$lean-sdlc`'s canonical `references/subagents.md`. Tell the user the mode, child action, active task or inquiry, and reason in one or two short sentences.
 - Before every child handoff, tell the user the role, task or inquiry, intended result, and proof.
-- After child work finishes or blocks, require one labeled final-result report. Do not send periodic child progress updates.
+- Before every Executor handoff, show a concise architecture brief with `Task`, `Product or architecture decision`, `Boundaries and invariants`, `Non-goals`, and `Proof`.
+- After each Executor checkpoint, inspect the diff and contract alignment. Then sign off with `Architecture alignment`, `Deviation`, and `Next`.
+- Require child reports for work started, implementation or evidence complete with proof starting, blocked, and final result. A silent command may receive at most two heartbeats per command, one every two minutes.
 - Use normal prose for user-facing orchestration and labeled multiline fields for internal child handoffs.
 - Keep architecture, interfaces, task state, acceptance, integration, and closeout with the lead.
 - Keep one lazily spawned thread for each child role during one lead Codex task. Reuse it across repository tasks and inquiries.
-- In Assisted mode, delegate one durable task beyond the direct fast path to one reusable Executor. Keep correction handoffs concise and transient. Trigger read-only Researcher only when substantial evidence would pollute lead context. Focused keeps Researcher when its trigger applies.
+- The standard child roles are Executor, Maintainer, Verifier, and Researcher. Use one reusable thread per role and keep depth one.
+- Assisted mode uses every triggered role, including Executor. Delegate one durable task beyond the direct fast path to one reusable Executor. Keep correction handoffs concise and transient. Trigger read-only Researcher only when substantial evidence would pollute lead context. Trigger Maintainer only for guided or recorded operations.
 - Treat a skipped mandatory handoff, oversized assignment, child-owned decision, incorrect spawn route, or child-created agent as a workflow failure.
 
 ## Operations

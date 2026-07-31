@@ -1,6 +1,6 @@
 # Operations
 
-Apply the Operator trigger, authority, profile, spawn, and handoff rules from [subagents.md](subagents.md). This file owns only how project-specific procedures are learned and repeated.
+Apply the Maintainer trigger, authority, profile, spawn, and handoff rules from [subagents.md](subagents.md). This file owns only how project-specific procedures are learned and repeated.
 
 ## Learn, then repeat
 
@@ -11,10 +11,10 @@ An operation moves through:
 For the first build, package, deploy, flash, runtime, or smoke operation:
 
 1. The lead, user, or bounded worker guides the exact attempt.
-2. The Operator observes commands, inputs, target, success signal, artifacts, and recovery facts.
-3. After success, the Operator returns a short procedure draft.
+2. The Maintainer observes commands, inputs, target, success signal, artifacts, and recovery facts.
+3. After success, the Maintainer returns a short procedure draft.
 4. The lead records it in optional `docs/OPERATIONS.md` under the active task.
-5. Later Operator runs replay the recorded procedure exactly.
+5. Later Maintainer runs replay the recorded procedure exactly.
 
 Update the recorded procedure after another guided success when reality changes. Stop when a procedure is missing, ambiguous, or stale.
 
@@ -58,7 +58,7 @@ Next: Required lead action, or None.
 
 Run one state-changing operation at a time for the same `task + operation + target`. Never guess a target, silently change a procedure, or retry a state-changing failure without authority and a recorded recovery rule.
 
-Discard successful raw logs after the compact result. Keep failed logs only as temporary artifacts and report their path. The Operator reports failure; Diagnose owns root cause and Deliver owns repairs.
+Discard successful raw logs after the compact result. Keep failed logs only as temporary artifacts and report their path. The Maintainer reports failure; Diagnose owns root cause and Deliver owns repairs.
 
 ## Delivery classes
 

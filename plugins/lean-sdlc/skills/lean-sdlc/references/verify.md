@@ -10,8 +10,8 @@ Apply the mandatory Verifier trigger and explicit profile from [subagents.md](su
 4. Compare the delivered behavior with every acceptance point.
 5. Reuse the existing `verifier` thread, or spawn it lazily. Have Verifier independently rerun acceptance-defining proof against the exact checkpoint and add risk-based regression.
 6. Have the Verifier skip Executor-only targeted checks. Run the full suite once under Verifier unless evidence conflicts.
-7. Have the Operator apply its canonical operation contract for artifact or operational work.
-8. Have the Verifier consume Operator evidence instead of repeating the operation.
+7. Have the Maintainer apply its canonical operation contract for artifact or operational work.
+8. Have the Verifier consume Maintainer evidence instead of repeating the operation.
 9. Have the lead avoid repeating child commands except in Solo mode or to resolve conflicting evidence.
 10. Inspect the diff for unrelated change, stale documentation, oversized tasks, pass-through modules, speculative seams, and boundaries that always change together.
 11. Check change locality: a meaningful task can be tested or replaced through its contract without unrelated repository surgery.

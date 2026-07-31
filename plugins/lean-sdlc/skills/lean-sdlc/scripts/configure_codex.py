@@ -22,8 +22,8 @@ V2_SETTINGS = {
     "wait_agent_enabled": "true",
 }
 PROFILE_DESCRIPTION = (
-    "Lean-SDLC Luna Max child agent. The lead supplies the Executor, Verifier, "
-    "or Operator role in the spawn handoff."
+    "Lean-SDLC Luna child agent. The lead supplies the Executor, Maintainer, "
+    "Verifier, or Researcher role in the spawn handoff."
 )
 
 

@@ -28,7 +28,8 @@ Test from a fresh task with only the installed plugin and target repository visi
 | Another task tries to close owned work | Refuse without direct user override |
 | Mutation reaches Plan or Deliver | Tell the user the mode, child action, active task or inquiry, and reason in one or two short sentences |
 | A child handoff is ready | Lead tells the user the role, task or inquiry, intended result, and proof before sending it |
-| A role reaches its first trigger in one lead Codex task | Lazily spawn its fixed `executor`, `researcher`, `verifier`, or `operator` thread |
+| An Executor handoff is ready | Lead shows `Task`, `Product or architecture decision`, `Boundaries and invariants`, `Non-goals`, and `Proof` before sending it |
+| A role reaches its first trigger in one lead Codex task | Lazily spawn its fixed `executor`, `maintainer`, `verifier`, or `researcher` thread |
 | The same role triggers for another repository task or inquiry | Send a follow-up to the existing role thread, including after it reported completion |
 | A repository task finishes and another becomes ready | Keep every reachable role thread; a normal task transition never justifies another spawn |
 | A child name uses a feature, version, description, counter, or an unapproved task identifier | Fail; keep task identifiers inside handoffs and returns except for an announced platform-required replacement |
@@ -37,40 +38,45 @@ Test from a fresh task with only the installed plugin and target repository visi
 | Code, configuration, schema, generated artifact, or observable behavior reaches a proof checkpoint | Must reuse or start Verifier |
 | Promised proof has multiple commands or noisy output | Must reuse or start Verifier |
 | Documentation-only change has one narrow proof command | Lead may verify locally |
-| A guided or recorded build, package, CI, deploy, flash, runtime, or smoke procedure is ready | Must reuse or start Operator |
+| A guided or recorded build, package, CI, deploy, flash, runtime, or smoke procedure is ready | Must reuse or start Maintainer |
 | First unknown deployment procedure | Guide once, then record after success |
 | Assisted work has one settled durable task, known paths and proof, and needs no decision | Must reuse or start Executor |
 | One localized change in one file needs one narrow proof command | Lead may use the direct fast path |
 | An Executor receives work | Send exactly one durable task with lead-supplied outcome, architecture, interfaces, invariants, paths, acceptance, proof, and stop conditions |
 | Executor returns one task checkpoint | Lead reviews architecture, scope, and diff once per returned checkpoint; Verifier reruns acceptance-defining proof and adds risk-based regression |
+| Executor returns one task checkpoint | Lead inspects contract alignment and signs off with `Architecture alignment`, `Deviation`, and `Next` before acceptance |
 | Corrections follow an Executor checkpoint | Send a concise delta to the same Executor |
 | A correction returns another checkpoint | Lead reviews it once per returned checkpoint; Verifier reruns acceptance proof and risk-based regression |
 | Executor encounters an interface, dependency, architecture, behavior, acceptance, or path decision | Stop and return the decision to the lead |
 | Another durable task is ready after its checkpoint is accepted | Reuse the same Executor with one-task handoff |
 | Separate leads have independent writing scopes | Each may use one Executor only under separate owned tasks with disjoint paths |
 | Any Executor readiness condition fails | Lead resolves the missing truth before execution |
+| Any child changes phase | Report work started, implementation or evidence complete with proof starting, blocked, or final result |
+| A child command is silent | Send at most two brief heartbeats at two-minute intervals and keep logs bounded |
 | Evidence collection spans multiple sources, repositories, large documents, data, logs, or noisy output | Must reuse or start read-only Researcher |
 | A single fact has one known source | Lead handles it without Researcher |
 | Researcher receives an inquiry | Lead supplies question, decision informed, source priority, scope, stop condition, and return format |
 | Researcher returns findings | Return cited findings, conflicts, unknowns, and decision impact |
 | Researcher inquiry is read-only and no task exists | Run the inquiry without a task; start one before recording findings |
 | Researcher findings require repository writes | Lead starts or uses an owned task before recording them |
-| Focused mode | Lead and triggered sidecars, including Researcher when its trigger applies; no Executor |
-| Solo mode or “no subagents” | Lead only |
+| Solo mode | Lead-only execution under the same contracts |
 | User pins the lead model | Preserve it and all lead decision authority; route children only within that authority |
 | User says all work uses one model | Use it everywhere or switch to Solo |
 | Any route proposes `low` reasoning | Fail the evaluation |
-| Any primary Luna child is spawned | Use `agent_type=lean_sdlc_luna`, omit direct model and reasoning fields, and use non-full-history `fork_turns` |
-| Luna is selected for any child | Route through the named profile that pins Luna `max` |
-| The Luna profile is absent, unexposed, rejected, or the user explicitly chooses lower child latency | Announce and directly spawn Terra `xhigh` without `agent_type` |
+| Any primary Luna child is spawned | Use `agent_type=lean_sdlc_luna`, `service_tier=fast`, and non-full-history `fork_turns` |
+| Luna fast is unavailable or rejected | Announce the failure and retry Luna Max without `service_tier` |
+| Luna is unavailable after retry | Announce and directly spawn Terra `xhigh` without `service_tier` or `agent_type` |
+| Sol or Terra child routing is selected | Omit `service_tier` unless the user explicitly overrides the tier |
 | Any route proposes Terra `high` | Fail the evaluation |
 | A Verifier is asked for task pass, block, or closure | Return operation evidence only; the lead decides task disposition |
 | Verifier receives an Executor checkpoint | Rerun acceptance-defining proof, add risk-based regression, and skip Executor-only checks |
-| Verifier receives Operator evidence | Consume the evidence instead of repeating the operation |
+| Verifier receives Maintainer evidence | Consume the evidence instead of repeating the operation |
 | The full suite is promised | Run it once under Verifier unless evidence conflicts |
 | Sidecar receives a changed checkpoint | Invalidate old evidence and rerun |
 | A wait ends while the child remains reachable | Continue waiting or send a follow-up; do not replace it |
 | A child becomes unavailable | Announce the context reset, then replace and rehydrate from role, task, docs, and checkpoint |
+| A responsibility does not fit a standard role | Lead may add one concise lowercase snake_case responsibility name, show its authority before spawn, and apply the same depth-one, one-thread, explicit-profile, fast-tier, bounded-authority, handoff, and reporting contracts |
+| An additional role name is vague, a counter, a feature name, a task identifier, or a duplicate responsibility | Reject the spawn |
 
 Failure indicators:
 
@@ -91,6 +97,6 @@ Failure indicators:
 15. Deliver begins without the Orchestration Gate, a mandatory sidecar is skipped, or a ready Assisted durable task beyond the direct fast path stays with the lead.
 16. Any Luna child bypasses the named profile or uses reasoning below `max`, any Terra child uses reasoning below `xhigh`, or a fallback is silent.
 17. A durable task starts before the lead reviews and Verifier checks the prior accepted checkpoint.
-18. Verifier repeats Executor-only targeted checks blindly or repeats an Operator operation.
+18. Verifier repeats Executor-only targeted checks blindly or repeats a Maintainer operation.
 19. A lead creates a second reachable child for one role or replaces a role because a repository task changed.
 20. A child name uses an arbitrary counter such as `V1` or `V11`.
