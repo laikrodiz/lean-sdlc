@@ -72,6 +72,6 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 ## Current Promise
 
 - Stage: Evolution
-- Version: 1.5.1
-- Version goal: Release deterministic role-thread reuse across repository tasks and inquiries.
+- Version: 1.6.0
+- Version goal: Release human-monitorable child work and the clearer task Context schema.
 - Exit evidence: Tests, skill and plugin validation, local installation, accepted checkpoints, repository checks, tagged commit, and successful push.

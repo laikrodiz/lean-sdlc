@@ -51,10 +51,10 @@ Lean-SDLC applies the applicable ASD-STE100 Issue 9 rules to generated English t
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-Install the immutable `v1.5.1` release:
+Install the immutable `v1.6.0` release:
 
 ```bash
-git clone --depth 1 --branch v1.5.1 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.6.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 python3 plugins/lean-sdlc/skills/lean-sdlc/scripts/configure_codex.py
 python3 plugins/lean-sdlc/skills/lean-sdlc/scripts/configure_codex.py --check
