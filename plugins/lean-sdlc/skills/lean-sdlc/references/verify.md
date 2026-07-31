@@ -7,7 +7,7 @@ Apply the mandatory Verifier trigger and explicit profile from [subagents.md](su
 1. Read the active task, owner, dependencies, acceptance, proof, parent truth, and checkpoint identity.
 2. Have the lead inspect the delivered task checkpoint for architecture, invariant, interface, path, and scope compliance.
 3. Compare the delivered behavior with every acceptance point.
-4. Have the Verifier independently rerun acceptance-defining proof against the exact checkpoint and add risk-based regression.
+4. Reuse the existing `verifier` thread, or spawn it lazily. Have Verifier independently rerun acceptance-defining proof against the exact checkpoint and add risk-based regression.
 5. Have the Verifier skip Executor-only targeted checks. Run the full suite once under Verifier unless evidence conflicts.
 6. Have the Operator apply its canonical operation contract for artifact or operational work.
 7. Have the Verifier consume Operator evidence instead of repeating the operation.

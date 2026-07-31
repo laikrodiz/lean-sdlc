@@ -18,6 +18,7 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - minimal repository initialization and migration;
 - atomic private task-ledger transactions;
 - deterministic lead, Executor, Researcher, Verifier, and Operator roles under one canonical policy;
+- one lazily spawned child thread per role and lead Codex task, reused across repository tasks and inquiries;
 - one named Luna Max custom-agent profile for child execution;
 - a standard-library configurator that installs the profile and its multi-agent metadata;
 - lead-directed execution with one durable task and one reviewed checkpoint at a time;
@@ -57,6 +58,7 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - Task transactions remain atomic, owner-aware, dependency-valid, and cycle-free.
 - Assisted, Focused, and Solo modes follow the same delivery gates.
 - Assisted mode delegates each settled durable task beyond the direct fast path to one reusable Executor.
+- Normal repository task transitions reuse existing role threads and never create numbered replacements.
 - The lead reviews every returned task checkpoint and Verifier checks each accepted checkpoint before another task begins.
 - Spawned Luna agents use the named Max profile, Terra High is never routed, and children never inherit lead decision authority.
 - Generated English technical prose follows applicable ASD-STE100 Issue 9 rules without unsupported certification claims.

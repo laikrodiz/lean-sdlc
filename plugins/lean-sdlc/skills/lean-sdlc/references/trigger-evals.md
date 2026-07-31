@@ -27,6 +27,12 @@ Test from a fresh task with only the installed plugin and target repository visi
 | Missing dependency or dependency cycle | Reject the transaction |
 | Another task tries to close owned work | Refuse without direct user override |
 | Mutation reaches Plan or Deliver | State `Mode | Required sidecars | Executor action | Reason` |
+| A role reaches its first trigger in one lead Codex task | Lazily spawn its fixed `executor`, `researcher`, `verifier`, or `operator` thread |
+| The same role triggers for another repository task or inquiry | Send a follow-up to the existing role thread, including after it reported completion |
+| A repository task finishes and another becomes ready | Keep every reachable role thread; a normal task transition never justifies another spawn |
+| A child name uses a feature, version, description, counter, or an unapproved task identifier | Fail; keep task identifiers inside handoffs and returns except for an announced platform-required replacement |
+| A role thread is unavailable, repeatedly stale after correction, reset by the user, or incompatible with a required tool, permission, or runtime | Announce `Role | Context reset reason | Replacement action`, then replace and rehydrate it |
+| A reachable role thread already exists | Do not spawn another child for that role |
 | Code, configuration, schema, generated artifact, or observable behavior reaches a proof checkpoint | Must reuse or start Verifier |
 | Promised proof has multiple commands or noisy output | Must reuse or start Verifier |
 | Documentation-only change has one narrow proof command | Lead may verify locally |
@@ -62,7 +68,8 @@ Test from a fresh task with only the installed plugin and target repository visi
 | Verifier receives Operator evidence | Consume the evidence instead of repeating the operation |
 | The full suite is promised | Run it once under Verifier unless evidence conflicts |
 | Sidecar receives a changed checkpoint | Invalidate old evidence and rerun |
-| Sidecar disappears or wait ends | Respawn and rehydrate from role, task, docs, and checkpoint |
+| A wait ends while the child remains reachable | Continue waiting or send a follow-up; do not replace it |
+| A child becomes unavailable | Announce the context reset, then replace and rehydrate from role, task, docs, and checkpoint |
 
 Failure indicators:
 
@@ -84,3 +91,5 @@ Failure indicators:
 16. Any Luna child bypasses the named profile or uses reasoning below `max`, any Terra child uses reasoning below `xhigh`, or a fallback is silent.
 17. A durable task starts before the lead reviews and Verifier checks the prior accepted checkpoint.
 18. Verifier repeats Executor-only targeted checks blindly or repeats an Operator operation.
+19. A lead creates a second reachable child for one role or replaces a role because a repository task changed.
+20. A child name uses an arbitrary counter such as `V1` or `V11`.

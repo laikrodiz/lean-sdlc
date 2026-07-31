@@ -14,6 +14,18 @@ Assisted is the default mode. Required sidecars run lazily. A ready durable task
 
 The user's mode remains active for the task or inquiry until changed. An explicit user profile pins the lead. When the user says all work must use one profile, apply it to every child or use Solo when it cannot be supplied.
 
+## Role instance lifecycle
+
+Keep at most one child thread for each role during one lead Codex task. Spawn `executor`, `researcher`, `verifier`, or `operator` lazily after its trigger. Reuse that role thread through follow-up handoffs across repository tasks and inquiries, including after it reports completion.
+
+Keep repository task identifiers in handoffs and returns. Do not derive child names from task identifiers, features, versions, workstreams, descriptions, or counters. A normal repository task transition never justifies another child.
+
+Replace a role thread only when it is unavailable, repeatedly uses stale assumptions after an explicit correction, the user requests clean context, or a required tool, permission, or runtime change needs another session. Before replacement, announce:
+
+`Role | Context reset reason | Replacement action`
+
+Use the canonical role name again when the platform permits it. When the platform requires a unique replacement name, use the active task identifier and state this constraint. Never use an arbitrary counter.
+
 ## Orchestration Gate
 
 Before Deliver or the first delegated read-only operation, state:
@@ -44,7 +56,7 @@ In Assisted mode, spawn or reuse Executor when every condition is true:
 
 A localized change in one file followed by one narrow proof command may stay with the lead. When any readiness condition is missing, the lead resolves the missing truth before execution. For ready work beyond that fast path, delegation is mandatory.
 
-Keep one writing Executor active per lead. Reuse the same named Executor for the task while its role, repository, architecture, and assumptions remain stable. Give it one observable outcome, one architecture and invariant set, one related path group, one acceptance set, one proof surface, and one stop condition. Never send several durable tasks or an internal backlog.
+Keep one writing Executor active per lead. Reuse `executor` across repository tasks while its lead Codex task remains active. Give it one observable outcome, one architecture and invariant set, one related path group, one acceptance set, one proof surface, and one stop condition. Never send several durable tasks or an internal backlog.
 
 Send:
 
@@ -58,7 +70,7 @@ The lead reviews architecture, scope, and diff once per returned checkpoint. Cor
 
 ## Mandatory sidecar triggers
 
-Spawn a sidecar only when its first command is ready. Reuse the same named sidecar while its task or inquiry, role, repository, and assumptions remain stable.
+Spawn a sidecar only when its first command is ready. Reuse its fixed role thread across tasks and inquiries under the lifecycle above.
 
 ### Researcher
 
@@ -70,7 +82,7 @@ Researcher is read-only and never edits repository files.
 Researcher returns cited findings, conflicts, unknowns, and decision impact.
 The lead evaluates sources and retains every decision.
 If findings require repository writes, the lead starts or uses an owned task before recording them.
-Reuse the same Researcher while its task or inquiry and assumptions remain stable.
+Reuse `researcher` across read-only inquiries. Send the current inquiry and changed assumptions in each handoff.
 
 ### Verifier
 
@@ -107,12 +119,14 @@ The profile receives the Executor, Researcher, Verifier, or Operator role throug
 Before every spawn:
 
 1. resolve the trigger, role, mode, user authority, and exposed models;
-2. use `agent_type=lean_sdlc_luna` for the primary Luna route;
-3. omit direct `model` and `reasoning_effort` fields for the primary Luna route because the named profile pins them;
-4. set `fork_turns` to `none` for sidecars and normally for Executor;
-5. use a bounded positive `fork_turns` for Executor only when those exact recent turns are required;
-6. announce the failure and directly spawn `gpt-5.6-terra` at `xhigh` without `agent_type` when the Luna profile is absent, unexposed, or rejected;
-7. keep the work with the lead when neither the required profile nor the Terra fallback is exposed.
+2. check for the existing fixed role thread and use a follow-up handoff when it is reachable;
+3. use `task_name=executor`, `researcher`, `verifier`, or `operator` for the first spawn;
+4. use `agent_type=lean_sdlc_luna` for the primary Luna route;
+5. omit direct `model` and `reasoning_effort` fields for the primary Luna route because the named profile pins them;
+6. set `fork_turns` to `none` for sidecars and normally for Executor;
+7. use a bounded positive `fork_turns` for Executor only when those exact recent turns are required;
+8. announce the failure and directly spawn `gpt-5.6-terra` at `xhigh` without `agent_type` when the Luna profile is absent, unexposed, or rejected;
+9. keep the work with the lead when neither the required profile nor the Terra fallback is exposed.
 
 Full-history inheritance is forbidden. The primary Luna route requires the named profile. The Terra fallback requires direct `model=gpt-5.6-terra` and `reasoning_effort=xhigh`. An automatic model default, inherited lead profile, silent fallback, effort downgrade, or incompatible fork is a routing failure.
 
@@ -156,8 +170,8 @@ The lead reviews and consumes every return before integration or closeout.
 
 ## Reuse, context, and loss recovery
 
-Keep stable role instructions, tools, profiles, architecture, and invariants unchanged during a task or inquiry. Put volatile data last and send only incremental deltas.
+Keep stable role instructions, tools, profiles, architecture, and invariants unchanged. Put the current task or inquiry and other volatile data last. Send only incremental deltas.
 
-Agent lifetime is not durable. A wait timeout may only end the wait, and a child may disappear. Store durable knowledge in repository documents. Rehydrate a replacement from its role, task or inquiry, relevant procedure, checkpoint, and latest unresolved result.
+Agent lifetime is not durable. A wait timeout only ends the wait and does not justify replacement. Store durable knowledge in repository documents. Rehydrate an allowed replacement from its role, current task or inquiry, relevant procedure, checkpoint, and latest unresolved result.
 
 Treat prompt-cache reuse as best effort. Never preserve stale context, create unnecessary agents, or weaken verification for a possible cache hit.

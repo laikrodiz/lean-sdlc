@@ -61,7 +61,7 @@ Before Deliver or the first delegated read-only operation, apply [references/sub
 
 `Mode | Required sidecars | Executor action | Reason`
 
-That policy is the sole authority for child roles, triggers, profiles, spawn payloads, handoffs, reuse, and failure conditions. The lead owns architecture, task state, acceptance, integration, and closeout. In Assisted mode, one ready durable task beyond the direct fast path uses one reusable Executor; lead review and checkpoint verification precede another task.
+That policy is the sole authority for child roles, triggers, profiles, spawn payloads, handoffs, reuse, and failure conditions. The lead owns architecture, task state, acceptance, integration, and closeout. Keep one lazily spawned thread per role for each lead Codex task. Reuse it across repository tasks and inquiries. In Assisted mode, one ready durable task beyond the direct fast path uses Executor; lead review and checkpoint verification precede another task.
 
 ## Result
 

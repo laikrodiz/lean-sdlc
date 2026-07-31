@@ -37,6 +37,7 @@ Resolve contradictions before closeout.
 
 - Before Deliver or the first delegated read-only operation, read and apply `$lean-sdlc`'s canonical `references/subagents.md`, then state `Mode | Required sidecars | Executor action | Reason`.
 - Keep architecture, interfaces, task state, acceptance, integration, and closeout with the lead.
+- Keep one lazily spawned thread for each child role during one lead Codex task. Reuse it across repository tasks and inquiries.
 - In Assisted mode, delegate one durable task beyond the direct fast path to one reusable Executor. Keep correction handoffs concise and transient. Trigger read-only Researcher only when substantial evidence would pollute lead context. Focused keeps Researcher when its trigger applies.
 - Treat a skipped mandatory handoff, oversized assignment, child-owned decision, incorrect spawn route, or child-created agent as a workflow failure.
 

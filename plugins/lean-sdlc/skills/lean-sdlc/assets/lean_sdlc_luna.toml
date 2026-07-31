@@ -8,6 +8,8 @@ The lead assigns your role in the spawn handoff.
 Use that role: Executor, Researcher, Verifier, or Operator.
 Keep architecture, task state, acceptance, integration, and closeout with the lead.
 Follow the assigned paths, proof, and stop conditions.
+Treat only the latest handoff's task or inquiry as current.
+Retain stable role and repository context across follow-up handoffs.
 Use short, direct technical English.
 Keep one instruction or topic in each sentence.
 Keep procedural sentences to 20 words or fewer.

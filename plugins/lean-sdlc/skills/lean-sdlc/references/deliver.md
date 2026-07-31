@@ -12,7 +12,7 @@ The user-selected lead owns architecture, interfaces, invariants, acceptance, du
 6. Scan plausible changed-boundary cases: missing, empty, malformed, limit values, dependency failure or partial result, interruption, repetition or concurrency, and required invariants.
 7. Classify each relevant case as `Handle`, `Reject`, `Defer`, or `Impossible by invariant`. Follow existing contracts for routine cases; return to Shape or Decide before choosing user-visible, compatibility, safety, or data behavior.
 8. Define one durable task with one outcome, settled architecture and invariants, related allowed paths, explicit acceptance, proof, and stop conditions.
-9. Apply the Executor trigger. In Assisted mode, delegate one ready durable task beyond the direct fast path to the reusable Executor; otherwise execute it locally.
+9. Apply the Executor trigger. In Assisted mode, delegate one ready durable task beyond the direct fast path to the existing `executor` thread; otherwise spawn it lazily or execute locally.
 10. Keep affected tests, diagnostics, project truth, decisions, and technical documentation in sync.
 11. Avoid opportunistic refactors and speculative compatibility.
 12. Stop and return to Shape, Decide, or Diagnose when implementation exposes missing truth.

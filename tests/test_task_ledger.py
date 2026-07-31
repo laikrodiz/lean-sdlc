@@ -684,6 +684,11 @@ class PackageContractTests(unittest.TestCase):
         )
         self.assertIn("delegation is mandatory", subagents)
         self.assertIn("one writing executor active per lead", subagents)
+        self.assertIn("at most one child thread for each role during one lead codex task", subagents)
+        self.assertIn("task_name=executor", subagents)
+        self.assertIn("normal repository task transition never justifies another child", subagents)
+        self.assertIn("role | context reset reason | replacement action", subagents)
+        self.assertIn("never use an arbitrary counter", subagents)
         self.assertIn("separate owned tasks with disjoint paths", subagents)
         self.assertIn("researcher", subagents)
         self.assertIn("before every spawn", subagents)
@@ -697,6 +702,8 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("must reuse or start operator", evaluations)
         self.assertIn("must reuse or start executor", evaluations)
         self.assertIn("must reuse or start read-only researcher", evaluations)
+        self.assertIn("send a follow-up to the existing role thread", evaluations)
+        self.assertIn("do not spawn another child for that role", evaluations)
         self.assertIn("directly spawn terra `xhigh`", evaluations)
         self.assertIn("inherits an automatic model", evaluations)
         self.assertIn("agent_type=lean_sdlc_luna", subagents)
@@ -747,7 +754,7 @@ class PackageContractTests(unittest.TestCase):
             "the lead evaluates sources and retains every decision",
             "use the researcher contract locally in solo",
             "if findings require repository writes, the lead starts or uses an owned task before recording them",
-            "reuse the same researcher while its task or inquiry and assumptions remain stable",
+            "reuse `researcher` across read-only inquiries",
             "verifier independently reruns acceptance-defining proof",
             "skips executor-only targeted checks",
             "verifier consumes operator evidence instead of repeating the operation",
