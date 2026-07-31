@@ -18,12 +18,6 @@ Task transactions themselves are exempt from the task-before-write rule; otherwi
 
 ## Execution shape
 
-- Keep quick, coupled, or critical-path work with the lead.
-- Reuse sidecars for checkpoint verification and repeatable operations.
-- Use one temporary agent when a substantial bounded scope saves context or wall time after handoff and integration cost.
-- Use two only for independent scopes. Parallel writers need separate tasks and disjoint paths.
-- In Focused mode, use no temporary agents. In Solo mode, use no subagents.
-
-Read [agent-coordination.md](agent-coordination.md) before delegation.
+Before Deliver, apply the [Subagent Policy](subagents.md) and state its one-line Orchestration Gate. Its mandatory sidecar triggers and complete Worker eligibility test determine the execution shape.
 
 Ready means ownership, boundaries, dependencies, acceptance, proof, and integration responsibility are unambiguous.

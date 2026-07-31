@@ -14,7 +14,7 @@ Keep repository intent, work, implementation, and proof coherent with the smalle
 3. Identify the requested outcome, current repository truth, active task, and orchestration mode.
 4. For a new repository, run [scripts/init_repo.py](scripts/init_repo.py), verify the minimal contract, close `TASK-000` as owner `bootstrap`, then ask the user to restart or resume so the scoped plugin hook supplies the stable numeric owner. For an older ledger, run [scripts/tasks.py](scripts/tasks.py) `upgrade` under its owned active task.
 5. Select the earliest unresolved lane below. Continue through later gates in the same task when their inputs are ready.
-6. For substantial work, read [references/model-routing.md](references/model-routing.md) and [references/agent-coordination.md](references/agent-coordination.md). Read [references/operations.md](references/operations.md) before build, package, deploy, flash, runtime, or smoke work.
+6. Before Plan, Deliver, Verify, or any child-agent use, read the canonical [Subagent Policy](references/subagents.md). For substantial decision work, read [references/model-routing.md](references/model-routing.md). Read [references/operations.md](references/operations.md) before build, package, deploy, flash, runtime, or smoke work.
 
 ## Route
 
@@ -50,13 +50,13 @@ When behavior or a module contract changes, scan only plausible edge cases and c
 
 Use diagrams only when they materially clarify flow, state, ownership, sequence, or dependencies. Prefer small Mermaid diagrams with short labels and minimal accents; use tables for mappings and prose for simple relationships. Never use ASCII pseudographics.
 
-## Orchestration
+## Subagent Gate
 
-Use Assisted mode by default, Focused mode when the user asks for focused work, and Solo mode when the user asks for one agent or no subagents. Keep the lead responsible for user dialogue, decisions, task state, integration, and closeout.
+Before Deliver or the first delegated read-only operation, apply [references/subagents.md](references/subagents.md) and state:
 
-Use the Verifier sidecar at coherent checkpoints. Use the Operator sidecar only for learned or guided operations. Spawn temporary agents conservatively, at depth one, with no more than two active in addition to sidecars.
+`Mode | Required sidecars | Eligible Workers | Reason`
 
-Before every spawn, explicitly set the available model, reasoning effort, and a non-full-history context according to [model-routing.md](references/model-routing.md) and [agent-coordination.md](references/agent-coordination.md). Never inherit the lead profile accidentally.
+That policy is the sole authority for child roles, triggers, profiles, spawn payloads, handoffs, reuse, and failure conditions. Skipping a required sidecar or spawning an ineligible Worker is a workflow failure.
 
 ## Result
 

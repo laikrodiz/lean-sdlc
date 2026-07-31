@@ -2,7 +2,7 @@
 
 Use Deliver only when cause and scope are known and an owned `In Progress` task has measurable acceptance and proof.
 
-Use Terra `high` for general implementation. Use Luna `xhigh` for narrow mechanical changes with exact boundaries and strong automated proof. Use Sol `high` or `xhigh` when implementation itself carries major decision or failure risk.
+Use Terra `high` for general implementation. Use Sol `high` or `xhigh` when implementation itself carries major decision or failure risk. Delegate only through the profiles and eligibility rules in [subagents.md](subagents.md).
 
 1. Read the active task, parent truth, acceptance, proof, and affected code.
 2. Run the structural before-write check.
@@ -15,8 +15,8 @@ Use Terra `high` for general implementation. Use Luna `xhigh` for narrow mechani
 9. Keep affected tests, diagnostics, project truth, decisions, and technical documentation in sync.
 10. Avoid opportunistic refactors and speculative compatibility.
 11. Stop and return to Shape, Decide, or Diagnose when implementation exposes missing truth.
-12. At a coherent checkpoint, ask the Verifier sidecar to run the narrow affected checks.
-13. Use the Operator sidecar for build, package, deploy, flash, runtime, or smoke procedures under [operations.md](operations.md).
+12. At each coherent checkpoint, apply the Verifier trigger in [subagents.md](subagents.md).
+13. For build, package, deploy, flash, runtime, or smoke work, apply the Operator trigger in [subagents.md](subagents.md) and procedure rules in [operations.md](operations.md).
 14. Hand the checkpoint and compact evidence to Verify.
 
 Documentation-only delivery follows the same task and proof gates. Synchronize settled truth; do not make new product or architecture decisions while cleaning documents.

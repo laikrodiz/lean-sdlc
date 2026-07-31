@@ -17,7 +17,7 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - one Lean-SDLC dispatcher skill;
 - minimal repository initialization and migration;
 - atomic private task-ledger transactions;
-- controlled lead, sidecar, and temporary-agent roles;
+- deterministic lead, sidecar, and Worker roles under one canonical policy;
 - learned project-specific operational procedures;
 - minimal modular engineering, plausible edge-case treatment, and lightweight rendered diagrams;
 - structural validation, tests, packaging, and installation guidance.
@@ -46,13 +46,14 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - A new repository needs only `AGENTS.md`, `docs/PROJECT.md`, and root `tasks.csv`.
 - Task transactions remain atomic, owner-aware, dependency-valid, and cycle-free.
 - Assisted, Focused, and Solo modes follow the same delivery gates.
-- Spawned agents use explicit role profiles and sidecars never inherit lead decision authority.
+- Mandatory sidecar triggers and strict Worker eligibility make delegation predictable.
+- Spawned agents use explicit role profiles, every Luna child uses Max, and children never inherit lead decision authority.
 - Changed contracts receive proportionate edge-case treatment and architecture remains modular without speculative seams.
 - The plugin validates, installs from a pinned Git tag, and passes its full test suite.
 
 ## Current Promise
 
 - Stage: Evolution
-- Version: 1.1.1
-- Version goal: Make every subagent spawn profile explicit and keep task-disposition decisions with the lead.
+- Version: 1.2.0
+- Version goal: Make subagent triggering deterministic and keep every child-agent rule in one canonical policy.
 - Exit evidence: Tests, skill and plugin validation, local installation, repository checks, reviewed diff, tagged commit, and successful push.

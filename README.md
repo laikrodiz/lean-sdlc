@@ -33,23 +33,22 @@ It also creates or extends `.gitignore` with `/tasks.csv` and `/.tasks.lock`. Fe
 
 ## Agents
 
-Assisted mode is the default. The lead keeps decisions and integration, while two lazy sidecars can be reused within the active task:
+All child-agent rules live in one editable policy: `references/subagents.md`. Before delivery or the first delegated read-only operation, Codex must state:
 
-- Verifier runs checks and returns compact evidence.
-- Operator repeats learned build, package, deploy, flash, and smoke procedures.
+`Mode | Required sidecars | Eligible Workers | Reason`
 
-At most two additional temporary agents may handle genuinely independent work. `focused mode` keeps only the lead and sidecars. `solo mode` runs the same workflow with the lead alone.
+Assisted mode is the default. Verifier is mandatory for code or behavior checkpoints and multi-command or noisy proof. Operator is mandatory when a guided or recorded build, package, CI, deploy, flash, runtime, or smoke operation is ready. Workers are allowed only for bounded independent deliverables with explicit ownership, settled decisions, known proof, and a net context or time saving. One Worker is normal; a second requires disjoint work.
 
-Reasoning never uses `low`. Every spawn explicitly sets its model, reasoning effort, and non-full-history context. Sol owns high-leverage decisions, Terra `high` is the general engineering worker, and sidecars use Luna `xhigh` when exposed or explicit Terra `high` otherwise. Sidecars return operation evidence; the lead decides task disposition. Explicit user model requests remain authoritative.
+`focused mode` keeps the lead and mandatory sidecars. `solo mode` runs the same workflow with the lead alone. Every Luna child uses Luna `max`; unavailable Luna profiles fall back explicitly to Terra `high`. Every spawn specifies model, reasoning, and bounded context. The lead retains decisions, integration, task state, and closeout.
 
 ## Install
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-Install the immutable `v1.1.1` release:
+Install the immutable `v1.2.0` release:
 
 ```bash
-codex plugin marketplace add laikrodiz/lean-sdlc --ref v1.1.1
+codex plugin marketplace add laikrodiz/lean-sdlc --ref v1.2.0
 codex plugin add lean-sdlc@lean-sdlc
 ```
 
@@ -96,5 +95,6 @@ That migration moves `planning/tasks.csv` to root `tasks.csv` under the active t
 - `plugins/lean-sdlc/.codex-plugin/plugin.json` defines the versioned plugin.
 - `plugins/lean-sdlc/hooks/hooks.json` provides the stable task owner at session start and after compaction.
 - `plugins/lean-sdlc/skills/lean-sdlc/SKILL.md` is the single dispatcher.
-- `plugins/lean-sdlc/skills/lean-sdlc/references/` contains the six lanes and shared policies.
+- `plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md` is the canonical child-agent policy.
+- `plugins/lean-sdlc/skills/lean-sdlc/references/` also contains the six lanes and other shared policies.
 - `plugins/lean-sdlc/skills/lean-sdlc/scripts/` contains initialization, task transactions, owner generation, and structural checks.

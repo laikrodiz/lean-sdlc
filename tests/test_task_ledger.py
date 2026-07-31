@@ -483,12 +483,13 @@ class PackageContractTests(unittest.TestCase):
                 "deliver.md",
                 "verify.md",
                 "model-routing.md",
-                "agent-coordination.md",
+                "subagents.md",
                 "operations.md",
                 "repository-contracts.md",
                 "trigger-evals.md",
             }.issubset(names)
         )
+        self.assertNotIn("agent-coordination.md", names)
         self.assertTrue(
             names.isdisjoint(
                 {
@@ -562,29 +563,42 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("ascii pseudographics", contracts)
         self.assertIn("plausible edge cases", evaluations)
 
-    def test_spawn_profiles_are_explicit_and_sidecars_do_not_decide_closeout(
+    def test_subagent_policy_is_canonical_deterministic_and_explicit(
         self,
     ) -> None:
         dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
-        routing = (
-            SKILL / "references/model-routing.md"
-        ).read_text(encoding="utf-8").lower()
-        coordination = (
-            SKILL / "references/agent-coordination.md"
+        subagents = (
+            SKILL / "references/subagents.md"
         ).read_text(encoding="utf-8").lower()
         verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
         evaluations = (
             SKILL / "references/trigger-evals.md"
         ).read_text(encoding="utf-8").lower()
+        root_agents = ROOT.joinpath("AGENTS.md").read_text(encoding="utf-8")
+        template_agents = (
+            SKILL / "assets/AGENTS.md"
+        ).read_text(encoding="utf-8")
 
-        self.assertIn("before every spawn", dispatcher)
-        self.assertIn("never omit either", routing)
-        self.assertIn("fork_turns", routing)
-        self.assertIn("routing failure", routing)
-        self.assertIn("every spawn must explicitly pass", coordination)
+        self.assertIn("sole authority", dispatcher)
+        self.assertIn("mode | required sidecars | eligible workers | reason", dispatcher)
+        self.assertIn("mandatory sidecar triggers", subagents)
+        self.assertIn("worker eligibility", subagents)
+        self.assertIn("before every spawn", subagents)
+        self.assertIn("fork_turns", subagents)
+        self.assertIn("routing failure", subagents)
+        self.assertIn("gpt-5.6 luna `max`", subagents)
+        self.assertIn("gpt-5.6 terra `high`", subagents)
         self.assertIn("lead alone decide task disposition", verify)
+        self.assertIn("must reuse or start verifier", evaluations)
+        self.assertIn("must reuse or start operator", evaluations)
         self.assertIn("explicitly spawn terra `high`", evaluations)
         self.assertIn("inherits the lead profile", evaluations)
+        self.assertEqual(root_agents, template_agents)
+
+        for document in [ROOT / "README.md", *SKILL.rglob("*.md")]:
+            for line in document.read_text(encoding="utf-8").splitlines():
+                if "luna" in line.lower():
+                    self.assertNotIn("xhigh", line.lower(), f"{document}: {line}")
 
     def test_release_version_is_consistent(self) -> None:
         manifest = json.loads(
@@ -594,7 +608,7 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.1.1")
+        self.assertEqual(version, "1.2.0")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
 

@@ -1,6 +1,6 @@
 # Operations
 
-The Operator sidecar owns repeatable command execution and log compression, while the lead owns procedure approval and task decisions.
+Apply the Operator trigger, authority, profile, spawn, and handoff rules from [subagents.md](subagents.md). This file owns only how project-specific procedures are learned and repeated.
 
 ## Learn, then repeat
 

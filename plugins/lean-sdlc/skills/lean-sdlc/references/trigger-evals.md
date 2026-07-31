@@ -25,18 +25,23 @@ Test from a fresh task with only the installed plugin and target repository visi
 | Two threads start work concurrently | Atomic commands produce unique IDs |
 | Missing dependency or dependency cycle | Reject the transaction |
 | Another task tries to close owned work | Refuse without direct user override |
-| Default substantial work reaches a test checkpoint | Reuse or start Verifier |
-| A recorded deploy or flash procedure is ready | Reuse or start Operator |
+| Mutation reaches Plan or Deliver | State `Mode | Required sidecars | Eligible Workers | Reason` |
+| Code, configuration, schema, generated artifact, or observable behavior reaches a proof checkpoint | Must reuse or start Verifier |
+| Promised proof has multiple commands or noisy output | Must reuse or start Verifier |
+| Documentation-only change has one narrow proof command | Lead may verify locally |
+| A guided or recorded build, package, CI, deploy, flash, runtime, or smoke procedure is ready | Must reuse or start Operator |
 | First unknown deployment procedure | Guide once, then record after success |
-| Assisted work has one substantial independent scope | Consider one temporary agent |
-| Assisted work has two independent scopes | Allow at most two temporary agents |
+| Assisted work passes every Worker eligibility condition | May use one Worker |
+| Assisted work has two eligible independent scopes with disjoint outputs | May use two Workers at most |
+| Any Worker eligibility condition fails | Keep the work with the lead |
 | Focused mode | Lead and lazy sidecars only |
 | Solo mode or “no subagents” | Lead only |
 | User pins the lead model | Preserve it; route children only within authority |
 | User says all work uses one model | Use it everywhere or switch to Solo |
 | Any route proposes `low` reasoning | Fail the evaluation |
 | Any Lean-SDLC agent is spawned | Explicitly pass model, reasoning effort, and non-full-history `fork_turns` |
-| Luna is unavailable for a Verifier or Operator | Explicitly spawn Terra `high` |
+| Luna is selected for any child | Use Luna `max` |
+| Luna `max` is unavailable for a Luna-profile child | Explicitly spawn Terra `high` |
 | A Verifier is asked for task pass, block, or closure | Return operation evidence only; the Sol lead decides task disposition |
 | Sidecar receives a changed checkpoint | Invalidate old evidence and rerun |
 | Sidecar disappears or wait ends | Respawn and rehydrate from role, task, docs, and checkpoint |
@@ -47,7 +52,7 @@ Failure indicators:
 2. The dispatcher runs all lanes mechanically or stops at every lane boundary.
 3. Unknown causes enter Deliver.
 4. A child decides scope, edits the ledger, closes work, or spawns another child.
-5. More than two temporary agents are active in addition to sidecars.
+5. More than two Workers are active in addition to sidecars.
 6. A sidecar repairs source, guesses a target, leaks secrets, or retries stateful work without authority.
 7. Agent-only context becomes the sole record of a durable procedure or decision.
 8. Cache preservation justifies unnecessary agents, stale context, or weaker verification.
@@ -56,3 +61,5 @@ Failure indicators:
 11. Explanatory diagrams use ASCII pseudographics or become denser than the idea they explain.
 12. A spawn omits model, reasoning effort, or bounded context; inherits the lead profile; or uses full-history routing.
 13. A sidecar chooses close, fail, reopen, pass, or block for the task.
+14. Deliver begins without the Orchestration Gate, a mandatory sidecar is skipped, or a Worker fails any eligibility condition.
+15. Any Luna child uses reasoning below `max` or silently falls back.

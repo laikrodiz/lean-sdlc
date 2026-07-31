@@ -31,16 +31,10 @@ Resolve contradictions before closeout.
 4. Change only the approved slice and keep affected truth in sync.
 5. Verify acceptance and evidence before moving to `Done`.
 
-## Agents and Models
+## Subagent Gate
 
-- Assisted mode is default: lead, lazy Verifier and Operator sidecars, and at most two temporary agents.
-- Focused mode: lead plus lazy sidecars, with no temporary agents.
-- Solo mode: lead only; run the same checks and operations locally.
-- The lead alone owns decisions, integration, task state, and user communication. Child agents never spawn agents.
-- Sidecars do not edit source or `tasks.csv`. Parallel writers require separate tasks and disjoint paths.
-- Never use `low` reasoning. Every spawn explicitly sets an available model, reasoning effort, and non-full-history context; omission or lead-profile inheritance is a routing failure.
-- Prefer Sol for decisions and Terra `high` for general engineering. Sidecars use Luna `xhigh` when exposed, otherwise explicitly Terra `high`, and report evidence while the lead decides task disposition.
-- Explicit user model and reasoning requests override routing. A request that all work use one model applies to every agent or forces Solo mode when unavailable.
+- Before Deliver or the first delegated read-only operation, read and apply `$lean-sdlc`'s canonical `references/subagents.md`, then state `Mode | Required sidecars | Eligible Workers | Reason`.
+- Treat a skipped mandatory sidecar, an ineligible Worker, child-owned task disposition, implicit spawn profile, or child-created agent as a workflow failure.
 
 ## Operations
 

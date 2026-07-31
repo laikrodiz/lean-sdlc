@@ -2,7 +2,7 @@
 
 Use Diagnose whenever failing behavior exists and the cause, fault boundary, or correct owner is uncertain.
 
-Use Terra `high` for ordinary diagnosis. Use Sol `high` or `xhigh` for subtle, high-risk, security, concurrency, or migration failures. Luna `xhigh` may collect exact logs and reproduce commands.
+Use Terra `high` for ordinary diagnosis. Use Sol `high` or `xhigh` for subtle, high-risk, security, concurrency, or migration failures. Delegate bounded reproduction or log collection only through [subagents.md](subagents.md).
 
 1. Start from the observed symptom, failing test, runtime signal, or user report.
 2. Reproduce it, or state the precise reason reproduction is unavailable.
