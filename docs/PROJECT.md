@@ -66,6 +66,6 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 ## Current Promise
 
 - Stage: Evolution
-- Version: 1.4.0
-- Version goal: Preserve lead decision authority while making named Luna Max execution, research, proof, and technical English controlled.
-- Exit evidence: Tests, skill and plugin validation, local installation, repository checks, reviewed diff, tagged commit, and successful push.
+- Version: 1.5.0
+- Version goal: Release compaction-resumable task slices and distinct child-role contracts under lead decision authority.
+- Exit evidence: Tests, skill and plugin validation, local installation, accepted checkpoints, repository checks, tagged commit, and successful push.
