@@ -749,7 +749,8 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("directly spawn terra `xhigh`", evaluations)
         self.assertIn("inherits an automatic model", evaluations)
         self.assertIn("agent_type=lean_sdlc_luna", subagents)
-        self.assertIn("service_tier=fast", subagents)
+        self.assertIn("fast service maps to `service_tier=priority`", subagents)
+        self.assertIn("service_tier=priority", subagents)
         self.assertIn("retry luna max without `service_tier`", subagents)
         self.assertIn("without `service_tier` or `agent_type`", subagents)
         self.assertIn("approved concise lowercase snake_case responsibility name", subagents)
@@ -770,6 +771,7 @@ class PackageContractTests(unittest.TestCase):
         )
         self.assertNotIn("operator", policy)
         self.assertNotIn("focused", policy)
+        self.assertNotIn("service_tier=fast", policy)
         self.assertNotIn("gpt-5.6 terra `high`", policy)
         self.assertNotIn("explicitly spawn terra `high`", policy)
 

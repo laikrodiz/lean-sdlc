@@ -51,8 +51,8 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - Never route reasoning below `high`.
 - Preserve explicit user model and orchestration requests.
 - Prefer deterministic depth-one delegation over agent hierarchies.
-- Route primary Luna children through the named `lean_sdlc_luna` profile at `service_tier=fast`.
-- Retry Luna Max without `service_tier` when fast is unavailable or rejected. Use direct Terra XHigh without `service_tier` only when Luna is unavailable.
+- Route primary Luna children through the named `lean_sdlc_luna` profile with Fast service mapped to `service_tier=priority`.
+- Retry Luna Max without `service_tier` when priority is unavailable or rejected. Use direct Terra XHigh without `service_tier` only when Luna is unavailable.
 - Apply ASD-STE100 sentence limits, active voice, consistent terms, condition-first instructions, and applicable spelling rules.
 - Preserve exact code, commands, paths, identifiers, protocol fields, quotations, and required domain terms.
 - Prefer cohesive replaceable units and earned boundaries over project-size architecture tiers.
@@ -66,7 +66,7 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - Solo mode uses lead-only execution under the same delivery gates.
 - Normal repository task transitions reuse existing role threads and never create numbered replacements.
 - The lead reviews every returned task checkpoint and Verifier checks each accepted checkpoint before another task begins.
-- Spawned Luna agents use the named profile and fast tier when available, Terra High is never routed, and children never inherit lead decision authority.
+- Spawned Luna agents use the named profile and priority tier for Fast service, Terra High is never routed, and children never inherit lead decision authority.
 - Generated English technical prose follows applicable ASD-STE100 Issue 9 rules without unsupported certification claims.
 - Changed contracts receive proportionate edge-case treatment and architecture remains modular without speculative seams.
 - The plugin validates, installs from a pinned Git tag, and passes its full test suite.

@@ -175,7 +175,7 @@ Run `scripts/configure_codex.py` before the first assisted task. It registers `l
 | Executor | `lean_sdlc_luna`, which pins GPT-5.6 Luna `max` | GPT-5.6 Terra `xhigh` |
 | Researcher | `lean_sdlc_luna`, which pins GPT-5.6 Luna `max` | GPT-5.6 Terra `xhigh` |
 
-The profile receives the Executor, Maintainer, Verifier, or Researcher role through the spawn handoff. Primary Luna spawns use `agent_type=lean_sdlc_luna`, `service_tier=fast`, and non-full-history `fork_turns`. If fast is unavailable or rejected, announce the failure and retry Luna Max without `service_tier`. Terra `xhigh` fallback omits `service_tier`. Sol and Terra never use fast unless the user explicitly overrides it. Preserve the user-selected lead model and tier. Keep architecture, task setting, integration, and other consequential decisions with the lead.
+The profile receives the Executor, Maintainer, Verifier, or Researcher role through the spawn handoff. Fast service maps to `service_tier=priority`. Primary Luna spawns use `agent_type=lean_sdlc_luna`, `service_tier=priority`, and non-full-history `fork_turns`. If priority is unavailable or rejected, announce the failure and retry Luna Max without `service_tier`. Terra `xhigh` and Sol omit `service_tier` unless the user explicitly overrides it. Preserve the user-selected lead model and tier. Keep architecture, task setting, integration, and other consequential decisions with the lead.
 
 ## Spawn protocol
 
@@ -187,16 +187,16 @@ Before every spawn:
 4. use an approved concise lowercase snake_case responsibility name for an additional role;
 5. reject vague names, counters, feature names, task identifiers, and duplicate responsibilities;
 6. show the additional role name and authority before its spawn;
-7. apply the same one-thread lifecycle, depth-one limit, explicit profile, fast-tier rule, bounded authority, handoff, and reporting contract to an additional role;
+7. apply the same one-thread lifecycle, depth-one limit, explicit profile, Fast-service rule, bounded authority, handoff, and reporting contract to an additional role;
 8. use `agent_type=lean_sdlc_luna` for the primary Luna route;
-9. set `service_tier=fast` for the primary Luna route;
+9. set `service_tier=priority` for Fast service on the primary Luna route;
 10. omit direct `model` and `reasoning_effort` fields because the named profile pins Luna Max;
 11. set non-full-history `fork_turns` for every child;
-12. announce fast unavailability or rejection, then retry Luna Max without `service_tier`;
+12. announce priority unavailability or rejection, then retry Luna Max without `service_tier`;
 13. directly spawn `gpt-5.6-terra` at `xhigh` without `service_tier` or `agent_type` when Luna is unavailable;
 14. keep the work with the lead when neither the required profile nor the Terra fallback is exposed.
 
-Full-history inheritance is forbidden. The primary Luna route requires the named profile, `service_tier=fast`, and non-full-history context. The Luna Max retry omits `service_tier`. The Terra fallback requires direct `model=gpt-5.6-terra` and `reasoning_effort=xhigh` without `service_tier`. An automatic model default, inherited lead profile, silent fallback, effort downgrade, fast Sol or Terra route, or incompatible fork is a routing failure.
+Full-history inheritance is forbidden. The primary Luna route requires the named profile, Fast service mapped to `service_tier=priority`, and non-full-history context. The Luna Max retry omits `service_tier`. The Terra fallback requires direct `model=gpt-5.6-terra` and `reasoning_effort=xhigh` without `service_tier`. An automatic model default, inherited lead profile, silent fallback, effort downgrade, priority Sol or Terra route, or incompatible fork is a routing failure.
 
 After a Codex update, run one bounded profile smoke test before the first required Luna handoff. Confirm the child reports Luna `max`. If the route fails, announce the failure and use the Terra fallback.
 

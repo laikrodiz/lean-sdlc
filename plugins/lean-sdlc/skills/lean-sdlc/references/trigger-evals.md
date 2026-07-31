@@ -63,8 +63,8 @@ Test from a fresh task with only the installed plugin and target repository visi
 | User pins the lead model | Preserve it and all lead decision authority; route children only within that authority |
 | User says all work uses one model | Use it everywhere or switch to Solo |
 | Any route proposes `low` reasoning | Fail the evaluation |
-| Any primary Luna child is spawned | Use `agent_type=lean_sdlc_luna`, `service_tier=fast`, and non-full-history `fork_turns` |
-| Luna fast is unavailable or rejected | Announce the failure and retry Luna Max without `service_tier` |
+| Any primary Luna child is spawned | Map Fast service to `service_tier=priority`; use `agent_type=lean_sdlc_luna`, `service_tier=priority`, and non-full-history `fork_turns` |
+| Luna priority is unavailable or rejected | Announce the failure and retry Luna Max without `service_tier` |
 | Luna is unavailable after retry | Announce and directly spawn Terra `xhigh` without `service_tier` or `agent_type` |
 | Sol or Terra child routing is selected | Omit `service_tier` unless the user explicitly overrides the tier |
 | Any route proposes Terra `high` | Fail the evaluation |
@@ -75,7 +75,7 @@ Test from a fresh task with only the installed plugin and target repository visi
 | Sidecar receives a changed checkpoint | Invalidate old evidence and rerun |
 | A wait ends while the child remains reachable | Continue waiting or send a follow-up; do not replace it |
 | A child becomes unavailable | Announce the context reset, then replace and rehydrate from role, task, docs, and checkpoint |
-| A responsibility does not fit a standard role | Lead may add one concise lowercase snake_case responsibility name, show its authority before spawn, and apply the same depth-one, one-thread, explicit-profile, fast-tier, bounded-authority, handoff, and reporting contracts |
+| A responsibility does not fit a standard role | Lead may add one concise lowercase snake_case responsibility name, show its authority before spawn, and apply the same depth-one, one-thread, explicit-profile, Fast-service, bounded-authority, handoff, and reporting contracts |
 | An additional role name is vague, a counter, a feature name, a task identifier, or a duplicate responsibility | Reject the spawn |
 
 Failure indicators:
