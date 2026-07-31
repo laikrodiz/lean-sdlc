@@ -8,6 +8,7 @@ Test from a fresh task with only the installed plugin and target repository visi
 | Read-only work outside a Lean-SDLC repository | Do not trigger implicitly |
 | Repository `AGENTS.md` requires Lean-SDLC for a mutation | Trigger the skill |
 | Rough idea, fuzzy behavior, or stale version promise | Shape |
+| A large synthesizer-clone request contains several independently verifiable outcomes | Create several independently verifiable tasks and start only the nearest ready task |
 | Stable intent needs database, boundary, or migration choice | Decide |
 | Approved work lacks a task or ownership | Plan |
 | Failure cause is unknown | Diagnose |

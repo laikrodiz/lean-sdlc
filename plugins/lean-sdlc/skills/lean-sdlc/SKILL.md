@@ -39,6 +39,7 @@ Do not stop merely because one lane completed. Stop when user authority, require
 6. Keep scope to one intentional change. Record new durable choices before relying on them.
 7. Verify acceptance, documentation parity, and the relevant repository state before `tasks.py close`.
 8. Only the owning task closes work. A different task may close it only after a direct user request using the recorded override.
+9. Each task is one independently accepted repository state; local implementation steps stay transient.
 
 Read-only inspection needs no task. Small writes still use a small `REPO` task.
 

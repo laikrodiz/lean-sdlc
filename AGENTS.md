@@ -22,6 +22,8 @@ Resolve contradictions before closeout.
 - `Planned` is unowned. `In Progress` and `Done` retain the stable 8-digit task owner supplied by the plugin hook.
 - Only the owner closes a task. A different task may close it only after a direct user request and must record the override reason.
 - Use `FEAT-*` for documented behavior, `DEC-*` for a documented durable choice, `REPO` for other project work, and `BOOTSTRAP` only for initialization.
+- Each task is one independently accepted repository state and remains resumable from repository truth and its ledger row after compaction.
+- Split independently accepted and independently proved work. Keep inseparable coding steps transient.
 
 ## Delivery Gates
 

@@ -17,6 +17,11 @@ Use Sol `high`. Use `xhigh` for security, concurrency, migrations, irreversible 
 11. Create `docs/decisions/DEC-*.md` only when the decision is costly to reverse, easy to forget, or likely to be re-litigated.
 12. Put commands, recipes, mappings, and volatile tuning in code, tests, technical docs, or `docs/OPERATIONS.md`.
 
+## Decision boundary
+
+Record one Decision for one independent reversal boundary.
+Keep a choice local when it is cheap to reverse and clear in code, tests, or technical documentation.
+
 Return to Shape when uncertainty concerns desired behavior or value.
 
 Ready means delivery can proceed without hiding a consequential choice inside implementation.

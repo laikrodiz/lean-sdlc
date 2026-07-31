@@ -65,3 +65,15 @@ The command serializes writers with a short root lock, reads the latest ledger u
 - local mechanism -> code, tests, or comments
 
 Split statements until one owner wins. Reconcile conflicting truth before closeout.
+
+## Work hierarchy
+
+- Project promise: current outcome, scope, stage, and exit evidence.
+- Feature: durable behavior that spans tasks.
+- Task: one independently accepted repository state with one change boundary, acceptance set, proof set, and close decision.
+- Local step: transient implementation or correction work that does not become a ledger row.
+
+## Task sizing summary
+
+Split or merge tasks by the independent boundaries in [plan.md](plan.md).
+Shape the nearest dependency frontier fully and keep later work coarse.

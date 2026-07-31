@@ -573,6 +573,90 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("ascii pseudographics", contracts)
         self.assertIn("plausible edge cases", evaluations)
 
+    def test_work_boundaries_keep_tasks_atomic_and_steps_transient(self) -> None:
+        dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
+        agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8").lower()
+        template = (
+            SKILL / "assets/AGENTS.md"
+        ).read_text(encoding="utf-8").lower()
+        shape = (SKILL / "references/shape.md").read_text(encoding="utf-8").lower()
+        decide = (SKILL / "references/decide.md").read_text(encoding="utf-8").lower()
+        plan = (SKILL / "references/plan.md").read_text(encoding="utf-8").lower()
+        contracts = (
+            SKILL / "references/repository-contracts.md"
+        ).read_text(encoding="utf-8").lower()
+        evaluations = (
+            SKILL / "references/trigger-evals.md"
+        ).read_text(encoding="utf-8").lower()
+
+        self.assertIn(
+            "each task is one independently accepted repository state; local implementation steps stay transient.",
+            dispatcher,
+        )
+        self.assertIn(
+            "each task is one independently accepted repository state and remains resumable from repository truth and its ledger row after compaction.",
+            agents,
+        )
+        self.assertIn(
+            "split independently accepted and independently proved work. keep inseparable coding steps transient.",
+            agents,
+        )
+        self.assertEqual(agents, template)
+
+        for phrase in [
+            "group the current outcome in the project promise.",
+            "use an optional feature document when one durable behavior spans tasks.",
+            "split a feature when a part has an independent promise, test, or change.",
+            "merge feature candidates when neither part has useful behavior alone.",
+        ]:
+            self.assertIn(phrase, shape)
+
+        self.assertIn(
+            "record one decision for one independent reversal boundary.",
+            decide,
+        )
+        self.assertIn(
+            "keep a choice local when it is cheap to reverse and clear in code, tests, or technical documentation.",
+            decide,
+        )
+
+        for phrase in [
+            "one durable task represents one independently accepted repository state.",
+            "the task owns one observable outcome, one coherent change boundary, one acceptance set, one proof set, and one close decision.",
+            "the task must resume from repository truth and its ledger row after compaction.",
+            "split a task when a part can fail, ship, revert, resume, or close independently.",
+            "split a task when a part needs different proof.",
+            "split a task when a part crosses a contract.",
+            "split a task when a part needs another durable decision.",
+            "merge rows when they only describe inseparable coding mechanics.",
+            "avoid fixed limits based on time, lines, or file count.",
+            "shape the nearest dependency frontier fully. keep later work coarse until its dependencies become current.",
+            "executor receives one durable task.",
+            "local implementation steps and correction handoffs remain transient.",
+            "never send several tasks or an internal backlog.",
+        ]:
+            self.assertIn(phrase, plan)
+
+        for phrase in [
+            "## work hierarchy",
+            "- project promise: current outcome, scope, stage, and exit evidence.",
+            "- feature: durable behavior that spans tasks.",
+            "- task: one independently accepted repository state with one change boundary, acceptance set, proof set, and close decision.",
+            "- local step: transient implementation or correction work that does not become a ledger row.",
+            "## task sizing summary",
+            "split or merge tasks by the independent boundaries in [plan.md](plan.md).",
+        ]:
+            self.assertIn(phrase, contracts)
+
+        self.assertIn(
+            "a large synthesizer-clone request contains several independently verifiable outcomes",
+            evaluations,
+        )
+        self.assertIn(
+            "create several independently verifiable tasks and start only the nearest ready task",
+            evaluations,
+        )
+
     def test_subagent_policy_is_canonical_deterministic_and_explicit(
         self,
     ) -> None:

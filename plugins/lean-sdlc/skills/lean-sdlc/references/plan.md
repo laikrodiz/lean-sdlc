@@ -14,12 +14,26 @@ The user-selected lead owns planning. Without an explicit profile, use Sol `high
 6. Add dependencies only when sequencing is real. A task cannot close before its dependencies.
 7. Keep requirements and design detail in their owning documents rather than the ledger.
 
+## Task sizing
+
+One durable task represents one independently accepted repository state.
+The task owns one observable outcome, one coherent change boundary, one acceptance set, one proof set, and one close decision.
+The task must resume from repository truth and its ledger row after compaction.
+
+Split a task when a part can fail, ship, revert, resume, or close independently.
+Split a task when a part needs different proof.
+Split a task when a part crosses a contract.
+Split a task when a part needs another durable decision.
+Merge rows when they only describe inseparable coding mechanics.
+Avoid fixed limits based on time, lines, or file count.
+Shape the nearest dependency frontier fully. Keep later work coarse until its dependencies become current.
+
 Task transactions themselves are exempt from the task-before-write rule; otherwise the rule would be circular.
 
 ## Execution shape
 
 Before Deliver, apply the [Subagent Policy](subagents.md) and state its one-line Orchestration Gate. The lead settles architecture, interfaces, invariants, allowed paths, acceptance, proof, and stop conditions before issuing one execution unit.
 
-Execution units are transient checkpoints under the lead-owned task; never add ledger rows for sequential Executor handoffs. Parallel writers require separate owned tasks and disjoint paths.
+Executor receives one durable task. Local implementation steps and correction handoffs remain transient. Never send several tasks or an internal backlog. Parallel writers require separate owned tasks and disjoint paths.
 
 Ready means ownership, boundaries, dependencies, acceptance, proof, and integration responsibility are unambiguous.

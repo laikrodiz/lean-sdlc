@@ -18,4 +18,11 @@ Use Sol `high` for framing. Escalate to `xhigh` only when the business risk or a
 
 Do not choose a stack or create delivery tasks while behavior remains ambiguous.
 
+## Project and Feature boundaries
+
+Group the current outcome in the project promise.
+Use an optional Feature document when one durable behavior spans tasks.
+Split a Feature when a part has an independent promise, test, or change.
+Merge Feature candidates when neither part has useful behavior alone.
+
 Ready means the smallest useful outcome, boundary, acceptance, and current promise are clear enough to decide or plan.
