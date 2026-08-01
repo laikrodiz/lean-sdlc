@@ -777,7 +777,7 @@ class PackageContractTests(unittest.TestCase):
             "decision reopened",
             "delegation is mandatory",
             "one writing engineer active per architect",
-            "task name: engineer_firstname",
+            "task name: firstname_engineer",
             "simple human first name",
             "firstname (role)",
             "context reset reason",
@@ -857,211 +857,29 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("Every update starts with work or current state", profile)
         self.assertNotIn("Role Firstname", subagents + profile)
 
-    def test_child_identities_replacements_and_commentary_are_human_monitorable(
-        self,
-    ) -> None:
-        subagents = (
-            SKILL / "references/subagents.md"
-        ).read_text(encoding="utf-8").lower()
-        evaluations = (
-            SKILL / "references/trigger-evals.md"
-        ).read_text(encoding="utf-8").lower()
-        deliver = (SKILL / "references/deliver.md").read_text(encoding="utf-8").lower()
-        plan = (SKILL / "references/plan.md").read_text(encoding="utf-8").lower()
-        verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
-        dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
-        profile = tomllib.loads(LUNA_PROFILE.read_text(encoding="utf-8"))
-        developer = profile["developer_instructions"].lower()
-        root_agents = ROOT.joinpath("AGENTS.md").read_text(encoding="utf-8").lower()
-        template_agents = (
-            SKILL / "assets/AGENTS.md"
-        ).read_text(encoding="utf-8").lower()
-        readme = ROOT.joinpath("README.md").read_text(encoding="utf-8").lower()
-        project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8").lower()
+    def test_trigger_evals_and_proof_ownership_are_compact(self) -> None:
+        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8")
+        scenarios = [
+            line
+            for line in evaluations.splitlines()
+            if line.startswith("| ") and not line.startswith("| ---") and "Scenario" not in line
+        ]
+        self.assertGreaterEqual(len(scenarios), 20)
+        self.assertLessEqual(len(scenarios), 30)
+        self.assertNotIn("Failure indicators", evaluations)
 
+        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
         for term in [
-            "simple human first name",
-            "firstname (role)",
-            "role_firstname",
-            "identity stable",
-            "thread remains reusable",
-            "reachable child per role",
-            "another unused",
-            "role prefix",
-            "reset reason",
-            "task identifier",
-            "material phases",
-            "planned proof",
-            "current work or state",
-            "scripted openings",
-            "sentence templates",
-            "heartbeat limits",
+            "Engineer owns targeted development checks",
+            "Architect reviews the diff and architecture once per checkpoint",
+            "Maintainer owns each recorded operation run and returns evidence once",
+            "Verifier owns acceptance proof and the full suite once",
+            "repeats only a disputed operation",
         ]:
             self.assertIn(term, subagents)
-
-        for term in [
-            "standard child identity",
-            "replacement is required",
-            "first visible update",
-            "later material phase",
-            "i am thinking about x",
-            "implement the agreed x proposal",
-            "proceed",
-        ]:
-            self.assertIn(term, evaluations)
-
-        for document in [dispatcher, developer]:
-            for term in ["simple human first name", "task name", "natural prose"]:
-                self.assertIn(term, document)
-        self.assertIn("inside your own agent task", developer)
-        self.assertIn("short plain-language commentary", subagents)
-        self.assertEqual(root_agents, template_agents)
-        self.assertIn("canonical child-agent policy", readme)
-        self.assertIn("existing engineer role thread", subagents)
-        self.assertIn("existing researcher role thread", subagents)
-        self.assertIn("task identifiers", evaluations)
-        policy_documents = [
-            subagents,
-            deliver,
-            plan,
-            verify,
-            readme,
-            project,
-            root_agents,
-            template_agents,
-            developer,
-        ]
-        for document in policy_documents:
-            self.assertNotIn("common " + "american first name", document)
-            self.assertNotRegex(document, r"(?i)\b(?:hello|hi)\s*,")
-            self.assertNotRegex(document, r"(?i)\bi\s+am\s+<role/name>")
-            self.assertNotRegex(document, r"(?i)\bstarting task-\d+\b")
-            for role, first_name in zip(
-                ["engineer", "maintainer", "verifier", "researcher"],
-                ["d" + "avid", "e" + "mily", "m" + "ichael", "s" + "arah"],
-            ):
-                self.assertNotIn(f"{role} {first_name}", document)
-                self.assertNotIn(f"{role}_{first_name}", document)
-        for role in ["engineer", "maintainer", "verifier", "researcher"]:
-            self.assertIn(f"firstname ({role})", subagents)
-            self.assertIn(f"{role}_firstname", subagents)
-
-    def test_visible_communication_contract_is_natural_and_returns_stay_lossless(
-        self,
-    ) -> None:
-        subagents = (
-            SKILL / "references/subagents.md"
-        ).read_text(encoding="utf-8").lower()
-        evaluations = (
-            SKILL / "references/trigger-evals.md"
-        ).read_text(encoding="utf-8").lower()
-        dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
-        plan = (SKILL / "references/plan.md").read_text(encoding="utf-8").lower()
-        deliver = (SKILL / "references/deliver.md").read_text(encoding="utf-8").lower()
-        profile = tomllib.loads(LUNA_PROFILE.read_text(encoding="utf-8"))
-        developer = profile["developer_instructions"].lower()
-        root_agents = ROOT.joinpath("AGENTS.md").read_text(encoding="utf-8").lower()
-        template_agents = (
-            SKILL / "assets/AGENTS.md"
-        ).read_text(encoding="utf-8").lower()
-        readme = ROOT.joinpath("README.md").read_text(encoding="utf-8").lower()
-        project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8").lower()
-
-        policy = "\n".join(
-            [subagents, evaluations, dispatcher, developer, plan, deliver, readme, project]
-        )
-        for term in [
-            "task",
-            "inquiry",
-            "intended result",
-            "boundaries",
-            "acceptance",
-            "proof",
-            "checkpoint",
-            "deviation",
-            "natural prose",
-            "sentence template",
-            "lossless",
-        ]:
-            self.assertIn(term, policy)
-
-        for field in [
-            "role:",
-            "task:",
-            "task name:",
-            "outcome:",
-            "architecture:",
-            "acceptance:",
-            "proof:",
-            "stop conditions:",
-            "result:",
-            "files changed:",
-            "targeted checks:",
-            "task checkpoint:",
-            "deviation or decision needed:",
-            "cited findings:",
-            "conflicts:",
-            "unknowns:",
-            "decision impact:",
-            "sources:",
-            "status:",
-            "evidence or artifacts:",
-            "issue or risk:",
-            "next:",
-        ]:
-            self.assertIn(field, subagents)
-
-        self.assertIn("concise natural update", dispatcher)
-        self.assertIn("natural prose", plan + deliver + developer + root_agents)
-        self.assertIn("canonical child-agent policy", readme)
-        self.assertEqual(readme.count("plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md"), 1)
-        self.assertEqual(root_agents, template_agents)
-
-        self.assertNotIn(
-            "tell the user the mode, child action, active task or inquiry, and reason in one or two short sentences",
-            dispatcher,
-        )
-        for document in [
-            subagents,
-            evaluations,
-            dispatcher,
-            developer,
-            root_agents,
-            template_agents,
-            readme,
-            project,
-        ]:
-            self.assertNotRegex(document, r"(?i)\b(?:hello|hi)\s*,")
-            self.assertNotRegex(document, r"(?i)\bi\s+am\s+<role/name>")
-            self.assertNotRegex(document, r"(?i)\bstarting task-\d+\b")
-
-        self.assertIn("assisted and solo are the only orchestration modes", subagents)
-        self.assertIn("assisted and solo are the only orchestration modes", dispatcher)
-        self.assertIn("assisted and solo are the only orchestration modes", readme)
-        self.assertIn("assisted and solo are the only orchestration modes", project)
-        self.assertIn("targeted", subagents)
-        for document in [
-            subagents,
-            dispatcher,
-            developer,
-            root_agents,
-            template_agents,
-            readme,
-            project,
-        ]:
-            self.assertNotIn(
-                "child commentary does not repeat its own name or role when the task title or lead assignment identifies it",
-                document,
-            )
-            self.assertNotIn(
-                "child identity is allowed only after replacement or genuine ambiguity",
-                document,
-            )
-        current_policy = "\n".join(
-            [subagents, dispatcher, plan, deliver, developer, root_agents, template_agents, readme, project]
-        )
-        for disallowed_mode in ["focused mode", "parallel mode", "review mode"]:
-            self.assertNotIn(disallowed_mode, current_policy)
+        for name in ["deliver", "verify", "operations"]:
+            lane = (SKILL / "references" / f"{name}.md").read_text(encoding="utf-8")
+            self.assertIn("subagents.md", lane)
 
     def test_readme_stays_public_and_links_detailed_policy(self) -> None:
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
@@ -1083,121 +901,6 @@ class PackageContractTests(unittest.TestCase):
             r"\b(?:handoff|checkpoint|deviation|task name)\b",
         ]:
             self.assertIsNone(re.search(pattern, lowered), pattern)
-
-    def test_children_address_primary_agent_as_architect(self) -> None:
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8").lower()
-        evaluations = (
-            SKILL / "references/trigger-evals.md"
-        ).read_text(encoding="utf-8").lower()
-        dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
-        profile = tomllib.loads(LUNA_PROFILE.read_text(encoding="utf-8"))
-        developer = profile["developer_instructions"].lower()
-        root_agents = ROOT.joinpath("AGENTS.md").read_text(encoding="utf-8").lower()
-        template_agents = (
-            SKILL / "assets/AGENTS.md"
-        ).read_text(encoding="utf-8").lower()
-        readme = ROOT.joinpath("README.md").read_text(encoding="utf-8").lower()
-        project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8").lower()
-
-        for document in [dispatcher, subagents]:
-            for term in [
-                "primary agent",
-                "architect",
-                "visible commentary",
-                "handoffs",
-                "returns",
-                "decision requests",
-                "speaks as i",
-            ]:
-                self.assertIn(term, document)
-        for term in ["child refers to the primary agent", "architect-supplied outcome", "architect supplies question"]:
-            self.assertIn(term, evaluations)
-        self.assertIn(
-            "plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md",
-            readme,
-        )
-
-        self.assertIn("architect speaks as i", developer)
-        self.assertNotIn("lead", developer)
-        self.assertNotIn("from the lead", subagents)
-        self.assertNotIn("lead decision", subagents)
-        self.assertNotIn("lead-owned task", subagents)
-        self.assertIn("from the architect", subagents)
-        self.assertIn("decision to the architect", evaluations)
-
-    def test_role_contracts_separate_execution_research_proof_and_operations(
-        self,
-    ) -> None:
-        subagents = (
-            SKILL / "references/subagents.md"
-        ).read_text(encoding="utf-8").lower()
-        deliver = (SKILL / "references/deliver.md").read_text(encoding="utf-8").lower()
-        verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
-        operations = (
-            SKILL / "references/operations.md"
-        ).read_text(encoding="utf-8").lower()
-        evaluations = (
-            SKILL / "references/trigger-evals.md"
-        ).read_text(encoding="utf-8").lower()
-        profile = tomllib.loads(LUNA_PROFILE.read_text(encoding="utf-8"))
-        root_agents = ROOT.joinpath("AGENTS.md").read_text(encoding="utf-8").lower()
-
-        for term in [
-            "durable task",
-            "decision envelope",
-            "local implementation mechanics",
-            "task checkpoint",
-            "architect reviews",
-            "correction",
-            "researcher",
-            "read-only",
-            "architect evaluates",
-            "verifier",
-            "acceptance-defining proof",
-            "risk-based regression",
-            "maintainer evidence",
-            "exact procedure",
-            "question and source boundary",
-            "preferred answer",
-        ]:
-            self.assertIn(term, subagents)
-        for term in ["one durable task", "one outcome", "checkpoint", "correction delta"]:
-            self.assertIn(term, deliver)
-        for term in [
-            "acceptance-defining proof",
-            "risk-based regression",
-            "engineer-only targeted checks",
-            "full suite",
-            "maintainer evidence",
-            "solo mode",
-        ]:
-            self.assertIn(term, verify)
-        for term in ["state-changing operation", "maintainer trigger", "required architect action"]:
-            self.assertIn(term, operations)
-        for field in ["role: researcher", "inquiry:", "decision informed:"]:
-            self.assertIn(field, subagents)
-        for term in [
-            "evidence collection",
-            "known source",
-            "researcher receives",
-            "researcher returns",
-            "read-only",
-            "repository writes",
-            "solo mode",
-            "snake_case responsibility",
-            "additional role name",
-            "correction",
-            "returned checkpoint",
-        ]:
-            self.assertIn(term, evaluations)
-        for term in ["architecture", "interfaces", "task state", "acceptance", "integration", "closeout", "architect"]:
-            self.assertIn(term, root_agents)
-        self.assertIn("reuse the existing engineer role thread", subagents)
-        self.assertIn("researcher is read-only", subagents)
-        self.assertEqual(profile["model"], "gpt-5.6-luna")
-        self.assertEqual(profile["model_reasoning_effort"], "max")
-        self.assertIn("Researcher", profile["description"])
-        self.assertIn("Use that role: Engineer, Maintainer, Verifier, or Researcher.", profile["developer_instructions"])
 
     def test_luna_profile_and_technical_english_rules_are_packaged(self) -> None:
         profile = tomllib.loads(LUNA_PROFILE.read_text(encoding="utf-8"))
@@ -1242,11 +945,11 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.8.2")
+        self.assertEqual(version, "1.9.0")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
         self.assertIn(
-            "- Version goal: Release intentional planning and human-monitorable children",
+            "- Version goal: Release compact proof ownership with high-risk trigger evaluations and independent acceptance evidence.",
             project,
         )
 

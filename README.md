@@ -46,10 +46,10 @@ Intent becomes a measurable plan and an owned task. The Architect keeps product 
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-Install the immutable `v1.8.2` release:
+Install the immutable `v1.9.0` release:
 
 ```bash
-git clone --depth 1 --branch v1.8.2 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.9.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 python3 plugins/lean-sdlc/skills/lean-sdlc/scripts/configure_codex.py
 python3 plugins/lean-sdlc/skills/lean-sdlc/scripts/configure_codex.py --check

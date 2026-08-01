@@ -5,7 +5,7 @@ This file is the sole authority for child roles, triggers, profiles, spawns, han
 ## Scope and modes
 
 - The Architect is the user-selected lead and principal engineer. The Architect owns product intent, architecture, interfaces, invariants, task state, acceptance, integration, and closeout.
-- The child roles are Engineer, Maintainer, Verifier, and Researcher. The standard four-role hierarchy is the Architect with these roles.
+- The four child roles are Engineer, Maintainer, Verifier, and Researcher.
 - Add one approved responsibility only when no standard role fits. Keep its authority, depth, profile, handoff, and return rules unchanged.
 - Assisted is the default and uses every triggered role, including Engineer. Solo is lead-only under the same implementation, proof, research, and operation contracts.
 - Assisted and Solo are the only orchestration modes. Keep the selected mode until the user changes it.
@@ -24,7 +24,7 @@ Apply every row before the first command. Delegation is mandatory beyond the Eng
 
 ## Mandatory sidecar triggers
 
-- The matrix is the only trigger source. Reuse or start the mapped sidecar when its trigger is true.
+- The matrix owns triggers.
 - Must reuse or start Engineer, Verifier, Maintainer, or read-only Researcher when its Assisted trigger is true.
 - Send a follow-up to the existing role thread for another task or inquiry. Do not spawn another child for that role.
 - Skip a sidecar only when its trigger is false or Solo mode is active. The Architect applies its contract locally in Solo.
@@ -37,7 +37,7 @@ Apply every row before the first command. Delegation is mandatory beyond the Eng
 - Keep at most one child thread for each role during one lead Codex task. Spawn lazily after its trigger.
 - Reuse the existing Engineer role thread and existing Researcher role thread when reachable. Reuse that role thread through follow-up handoffs, including after completion.
 - Keep one reachable child per role. Do not spawn another child for a reachable role; a normal task transition never justifies another child.
-- Choose an unused simple human first name for a new role thread. Display `Firstname (Role)` and use `role_firstname` as its task name.
+- Choose an unused simple human first name for a new role thread. Display `Firstname (Role)` and use `firstname_role` as the task name.
 - Keep the identity stable while the thread remains reusable. Additional roles use an approved concise lowercase snake_case responsibility name.
 - Never use a task identifier, feature, version, description, or arbitrary counter in a child name. Keep task identifiers in handoffs and returns.
 - Replace a role only for unavailability, repeated stale assumptions after correction, a user reset, or a required tool, permission, or runtime change.
@@ -70,7 +70,7 @@ Apply every row before the first command. Delegation is mandatory beyond the Eng
 Role: Engineer
 Identity: Firstname (Engineer)
 Task: TASK-ID
-Task name: engineer_firstname
+Task name: firstname_engineer
 Outcome: One observable result.
 Architecture: Settled implementation boundary.
 Interfaces and invariants: Architect-defined contracts.
@@ -83,7 +83,7 @@ Stop conditions: Decisions that require the Architect.
 
 - The envelope also serves Maintainer, Verifier, and Researcher. Researcher adds Inquiry, Question, Source priority, Source boundary, Decision informed, and Return format.
 - Maintainer adds Trigger, Checkpoint, Scope, Allowed writes, and Expected result. Verifier adds exact Checkpoint, risk scope, and `Allowed writes: None`.
-- Use identities `Firstname (Maintainer)`, `Firstname (Verifier)`, and `Firstname (Researcher)` with `maintainer_firstname`, `verifier_firstname`, and `researcher_firstname` task names.
+- Use identities `Firstname (Maintainer)`, `Firstname (Verifier)`, and `Firstname (Researcher)` with `firstname_maintainer`, `firstname_verifier`, and `firstname_researcher` task names.
 - Each payload comes from the Architect. Children do not infer decisions, dependencies, public behavior, acceptance, or paths.
 - Before Engineer handoff, show the architecture brief. After each checkpoint, the Architect reviews architecture, scope, diff, and contract alignment.
 - The Architect signs off each Engineer checkpoint once with alignment, deviation, and next action before acceptance.
@@ -110,6 +110,7 @@ Stop conditions: Decisions that require the Architect.
 - Engineer returns one task checkpoint. Stop for a missing architecture, interface, dependency, behavior, acceptance, path, or scope decision.
 - Keep one writing Engineer active per Architect. Give one outcome, decision envelope, path group, acceptance set, proof surface, and stop condition.
 - Corrections return as a concise delta to the same Engineer. Never send several durable tasks or an internal backlog.
+- Engineer owns targeted development checks. The Architect reviews the diff and architecture once per checkpoint.
 - Iterate until targeted checks pass while scope stays unchanged. Return Result, Files changed, Targeted checks, Task checkpoint, and Deviation or decision needed.
 
 ### Researcher
@@ -124,12 +125,13 @@ Stop conditions: Decisions that require the Architect.
 
 - Maintainer replays a guided or recorded procedure exactly. It never repairs source, invents a target, changes a procedure, or retries a state-changing failure without authority and a recorded recovery rule.
 - Return commands, inputs, target, success signal, artifacts, and bounded logs. Consume the exact source fingerprint.
+- Maintainer owns each recorded operation run and returns evidence once.
 - Later runs replay the recorded procedure. The Architect records a successful short procedure draft in optional `docs/operations.md`.
 
 ### Verifier
 
 - Verifier receives acceptance and the exact checkpoint. It independently reruns acceptance-defining proof, adds risk-based regression, and skips Engineer-only targeted checks.
-- The full suite normally runs once under Verifier. Consume Maintainer evidence instead of repeating the operation.
+- Verifier owns acceptance proof and the full suite once. It consumes Maintainer evidence and repeats only a disputed operation.
 - Verifier never repairs source or chooses task disposition. In Solo, the Architect applies this contract locally.
 - Return operation status, evidence or artifacts, issue or risk, and next Architect action.
 

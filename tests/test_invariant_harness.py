@@ -139,7 +139,7 @@ FROZEN_INVARIANTS = (
             "| maintainer |",
             "| verifier |",
             "| researcher |",
-            "the standard four-role hierarchy",
+            "the four child roles are",
         ),
     ),
     FrozenInvariant(
@@ -180,9 +180,8 @@ FROZEN_INVARIANTS = (
         ),
         (
             "display `firstname (role)`",
-            "use `role_firstname` as its task name",
+            "`firstname_role` as the task name",
             "every child update starts with work or current state",
-            "display `firstname (role)` and use `role_firstname` as the task name",
         ),
     ),
     FrozenInvariant(

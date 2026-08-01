@@ -16,5 +16,4 @@ The user-selected lead acts as principal engineer and owns product intent, archi
 8. Keep tests, diagnostics, project truth, decisions, and technical documentation synchronized. Avoid opportunistic refactors and speculative compatibility.
 9. After Engineer returns one task checkpoint, inspect scope, diff, and contract alignment. Accept it or send a concise correction delta to the same Engineer.
 10. Apply [operations.md](operations.md) for build, package, deploy, flash, runtime, or smoke work. Send the accepted checkpoint and evidence to Verify.
-
 Documentation-only delivery follows the same task and proof gates. Do not make new product or architecture decisions while cleaning documents.

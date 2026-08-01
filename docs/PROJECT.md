@@ -41,6 +41,6 @@ Codex repository work can drift from user intent, lose ownership, or claim compl
 ## Current promise
 
 - Stage: Evolution
-- Version: 1.8.2
-- Version goal: Release intentional planning and human-monitorable children with visible plans and short material-phase commentary.
+- Version: 1.9.0
+- Version goal: Release compact proof ownership with high-risk trigger evaluations and independent acceptance evidence.
 - Exit evidence: Tests, skill and plugin validation, local installation, accepted checkpoints, repository checks, tagged commit, and successful push.
