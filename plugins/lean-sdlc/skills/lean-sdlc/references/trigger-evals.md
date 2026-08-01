@@ -34,3 +34,11 @@ Run these high-risk scenarios from a fresh task with only the installed plugin a
 | Proof or operation checkpoint | Identify the exact commit or working-tree fingerprint; invalidate evidence after relevant source changes. |
 | Stateful operation | Use one exact target and one state change at a time; never guess, silently alter, or retry without authority and recovery. Redact secrets. |
 | Task closeout | Verifier returns evidence only; the owning Architect alone decides accept, correct, reopen, fail, or close. |
+| Two independent modules with settled contracts | Schedule two Engineers in one checkout with exclusive primary write scopes. |
+| Shared interface or schema work | Keep the tasks serial. |
+| Shared manifest or lock-file work | Keep the tasks serial. |
+| Shared tests or documentation during writes | Wait until both Engineers stop at the combined checkpoint. |
+| Qualified group reuses Engineer threads | Reuse two reachable Engineer threads and keep one task per thread. |
+| Parallel overlap appears | Pause both writers, let the Architect decide, and return correction to one Engineer. |
+| Maintainer receives accepted behavior delta | Synchronize affected shared narrative documents without inventing decisions. |
+| Solo mode with parallel-ready tasks | Keep execution lead-only and preserve existing Solo gates. |

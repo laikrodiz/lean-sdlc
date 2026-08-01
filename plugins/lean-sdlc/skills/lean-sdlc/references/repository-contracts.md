@@ -22,6 +22,9 @@ README remains project-owned.
 - Repeatable procedure -> `docs/OPERATIONS.md`.
 - Shared mapping or interface -> technical documentation.
 - Local mechanism -> code, tests, or comments.
+- Engineer owns code-local truth such as tests, comments, docstrings, annotations, and local examples.
+- Maintainer owns shared narrative truth in `docs/PROJECT.md`, feature, decision, architecture, interface, README, and operations documents.
+- The Architect supplies the behavior and decision delta. Maintainer synchronizes only affected documents through an impact-directed pass.
 
 Resolve conflicting truth in the authoritative source before synchronization.
 
@@ -47,6 +50,7 @@ Use `Project`, `FEAT-*`, `DEC-*`, or `Bootstrap` as `Context`.
 `tasks.py upgrade` accepts the previous `Parent` header and older planning header. It maps `REPO` to `Project` and `BOOTSTRAP` to `Bootstrap`, then atomically writes one root CSV under the existing lock.
 
 The command serializes writers with a short root lock, reads the latest ledger under that lock, validates dependencies, changes one transaction, and replaces the file atomically. Owner IDs coordinate threads; they are not a security boundary.
+A qualified parallel group may hold two `In Progress` rows under one Architect owner. One root `tasks.csv` remains authoritative, and the Architect alone mutates or closes both rows.
 
 ## Work hierarchy
 

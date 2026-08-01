@@ -32,11 +32,15 @@ Assisted mode is the default. It invokes the roles needed for the request. Solo 
 | Role | Responsibility |
 | --- | --- |
 | Engineer | Implements an approved task. |
-| Maintainer | Runs a recorded operational procedure. |
+| Maintainer | Synchronizes affected shared documents and runs recorded operational procedures. |
 | Verifier | Checks acceptance independently. |
 | Scout | Collects cited evidence for complex inquiries. |
 
 See the [canonical child-agent policy](plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md) for role lifecycle and communication rules.
+
+Assisted work normally uses one Engineer in one checkout. Cautious soft parallelism allows two reusable Engineers only for ready tasks with separate primary write scopes, settled contracts, no dependency, and useful time reduction. One root `tasks.csv` remains authoritative. Shared tests, documentation, and operations wait until both Engineers stop. If qualification fails or scopes overlap, keep the normal serial path.
+
+Engineers keep code-local tests and notes current. The Maintainer synchronizes affected shared project, feature, decision, architecture, interface, README, and operations documents, and runs recorded procedures without inventing product or architecture decisions.
 
 ## Workflow
 
@@ -46,10 +50,10 @@ Intent becomes a measurable plan and an owned task. The Architect keeps product 
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-Install the immutable `v1.9.1` release:
+Install the immutable `v1.10.0` release:
 
 ```bash
-git clone --depth 1 --branch v1.9.1 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.10.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 python3 plugins/lean-sdlc/skills/lean-sdlc/scripts/configure_codex.py
 python3 plugins/lean-sdlc/skills/lean-sdlc/scripts/configure_codex.py --check

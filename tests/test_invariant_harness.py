@@ -17,6 +17,7 @@ class FrozenInvariant:
     sources: tuple[str, ...]
     required_terms: tuple[str, ...]
     check: str = "terms"
+    ordered_terms: tuple[str, ...] = ()
 
 
 FROZEN_INVARIANTS = (
@@ -268,6 +269,50 @@ FROZEN_INVARIANTS = (
             "avoid fixed limits based on time, lines, or file count",
         ),
     ),
+    FrozenInvariant(
+        "qualified parallel writing and shared documentation",
+        (
+            "README.md",
+            "docs/PROJECT.md",
+            "plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md",
+            "plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md",
+            "plugins/lean-sdlc/skills/lean-sdlc/references/deliver.md",
+            "plugins/lean-sdlc/skills/lean-sdlc/references/verify.md",
+            "plugins/lean-sdlc/skills/lean-sdlc/references/trigger-evals.md",
+        ),
+        (
+            "qualified parallel group",
+            "one root `tasks.csv` remains authoritative",
+            "serial execution",
+            "shared tests, docs, and operations wait",
+            "two reusable Engineers",
+            "combined checkpoint",
+            "Maintainer synchronizes affected shared narrative documents",
+            "impact-directed pass",
+            "do not add worktrees, branches, or a merge workflow",
+            "Engineer edits only assigned implementation paths",
+            "Maintainer edits only assigned shared-document paths",
+            "Verifier and Scout are read-only",
+            "No child edits `tasks.csv`",
+            "Route a documentation-only task directly to Maintainer",
+            "at most two reachable Engineers prevent a third",
+            "two qualified tasks in one group start together",
+            "later dependent work waits",
+            "send the final source checkpoint to Verify first",
+            "consume Maintainer evidence without repeating accepted source proof",
+            "the full suite once",
+        ),
+        ordered_terms=(
+            "Require Engineers to stop",
+            "Architect reviews the combined implementation and scopes",
+            "Run any shared source-changing formatter or generator serially",
+            "Architect reviews resulting changes",
+            "Maintainer synchronizes affected shared docs",
+            "Pause all writers and identify the checkpoint by commit or exact working-tree fingerprint",
+            "Verifier checks both acceptance sets",
+            "Maintainer runs required build, package, deploy, flash, runtime, or smoke operations serially",
+        ),
+    ),
 )
 
 
@@ -299,7 +344,7 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
     def test_every_frozen_invariant_maps_to_a_current_contract(self) -> None:
         names = [invariant.name for invariant in FROZEN_INVARIANTS]
         self.assertEqual(len(names), len(set(names)))
-        self.assertEqual(len(FROZEN_INVARIANTS), 18)
+        self.assertEqual(len(FROZEN_INVARIANTS), 19)
 
         for invariant in FROZEN_INVARIANTS:
             with self.subTest(invariant=invariant.name):
@@ -309,6 +354,21 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
                 self.assertTrue(invariant.required_terms)
                 for term in invariant.required_terms:
                     self.assertIn(_normalized(term), combined, term)
+
+                if invariant.ordered_terms:
+                    ordered_source = next(
+                        (
+                            source
+                            for source in sources
+                            if "## checkpoint barrier" in source
+                        ),
+                        combined,
+                    )
+                    positions = [
+                        ordered_source.index(_normalized(term))
+                        for term in invariant.ordered_terms
+                    ]
+                    self.assertEqual(positions, sorted(positions))
 
                 if invariant.check == "lanes":
                     readme = (ROOT / "README.md").read_text(encoding="utf-8")

@@ -30,13 +30,13 @@ Read the lane reference only when active: [shape.md](references/shape.md), [deci
 
 ## Hard gates
 
-Treat task-ledger commands as control transactions. Before any other repository mutation, run `tasks.py start` or claim planned work with `tasks.py start TASK-ID`; never edit `tasks.csv` directly. Require an owned `In Progress` task, measurable acceptance, explicit proof, and a matching visible plan. Run `lean_check.py --before-write --task TASK-ID --owner OWNER` before the first non-control write. Diagnose an unknown cause before a fix. Keep one intentional change and one durable task. Each task is one independently accepted repository state; local implementation steps stay transient. Verify acceptance and documentation parity before closure. Only the owner closes a task; a direct user request may override with a recorded reason.
+Treat task-ledger commands as control transactions. Before any other repository mutation, run `tasks.py start` or claim planned work with `tasks.py start TASK-ID`; never edit `tasks.csv` directly. Require an owned `In Progress` task, measurable acceptance, explicit proof, and a matching visible plan. Run `lean_check.py --before-write --task TASK-ID --owner OWNER` before the first non-control write. Diagnose an unknown cause before a fix. Keep one intentional change and one durable task normally; a qualified parallel group may hold two independently accepted tasks under one Architect owner. Each task is one independently accepted repository state; local implementation steps stay transient. Verify acceptance and documentation parity before closure. Only the owner closes a task; a direct user request may override with a recorded reason.
 
 ## Child boundary
 
 The canonical [subagent policy](references/subagents.md) is the sole authority for child roles, triggers, profiles, spawn payloads, handoffs, reuse, visible communication, and failure conditions. The user-selected lead acts as principal engineer and owns product intent, architecture, interfaces, invariants, task boundaries, integration, acceptance, and closeout.
 
-Children call the primary agent Architect; the Architect speaks as I. Assisted and Solo are the only orchestration modes. Keep one reusable child thread per role. Each child uses an unused Greek label and a `role_label` task name.
+Children call the primary agent Architect; the Architect speaks as I. Assisted and Solo are the only orchestration modes. Assisted normally uses one Engineer; a qualified parallel group may use two under the canonical child policy. Keep one reusable child thread per sidecar role and normally one Engineer. Each child uses an unused Greek label and a `role_label` task name.
 
 ## Engineering and technical English
 

@@ -181,6 +181,58 @@ class TaskLedgerTests(unittest.TestCase):
             self.assertEqual(row["Owner"], "12345678")
             self.assertEqual(row["Status"], "In Progress")
 
+    def test_one_owner_can_hold_two_parallel_tasks_under_before_write_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            write_ledger(
+                repository,
+                "TASK-001,Module A,In Progress,Project,,12345678,"
+                "Module A passes,Run module A checks,\n"
+                "TASK-000,Module B,In Progress,Project,,12345678,"
+                "Module B passes,Run module B checks,\n",
+            )
+
+            for task_id in ("TASK-001", "TASK-000"):
+                checked = run(
+                    str(CHECK),
+                    str(repository),
+                    "--before-write",
+                    "--task",
+                    task_id,
+                    "--owner",
+                    "12345678",
+                )
+                self.assertEqual(
+                    checked.returncode,
+                    0,
+                    checked.stdout + checked.stderr,
+                )
+
+            first = task(
+                repository,
+                "update",
+                "TASK-001",
+                "--owner",
+                "12345678",
+                "--proof",
+                "Run module A checks again",
+            )
+            second = task(
+                repository,
+                "update",
+                "TASK-000",
+                "--owner",
+                "12345678",
+                "--proof",
+                "Run module B checks again",
+            )
+            self.assertEqual(first.returncode, 0, first.stderr)
+            self.assertEqual(second.returncode, 0, second.stderr)
+            self.assertEqual(
+                {row["Owner"] for row in read_rows(repository)},
+                {"12345678"},
+            )
+
     def test_only_owner_closes_without_direct_user_override(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             repository = Path(directory)
@@ -837,7 +889,7 @@ class PackageContractTests(unittest.TestCase):
         subagents = subagents_path.read_text(encoding="utf-8")
         profile = profile_path.read_text(encoding="utf-8")
 
-        self.assertGreaterEqual(len(subagents.splitlines()), 170)
+        self.assertGreaterEqual(len(subagents.splitlines()), 180)
         self.assertLessEqual(len(subagents.splitlines()), 190)
         self.assertGreaterEqual(len(profile.splitlines()), 15)
         self.assertLessEqual(len(profile.splitlines()), 18)
@@ -865,7 +917,7 @@ class PackageContractTests(unittest.TestCase):
             if line.startswith("| ") and not line.startswith("| ---") and "Scenario" not in line
         ]
         self.assertGreaterEqual(len(scenarios), 20)
-        self.assertLessEqual(len(scenarios), 30)
+        self.assertLessEqual(len(scenarios), 40)
         self.assertNotIn("Failure indicators", evaluations)
 
         subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
@@ -961,11 +1013,11 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.9.1")
+        self.assertEqual(version, "1.10.0")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
         self.assertIn(
-            "- Version goal: Release globally distinct Greek-label child identities with compact proof ownership and high-risk trigger evaluations.",
+            "- Version goal: Release cautious same-checkout parallel Engineers with shared-document stewardship and combined checkpoint proof.",
             project,
         )
 
