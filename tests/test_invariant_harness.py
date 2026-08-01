@@ -84,7 +84,7 @@ FROZEN_INVARIANTS = (
             "retain the stable 8-digit task owner supplied by the plugin hook",
             "remains resumable from repository truth and its ledger row after compaction",
             "rehydrate an allowed replacement from its role",
-            "relevant procedure, checkpoint, and latest unresolved result",
+            "procedure, checkpoint, and latest unresolved result",
         ),
     ),
     FrozenInvariant(
@@ -123,7 +123,7 @@ FROZEN_INVARIANTS = (
         ),
         (
             "the user-selected lead acts as principal engineer and owns product intent",
-            "the architect supplies the question and source boundary",
+            "the architect supplies a question and source boundary",
             "keep architecture, task setting, integration, and other consequential decisions with the architect",
             "the user-selected lead makes the final accept",
         ),
@@ -169,6 +169,20 @@ FROZEN_INVARIANTS = (
             "reuse that role thread through follow-up handoffs",
             "keep one reachable child per role",
             "reuse the existing engineer role thread",
+        ),
+    ),
+    FrozenInvariant(
+        "stable child identity and update start",
+        (
+            "plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md",
+            "plugins/lean-sdlc/skills/lean-sdlc/assets/lean_sdlc_luna.toml",
+            "plugins/lean-sdlc/skills/lean-sdlc/references/trigger-evals.md",
+        ),
+        (
+            "display `firstname (role)`",
+            "use `role_firstname` as its task name",
+            "every child update starts with work or current state",
+            "display `firstname (role)` and use `role_firstname` as the task name",
         ),
     ),
     FrozenInvariant(
@@ -283,7 +297,7 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
     def test_every_frozen_invariant_maps_to_a_current_contract(self) -> None:
         names = [invariant.name for invariant in FROZEN_INVARIANTS]
         self.assertEqual(len(names), len(set(names)))
-        self.assertEqual(len(FROZEN_INVARIANTS), 17)
+        self.assertEqual(len(FROZEN_INVARIANTS), 18)
 
         for invariant in FROZEN_INVARIANTS:
             with self.subTest(invariant=invariant.name):

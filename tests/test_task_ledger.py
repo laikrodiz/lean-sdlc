@@ -777,9 +777,9 @@ class PackageContractTests(unittest.TestCase):
             "decision reopened",
             "delegation is mandatory",
             "one writing engineer active per architect",
-            "task_name=role_firstname",
+            "task name: engineer_firstname",
             "simple human first name",
-            "role firstname",
+            "firstname (role)",
             "context reset reason",
             "replacement action",
             "arbitrary counter",
@@ -831,6 +831,32 @@ class PackageContractTests(unittest.TestCase):
                     f"{document}: {line}",
                 )
 
+    def test_child_policy_compaction_bounds_and_identity_contract(self) -> None:
+        subagents_path = SKILL / "references/subagents.md"
+        profile_path = SKILL / "assets/lean_sdlc_luna.toml"
+        subagents = subagents_path.read_text(encoding="utf-8")
+        profile = profile_path.read_text(encoding="utf-8")
+
+        self.assertGreaterEqual(len(subagents.splitlines()), 170)
+        self.assertLessEqual(len(subagents.splitlines()), 190)
+        self.assertGreaterEqual(len(profile.splitlines()), 15)
+        self.assertLessEqual(len(profile.splitlines()), 18)
+        for heading in [
+            "## Role-trigger matrix",
+            "## Shared lifecycle",
+            "## Shared handoff envelope",
+            "## Role-specific deltas",
+            "## Model and spawn",
+            "## Checkpoint barrier",
+            "## Return",
+        ]:
+            self.assertIn(heading, subagents)
+        self.assertIn("Display `Firstname (Role)`", subagents)
+        self.assertIn("Display `Firstname (Role)`", profile)
+        self.assertIn("Every child update starts with work or current state", subagents)
+        self.assertIn("Every update starts with work or current state", profile)
+        self.assertNotIn("Role Firstname", subagents + profile)
+
     def test_child_identities_replacements_and_commentary_are_human_monitorable(
         self,
     ) -> None:
@@ -855,7 +881,7 @@ class PackageContractTests(unittest.TestCase):
 
         for term in [
             "simple human first name",
-            "role firstname",
+            "firstname (role)",
             "role_firstname",
             "identity stable",
             "thread remains reusable",
@@ -867,7 +893,7 @@ class PackageContractTests(unittest.TestCase):
             "material phases",
             "planned proof",
             "current work or state",
-            "greetings",
+            "scripted openings",
             "sentence templates",
             "heartbeat limits",
         ]:
@@ -917,8 +943,8 @@ class PackageContractTests(unittest.TestCase):
                 self.assertNotIn(f"{role} {first_name}", document)
                 self.assertNotIn(f"{role}_{first_name}", document)
         for role in ["engineer", "maintainer", "verifier", "researcher"]:
-            self.assertIn(f"role: {role} firstname", subagents)
-            self.assertIn(f"task name: {role}_firstname", subagents)
+            self.assertIn(f"firstname ({role})", subagents)
+            self.assertIn(f"{role}_firstname", subagents)
 
     def test_visible_communication_contract_is_natural_and_returns_stay_lossless(
         self,

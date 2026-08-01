@@ -41,10 +41,10 @@ Test from a fresh task with only the installed plugin and target repository visi
 | A child handoff is ready | Lead gives a natural first assignment update with the child identity, task or inquiry, intended result, useful boundaries, and proof |
 | A child refers to the primary agent | Use Architect in child commentary, handoffs, returns, and decision requests; the primary agent speaks as I |
 | An Engineer handoff is ready | Lead gives a natural visible architecture brief with task or outcome, decision, boundaries and invariants, non-goals, and proof. Fixed headings are not required |
-| Standard child identity | Choose an unused simple human first name when the role thread starts. Display `Role Firstname` and use `role_firstname` as the task name |
+| Standard child identity | Choose an unused simple human first name when the role thread starts. Display `Firstname (Role)` and use `role_firstname` as the task name |
 | A role identity remains reachable | Reuse the same role and first-name identity across repository tasks and inquiries |
 | A replacement is required and the current name is unavailable | Keep the role prefix, choose another unused simple human first name, announce the new identity and reset reason, and keep it stable |
-| A child reaches the first visible update for each newly assigned durable task or inquiry | State the assignment or inquiry, intended result, boundaries, and planned proof in concise natural prose. Do not require a greeting, self-introduction, or sentence template |
+| A child reaches the first visible update for each newly assigned durable task or inquiry | Start with work or current state. State the assignment or inquiry, intended result, boundaries, and planned proof in concise natural prose |
 | A child reaches a later material phase for that task or inquiry | Start natural commentary with work or current state. Include the required result, checks, checkpoint, and deviation information |
 | The default Assisted mode does not affect the user-visible decision | Omit the mode announcement |
 | A visible lead correction or acceptance update is due | Start with the current fact or action, use natural prose, and repeat a name or role only when clarity needs it |
@@ -104,7 +104,7 @@ Test from a fresh task with only the installed plugin and target repository visi
 
 Positive updates begin with current work or state and preserve the information needed for action, proof, and review. They use concise natural engineering prose.
 
-Negative updates begin with a greeting, self-introduction, praise, filler, ceremonial heading, fixed field label, or sentence template. They omit task, boundaries, acceptance, proof, checkpoint, deviation, or next action information.
+Negative updates begin with a scripted opening, identity-only introduction, praise, filler, ceremonial heading, fixed field label, or sentence template. They omit task, boundaries, acceptance, proof, checkpoint, deviation, or next action information.
 
 Failure indicators:
 
@@ -135,8 +135,8 @@ Failure indicators:
 25. Verifier repeats Engineer-only targeted checks blindly or repeats a Maintainer operation.
 26. A lead creates a second reachable child for one role or replaces a role because a repository task changed.
 27. A child name uses an arbitrary counter such as `V1` or `V11`.
-28. A lead or child update starts with a greeting, self-introduction, praise, filler, ceremonial heading, fixed field label, or sentence template instead of work or current state.
+28. A lead or child update starts with a scripted opening, identity-only introduction, praise, filler, ceremonial heading, fixed field label, or sentence template instead of work or current state.
 29. A lead repeats a child identity without assignment clarity, replacement, or genuine ambiguity, or a role thread changes its first name during normal reuse.
 30. A visible architecture brief or sign-off requires fixed headings or drops task, decision, boundaries, non-goals, proof, alignment, deviation, or next-action facts.
-31. A child update requires a greeting or self-introduction, uses a scripted sentence template, or omits the assignment, intended result, boundaries, or proof information needed for the current phase.
+31. A child update requires a scripted opening or identity-only introduction, uses a sentence template, or omits the assignment, intended result, boundaries, or proof information needed for the current phase.
 32. A visible final update omits result, checks, checkpoint, or deviation, exceeds three short sentences, or replaces the labeled internal return.
