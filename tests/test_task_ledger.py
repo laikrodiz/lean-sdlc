@@ -777,9 +777,9 @@ class PackageContractTests(unittest.TestCase):
             "decision reopened",
             "delegation is mandatory",
             "one writing engineer active per architect",
-            "task name: firstname_engineer",
-            "simple human first name",
-            "firstname (role)",
+            "task name: engineer_alpha",
+            "the ordered pool is",
+            "role label",
             "context reset reason",
             "replacement action",
             "arbitrary counter",
@@ -792,7 +792,7 @@ class PackageContractTests(unittest.TestCase):
             "user-selected lead",
             "agent_type=lean_sdlc_luna",
             "service_tier=priority",
-            "approved concise lowercase snake_case responsibility name",
+            "responsibility_label",
             "material phase changes",
             "two heartbeats per command",
         ]:
@@ -802,7 +802,7 @@ class PackageContractTests(unittest.TestCase):
             "must reuse or start verifier",
             "must reuse or start maintainer",
             "must reuse or start engineer",
-            "must reuse or start read-only researcher",
+            "must reuse or start read-only scout",
             "follow-up to the existing role thread",
             "do not spawn another child for that role",
             "directly spawn terra `xhigh`",
@@ -851,11 +851,11 @@ class PackageContractTests(unittest.TestCase):
             "## Return",
         ]:
             self.assertIn(heading, subagents)
-        self.assertIn("Display `Firstname (Role)`", subagents)
-        self.assertIn("Display `Firstname (Role)`", profile)
+        self.assertIn("Display `Role label`", subagents)
+        self.assertIn("Display `Role label`", profile)
         self.assertIn("Every child update starts with work or current state", subagents)
         self.assertIn("Every update starts with work or current state", profile)
-        self.assertNotIn("Role Firstname", subagents + profile)
+        self.assertNotIn("First" + "name", subagents + profile)
 
     def test_trigger_evals_and_proof_ownership_are_compact(self) -> None:
         evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8")
@@ -880,6 +880,22 @@ class PackageContractTests(unittest.TestCase):
         for name in ["deliver", "verify", "operations"]:
             lane = (SKILL / "references" / f"{name}.md").read_text(encoding="utf-8")
             self.assertIn("subagents.md", lane)
+
+        policy = "\n".join(
+            path.read_text(encoding="utf-8")
+            for path in [
+                SKILL / "SKILL.md",
+                SKILL / "references/subagents.md",
+                SKILL / "references/trigger-evals.md",
+                SKILL / "assets/lean_sdlc_luna.toml",
+                ROOT / "README.md",
+                ROOT / "docs/PROJECT.md",
+            ]
+        )
+        for stale in ["Research" + "er", "research" + "er_", "First" + "name", "role_first" + "name"]:
+            self.assertNotIn(stale, policy)
+        self.assertIn("Scout delta", policy)
+        self.assertIn("scout_delta", policy)
 
     def test_readme_stays_public_and_links_detailed_policy(self) -> None:
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
@@ -918,7 +934,7 @@ class PackageContractTests(unittest.TestCase):
         self.assertEqual(profile["name"], "lean_sdlc_luna")
         self.assertEqual(profile["model"], "gpt-5.6-luna")
         self.assertEqual(profile["model_reasoning_effort"], "max")
-        self.assertIn("Engineer, Maintainer, Verifier, or Researcher", profile["description"])
+        self.assertIn("Engineer, Maintainer, Verifier, or Scout", profile["description"])
         self.assertIn("agent_type=lean_sdlc_luna", subagents)
         self.assertIn("gpt-5.6-terra", subagents)
         self.assertIn("reasoning_effort=xhigh", subagents)
@@ -945,11 +961,11 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.9.0")
+        self.assertEqual(version, "1.9.1")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
         self.assertIn(
-            "- Version goal: Release compact proof ownership with high-risk trigger evaluations and independent acceptance evidence.",
+            "- Version goal: Release globally distinct Greek-label child identities with compact proof ownership and high-risk trigger evaluations.",
             project,
         )
 
@@ -989,6 +1005,7 @@ class CodexConfigurationTests(unittest.TestCase):
             generated_description = config["agents"]["lean_sdlc_luna"]["description"]
             self.assertEqual(generated_description, source_profile["description"])
             self.assertIn("Architect", generated_description)
+            self.assertIn("Scout", generated_description)
             self.assertNotIn("lead", generated_description.lower())
             self.assertEqual(
                 codex_home.joinpath("agents/lean_sdlc_luna.toml").read_text(

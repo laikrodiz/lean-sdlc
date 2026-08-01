@@ -129,7 +129,7 @@ FROZEN_INVARIANTS = (
         ),
     ),
     FrozenInvariant(
-        "engineer, maintainer, verifier, and researcher roles",
+        "engineer, maintainer, verifier, and scout roles",
         (
             "README.md",
             "plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md",
@@ -138,7 +138,7 @@ FROZEN_INVARIANTS = (
             "| engineer |",
             "| maintainer |",
             "| verifier |",
-            "| researcher |",
+            "| scout |",
             "the four child roles are",
         ),
     ),
@@ -172,15 +172,18 @@ FROZEN_INVARIANTS = (
         ),
     ),
     FrozenInvariant(
-        "stable child identity and update start",
+        "stable child label and update start",
         (
             "plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md",
             "plugins/lean-sdlc/skills/lean-sdlc/assets/lean_sdlc_luna.toml",
             "plugins/lean-sdlc/skills/lean-sdlc/references/trigger-evals.md",
         ),
         (
-            "display `firstname (role)`",
-            "`firstname_role` as the task name",
+            "the ordered pool is",
+            "display `role label`",
+            "`role_label` as the task name",
+            "a replacement takes the next label",
+            "recycle the earliest label from an unreachable thread",
             "every child update starts with work or current state",
         ),
     ),
@@ -326,6 +329,24 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
             "references/repository-contracts.md) only for initialization, legacy migration, or document ownership",
             dispatcher,
         )
+
+    def test_child_label_pool_is_ordered_unique_and_recycles_unreachable_labels(self) -> None:
+        policy = (ROOT / "plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md").read_text(
+            encoding="utf-8"
+        )
+        match = re.search(r"the ordered pool is .*?`([^`]+)`", policy, re.I)
+        self.assertIsNotNone(match)
+        labels = tuple(label.strip() for label in match.group(1).split(","))
+        expected = (
+            "alpha", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta",
+            "iota", "kappa", "lambda", "mu", "nu", "xi", "omicron", "pi",
+            "rho", "sigma", "tau", "upsilon", "phi", "chi", "psi", "omega",
+        )
+        self.assertEqual(labels, expected)
+        self.assertEqual(len(labels), len(set(labels)))
+        self.assertEqual(policy.count(match.group(1)), 1)
+        self.assertIn("a replacement takes the next label", policy.lower())
+        self.assertIn("recycle the earliest label from an unreachable thread", policy.lower())
 
 
 if __name__ == "__main__":

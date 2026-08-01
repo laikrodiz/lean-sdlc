@@ -10,7 +10,7 @@ Codex repository work can drift from user intent, lose ownership, or claim compl
 - Minimal initialization, legacy migration, and atomic private task-ledger transactions.
 - Human-readable `Context` values and one durable task per independently accepted state.
 - Architect ownership of intent, architecture, interfaces, invariants, acceptance, integration, proof, and closeout. The primary agent is Architect. Use Architect in visible commentary, handoffs, returns, and decision requests; the Architect speaks as I.
-- Engineer, Maintainer, Verifier, and Researcher roles under one canonical policy.
+- Engineer, Maintainer, Verifier, and Scout roles under one canonical policy.
 - One reusable child thread per role. Assisted and Solo are the only orchestration modes.
 - Named `lean_sdlc_luna` profile for Luna Max children with Terra XHigh fallback.
 - Independent Verifier proof, Maintainer evidence, applicable ASD-STE100 Issue 9 guidance, minimal modular engineering, plausible edge-case treatment, and small Mermaid diagrams.
@@ -41,6 +41,6 @@ Codex repository work can drift from user intent, lose ownership, or claim compl
 ## Current promise
 
 - Stage: Evolution
-- Version: 1.9.0
-- Version goal: Release compact proof ownership with high-risk trigger evaluations and independent acceptance evidence.
+- Version: 1.9.1
+- Version goal: Release globally distinct Greek-label child identities with compact proof ownership and high-risk trigger evaluations.
 - Exit evidence: Tests, skill and plugin validation, local installation, accepted checkpoints, repository checks, tagged commit, and successful push.

@@ -23,7 +23,7 @@ V2_SETTINGS = {
 }
 PROFILE_DESCRIPTION = (
     "Lean-SDLC Luna child agent. The Architect supplies the Engineer, Maintainer, "
-    "Verifier, or Researcher role in the spawn handoff."
+    "Verifier, or Scout role in the spawn handoff."
 )
 
 

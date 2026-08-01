@@ -36,7 +36,7 @@ Treat task-ledger commands as control transactions. Before any other repository 
 
 The canonical [subagent policy](references/subagents.md) is the sole authority for child roles, triggers, profiles, spawn payloads, handoffs, reuse, visible communication, and failure conditions. The user-selected lead acts as principal engineer and owns product intent, architecture, interfaces, invariants, task boundaries, integration, acceptance, and closeout.
 
-Children call the primary agent Architect in visible commentary, handoffs, returns, and decision requests; the Architect speaks as I. Assisted and Solo are the only orchestration modes. Keep one reusable child thread per role. Lead review and checkpoint verification precede another task. Use concise natural prose and concise natural update messages. Each role uses an unused simple human first name and task name.
+Children call the primary agent Architect; the Architect speaks as I. Assisted and Solo are the only orchestration modes. Keep one reusable child thread per role. Each child uses an unused Greek label and a `role_label` task name.
 
 ## Engineering and technical English
 

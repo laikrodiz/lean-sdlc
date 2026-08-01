@@ -23,11 +23,11 @@ Run these high-risk scenarios from a fresh task with only the installed plugin a
 | Full suite promised | Run it once under Verifier. |
 | Maintainer trigger for a recorded or guided build, package, deploy, flash, runtime, CI, or smoke operation | Must reuse or start Maintainer; replay it once and return evidence. |
 | Verifier receives Maintainer evidence | Consume it; repeat only a disputed operation. |
-| Broad evidence spans sources, repositories, documents, data, or logs | Must reuse or start read-only Researcher. |
+| Broad evidence spans sources, repositories, documents, data, or logs | Must reuse or start read-only Scout. |
 | Another task or inquiry reaches a reachable role thread | Send a follow-up to the existing role thread; do not spawn another child for that role. |
-| Standard child identity | Use an unused simple first name as `Firstname (Role)` with task name `firstname_role`; keep it stable. |
+| Standard child identity | Allocate the next unused canonical label; display `Scout delta` and use `scout_delta`; keep the label stable. |
 | Child visible update | Start with work or current state; omit greetings, identity-only introductions, and sentence templates. |
-| Child replacement or reuse | Reuse one reachable thread per role; replace only for reset, unavailability, stale assumptions, or incompatible tools. Keep depth one. |
+| Child replacement or pool exhaustion | Reuse one reachable thread per role; allocate the next unused label for replacement. After all 24 labels, recycle the earliest label whose prior thread is unreachable. Reuse across roles only during recycling. Keep depth one. |
 | Primary Luna spawn | Use `agent_type=lean_sdlc_luna`, `service_tier=priority`, and non-full-history `fork_turns`. |
 | Luna priority failure | Retry Luna `max` without `service_tier`; then directly spawn Terra `xhigh` without `service_tier` or `agent_type`. Never use `low`. |
 | Child route inherits an automatic model | Fail the route; use the named profile or the explicit Terra `xhigh` fallback. |
