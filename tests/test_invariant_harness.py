@@ -55,8 +55,8 @@ FROZEN_INVARIANTS = (
         ("AGENTS.md", "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md"),
         (
             "before any other repository mutation",
-            "create immediate work with `tasks.py start`",
-            "enforce an owned task before repository writes",
+            "create immediate work or claim planned work",
+            "require an owned `in progress` task",
             "run `lean_check.py --before-write",
         ),
     ),
@@ -151,10 +151,14 @@ FROZEN_INVARIANTS = (
         (
             "gpt-5.6-luna",
             "max",
+            "agent_type=lean_sdlc_luna",
+            "service_tier=priority",
+            "non-full-history `fork_turns`",
             "retry luna max",
             "gpt-5.6-terra",
             "terra `xhigh`",
             "directly spawn `gpt-5.6-terra` at `xhigh`",
+            "without `service_tier` or `agent_type`",
         ),
     ),
     FrozenInvariant(
@@ -196,7 +200,7 @@ FROZEN_INVARIANTS = (
         (
             "for an older ledger",
             "run [scripts/tasks.py](scripts/tasks.py) `upgrade`",
-            "accepts the previous `parent` header and the older planning header",
+            "accepts the previous `parent` header and older planning header",
             "maps `repo` to `project` and `bootstrap` to `bootstrap`",
             "atomically writes one root csv under the existing lock",
         ),
@@ -228,7 +232,7 @@ FROZEN_INVARIANTS = (
             "smallest cohesive units",
             "avoid project-size tiers, speculative interfaces, and pass-through modules",
             "plausible edge cases",
-            "classify them as `handle`, `reject`, `defer`, or `impossible by invariant`",
+            "classify plausible edge cases as `handle`, `reject`, `defer`, or `impossible by invariant`",
             "prefer small mermaid diagrams",
             "never use ascii pseudographics",
         ),
@@ -283,6 +287,7 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
 
         for invariant in FROZEN_INVARIANTS:
             with self.subTest(invariant=invariant.name):
+                self.assertIn(invariant.check, {"terms", "lanes"})
                 sources = _source_texts(invariant)
                 combined = "\n".join(sources)
                 self.assertTrue(invariant.required_terms)
@@ -295,6 +300,19 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
                         _lane_names(readme),
                         ("shape", "decide", "plan", "diagnose", "deliver", "verify"),
                     )
+
+    def test_policy_loading_is_conditional_on_delegation(self) -> None:
+        dispatcher = _normalized(
+            (ROOT / "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertIn("solo planning does not load child policy", dispatcher)
+        self.assertIn("assisted delegation loads it before child use", dispatcher)
+        self.assertIn(
+            "references/repository-contracts.md) only for initialization, legacy migration, or document ownership",
+            dispatcher,
+        )
 
 
 if __name__ == "__main__":

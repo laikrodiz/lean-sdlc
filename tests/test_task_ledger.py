@@ -884,11 +884,11 @@ class PackageContractTests(unittest.TestCase):
         ]:
             self.assertIn(term, evaluations)
 
-        for document in [dispatcher, developer, root_agents]:
+        for document in [dispatcher, developer]:
             for term in ["simple human first name", "task name", "natural prose"]:
                 self.assertIn(term, document)
         self.assertIn("inside your own agent task", developer)
-        self.assertIn("short plain-language commentary", root_agents)
+        self.assertIn("short plain-language commentary", subagents)
         self.assertEqual(root_agents, template_agents)
         self.assertIn("canonical child-agent policy", readme)
         self.assertIn("existing engineer role thread", subagents)
@@ -1073,7 +1073,7 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8").lower()
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8").lower()
 
-        for document in [dispatcher, root_agents, template_agents, subagents, project]:
+        for document in [dispatcher, subagents]:
             for term in [
                 "primary agent",
                 "architect",
@@ -1166,8 +1166,8 @@ class PackageContractTests(unittest.TestCase):
             self.assertIn(term, evaluations)
         for term in ["architecture", "interfaces", "task state", "acceptance", "integration", "closeout", "architect"]:
             self.assertIn(term, root_agents)
-        self.assertIn("reusable engineer", root_agents)
-        self.assertIn("read-only researcher", root_agents)
+        self.assertIn("reuse the existing engineer role thread", subagents)
+        self.assertIn("researcher is read-only", subagents)
         self.assertEqual(profile["model"], "gpt-5.6-luna")
         self.assertEqual(profile["model_reasoning_effort"], "max")
         self.assertIn("Researcher", profile["description"])

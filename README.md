@@ -38,6 +38,10 @@ Assisted mode is the default. It invokes the roles needed for the request. Solo 
 
 See the [canonical child-agent policy](plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md) for role lifecycle and communication rules.
 
+## Workflow
+
+Intent becomes a measurable plan and an owned task. The Architect keeps product and architecture decisions. Assisted mode reuses Engineer, Maintainer, Verifier, or Researcher only when triggered. Solo mode follows the same gates locally. Changes close only after independent evidence.
+
 ## Install
 
 Requirements: Git, Python 3, and Codex with plugin support.

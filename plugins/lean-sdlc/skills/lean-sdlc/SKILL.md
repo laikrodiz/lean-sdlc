@@ -1,75 +1,45 @@
 ---
 name: lean-sdlc
-description: Run Lean-SDLC when the user explicitly invokes Lean-SDLC or `$lean-sdlc`, or when a repository AGENTS.md requires Lean-SDLC for planning, diagnosis, mutation, verification, or closeout. Require explicit implementation authority and the visible Plan contract before task creation or implementation. Route the work through Shape, Decide, Plan, Diagnose, Deliver, or Verify; enforce an owned task before repository writes; and use controlled agents and evidence-based completion. Do not invoke implicitly for read-only work outside a Lean-SDLC repository.
+description: Run Lean-SDLC when the user explicitly invokes Lean-SDLC or `$lean-sdlc`, or when repository AGENTS.md requires Lean-SDLC. Require explicit implementation authority, the visible Plan contract, an owned task before writes, and evidence-based completion. Do not invoke implicitly for read-only work outside a Lean-SDLC repository.
 ---
 
 # Lean-SDLC
 
-Keep repository intent, work, implementation, and proof coherent with the smallest useful process.
+Keep intent, work, implementation, and proof coherent with the smallest useful process.
 
-## Start
+## Start and route
 
-1. Read repository `AGENTS.md`.
-2. Read [references/repository-contracts.md](references/repository-contracts.md).
-3. Identify the requested outcome, current repository truth, active task, and orchestration mode.
-4. Before creating a task or changing files, determine whether the user authorized implementation. Discussion or proposal requests remain read-only. Brainstorming requests use the same read-only path. Explicit implementation wording, or clear confirmation to proceed against a recoverable agreed proposal, permits Plan and Deliver. If authority is ambiguous, remain read-only.
-5. Before task creation and implementation, apply the intent and visible-plan contract in [references/plan.md](references/plan.md). Use natural prose for the outcome, important constraints, and exclusions. Show a concise visible plan with measurable, observable completion conditions and proof. A one-item plan is valid.
-6. For a new repository, run [scripts/init_repo.py](scripts/init_repo.py), verify the minimal contract, close `TASK-000` as owner `bootstrap`, then ask the user to restart or resume so the scoped plugin hook supplies the stable numeric owner. For an older ledger, run [scripts/tasks.py](scripts/tasks.py) `upgrade` under its owned active task. The upgrade maps old `Parent` values to new `Context` values.
-7. Select the earliest unresolved lane below. Continue through later gates in the same task when their inputs are ready.
-8. Before Plan, Deliver, Verify, or any child-agent use, read the canonical [Subagent Policy](references/subagents.md). For substantial decision work, read [references/model-routing.md](references/model-routing.md). Read [references/operations.md](references/operations.md) before build, package, deploy, flash, runtime, or smoke work.
+1. Read `AGENTS.md` and `docs/PROJECT.md`. Identify outcome, repository truth, active task, and mode.
+2. Before task creation or file changes, require explicit implementation authority. Discussion and proposal requests remain read-only. If authority is ambiguous, remain read-only.
+3. Apply [Plan](references/plan.md): confirm intent with natural intent confirmation, show a concise visible plan, and define observable completion conditions and proof. A one-item plan is valid.
+4. Read [repository-contracts.md](references/repository-contracts.md) only for initialization, legacy migration, or document ownership. For an older ledger, run [scripts/tasks.py](scripts/tasks.py) `upgrade`.
+5. Read [subagents.md](references/subagents.md) only before actual delegation. Solo planning does not load child policy. Assisted delegation loads it before child use.
 
-## Route
+Use the earliest unresolved lane, then continue when later gates are ready.
 
-| State or request | Lane |
+| Lane | Use when |
 | --- | --- |
-| Problem, user, behavior, scope, stage, or version promise is unclear | [Shape](references/shape.md) |
-| Stable intent needs a durable technical choice or boundary | [Decide](references/decide.md) |
-| Approved work needs a task, dependencies, or execution ownership | [Plan](references/plan.md) |
-| A failure exists and its cause or fault boundary is uncertain | [Diagnose](references/diagnose.md) |
-| Cause, scope, acceptance, proof, and owned task are ready | [Deliver](references/deliver.md) |
-| Completion is claimed, truth conflicts, or a task may close | [Verify](references/verify.md) |
+| Shape | Problem, user, behavior, scope, stage, or promise is unclear. |
+| Decide | Stable intent needs a durable technical choice or boundary. |
+| Plan | Approved work needs a task, dependency, or owner. |
+| Diagnose | A failure exists and its cause or boundary is uncertain. |
+| Deliver | Cause, scope, acceptance, proof, and owned task are ready. |
+| Verify | Completion is claimed, truth conflicts, or a task may close. |
 
-Discussion or proposal requests stay outside Plan and Deliver until the user gives implementation authority. Do not stop merely because one lane completed. Stop when authority, required truth, or evidence is missing.
+Read the lane reference only when active: [shape.md](references/shape.md), [decide.md](references/decide.md), [diagnose.md](references/diagnose.md), [deliver.md](references/deliver.md), [verify.md](references/verify.md), or [operations.md](references/operations.md). Read [model-routing.md](references/model-routing.md) for substantial decisions.
 
-## Hard Gates
+## Hard gates
 
-1. Treat task-ledger commands as control transactions; they do not require a prior task.
-2. Before any other repository mutation, create immediate work with `tasks.py start` or claim planned work with `tasks.py start TASK-ID`. Never edit `tasks.csv` directly.
-3. Require one `In Progress` task owned by the current task owner, measurable acceptance, and explicit proof.
-4. Run `lean_check.py --before-write --task TASK-ID --owner OWNER` before the first write.
-5. Diagnose an unknown cause before implementing a fix.
-6. Keep scope to one intentional change. Record new durable choices before relying on them.
-7. Verify acceptance, documentation parity, and the relevant repository state before `tasks.py close`.
-8. Only the owning task closes work. A different task may close it only after a direct user request using the recorded override.
-9. Each task is one independently accepted repository state; local implementation steps stay transient.
-10. Keep `tasks.csv` as the only durable task plan. Each durable plan item maps to one task. Each durable item includes observable completion conditions and proof. Do not start Engineer until the visible plan exists and its task matches one durable item.
+Treat task-ledger commands as control transactions. Before any other repository mutation, run `tasks.py start` or claim planned work with `tasks.py start TASK-ID`; never edit `tasks.csv` directly. Require an owned `In Progress` task, measurable acceptance, explicit proof, and a matching visible plan. Run `lean_check.py --before-write --task TASK-ID --owner OWNER` before the first non-control write. Diagnose an unknown cause before a fix. Keep one intentional change and one durable task. Each task is one independently accepted repository state; local implementation steps stay transient. Verify acceptance and documentation parity before closure. Only the owner closes a task; a direct user request may override with a recorded reason.
 
-Read-only inspection needs no task. Small writes still use a small `Project` task.
+## Child boundary
 
-## Engineering Discipline
+The canonical [subagent policy](references/subagents.md) is the sole authority for child roles, triggers, profiles, spawn payloads, handoffs, reuse, visible communication, and failure conditions. The user-selected lead acts as principal engineer and owns product intent, architecture, interfaces, invariants, task boundaries, integration, acceptance, and closeout.
 
-Build the smallest cohesive units that can be understood, tested, and replaced independently. Give each real responsibility a narrow input, output, and failure contract; keep orchestration legible; and strengthen boundaries only under observed change, state, I/O, failure, or replacement pressure. Avoid project-size tiers, speculative interfaces, and pass-through modules.
+Children call the primary agent Architect in visible commentary, handoffs, returns, and decision requests; the Architect speaks as I. Assisted and Solo are the only orchestration modes. Keep one reusable child thread per role. Lead review and checkpoint verification precede another task. Use concise natural prose and concise natural update messages. Each role uses an unused simple human first name and task name.
 
-When behavior or a module contract changes, scan only plausible edge cases and classify them as `Handle`, `Reject`, `Defer`, or `Impossible by invariant`. Settle user-visible, compatibility, safety, or data consequences before implementation.
+## Engineering and technical English
 
-Use diagrams only when they materially clarify flow, state, ownership, sequence, or dependencies. Prefer small Mermaid diagrams with short labels and minimal accents; use tables for mappings and prose for simple relationships. Never use ASCII pseudographics.
+Build the smallest cohesive units with narrow contracts and a readable orchestrator. Avoid project-size tiers, speculative interfaces, and pass-through modules. Classify plausible edge cases as `Handle`, `Reject`, `Defer`, or `Impossible by invariant` before choosing behavior. Use small Mermaid diagrams when they materially clarify flow, state, ownership, sequence, or dependencies. Never use ASCII pseudographics.
 
-## Technical English
-
-Apply the applicable ASD-STE100 Issue 9 rules to generated English technical prose. Use active voice. Put one instruction or topic in each sentence. Keep procedural sentences to 20 words or fewer. Keep descriptive sentences to 25 words or fewer. Use one term for one meaning. Put a condition before its action. Explain a necessary abbreviation at its first use. Use American English spelling unless project rules require another spelling. Avoid idioms, unnecessary synonyms, and vague pronouns. Preserve exact code, commands, paths, identifiers, protocol fields, quotations, and required domain terms. Preserve technical meaning and safety. Do not claim certified or full controlled-dictionary compliance without an ASD-STE100 checker.
-
-## Subagent Gate
-
-Before Deliver or the first delegated read-only operation, apply [references/subagents.md](references/subagents.md). Give the user a concise natural update that starts with the work or current state and states the child action, task or inquiry, intended result, useful boundaries, and proof. Mention the mode only when it matters, changes, or the user asks.
-
-Every user-facing lead message starts with outcome, work, or current state. Avoid repeating the lead role, model, mode, internal field labels, greetings, praise, filler, or roleplay unless clarity requires the information. Keep internal control data structured.
-
-Children call the primary agent Architect in visible commentary, handoffs, returns, and decision requests. The primary agent speaks as I. Keep lead for internal policy wording where useful.
-
-That policy is the sole authority for child roles, triggers, profiles, spawn payloads, handoffs, reuse, visible communication, and failure conditions. Each role thread receives an unused simple human first name for the lead Codex task. Display the identity as `Role Firstname` and use `role_firstname` as the task name. Keep the identity stable while the thread remains reusable, then choose another unused first name only for replacement. User-facing assignments and child updates use concise natural prose, start with work or current state, and carry the required task, result, boundary, acceptance, proof, checkpoint, and deviation information. Do not require greetings, self-introductions, or sentence templates. Internal lead-child handoffs and compact returns remain labeled and lossless. Each child writes short plain-language commentary inside its own agent task at material phases. The user-selected lead acts as principal engineer and owns product intent, architecture, interfaces, invariants, task boundaries, integration, acceptance, and closeout. Assisted mode uses every triggered role, including Engineer. Solo mode uses lead-only execution under the same contracts. Assisted and Solo are the only orchestration modes. Keep one lazily spawned thread per role for each lead Codex task. Reuse it across repository tasks and inquiries. Lead review and checkpoint verification precede another task.
-
-## Result
-
-Leave one compact chain:
-
-`project truth -> durable decision if needed -> owned task -> change -> proof -> evidence`
+Apply applicable ASD-STE100 Issue 9 guidance. Use active voice, one term for one meaning, condition-first instructions, and American English spelling. State conditions before actions. Avoid idioms, unnecessary synonyms, and vague pronouns. Keep procedural sentences to 20 words or fewer and descriptive sentences to 25 words or fewer. Preserve code, commands, paths, identifiers, protocol fields, quotations, and required terms. Do not claim certified or full controlled-dictionary compliance without an ASD-STE100 checker.
