@@ -21,7 +21,7 @@ Initialization creates three control files:
 
 - `AGENTS.md` contains durable repository rules.
 - `docs/PROJECT.md` contains the problem, scope, promise, and success criteria.
-- `tasks.csv` contains the private task overview and changes only through bundled task commands.
+- `tasks.csv` contains the human-readable task overview and changes only through bundled task commands. Use `tasks.py open` for current work or `tasks.py show TASK-ID` for one task plus recursive dependencies instead of loading full `Done` history.
 
 The initializer also adds `/tasks.csv` and `/.tasks.lock` to `.gitignore`. Feature, decision, and operations documents remain optional.
 
@@ -38,22 +38,27 @@ Assisted mode is the default. It invokes the roles needed for the request. Solo 
 
 See the [canonical child-agent policy](plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md) for role lifecycle and communication rules.
 
-Assisted work normally uses one Engineer in one checkout. Cautious soft parallelism allows two reusable Engineers only for ready tasks with separate primary write scopes, settled contracts, no dependency, and useful time reduction. One root `tasks.csv` remains authoritative. Shared tests, documentation, and operations wait until both Engineers stop. If qualification fails or scopes overlap, keep the normal serial path.
-
-Engineers keep code-local tests and notes current. The Maintainer synchronizes affected shared project, feature, decision, architecture, interface, README, and operations documents, and runs recorded procedures without inventing product or architecture decisions.
+Assisted mode delegates bounded independent work through the canonical child-agent policy. Solo mode keeps execution with the Architect. The Maintainer keeps shared documents current and runs recorded procedures.
 
 ## Workflow
 
-Intent becomes a measurable plan and an owned task. The Architect keeps product and architecture decisions. Assisted mode reuses Engineer, Maintainer, Verifier, or Scout only when triggered. Solo mode follows the same gates locally. Changes close only after independent evidence.
+1. Intent defines the outcome, scope, constraints, and observable success.
+2. Plan and tasks turn approved intent into measurable work, owned task rows, and reproducible proof. The human-readable `tasks.csv` remains authoritative.
+3. Delegation routes ready work to the standard roles when assisted execution helps. Solo execution stays with the Architect.
+4. Integration review combines accepted changes after child work stops and checks scope and contract alignment.
+5. Documentation synchronization updates shared project, feature, decision, architecture, interface, README, and operations documents affected by accepted changes.
+6. Verification runs acceptance proof and one planned regression command. The full suite runs only when the task or repository contract requires it.
+7. Operations replay required recorded build, package, deploy, flash, runtime, or smoke procedures against accepted source.
+8. Closeout resolves evidence, updates repository truth, and closes the owned task.
 
 ## Install
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-Install the immutable `v1.10.0` release:
+Install the immutable `v1.11.0` release:
 
 ```bash
-git clone --depth 1 --branch v1.10.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.11.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 python3 plugins/lean-sdlc/skills/lean-sdlc/scripts/configure_codex.py
 python3 plugins/lean-sdlc/skills/lean-sdlc/scripts/configure_codex.py --check

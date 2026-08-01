@@ -348,6 +348,115 @@ class TaskLedgerTests(unittest.TestCase):
 
             self.assertEqual(len(read_rows(repository)), 2)
 
+    def test_open_prints_header_and_only_planned_or_in_progress_rows(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            write_ledger(
+                repository,
+                "TASK-003,Closed,Done,Project,,11111111,Done,Check,Evidence\n"
+                "TASK-002,Planned,Planned,Project,,,Ready,Check,\n"
+                "TASK-001,Active,In Progress,Project,,12345678,Ready,Check,\n",
+            )
+            before = repository.joinpath("tasks.csv").read_text(encoding="utf-8")
+
+            result = task(repository, "open")
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(
+                result.stdout,
+                HEADER
+                + "TASK-002,Planned,Planned,Project,,,Ready,Check,\n"
+                + "TASK-001,Active,In Progress,Project,,12345678,Ready,Check,\n",
+            )
+            self.assertEqual(
+                repository.joinpath("tasks.csv").read_text(encoding="utf-8"),
+                before,
+            )
+
+    def test_show_prints_selected_task_then_recursive_dependencies_in_field_order(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            write_ledger(
+                repository,
+                "TASK-004,Selected,In Progress,Project,TASK-002 TASK-001,"
+                "12345678,Ready,Check,\n"
+                "TASK-003,Unrelated,Done,Project,,11111111,Done,Check,Evidence\n"
+                "TASK-002,First dependency,Done,Project,TASK-000,11111111,"
+                "Done,Check,Evidence\n"
+                "TASK-001,Second dependency,Planned,Project,TASK-000,,"
+                "Ready,Check,\n"
+                "TASK-000,Root dependency,Done,Project,,11111111,Done,"
+                "Check,Evidence\n",
+            )
+
+            first = task(repository, "show", "TASK-004")
+            second = task(repository, "show", "TASK-004")
+
+            self.assertEqual(first.returncode, 0, first.stderr)
+            self.assertEqual(second.returncode, 0, second.stderr)
+            self.assertEqual(first.stdout, second.stdout)
+            self.assertEqual(first.stdout.splitlines()[0] + "\n", HEADER)
+            self.assertEqual(
+                [row["Task ID"] for row in csv.DictReader(first.stdout.splitlines())],
+                ["TASK-004", "TASK-002", "TASK-000", "TASK-001"],
+            )
+
+    def test_show_missing_task_fails_without_output(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            write_ledger(
+                repository,
+                "TASK-000,Existing,Planned,Project,,,Ready,Check,\n",
+            )
+
+            result = task(repository, "show", "TASK-999")
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("task does not exist: TASK-999", result.stderr)
+            self.assertEqual(result.stdout, "")
+
+    def test_read_commands_leave_ledger_unchanged_and_writes_still_mutate(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            write_ledger(repository, "")
+            before = repository.joinpath("tasks.csv").read_text(encoding="utf-8")
+
+            self.assertEqual(task(repository, "open").returncode, 0)
+            self.assertEqual(task(repository, "show", "TASK-000").returncode, 1)
+            self.assertEqual(
+                repository.joinpath("tasks.csv").read_text(encoding="utf-8"),
+                before,
+            )
+
+            planned = task(
+                repository,
+                "plan",
+                "--title",
+                "New work",
+                "--context",
+                "Project",
+                "--acceptance",
+                "Ready",
+                "--proof",
+                "Check",
+            )
+            self.assertEqual(planned.returncode, 0, planned.stderr)
+            started = task(
+                repository,
+                "start",
+                "TASK-000",
+                "--owner",
+                "12345678",
+            )
+            self.assertEqual(started.returncode, 0, started.stderr)
+            self.assertEqual(read_rows(repository)[0]["Status"], "In Progress")
+            self.assertEqual(
+                repository.joinpath("tasks.csv").read_text(encoding="utf-8").splitlines()[0],
+                HEADER.strip(),
+            )
+
     def test_legacy_path_and_header_upgrade_atomically(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             repository = Path(directory)
@@ -714,8 +823,8 @@ class PackageContractTests(unittest.TestCase):
             "merge rows when they only describe inseparable coding mechanics.",
             "avoid fixed limits based on time, lines, or file count.",
             "shape the nearest dependency frontier fully. keep later work coarse until its dependencies become current.",
-            "engineer receives one durable task.",
-            "local implementation steps and correction handoffs remain transient.",
+            "use [subagents.md](subagents.md) for child triggers, scheduling, handoffs, profiles, checkpoints, and reporting.",
+            "keep local implementation steps and correction handoffs transient.",
             "never send several tasks or an internal backlog.",
         ]:
             self.assertIn(phrase, plan)
@@ -731,14 +840,8 @@ class PackageContractTests(unittest.TestCase):
         ]:
             self.assertIn(phrase, contracts)
 
-        self.assertIn(
-            "a large synthesizer-clone request contains several independently verifiable outcomes",
-            evaluations,
-        )
-        self.assertIn(
-            "create several independently verifiable tasks and start only the nearest ready task",
-            evaluations,
-        )
+        self.assertIn("triggered assisted child with two independent scopes", evaluations)
+        self.assertIn("shared scope, dependency, or uncertain time reduction", evaluations)
 
     def test_implementation_authority_and_visible_plan_gate_are_explicit(self) -> None:
         dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
@@ -776,8 +879,8 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("discussion or proposal requests remain read-only", shape + deliver)
         self.assertIn("clear confirmation to proceed against a recoverable agreed proposal", dispatcher + shape + subagents)
         self.assertIn("if authority is ambiguous, remain read-only", dispatcher + shape + subagents)
-        self.assertIn("each durable plan item maps to one task", subagents)
-        self.assertIn("implementation steps and correction handoffs remain transient", plan + subagents)
+        self.assertIn("each durable plan item maps to one task", plan)
+        self.assertIn("keep local implementation steps and correction handoffs transient", plan + subagents)
 
         self.assertIn(
             "engineer cannot start until the visible plan exists",
@@ -792,18 +895,17 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("i am thinking about x; what do you think?", evaluations)
         self.assertIn("implement the agreed x proposal", evaluations)
         self.assertIn(
-            "perform a natural restatement and show the visible plan before task creation",
+            "restate intent and show the visible plan before task creation",
             evaluations,
         )
-        self.assertIn('"proceed" when no agreed proposal is recoverable', evaluations)
+        self.assertIn("proceed” with no recoverable proposal", evaluations)
         self.assertIn("one-item visible plan", evaluations)
-        self.assertIn("engineer trigger", evaluations)
+        self.assertIn("engineer direct path", evaluations)
         self.assertEqual(root_agents, template_agents)
 
     def test_subagent_policy_is_canonical_deterministic_and_explicit(
         self,
     ) -> None:
-        dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
         subagents = (
             SKILL / "references/subagents.md"
         ).read_text(encoding="utf-8").lower()
@@ -811,59 +913,63 @@ class PackageContractTests(unittest.TestCase):
         evaluations = (
             SKILL / "references/trigger-evals.md"
         ).read_text(encoding="utf-8").lower()
-        root_agents = ROOT.joinpath("AGENTS.md").read_text(encoding="utf-8")
-        template_agents = (
-            SKILL / "assets/AGENTS.md"
-        ).read_text(encoding="utf-8")
 
         for term in [
             "sole authority",
-            "mandatory sidecar triggers",
-            "engineer trigger and loop",
-            "lead authority",
-            "principal engineer",
-            "product or architecture decision",
-            "boundaries and invariants",
-            "non-goals",
-            "architecture alignment",
-            "decision reopened",
-            "delegation is mandatory",
-            "one writing engineer active per architect",
-            "task name: engineer_alpha",
+            "role-trigger matrix",
+            "independence gate",
+            "at most two active children",
+            "universal independence gate",
+            "engineer/engineer",
+            "engineer/scout",
+            "scout/scout",
+            "scout may overlap one verifier or maintainer only for future work with separate resources",
+            "at most one reusable verifier",
+            "at most one reusable maintainer",
+            "implementation writers stop before integration",
+            "documentation synchronization",
+            "stateful operations",
+            "no writer overlaps documentation synchronization, verification, or stateful operations",
+            "named architect decision requires distinct source sets or enough material, data, or logs to pollute lead context",
+            "direct user authority",
+            "one mechanical bounded change",
+            "shared handoff envelope",
+            "outcome, boundary, contract, proof, and stop conditions",
+            "without a fixed runtime template",
             "the ordered pool is",
             "role label",
             "context reset reason",
             "replacement action",
-            "arbitrary counter",
-            "disjoint paths",
+            "rehydrate an allowed replacement",
+            "counter-based",
             "before every spawn",
             "fork_turns",
             "routing failure",
-            "gpt-5.6 luna `max`",
+            "gpt-5.6-luna",
             "gpt-5.6 terra `xhigh`",
             "user-selected lead",
             "agent_type=lean_sdlc_luna",
             "service_tier=priority",
-            "responsibility_label",
             "material phase changes",
-            "two heartbeats per command",
+            "at most two useful heartbeats",
+            "every child update starts with work or current state",
+            "maintainer synchronizes affected shared narrative documents",
+            "no child edits `tasks.csv`",
         ]:
-            self.assertIn(term, subagents + dispatcher)
+            self.assertIn(term, subagents)
         for term in [
-            "lead alone decide task disposition",
-            "must reuse or start verifier",
-            "must reuse or start maintainer",
-            "must reuse or start engineer",
-            "must reuse or start read-only scout",
-            "follow-up to the existing role thread",
-            "do not spawn another child for that role",
-            "directly spawn terra `xhigh`",
-            "inherits an automatic model",
+            "acceptance-defining proof",
+            "one planned regression command",
+            "full suite once under verifier only when the task or repository contract requires it",
         ]:
-            self.assertIn(term, verify + evaluations)
+            self.assertIn(term, verify)
+        for term in [
+            "allow at most two active children",
+            "custom role request",
+        ]:
+            self.assertIn(term, evaluations)
         self.assertIn("retry luna max", subagents)
         self.assertIn("shorthand tool names", verify)
-        self.assertEqual(root_agents, template_agents)
 
         policy_documents = [ROOT / "README.md", ROOT / "docs/PROJECT.md", *SKILL.rglob("*.md")]
         policy = "\n".join(
@@ -889,24 +995,34 @@ class PackageContractTests(unittest.TestCase):
         subagents = subagents_path.read_text(encoding="utf-8")
         profile = profile_path.read_text(encoding="utf-8")
 
-        self.assertGreaterEqual(len(subagents.splitlines()), 180)
-        self.assertLessEqual(len(subagents.splitlines()), 190)
-        self.assertGreaterEqual(len(profile.splitlines()), 15)
-        self.assertLessEqual(len(profile.splitlines()), 18)
+        self.assertGreaterEqual(len(subagents.splitlines()), 100)
+        self.assertLessEqual(len(subagents.splitlines()), 140)
+        self.assertGreaterEqual(len(profile.splitlines()), 18)
+        self.assertLessEqual(len(profile.splitlines()), 22)
         for heading in [
             "## Role-trigger matrix",
-            "## Shared lifecycle",
+            "## Independence gate",
+            "## Child lifecycle",
             "## Shared handoff envelope",
-            "## Role-specific deltas",
+            "## Role-specific rules",
             "## Model and spawn",
             "## Checkpoint barrier",
-            "## Return",
+            "## Return and stop conditions",
         ]:
             self.assertIn(heading, subagents)
         self.assertIn("Display `Role label`", subagents)
         self.assertIn("Display `Role label`", profile)
         self.assertIn("Every child update starts with work or current state", subagents)
         self.assertIn("Every update starts with work or current state", profile)
+        self.assertIn(
+            "Before every handoff, state the outcome, boundary, contract, proof, and stop conditions",
+            subagents,
+        )
+        self.assertIn("without a fixed runtime template", profile)
+        self.assertIn("at most two useful Luna heartbeats at two-minute intervals", profile)
+        self.assertNotIn("Architecture alignment:", subagents + profile)
+        self.assertNotIn("Return labels remain explicit", subagents + profile)
+        self.assertNotIn("labeled report", profile)
         self.assertNotIn("First" + "name", subagents + profile)
 
     def test_trigger_evals_and_proof_ownership_are_compact(self) -> None:
@@ -923,10 +1039,11 @@ class PackageContractTests(unittest.TestCase):
         subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
         for term in [
             "Engineer owns targeted development checks",
-            "Architect reviews the diff and architecture once per checkpoint",
+            "After each checkpoint, the Architect reviews the diff, architecture, scope, and contract alignment in concise natural prose.",
             "Maintainer owns each recorded operation run and returns evidence once",
-            "Verifier owns acceptance proof and the full suite once",
-            "repeats only a disputed operation",
+            "Verifier receives acceptance and the exact checkpoint",
+            "independently reruns acceptance proof and one planned regression command",
+            "repeat only a disputed operation",
         ]:
             self.assertIn(term, subagents)
         for name in ["deliver", "verify", "operations"]:
@@ -946,8 +1063,8 @@ class PackageContractTests(unittest.TestCase):
         )
         for stale in ["Research" + "er", "research" + "er_", "First" + "name", "role_first" + "name"]:
             self.assertNotIn(stale, policy)
-        self.assertIn("Scout delta", policy)
-        self.assertIn("scout_delta", policy)
+        self.assertIn("the ordered pool is", policy.lower())
+        self.assertIn("scout/scout", policy.lower())
 
     def test_readme_stays_public_and_links_detailed_policy(self) -> None:
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
@@ -1013,11 +1130,11 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.10.0")
+        self.assertEqual(version, "1.11.0")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
         self.assertIn(
-            "- Version goal: Release cautious same-checkout parallel Engineers with shared-document stewardship and combined checkpoint proof.",
+            "- Version goal: Release bounded task-ledger reads and simplified child orchestration with shared-document stewardship and combined checkpoint proof.",
             project,
         )
 

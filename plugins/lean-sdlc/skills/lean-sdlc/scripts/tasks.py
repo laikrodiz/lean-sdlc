@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import os
 import sys
 from pathlib import Path
@@ -46,7 +47,7 @@ def add_definition_arguments(
 
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(
-        description="Mutate the root tasks.csv ledger under a short atomic lock."
+        description="Read or mutate the root tasks.csv ledger."
     )
     result.add_argument(
         "--repo",
@@ -84,6 +85,17 @@ def parser() -> argparse.ArgumentParser:
         help="Close another thread's task after a direct user request",
     )
     close.add_argument("--override-reason")
+
+    subparsers.add_parser(
+        "open",
+        help="Print Planned and In Progress tasks",
+    )
+
+    show = subparsers.add_parser(
+        "show",
+        help="Print one task and its recursive dependencies",
+    )
+    show.add_argument("task_id")
 
     upgrade = subparsers.add_parser(
         "upgrade",
@@ -232,6 +244,38 @@ def close_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
     return f"closed {args.task_id}"
 
 
+def dependency_closure(
+    rows: list[dict[str, str]],
+    task_id: str,
+) -> list[dict[str, str]]:
+    rows_by_id = {row.get("Task ID", ""): row for row in rows}
+    selected = find_task(rows, task_id)
+    ordered: list[dict[str, str]] = []
+    visited: set[str] = set()
+
+    def visit(task: dict[str, str]) -> None:
+        current_id = task.get("Task ID", "")
+        if current_id in visited:
+            return
+        visited.add(current_id)
+        ordered.append(task)
+        for dependency in dependency_ids(task.get("Dependencies", "")):
+            visit(rows_by_id[dependency])
+
+    visit(selected)
+    return ordered
+
+
+def emit_rows(rows: list[dict[str, str]]) -> None:
+    writer = csv.DictWriter(
+        sys.stdout,
+        fieldnames=TASK_COLUMNS,
+        lineterminator="\n",
+    )
+    writer.writeheader()
+    writer.writerows(rows)
+
+
 def authorize_upgrade(
     rows: list[dict[str, str]],
     task_id: str,
@@ -316,9 +360,25 @@ def main() -> int:
         )
         return 1
 
+    message: str | None = None
     try:
         if args.command == "upgrade":
             message = upgrade_ledger(root, args)
+        elif args.command in {"open", "show"}:
+            columns, rows = read_ledger(task_path(root))
+            if columns != list(TASK_COLUMNS):
+                raise TaskError("run tasks.py upgrade before reading tasks")
+            require_integrity(rows)
+            if args.command == "open":
+                emit_rows(
+                    [
+                        row
+                        for row in rows
+                        if row.get("Status") in {"Planned", "In Progress"}
+                    ]
+                )
+            else:
+                emit_rows(dependency_closure(rows, args.task_id))
         else:
             path = task_path(root)
             with ledger_lock(root):
@@ -339,7 +399,8 @@ def main() -> int:
         print(f"Task operation failed: {exc}", file=sys.stderr)
         return 1
 
-    print(message)
+    if message is not None:
+        print(message)
     return 0
 
 

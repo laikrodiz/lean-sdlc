@@ -2,7 +2,7 @@
 
 Invoke `$lean-sdlc` before planning, diagnosing, changing, verifying, or closing repository work. Read-only inspection may use the direct path.
 
-Read `docs/PROJECT.md`, relevant feature, decision, or operations documents, `tasks.csv`, then affected code and tests. Use `references/repository-contracts.md` only for initialization, legacy migration, or document ownership. Resolve contradictions before closeout.
+Read `docs/PROJECT.md` and relevant feature, decision, or operations documents. Use `tasks.py open` for current work and `tasks.py show TASK-ID` for one task plus recursive dependencies instead of loading full Done history. The human-readable `tasks.csv` remains authoritative. Read affected code and tests after the task boundary is clear. Use `references/repository-contracts.md` only for initialization, legacy migration, or document ownership. Resolve contradictions before closeout.
 
 ## Task gate
 
@@ -21,4 +21,4 @@ Read `docs/PROJECT.md`, relevant feature, decision, or operations documents, `ta
 
 Read `references/subagents.md` before Deliver or the first delegated read-only operation. Solo planning does not load child policy. Assisted delegation loads it before child use.
 
-The Architect owns architecture, interfaces, task state, acceptance, integration, and closeout. Read the canonical child policy for roles, communication, profiles, and checkpoints.
+The Architect owns architecture, interfaces, task state, acceptance, integration, and closeout. Read the canonical child policy for bounded delegation, handoff facts, checkpoints, and sidecar limits.

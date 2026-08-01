@@ -40,6 +40,8 @@ Use exactly:
 
 Use `Project`, `FEAT-*`, `DEC-*`, or `Bootstrap` as `Context`.
 
+Use `tasks.py open` for current `Planned` and `In Progress` work. Use `tasks.py show TASK-ID` for one task and its recursive dependencies. These read-only views keep the existing human-readable CSV shape and avoid loading full `Done` history. The human-readable `tasks.csv` remains authoritative.
+
 1. Use `tasks.py`; never edit the CSV directly.
 2. `plan` creates unowned `Planned` work. `start` creates `In Progress` work or claims a planned task.
 3. `update` requires the task owner for In Progress work.

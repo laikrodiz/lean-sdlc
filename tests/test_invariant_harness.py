@@ -11,307 +11,122 @@ ROOT = Path(__file__).resolve().parents[1]
 
 @dataclass(frozen=True)
 class FrozenInvariant:
-    """One frozen behavior and the source terms that define its contract."""
+    """One frozen behavior owned by one contract source."""
 
     name: str
-    sources: tuple[str, ...]
+    source: str
     required_terms: tuple[str, ...]
-    check: str = "terms"
     ordered_terms: tuple[str, ...] = ()
+
+
+SUBAGENTS = "plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md"
 
 
 FROZEN_INVARIANTS = (
     FrozenInvariant(
         "six lanes",
-        ("README.md", "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md"),
-        (
-            "## lanes",
-            "| lane | purpose |",
-            "| shape |",
-            "| decide |",
-            "| plan |",
-            "| diagnose |",
-            "| deliver |",
-            "| verify |",
-        ),
-        check="lanes",
+        "README.md",
+        ("## Lanes", "| Lane | Purpose |", "| Shape |", "| Decide |", "| Plan |", "| Diagnose |", "| Deliver |", "| Verify |"),
     ),
     FrozenInvariant(
         "explicit implementation authority",
-        (
-            "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/shape.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/plan.md",
-        ),
-        (
-            "explicit implementation authority",
-            "discussion or proposal requests remain read-only",
-            "if authority is ambiguous, remain read-only",
-            "natural intent confirmation",
-            "concise visible plan",
-        ),
+        "plugins/lean-sdlc/skills/lean-sdlc/references/plan.md",
+        ("explicit implementation authority", "discussion and proposal requests remain read-only", "if authority is ambiguous, remain read-only", "natural intent confirmation", "concise visible plan"),
     ),
     FrozenInvariant(
         "owned task before writes",
-        ("AGENTS.md", "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md"),
-        (
-            "before any other repository mutation",
-            "create immediate work or claim planned work",
-            "require an owned `in progress` task",
-            "run `lean_check.py --before-write",
-        ),
+        "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md",
+        ("before any other repository mutation", "run `tasks.py start` or claim planned work", "require an owned `in progress` task", "run `lean_check.py --before-write"),
     ),
     FrozenInvariant(
         "atomic tasks.csv transactions",
-        (
-            "docs/PROJECT.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md",
-        ),
-        (
-            "atomic private task-ledger transactions",
-            "task transactions remain atomic",
-            "command serializes writers",
-            "replaces the file atomically",
-        ),
+        "plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md",
+        ("serializes writers with a short root lock", "replaces the file atomically", "under the existing lock", "one root `tasks.csv` remains authoritative"),
     ),
     FrozenInvariant(
         "stable owner after compaction",
-        (
-            "AGENTS.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/plan.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md",
-        ),
-        (
-            "retain the stable 8-digit task owner supplied by the plugin hook",
-            "remains resumable from repository truth and its ledger row after compaction",
-            "rehydrate an allowed replacement from its role",
-            "procedure, checkpoint, and latest unresolved result",
-        ),
+        "AGENTS.md",
+        ("stable 8-digit task owner supplied by the plugin hook", "remains resumable from repository truth and its ledger row after compaction"),
     ),
     FrozenInvariant(
         "owner-only close",
-        (
-            "AGENTS.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/verify.md",
-        ),
-        (
-            "only the owner closes a task",
-            "`close` belongs to the owner after verification",
-            "owning lead alone decide task disposition",
-            "direct user request",
-        ),
+        "plugins/lean-sdlc/skills/lean-sdlc/references/verify.md",
+        ("owning lead alone decide task disposition", "close the accepted task through `tasks.py close`", "direct-user override requires an explicit request and recorded reason"),
     ),
     FrozenInvariant(
         "assisted and solo only",
-        (
-            "README.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md",
-        ),
-        (
-            "assisted mode",
-            "solo mode",
-            "assisted and solo are the only orchestration modes",
-        ),
+        SUBAGENTS,
+        ("assisted mode is the default", "solo mode is lead-only", "assisted and solo are the only orchestration modes"),
     ),
     FrozenInvariant(
         "architect owns decisions",
-        (
-            "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/verify.md",
-        ),
-        (
-            "the user-selected lead acts as principal engineer and owns product intent",
-            "the architect supplies a question and source boundary",
-            "keep architecture, task setting, integration, and other consequential decisions with the architect",
-            "the user-selected lead makes the final accept",
-        ),
+        SUBAGENTS,
+        ("the architect is the sole authority for product intent", "the architect supplies a question and source boundary", "keep architecture, task setting, integration, and other consequential decisions with the architect"),
     ),
     FrozenInvariant(
         "engineer, maintainer, verifier, and scout roles",
-        (
-            "README.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md",
-        ),
-        (
-            "| engineer |",
-            "| maintainer |",
-            "| verifier |",
-            "| scout |",
-            "the four child roles are",
-        ),
+        SUBAGENTS,
+        ("| engineer |", "| maintainer |", "| verifier |", "| scout |", "the standard child roles are"),
     ),
     FrozenInvariant(
         "luna max primary and terra xhigh fallback",
-        (
-            "plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/assets/lean_sdlc_luna.toml",
-        ),
-        (
-            "gpt-5.6-luna",
-            "max",
-            "agent_type=lean_sdlc_luna",
-            "service_tier=priority",
-            "non-full-history `fork_turns`",
-            "retry luna max",
-            "gpt-5.6-terra",
-            "terra `xhigh`",
-            "directly spawn `gpt-5.6-terra` at `xhigh`",
-            "without `service_tier` or `agent_type`",
-        ),
+        SUBAGENTS,
+        ("gpt-5.6-luna", "agent_type=lean_sdlc_luna", "service_tier=priority", "non-full-history `fork_turns`", "retry luna max", "gpt-5.6-terra", "terra `xhigh`", "directly spawn `gpt-5.6-terra` at `xhigh`", "without `service_tier` or `agent_type`"),
     ),
     FrozenInvariant(
         "one reusable child per role",
-        ("plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md",),
-        (
-            "at most one child thread for each role during one lead codex task",
-            "reuse that role thread through follow-up handoffs",
-            "keep one reachable child per role",
-            "reuse the existing engineer role thread",
-        ),
+        SUBAGENTS,
+        ("keep one reachable child thread for each role", "reuse or start engineer, verifier, maintainer, or read-only scout", "send a follow-up to a reachable role thread", "at most one reusable verifier", "at most one reusable maintainer"),
     ),
     FrozenInvariant(
         "stable child label and update start",
-        (
-            "plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/assets/lean_sdlc_luna.toml",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/trigger-evals.md",
-        ),
-        (
-            "the ordered pool is",
-            "display `role label`",
-            "`role_label` as the task name",
-            "a replacement takes the next label",
-            "recycle the earliest label from an unreachable thread",
-            "every child update starts with work or current state",
-        ),
+        SUBAGENTS,
+        ("the ordered pool is", "display `role label`", "`role_label` as the task name", "a replacement takes the next label", "recycle the earliest label from an unreachable thread", "every child update starts with work or current state"),
     ),
     FrozenInvariant(
         "exact checkpoint barrier",
-        ("plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md",),
-        (
-            "## checkpoint barrier",
-            "identify the checkpoint by commit or exact working-tree fingerprint",
-            "require the sidecar to confirm the identity before acting",
-            "invalidate the result after any relevant source change",
+        SUBAGENTS,
+        ("## checkpoint barrier", "identify the checkpoint by commit or exact working-tree fingerprint", "require the sidecar to confirm the identity before acting", "invalidate the result after any relevant source change"),
+        ordered_terms=(
+            "require all active work children to stop before integration",
+            "architect reviews the combined implementation and scopes",
+            "run any shared source-changing formatter or generator serially",
+            "architect reviews resulting changes",
+            "maintainer synchronizes affected shared docs",
+            "pause all writers and identify the checkpoint by commit or exact working-tree fingerprint",
+            "verifier checks both acceptance sets",
+            "maintainer runs required build, package, deploy, flash, runtime, or smoke operations serially",
         ),
     ),
     FrozenInvariant(
         "learned operations",
-        ("plugins/lean-sdlc/skills/lean-sdlc/references/operations.md",),
-        (
-            "unknown -> guided success -> recorded -> verified -> repeatable -> stale",
-            "after success, the maintainer returns a short procedure draft",
-            "the lead records it in optional `docs/operations.md`",
-            "later maintainer runs replay the recorded procedure exactly",
-        ),
+        "plugins/lean-sdlc/skills/lean-sdlc/references/operations.md",
+        ("unknown -> guided success -> recorded -> verified -> repeatable -> stale", "after success, the maintainer returns a short procedure draft", "the lead records it in optional `docs/OPERATIONS.md`", "later maintainer runs replay the recorded procedure exactly"),
     ),
     FrozenInvariant(
         "legacy ledger migration",
-        (
-            "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md",
-        ),
-        (
-            "for an older ledger",
-            "run [scripts/tasks.py](scripts/tasks.py) `upgrade`",
-            "accepts the previous `parent` header and older planning header",
-            "maps `repo` to `project` and `bootstrap` to `bootstrap`",
-            "atomically writes one root csv under the existing lock",
-        ),
+        "plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md",
+        ("tasks.py upgrade", "accepts the previous `parent` header and older planning header", "maps `repo` to `project` and `bootstrap` to `bootstrap`", "atomically writes one root csv under the existing lock"),
     ),
     FrozenInvariant(
         "applicable asd-ste100 guidance",
-        ("AGENTS.md", "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md"),
-        (
-            "asd-ste100 issue 9",
-            "active voice",
-            "20 words or fewer",
-            "25 words or fewer",
-            "one term for one meaning",
-            "conditions before actions",
-            "american english spelling",
-            "preserve code, commands, paths, identifiers, protocol fields, quotations",
-            "do not claim certified or full controlled-dictionary compliance",
-        ),
+        "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md",
+        ("asd-ste100 issue 9", "active voice", "20 words or fewer", "25 words or fewer", "one term for one meaning", "conditions before actions", "american english spelling", "preserve code, commands, paths, identifiers, protocol fields, quotations", "do not claim certified or full controlled-dictionary compliance"),
     ),
     FrozenInvariant(
         "modularity, edge cases, and mermaid diagrams",
-        (
-            "AGENTS.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/trigger-evals.md",
-        ),
-        (
-            "smallest cohesive units",
-            "avoid project-size tiers, speculative interfaces, and pass-through modules",
-            "plausible edge cases",
-            "classify plausible edge cases as `handle`, `reject`, `defer`, or `impossible by invariant`",
-            "prefer small mermaid diagrams",
-            "never use ascii pseudographics",
-        ),
+        "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md",
+        ("smallest cohesive units", "avoid project-size tiers, speculative interfaces, and pass-through modules", "plausible edge cases", "classify plausible edge cases as `handle`, `reject`, `defer`, or `impossible by invariant`", "small mermaid diagrams", "never use ascii pseudographics"),
     ),
     FrozenInvariant(
         "task sizing and compaction resume",
-        (
-            "AGENTS.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/plan.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md",
-        ),
-        (
-            "one durable task represents one independently accepted repository state",
-            "one observable outcome, one coherent change boundary, one acceptance set",
-            "the task must resume from repository truth and its ledger row after compaction",
-            "split a task when a part can fail, ship, revert, resume, or close independently",
-            "avoid fixed limits based on time, lines, or file count",
-        ),
+        "plugins/lean-sdlc/skills/lean-sdlc/references/plan.md",
+        ("one durable task represents one independently accepted repository state", "one observable outcome, one coherent change boundary, one acceptance set", "the task must resume from repository truth and its ledger row after compaction", "split a task when a part can fail, ship, revert, resume, or close independently", "avoid fixed limits based on time, lines, or file count"),
     ),
     FrozenInvariant(
         "qualified parallel writing and shared documentation",
-        (
-            "README.md",
-            "docs/PROJECT.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/deliver.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/verify.md",
-            "plugins/lean-sdlc/skills/lean-sdlc/references/trigger-evals.md",
-        ),
-        (
-            "qualified parallel group",
-            "one root `tasks.csv` remains authoritative",
-            "serial execution",
-            "shared tests, docs, and operations wait",
-            "two reusable Engineers",
-            "combined checkpoint",
-            "Maintainer synchronizes affected shared narrative documents",
-            "impact-directed pass",
-            "do not add worktrees, branches, or a merge workflow",
-            "Engineer edits only assigned implementation paths",
-            "Maintainer edits only assigned shared-document paths",
-            "Verifier and Scout are read-only",
-            "No child edits `tasks.csv`",
-            "Route a documentation-only task directly to Maintainer",
-            "at most two reachable Engineers prevent a third",
-            "two qualified tasks in one group start together",
-            "later dependent work waits",
-            "send the final source checkpoint to Verify first",
-            "consume Maintainer evidence without repeating accepted source proof",
-            "the full suite once",
-        ),
-        ordered_terms=(
-            "Require Engineers to stop",
-            "Architect reviews the combined implementation and scopes",
-            "Run any shared source-changing formatter or generator serially",
-            "Architect reviews resulting changes",
-            "Maintainer synchronizes affected shared docs",
-            "Pause all writers and identify the checkpoint by commit or exact working-tree fingerprint",
-            "Verifier checks both acceptance sets",
-            "Maintainer runs required build, package, deploy, flash, runtime, or smoke operations serially",
-        ),
+        SUBAGENTS,
+        ("at most two active children", "universal independence gate", "engineer/engineer", "engineer/scout", "scout/scout", "a scout may overlap one verifier or maintainer only for future work with separate resources", "implementation writers stop before integration", "no writer overlaps documentation synchronization, verification, or stateful operations", "shared tests, docs, generators, and operations run serially", "named architect decision requires distinct source sets or enough material, data, or logs to pollute lead context", "maintainer synchronizes affected shared narrative documents", "engineer edits only assigned implementation paths", "maintainer edits only assigned shared-document paths", "verifier and scout are read-only", "no child edits `tasks.csv`"),
     ),
 )
 
@@ -320,14 +135,11 @@ def _normalized(text: str) -> str:
     return " ".join(text.casefold().split())
 
 
-def _source_texts(invariant: FrozenInvariant) -> tuple[str, ...]:
-    texts: list[str] = []
-    for source in invariant.sources:
-        path = ROOT / source
-        if not path.is_file():
-            raise AssertionError(f"missing contract source: {source}")
-        texts.append(_normalized(path.read_text(encoding="utf-8")))
-    return tuple(texts)
+def _read(path: str) -> str:
+    file = ROOT / path
+    if not file.is_file():
+        raise AssertionError(f"missing contract source: {path}")
+    return file.read_text(encoding="utf-8")
 
 
 def _lane_names(text: str) -> tuple[str, ...]:
@@ -341,72 +153,59 @@ def _lane_names(text: str) -> tuple[str, ...]:
 
 
 class FrozenInvariantHarnessTests(unittest.TestCase):
-    def test_every_frozen_invariant_maps_to_a_current_contract(self) -> None:
+    def test_every_invariant_has_one_canonical_source(self) -> None:
         names = [invariant.name for invariant in FROZEN_INVARIANTS]
-        self.assertEqual(len(names), len(set(names)))
         self.assertEqual(len(FROZEN_INVARIANTS), 19)
-
+        self.assertEqual(len(names), len(set(names)))
         for invariant in FROZEN_INVARIANTS:
             with self.subTest(invariant=invariant.name):
-                self.assertIn(invariant.check, {"terms", "lanes"})
-                sources = _source_texts(invariant)
-                combined = "\n".join(sources)
-                self.assertTrue(invariant.required_terms)
-                for term in invariant.required_terms:
-                    self.assertIn(_normalized(term), combined, term)
+                self.assertIsInstance(invariant.source, str)
+                self.assertTrue(invariant.source)
+                self.assertTrue((ROOT / invariant.source).is_file())
 
+    def test_every_invariant_terms_match_its_owner(self) -> None:
+        for invariant in FROZEN_INVARIANTS:
+            with self.subTest(invariant=invariant.name):
+                source = _normalized(_read(invariant.source))
+                for term in invariant.required_terms:
+                    self.assertIn(_normalized(term), source, term)
                 if invariant.ordered_terms:
-                    ordered_source = next(
-                        (
-                            source
-                            for source in sources
-                            if "## checkpoint barrier" in source
-                        ),
-                        combined,
-                    )
-                    positions = [
-                        ordered_source.index(_normalized(term))
-                        for term in invariant.ordered_terms
-                    ]
+                    positions = [source.index(_normalized(term)) for term in invariant.ordered_terms]
                     self.assertEqual(positions, sorted(positions))
 
-                if invariant.check == "lanes":
-                    readme = (ROOT / "README.md").read_text(encoding="utf-8")
-                    self.assertEqual(
-                        _lane_names(readme),
-                        ("shape", "decide", "plan", "diagnose", "deliver", "verify"),
-                    )
+    def test_lane_order_is_frozen(self) -> None:
+        self.assertEqual(
+            _lane_names(_read("README.md")),
+            ("shape", "decide", "plan", "diagnose", "deliver", "verify"),
+        )
 
     def test_policy_loading_is_conditional_on_delegation(self) -> None:
-        dispatcher = _normalized(
-            (ROOT / "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md").read_text(
-                encoding="utf-8"
-            )
-        )
+        dispatcher = _normalized(_read("plugins/lean-sdlc/skills/lean-sdlc/SKILL.md"))
         self.assertIn("solo planning does not load child policy", dispatcher)
         self.assertIn("assisted delegation loads it before child use", dispatcher)
-        self.assertIn(
-            "references/repository-contracts.md) only for initialization, legacy migration, or document ownership",
-            dispatcher,
-        )
+        self.assertIn("references/repository-contracts.md) only for initialization, legacy migration, or document ownership", dispatcher)
 
     def test_child_label_pool_is_ordered_unique_and_recycles_unreachable_labels(self) -> None:
-        policy = (ROOT / "plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md").read_text(
-            encoding="utf-8"
-        )
+        policy = _read(SUBAGENTS)
         match = re.search(r"the ordered pool is .*?`([^`]+)`", policy, re.I)
         self.assertIsNotNone(match)
         labels = tuple(label.strip() for label in match.group(1).split(","))
-        expected = (
-            "alpha", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta",
-            "iota", "kappa", "lambda", "mu", "nu", "xi", "omicron", "pi",
-            "rho", "sigma", "tau", "upsilon", "phi", "chi", "psi", "omega",
-        )
+        expected = ("alpha", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta", "iota", "kappa", "lambda", "mu", "nu", "xi", "omicron", "pi", "rho", "sigma", "tau", "upsilon", "phi", "chi", "psi", "omega")
         self.assertEqual(labels, expected)
         self.assertEqual(len(labels), len(set(labels)))
         self.assertEqual(policy.count(match.group(1)), 1)
         self.assertIn("a replacement takes the next label", policy.lower())
         self.assertIn("recycle the earliest label from an unreachable thread", policy.lower())
+
+    def test_handoffs_require_facts_without_fixed_labels(self) -> None:
+        policy = _read(SUBAGENTS)
+        profile = _read("plugins/lean-sdlc/skills/lean-sdlc/assets/lean_sdlc_luna.toml")
+        for text in (policy, profile):
+            self.assertIn("outcome, boundary, contract, proof, and stop conditions", text)
+            self.assertIn("concise natural prose", text)
+            self.assertNotIn("Architecture alignment:", text)
+            self.assertNotIn("Return labels remain explicit", text)
+            self.assertNotIn("labeled report", text)
 
 
 if __name__ == "__main__":

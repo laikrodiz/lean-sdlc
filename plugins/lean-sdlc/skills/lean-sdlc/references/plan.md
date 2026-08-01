@@ -23,8 +23,8 @@ Split a task when a part can fail, ship, revert, resume, or close independently.
 
 ## Execution shape
 
-Before Deliver, apply the [Subagent Policy](subagents.md) only when delegation is ready. Solo planning does not load child policy. The Architect settles architecture, interfaces, invariants, allowed paths, acceptance, proof, and stop conditions before one execution unit.
+Before Deliver, apply the [Subagent Policy](subagents.md) only when delegation is ready. Solo planning does not load child policy. The Architect settles architecture, interfaces, invariants, allowed paths, acceptance, proof, and stop conditions before execution.
 
-Engineer receives one durable task. Reuse the existing Engineer role thread when another repository task becomes ready. Local implementation steps and correction handoffs remain transient. Never send several tasks or an internal backlog. Parallel writing uses the qualification and veto gate in [subagents.md](subagents.md), then pauses at one combined checkpoint.
+Use [subagents.md](subagents.md) for child triggers, scheduling, handoffs, profiles, checkpoints, and reporting. Keep local implementation steps and correction handoffs transient. Never send several tasks or an internal backlog.
 
 Ready means implementation authority, visible plan, ownership, boundaries, dependencies, acceptance, proof, and integration responsibility are unambiguous.

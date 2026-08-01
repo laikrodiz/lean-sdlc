@@ -9,7 +9,7 @@ Keep intent, work, implementation, and proof coherent with the smallest useful p
 
 ## Start and route
 
-1. Read `AGENTS.md` and `docs/PROJECT.md`. Identify outcome, repository truth, active task, and mode.
+1. Read `AGENTS.md` and `docs/PROJECT.md`. Use `tasks.py open` for current work and `tasks.py show TASK-ID` for one task plus recursive dependencies instead of loading full Done history. The human-readable `tasks.csv` remains authoritative. Identify outcome, repository truth, active task, and mode.
 2. Before task creation or file changes, require explicit implementation authority. Discussion and proposal requests remain read-only. If authority is ambiguous, remain read-only.
 3. Apply [Plan](references/plan.md): confirm intent with natural intent confirmation, show a concise visible plan, and define observable completion conditions and proof. A one-item plan is valid.
 4. Read [repository-contracts.md](references/repository-contracts.md) only for initialization, legacy migration, or document ownership. For an older ledger, run [scripts/tasks.py](scripts/tasks.py) `upgrade`.
@@ -30,7 +30,7 @@ Read the lane reference only when active: [shape.md](references/shape.md), [deci
 
 ## Hard gates
 
-Treat task-ledger commands as control transactions. Before any other repository mutation, run `tasks.py start` or claim planned work with `tasks.py start TASK-ID`; never edit `tasks.csv` directly. Require an owned `In Progress` task, measurable acceptance, explicit proof, and a matching visible plan. Run `lean_check.py --before-write --task TASK-ID --owner OWNER` before the first non-control write. Diagnose an unknown cause before a fix. Keep one intentional change and one durable task normally; a qualified parallel group may hold two independently accepted tasks under one Architect owner. Each task is one independently accepted repository state; local implementation steps stay transient. Verify acceptance and documentation parity before closure. Only the owner closes a task; a direct user request may override with a recorded reason.
+Treat task-ledger commands as control transactions. Before any other repository mutation, run `tasks.py start` or claim planned work with `tasks.py start TASK-ID`; never edit `tasks.csv` directly. Read-only `tasks.py open` and `tasks.py show TASK-ID` views keep current work bounded while the human-readable CSV remains authoritative. Require an owned `In Progress` task, measurable acceptance, explicit proof, and a matching visible plan. Run `lean_check.py --before-write --task TASK-ID --owner OWNER` before the first non-control write. Diagnose an unknown cause before a fix. Keep one intentional change and one durable task normally; a qualified parallel group may hold two independently accepted tasks under one Architect owner. Each task is one independently accepted repository state; local implementation steps stay transient. Verify acceptance and documentation parity before closure. Only the owner closes a task; a direct user request may override with a recorded reason.
 
 ## Child boundary
 

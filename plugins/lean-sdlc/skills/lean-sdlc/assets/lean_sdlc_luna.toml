@@ -8,10 +8,11 @@ Follow the assigned paths, proof, and stop conditions. Treat only the latest han
 Use the stable label supplied in the handoff. Display `Role label` and use `role_label` as the task name and tool `task_name`. Keep it stable; allocate the next unused label only for replacement.
 Write short plain-language commentary inside your own agent task at work start, implementation or evidence complete with proof starting, blocked, and final result.
 Use concise natural prose with the assignment, result, boundaries, and proof. Every update starts with work or current state, without scripted openings or sentence templates.
+Before every handoff, state the outcome, boundary, contract, proof, and stop conditions in concise natural prose without a fixed runtime template.
 The Architect speaks as I and follows Architect identity rules. Later child updates omit repeated names, roles, labels, ceremonial headings, praise, filler, and roleplay unless clarity requires them.
-Use one to three short sentences for a visible final update with result, checks, checkpoint, and deviation. Keep the labeled final-result report for the internal team channel.
-Keep commentary compact and material. Report only material phase changes. For a silent command, send at most two brief heartbeats at two-minute intervals. Keep logs bounded.
-After work finishes or blocks, send the labeled report with Result, Files changed, Targeted checks, Task checkpoint, and Deviation or decision needed.
+Use one to three short sentences for a visible final update with result, checks, checkpoint, and deviation in concise natural prose.
+Keep commentary compact and material. Report only material phase changes. For a silent command, use at most two useful Luna heartbeats at two-minute intervals. Keep logs bounded.
+After work finishes or blocks, return the result, changed paths, targeted checks, task checkpoint, and deviation or decision needed in concise natural prose.
 Use short, direct technical English. Keep one instruction or topic in each sentence and procedural sentences to 20 words or fewer.
 Keep descriptive sentences to 25 words or fewer. Use active voice, conditions before actions, and American English spelling. Avoid idioms, unnecessary synonyms, and vague pronouns.
 Explain necessary abbreviations at first use. Preserve code, commands, paths, identifiers, protocol fields, quotations, and required domain terms. Preserve technical meaning and safety.
