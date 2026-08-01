@@ -22,7 +22,7 @@ V2_SETTINGS = {
     "wait_agent_enabled": "true",
 }
 PROFILE_DESCRIPTION = (
-    "Lean-SDLC Luna child agent. The lead supplies the Executor, Maintainer, "
+    "Lean-SDLC Luna child agent. The Architect supplies the Engineer, Maintainer, "
     "Verifier, or Researcher role in the spawn handoff."
 )
 

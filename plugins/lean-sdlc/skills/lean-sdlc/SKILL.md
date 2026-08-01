@@ -42,7 +42,7 @@ Discussion or proposal requests stay outside Plan and Deliver until the user giv
 7. Verify acceptance, documentation parity, and the relevant repository state before `tasks.py close`.
 8. Only the owning task closes work. A different task may close it only after a direct user request using the recorded override.
 9. Each task is one independently accepted repository state; local implementation steps stay transient.
-10. Keep `tasks.csv` as the only durable task plan. Each durable plan item maps to one task. Each durable item includes observable completion conditions and proof. Do not start Executor until the visible plan exists and its task matches one durable item.
+10. Keep `tasks.csv` as the only durable task plan. Each durable plan item maps to one task. Each durable item includes observable completion conditions and proof. Do not start Engineer until the visible plan exists and its task matches one durable item.
 
 Read-only inspection needs no task. Small writes still use a small `Project` task.
 
@@ -60,9 +60,13 @@ Apply the applicable ASD-STE100 Issue 9 rules to generated English technical pro
 
 ## Subagent Gate
 
-Before Deliver or the first delegated read-only operation, apply [references/subagents.md](references/subagents.md). Tell the user the mode, child action, active task or inquiry, and reason in one or two short sentences.
+Before Deliver or the first delegated read-only operation, apply [references/subagents.md](references/subagents.md). Give the user a concise natural update that starts with the work or current state and states the child action, task or inquiry, intended result, useful boundaries, and proof. Mention the mode only when it matters, changes, or the user asks.
 
-That policy is the sole authority for child roles, triggers, profiles, spawn payloads, handoffs, reuse, and failure conditions. Standard child identities are Executor David / `executor_david`, Maintainer Emily / `maintainer_emily`, Verifier Michael / `verifier_michael`, and Researcher Sarah / `researcher_sarah`. Each child writes short plain-language commentary inside its own agent task at material phases. The user-selected lead acts as principal engineer and owns product intent, architecture, interfaces, invariants, task boundaries, integration, acceptance, and closeout. Assisted mode uses every triggered role, including Executor. Solo mode uses lead-only execution under the same contracts. Keep one lazily spawned thread per role for each lead Codex task. Reuse it across repository tasks and inquiries. Lead review and checkpoint verification precede another task.
+Every user-facing lead message starts with outcome, work, or current state. Avoid repeating the lead role, model, mode, internal field labels, greetings, praise, filler, or roleplay unless clarity requires the information. Keep internal control data structured.
+
+Children call the primary agent Architect in visible commentary, handoffs, returns, and decision requests. The primary agent speaks as I. Keep lead for internal policy wording where useful.
+
+That policy is the sole authority for child roles, triggers, profiles, spawn payloads, handoffs, reuse, visible communication, and failure conditions. Standard child identities are Engineer David / `engineer_david`, Maintainer Emily / `maintainer_emily`, Verifier Michael / `verifier_michael`, and Researcher Sarah / `researcher_sarah`. The task title and the lead's first assignment are the primary identity signal. User-facing lead messages and later child updates use natural prose, start with work or current state, and avoid repeated names, fixed labels, greetings, praise, filler, and roleplay. At the first visible update for each newly assigned durable task or inquiry, a child may use one concise greeting and identity. After that first update, child commentary omits the greeting, name, and role unless replacement or genuine ambiguity requires identity. Use a natural `Hi, <identity> here. Starting...` variant. The robotic form `I am <role/name>` is disfavored. Internal lead-child handoffs and compact returns remain labeled and lossless. Each child writes short plain-language commentary inside its own agent task at material phases. The user-selected lead acts as principal engineer and owns product intent, architecture, interfaces, invariants, task boundaries, integration, acceptance, and closeout. Assisted mode uses every triggered role, including Engineer. Solo mode uses lead-only execution under the same contracts. Assisted and Solo are the only orchestration modes. Keep one lazily spawned thread per role for each lead Codex task. Reuse it across repository tasks and inquiries. Lead review and checkpoint verification precede another task.
 
 ## Result
 

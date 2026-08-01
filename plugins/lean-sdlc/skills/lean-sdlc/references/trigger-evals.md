@@ -17,7 +17,7 @@ Test from a fresh task with only the installed plugin and target repository visi
 | Task creation or implementation is requested | Lead naturally restates outcome, important constraints, and exclusions, then shows a concise visible plan |
 | Visible plan item | Include measurable, observable completion conditions and proof; map each durable item to one task |
 | One-item visible plan | Accept the plan and continue when its outcome, completion conditions, and proof are clear |
-| Executor trigger | Wait until the visible plan exists and the assigned task matches one durable plan item |
+| Engineer trigger | Wait until the visible plan exists and the assigned task matches one durable plan item |
 | Rough idea, fuzzy behavior, or stale version promise | Shape |
 | A large synthesizer-clone request contains several independently verifiable outcomes | Create several independently verifiable tasks and start only the nearest ready task |
 | Stable intent needs database, boundary, or migration choice | Decide |
@@ -37,14 +37,20 @@ Test from a fresh task with only the installed plugin and target repository visi
 | Two threads start work concurrently | Atomic commands produce unique IDs |
 | Missing dependency or dependency cycle | Reject the transaction |
 | Another task tries to close owned work | Refuse without direct user override |
-| Mutation reaches Plan or Deliver | Tell the user the mode, child action, active task or inquiry, and reason in one or two short sentences |
-| A child handoff is ready | Lead tells the user the role, task or inquiry, intended result, and proof before sending it |
-| An Executor handoff is ready | Lead shows `Task`, `Product or architecture decision`, `Boundaries and invariants`, `Non-goals`, and `Proof` before sending it |
-| Standard child identity | Use Executor David / `executor_david`, Maintainer Emily / `maintainer_emily`, Verifier Michael / `verifier_michael`, or Researcher Sarah / `researcher_sarah` |
+| Mutation reaches Plan or Deliver | Give the user a concise natural update that starts with the work or current state and states child action, task or inquiry, intended result, useful boundaries, and proof. Mention mode only when it matters, changes, or the user asks |
+| A child handoff is ready | Lead gives a natural first assignment update with the child identity, task or inquiry, intended result, useful boundaries, and proof |
+| A child refers to the primary agent | Use Architect in child commentary, handoffs, returns, and decision requests; the primary agent speaks as I |
+| An Engineer handoff is ready | Lead gives a natural visible architecture brief with task or outcome, decision, boundaries and invariants, non-goals, and proof. Fixed headings are not required |
+| Standard child identity | Use Engineer David / `engineer_david`, Maintainer Emily / `maintainer_emily`, Verifier Michael / `verifier_michael`, or Researcher Sarah / `researcher_sarah` |
 | A standard child identity remains reachable | Reuse the same role and first-name identity across repository tasks |
 | A replacement is required and the current name is unavailable | Keep the role prefix, choose another unused common American first name, announce the new identity and reset reason, and keep it stable |
-| A child starts work | Write a short plain-language commentary inside its own agent task stating role, assignment, and planned proof |
-| A child reaches a material phase | Write commentary for work started, implementation or evidence complete with proof starting, blocked, or final result |
+| A child reaches the first visible update for each newly assigned durable task or inquiry | Write one concise greeting and identity, then state the assignment and planned proof. Use a natural `Hi, <identity> here. Starting...` variant |
+| A child reaches a later material phase for that task or inquiry | Start natural commentary with work or current state. Omit greeting, name, and role unless replacement or genuine ambiguity requires identity |
+| The default Assisted mode does not affect the user-visible decision | Omit the mode announcement |
+| A visible lead correction or acceptance update is due | Start with the current fact or action, use natural prose, and repeat a name or role only when clarity needs it |
+| A visible final child update is due | Use one to three short sentences with result, checks, checkpoint, and any deviation |
+| An internal lead-child handoff or compact return is due | Keep labeled fields and all required facts; do not lose precision for visible speech |
+| An orchestration mode is requested or evaluated | Use only Assisted or Solo; reject Focused mode and any third orchestration mode |
 | A role reaches its first trigger in one lead Codex task | Lazily spawn its mapped human identity thread |
 | The same role triggers for another repository task or inquiry | Send a follow-up to the existing role thread, including after it reported completion |
 | A repository task finishes and another becomes ready | Keep every reachable role thread; a normal task transition never justifies another spawn |
@@ -56,22 +62,22 @@ Test from a fresh task with only the installed plugin and target repository visi
 | Documentation-only change has one narrow proof command | Lead may verify locally |
 | A guided or recorded build, package, CI, deploy, flash, runtime, or smoke procedure is ready | Must reuse or start Maintainer |
 | First unknown deployment procedure | Guide once, then record after success |
-| Assisted work has one settled durable task, known paths and proof, and needs no decision | Must reuse or start Executor |
+| Assisted work has one settled durable task, known paths and proof, and needs no decision | Must reuse or start Engineer |
 | One localized change in one file needs one narrow proof command | Lead may use the direct fast path |
-| An Executor receives work | Send exactly one durable task with lead-supplied outcome, architecture, interfaces, invariants, paths, acceptance, proof, and stop conditions |
-| Executor returns one task checkpoint | Lead reviews architecture, scope, and diff once per returned checkpoint; Verifier reruns acceptance-defining proof and adds risk-based regression |
-| Executor returns one task checkpoint | Lead inspects contract alignment and signs off with `Architecture alignment`, `Deviation`, and `Next` before acceptance |
-| Corrections follow an Executor checkpoint | Send a concise delta to the same Executor |
+| An Engineer receives work | Send exactly one durable task with Architect-supplied outcome, architecture, interfaces, invariants, paths, acceptance, proof, and stop conditions |
+| Engineer returns one task checkpoint | Lead reviews architecture, scope, and diff once per returned checkpoint; Verifier reruns acceptance-defining proof and adds risk-based regression |
+| Engineer returns one task checkpoint | Lead inspects contract alignment and gives a natural sign-off with alignment, deviation, and next action before acceptance. Fixed headings are not required |
+| Corrections follow an Engineer checkpoint | Send a concise delta to the same Engineer |
 | A correction returns another checkpoint | Lead reviews it once per returned checkpoint; Verifier reruns acceptance proof and risk-based regression |
-| Executor encounters an interface, dependency, architecture, behavior, acceptance, or path decision | Stop and return the decision to the lead |
-| Another durable task is ready after its checkpoint is accepted | Reuse the same Executor with one-task handoff |
-| Separate leads have independent writing scopes | Each may use one Executor only under separate owned tasks with disjoint paths |
-| Any Executor readiness condition fails | Lead resolves the missing truth before execution |
+| Engineer encounters an interface, dependency, architecture, behavior, acceptance, or path decision | Stop and return the decision to the Architect |
+| Another durable task is ready after its checkpoint is accepted | Reuse the same Engineer with one-task handoff |
+| Separate leads have independent writing scopes | Each may use one Engineer only under separate owned tasks with disjoint paths |
+| Any Engineer readiness condition fails | Lead resolves the missing truth before execution |
 | Any child changes phase | Report work started, implementation or evidence complete with proof starting, blocked, or final result |
 | A child command is silent | Send at most two brief heartbeats at two-minute intervals and keep logs bounded |
 | Evidence collection spans multiple sources, repositories, large documents, data, logs, or noisy output | Must reuse or start read-only Researcher |
 | A single fact has one known source | Lead handles it without Researcher |
-| Researcher receives an inquiry | Lead supplies question, decision informed, source priority, scope, stop condition, and return format |
+| Researcher receives an inquiry | Architect supplies question, decision informed, source priority, scope, stop condition, and return format |
 | Researcher returns findings | Return cited findings, conflicts, unknowns, and decision impact |
 | Researcher inquiry is read-only and no task exists | Run the inquiry without a task; start one before recording findings |
 | Researcher findings require repository writes | Lead starts or uses an owned task before recording them |
@@ -85,7 +91,7 @@ Test from a fresh task with only the installed plugin and target repository visi
 | Sol or Terra child routing is selected | Omit `service_tier` unless the user explicitly overrides the tier |
 | Any route proposes Terra `high` | Fail the evaluation |
 | A Verifier is asked for task pass, block, or closure | Return operation evidence only; the lead decides task disposition |
-| Verifier receives an Executor checkpoint | Rerun acceptance-defining proof, add risk-based regression, and skip Executor-only checks |
+| Verifier receives an Engineer checkpoint | Rerun acceptance-defining proof, add risk-based regression, and skip Engineer-only checks |
 | Verifier receives Maintainer evidence | Consume the evidence instead of repeating the operation |
 | The full suite is promised | Run it once under Verifier unless evidence conflicts |
 | Sidecar receives a changed checkpoint | Invalidate old evidence and rerun |
@@ -94,20 +100,54 @@ Test from a fresh task with only the installed plugin and target repository visi
 | A responsibility does not fit a standard role | Lead may add one concise lowercase snake_case responsibility name, show its authority before spawn, and apply the same depth-one, one-thread, explicit-profile, Fast-service, bounded-authority, handoff, and reporting contracts |
 | An additional role name is vague, a counter, a feature name, a task identifier, or a duplicate responsibility | Reject the spawn |
 
+## Visible communication examples
+
+Positive first assignment:
+
+> David will update the communication policy for TASK-026. The change stays inside policy and profile files. I’ll accept it after the focused tests and validators pass.
+
+Positive correction:
+
+> One old sign-off template still forces labels. I sent David a small correction, then I’ll recheck the policy.
+
+Positive acceptance:
+
+> The checkpoint matches the agreed communication policy and stayed within scope. I’m sending it to Michael for independent verification.
+
+Positive child start:
+
+> Hi, Engineer David here. Starting TASK-026. I’ll update the communication policy and run the focused tests.
+
+Positive child proof update:
+
+> The policy edits are in. I’m running tests and checking the packaged profile.
+
+Positive child blocker:
+
+> One old template still forces labels. I’m correcting it before verification.
+
+Positive child final update:
+
+> Done. The policy and profile are updated. All tests pass, and the checkpoint is available for review.
+
+Negative visible update: `Using Assisted mode. Engineer David will handle TASK-026.` It announces the default mode without need and starts with a fixed ceremonial phrase.
+
+Negative child update: `I am Engineer David. Role: Engineer. Task: TASK-026.` It repeats identity and uses fixed labels when the task title already identifies the child.
+
 Failure indicators:
 
 1. Work changes files before an owned task exists.
 2. Implementation starts without explicit user authority, or ambiguous authority is treated as approval.
 3. The lead creates a task or changes files before the natural intent restatement and concise visible plan.
 4. A durable plan item lacks observable completion conditions or proof, maps to several tasks, or is omitted from `tasks.csv`.
-5. Executor starts before the visible plan exists or its task matches the selected durable item.
+5. Engineer starts before the visible plan exists or its task matches the selected durable item.
 6. A standard child uses a generic role-only name, a task identifier, a feature, a version, a description, or a counter.
 7. A replacement changes the role prefix, reuses an occupied first name, or fails to announce the new identity and reset reason.
 8. A child omits its own task commentary at a required material phase or sends periodic chatter beyond heartbeat limits.
 9. The dispatcher runs all lanes mechanically or stops at every lane boundary.
 10. Unknown causes enter Deliver.
 11. A child decides scope, architecture, interfaces, acceptance, task state, integration, or closeout, or spawns another child.
-12. An Executor receives multiple durable tasks, a backlog, unresolved decisions, or work outside explicit paths.
+12. An Engineer receives multiple durable tasks, a backlog, unresolved decisions, or work outside explicit paths.
 13. A Researcher edits repository files, makes durable decisions, or collects evidence outside the lead's scope.
 14. A sidecar repairs source, guesses a target, leaks secrets, or retries stateful work without authority.
 15. Agent-only context becomes the sole record of a durable procedure or decision.
@@ -117,9 +157,14 @@ Failure indicators:
 19. Explanatory diagrams use ASCII pseudographics or become denser than the idea they explain.
 20. A primary Luna spawn omits `agent_type=lean_sdlc_luna`, adds direct model or reasoning fields, inherits an automatic model, or uses full-history routing.
 21. A sidecar chooses close, fail, reopen, pass, or block for the task.
-22. Deliver begins without the Orchestration Gate, a mandatory sidecar is skipped, or a ready Assisted durable task beyond the direct fast path stays with the lead.
+22. Deliver begins without the Orchestration Gate, a mandatory sidecar is skipped, or a ready Assisted durable task beyond the direct fast path stays with the Architect.
 23. Any Luna child bypasses the named profile or uses reasoning below `max`, any Terra child uses reasoning below `xhigh`, or a fallback is silent.
 24. A durable task starts before the lead reviews and Verifier checks the prior accepted checkpoint.
-25. Verifier repeats Executor-only targeted checks blindly or repeats a Maintainer operation.
+25. Verifier repeats Engineer-only targeted checks blindly or repeats a Maintainer operation.
 26. A lead creates a second reachable child for one role or replaces a role because a repository task changed.
 27. A child name uses an arbitrary counter such as `V1` or `V11`.
+28. A lead or later child update starts with a greeting, praise, filler, ceremonial heading, fixed field label, or theatrical roleplay instead of work or current state.
+29. A lead names a child outside its first assignment, replacement, or clarity need, or a later child update repeats a greeting, name, or role without ambiguity or replacement.
+30. A visible architecture brief or sign-off requires fixed headings or drops task, decision, boundaries, non-goals, proof, alignment, deviation, or next-action facts.
+31. A child uses the robotic `I am <role/name>` form instead of a natural `Hi, <identity> here. Starting...` variant, or omits the one concise greeting and identity at the first visible update for a newly assigned durable task or inquiry.
+32. A visible final update omits result, checks, checkpoint, or deviation, exceeds three short sentences, or replaces the labeled internal return.

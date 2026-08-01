@@ -2,7 +2,7 @@
 
 Use Plan only after the user gives explicit implementation authority. Discussion or proposal requests remain read-only, and ambiguous authority stays read-only.
 
-Require the information, not fixed labels. Use natural prose for the outcome, important constraints, and exclusions. Only the plan needs visible structure.
+Require the information, not fixed labels. Use natural prose for the outcome, important constraints, and exclusions. Only the plan needs visible structure. User-facing assignments, architecture briefs, progress updates, and sign-offs use natural prose and start with work or current state. Internal handoffs and compact returns remain labeled and lossless.
 
 Before creating a task or implementing work, the lead gives the natural intent confirmation, then shows a concise visible plan. Define each durable plan item in natural prose with its observable completion condition and verification method. The verification method is its proof. A one-item plan is valid.
 
@@ -40,8 +40,8 @@ Task transactions themselves are exempt from the task-before-write rule; otherwi
 
 ## Execution shape
 
-Before Deliver, apply the [Subagent Policy](subagents.md) and state its one-line Orchestration Gate. The lead settles architecture, interfaces, invariants, allowed paths, acceptance, proof, and stop conditions before issuing one execution unit. The execution task must match one item in the visible plan.
+Before Deliver, apply the [Subagent Policy](subagents.md) and give its natural one-line Orchestration Gate. The lead settles architecture, interfaces, invariants, allowed paths, acceptance, proof, and stop conditions before issuing one execution unit. The execution task must match one item in the visible plan.
 
-Executor receives one durable task. Reuse the existing `executor_david` thread when another repository task becomes ready. Local implementation steps and correction handoffs remain transient. Never send several tasks or an internal backlog. Parallel writers require separate owned tasks and disjoint paths.
+Engineer receives one durable task. Reuse the existing `engineer_david` thread when another repository task becomes ready. Local implementation steps and correction handoffs remain transient. Never send several tasks or an internal backlog. Parallel writers require separate owned tasks and disjoint paths.
 
 Ready means implementation authority, the visible plan, ownership, boundaries, dependencies, acceptance, proof, and integration responsibility are unambiguous.

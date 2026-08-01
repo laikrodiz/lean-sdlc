@@ -20,7 +20,7 @@ Resolve contradictions before closeout.
 - Explicit implementation wording, or clear confirmation to proceed against a recoverable agreed proposal, permits Plan and Deliver. If authority is ambiguous, remain read-only.
 - Before task creation and implementation, apply `$lean-sdlc`'s canonical `references/plan.md` contract. It requires natural intent confirmation and a concise visible plan with measurable completion conditions and proof. A one-item plan is valid.
 - Keep `tasks.csv` as the only durable task plan. Each durable plan item maps to one task, exactly once. Keep implementation steps transient.
-- Use stable child identities: Executor David / `executor_david`, Maintainer Emily / `maintainer_emily`, Verifier Michael / `verifier_michael`, and Researcher Sarah / `researcher_sarah`. Replacements keep the role prefix and use another unused common American first name.
+- Use stable child identities: Engineer David / `engineer_david`, Maintainer Emily / `maintainer_emily`, Verifier Michael / `verifier_michael`, and Researcher Sarah / `researcher_sarah`. Replacements keep the role prefix and use another unused common American first name.
 - Each child writes a short plain-language commentary inside its own agent task at work start, implementation or evidence completion with proof starting, blocked state, and final result. Keep lead reports compact and heartbeat limits unchanged.
 - Before any other file mutation, use the installed `tasks.py start` command to create immediate work or claim a Planned task.
 - Keep one intentional change per task with observable acceptance and explicit proof.
@@ -42,18 +42,23 @@ Resolve contradictions before closeout.
 
 ## Subagent Gate
 
-- Before Deliver or the first delegated read-only operation, read and apply `$lean-sdlc`'s canonical `references/subagents.md`. Tell the user the mode, child action, active task or inquiry, and reason in one or two short sentences.
-- Before every child handoff, tell the user the role, task or inquiry, intended result, and proof.
-- Include the stable human identity and task name in every child handoff.
-- Before every Executor handoff, show a concise architecture brief with `Task`, `Product or architecture decision`, `Boundaries and invariants`, `Non-goals`, and `Proof`.
-- Do not start Executor until the visible plan exists and its task matches one durable plan item.
-- After each Executor checkpoint, inspect the diff and contract alignment. Then sign off with `Architecture alignment`, `Deviation`, and `Next`.
-- Require child reports for work started, implementation or evidence complete with proof starting, blocked, and final result. A silent command may receive at most two heartbeats per command, one every two minutes.
-- Use normal prose for user-facing orchestration and labeled multiline fields for internal child handoffs.
-- Keep architecture, interfaces, task state, acceptance, integration, and closeout with the lead.
+- Before Deliver or the first delegated read-only operation, read and apply `$lean-sdlc`'s canonical `references/subagents.md`. Give the user a concise natural update that starts with the work or current state and states the child action, task or inquiry, intended result, useful boundaries, and proof. Mention the mode only when it matters, changes, or the user asks.
+- Every user-facing lead message starts with outcome, work, or current state. Avoid repeating the lead role, model, mode, internal field labels, greetings, praise, filler, or roleplay unless clarity requires the information. Keep internal control data structured.
+- Children call the primary agent Architect in visible commentary, handoffs, returns, and decision requests. The primary agent speaks as I. Keep lead for internal policy wording where useful.
+- Use the task title and the lead's first assignment as the primary identity signal. The lead names the child on the first assignment and again only after replacement or when clarity requires it.
+- At the first visible update for each newly assigned durable task or inquiry, a child may use one concise greeting and identity. After that first update, child commentary omits the greeting, name, and role unless replacement or genuine ambiguity requires identity. Use a natural `Hi, <identity> here. Starting...` variant. The robotic form `I am <role/name>` is disfavored.
+- Before every child handoff, give the user a natural assignment update. Keep the required facts and do not depend on child commentary for startup visibility.
+- Include the stable human identity and task name in every internal child handoff.
+- Before every Engineer handoff, give a concise visible architecture brief in natural prose with the task or outcome, decision, boundaries and invariants, non-goals, and proof. Fixed headings are not required in visible speech. Keep the labeled form for the internal handoff.
+- Do not start Engineer until the visible plan exists and its task matches one durable plan item.
+- After each Engineer checkpoint, inspect the diff and contract alignment. Give the user a natural sign-off with alignment, deviation, and next action. Fixed headings are not required in visible speech. Keep the labeled form for the internal sign-off.
+- Require child updates for work started, implementation or evidence complete with proof starting, blocked, and final result. Start with work or current state. A visible final update uses one to three short sentences and states result, checks, checkpoint, and any deviation. A silent command may receive at most two heartbeats per command, one every two minutes.
+- Use natural prose for user-facing orchestration. Lead messages and later child updates avoid repeated names, roles, fixed labels, ceremonial headings, greetings, praise, filler, and theatrical roleplay. Keep labeled multiline fields for internal child handoffs and compact returns.
+- Keep architecture, interfaces, task state, acceptance, integration, and closeout with the Architect.
 - Keep one lazily spawned thread for each child role during one lead Codex task. Reuse it across repository tasks and inquiries.
-- The standard child roles are Executor, Maintainer, Verifier, and Researcher. Use one reusable thread per role and keep depth one.
-- Assisted mode uses every triggered role, including Executor. Delegate one durable task beyond the direct fast path to one reusable Executor. Keep correction handoffs concise and transient. Trigger read-only Researcher only when substantial evidence would pollute lead context. Trigger Maintainer only for guided or recorded operations.
+- The standard child roles are Engineer, Maintainer, Verifier, and Researcher. Use one reusable thread per role and keep depth one.
+- Assisted mode uses every triggered role, including Engineer. Delegate one durable task beyond the direct fast path to one reusable Engineer. Keep correction handoffs concise and transient. Trigger read-only Researcher only when substantial evidence would pollute lead context. Trigger Maintainer only for guided or recorded operations.
+- Assisted and Solo are the only orchestration modes.
 - Treat a skipped mandatory handoff, oversized assignment, child-owned decision, incorrect spawn route, or child-created agent as a workflow failure.
 
 ## Operations

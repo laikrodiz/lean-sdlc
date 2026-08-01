@@ -53,7 +53,7 @@ Artifact path or hash: Artifact reference, or None.
 Target: Target identifier.
 Signal: Observed success or failure signal.
 Saved failure log: Temporary log reference, or None.
-Next: Required lead action, or None.
+Next: Required Architect action, or None.
 ```
 
 Run one state-changing operation at a time for the same `task + operation + target`. Never guess a target, silently change a procedure, or retry a state-changing failure without authority and a recorded recovery rule.
