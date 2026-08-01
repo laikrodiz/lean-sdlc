@@ -47,10 +47,10 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - Keep `tasks.csv` as the only durable task plan. Map each durable plan item to exactly one task, and keep implementation steps transient.
 - Use `Context` values `Project`, `FEAT-*`, `DEC-*`, and `Bootstrap` for durable project truth.
 - Require one concise natural lead assignment before every child handoff and one natural final update after child work. Keep required facts visible.
-- Use stable human child identities with role prefixes and common American first names. Require short child-task commentary at material phases while keeping lead reports compact.
+- Choose an unused simple human first name for each role when its thread starts. Display `Role Firstname` and use `role_firstname` as the task name. Keep the identity stable while the thread remains reusable. Require short child-task commentary at material phases while keeping lead reports compact.
 - Require every user-facing lead message to start with outcome, work, or current state. Avoid repeated lead identity, model, mode, internal labels, greetings, praise, filler, and roleplay unless clarity requires them. Keep internal control data structured.
 - Require children to call the primary agent Architect in visible commentary, handoffs, returns, and decision requests. The primary agent speaks as I. Keep lead for internal policy wording where useful.
-- Have the lead name a child on the first assignment and again only after replacement or when clarity requires it. At the first visible update for each newly assigned durable task or inquiry, a child may use one concise greeting and identity. After that first update, child commentary omits the greeting, name, and role unless replacement or genuine ambiguity requires identity. Use a natural `Hi, <identity> here. Starting...` variant. The robotic form `I am <role/name>` is disfavored.
+- Have the lead identify the child when assignment clarity requires it. Require concise natural updates that state the assignment or inquiry, intended result, boundaries, acceptance, proof, checkpoint, and deviation. Do not require greetings, self-introductions, or sentence templates.
 - Require a concise natural architecture brief before every Engineer handoff and a natural lead sign-off after every Engineer checkpoint. Keep internal handoffs and compact returns labeled and lossless.
 - Report child phase changes sparsely and bound silent-command heartbeats to two at two-minute intervals.
 - Do not send unbounded child progress updates.
@@ -72,7 +72,7 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 - Assisted mode uses every triggered role, including Engineer.
 - Solo mode uses lead-only execution under the same delivery gates.
 - Assisted and Solo are the only orchestration modes.
-- Normal repository task transitions reuse existing role threads and never create numbered replacements.
+- Normal repository task transitions reuse existing role threads. Replacement keeps the role prefix and chooses another unused first name only when reset conditions apply. Names never use task identifiers, features, versions, descriptions, or counters.
 - The lead reviews every returned task checkpoint and Verifier checks each accepted checkpoint before another task begins.
 - Spawned Luna agents use the named profile and priority tier for Fast service, Terra High is never routed, and children never inherit Architect decision authority.
 - Generated English technical prose follows applicable ASD-STE100 Issue 9 rules without unsupported certification claims.
@@ -82,6 +82,6 @@ Provide one simple, shareable Codex plugin that routes work through the smallest
 ## Current Promise
 
 - Stage: Evolution
-- Version: 1.8.1
+- Version: 1.8.2
 - Version goal: Release intentional planning and human-monitorable children with visible plans and short material-phase commentary.
 - Exit evidence: Tests, skill and plugin validation, local installation, accepted checkpoints, repository checks, tagged commit, and successful push.

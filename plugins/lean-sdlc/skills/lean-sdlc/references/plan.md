@@ -42,6 +42,6 @@ Task transactions themselves are exempt from the task-before-write rule; otherwi
 
 Before Deliver, apply the [Subagent Policy](subagents.md) and give its natural one-line Orchestration Gate. The lead settles architecture, interfaces, invariants, allowed paths, acceptance, proof, and stop conditions before issuing one execution unit. The execution task must match one item in the visible plan.
 
-Engineer receives one durable task. Reuse the existing `engineer_david` thread when another repository task becomes ready. Local implementation steps and correction handoffs remain transient. Never send several tasks or an internal backlog. Parallel writers require separate owned tasks and disjoint paths.
+Engineer receives one durable task. Reuse the existing Engineer role thread when another repository task becomes ready. Local implementation steps and correction handoffs remain transient. Never send several tasks or an internal backlog. Parallel writers require separate owned tasks and disjoint paths.
 
 Ready means implementation authority, the visible plan, ownership, boundaries, dependencies, acceptance, proof, and integration responsibility are unambiguous.

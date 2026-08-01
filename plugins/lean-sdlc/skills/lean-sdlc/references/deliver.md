@@ -15,7 +15,7 @@ The user-selected lead acts as principal engineer and owns product intent, archi
 7. Scan plausible changed-boundary cases: missing, empty, malformed, limit values, dependency failure or partial result, interruption, repetition or concurrency, and required invariants.
 8. Classify each relevant case as `Handle`, `Reject`, `Defer`, or `Impossible by invariant`. Follow existing contracts for routine cases; return to Shape or Decide before choosing user-visible, compatibility, safety, or data behavior.
 9. Keep one durable task with one outcome, settled architecture and invariants, related allowed paths, explicit acceptance, proof, and stop conditions.
-10. Before the Engineer handoff, give the concise natural architecture brief required by [subagents.md](subagents.md). Apply the Engineer trigger only after the visible plan exists and the task matches it. In Assisted mode, delegate one ready durable task beyond the direct fast path to the existing `engineer_david` thread; otherwise spawn it lazily or execute locally.
+10. Before the Engineer handoff, give the concise natural architecture brief required by [subagents.md](subagents.md). Apply the Engineer trigger only after the visible plan exists and the task matches it. In Assisted mode, delegate one ready durable task beyond the direct fast path to the existing Engineer role thread; otherwise spawn it lazily or execute locally.
 11. Keep affected tests, diagnostics, project truth, decisions, and technical documentation in sync.
 12. Avoid opportunistic refactors and speculative compatibility.
 13. Stop and return to Shape, Decide, or Diagnose when implementation exposes missing truth.

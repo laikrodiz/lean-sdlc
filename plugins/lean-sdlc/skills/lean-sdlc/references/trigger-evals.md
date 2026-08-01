@@ -41,11 +41,11 @@ Test from a fresh task with only the installed plugin and target repository visi
 | A child handoff is ready | Lead gives a natural first assignment update with the child identity, task or inquiry, intended result, useful boundaries, and proof |
 | A child refers to the primary agent | Use Architect in child commentary, handoffs, returns, and decision requests; the primary agent speaks as I |
 | An Engineer handoff is ready | Lead gives a natural visible architecture brief with task or outcome, decision, boundaries and invariants, non-goals, and proof. Fixed headings are not required |
-| Standard child identity | Use Engineer David / `engineer_david`, Maintainer Emily / `maintainer_emily`, Verifier Michael / `verifier_michael`, or Researcher Sarah / `researcher_sarah` |
-| A standard child identity remains reachable | Reuse the same role and first-name identity across repository tasks |
-| A replacement is required and the current name is unavailable | Keep the role prefix, choose another unused common American first name, announce the new identity and reset reason, and keep it stable |
-| A child reaches the first visible update for each newly assigned durable task or inquiry | Write one concise greeting and identity, then state the assignment and planned proof. Use a natural `Hi, <identity> here. Starting...` variant |
-| A child reaches a later material phase for that task or inquiry | Start natural commentary with work or current state. Omit greeting, name, and role unless replacement or genuine ambiguity requires identity |
+| Standard child identity | Choose an unused simple human first name when the role thread starts. Display `Role Firstname` and use `role_firstname` as the task name |
+| A role identity remains reachable | Reuse the same role and first-name identity across repository tasks and inquiries |
+| A replacement is required and the current name is unavailable | Keep the role prefix, choose another unused simple human first name, announce the new identity and reset reason, and keep it stable |
+| A child reaches the first visible update for each newly assigned durable task or inquiry | State the assignment or inquiry, intended result, boundaries, and planned proof in concise natural prose. Do not require a greeting, self-introduction, or sentence template |
+| A child reaches a later material phase for that task or inquiry | Start natural commentary with work or current state. Include the required result, checks, checkpoint, and deviation information |
 | The default Assisted mode does not affect the user-visible decision | Omit the mode announcement |
 | A visible lead correction or acceptance update is due | Start with the current fact or action, use natural prose, and repeat a name or role only when clarity needs it |
 | A visible final child update is due | Use one to three short sentences with result, checks, checkpoint, and any deviation |
@@ -100,39 +100,11 @@ Test from a fresh task with only the installed plugin and target repository visi
 | A responsibility does not fit a standard role | Lead may add one concise lowercase snake_case responsibility name, show its authority before spawn, and apply the same depth-one, one-thread, explicit-profile, Fast-service, bounded-authority, handoff, and reporting contracts |
 | An additional role name is vague, a counter, a feature name, a task identifier, or a duplicate responsibility | Reject the spawn |
 
-## Visible communication examples
+## Visible communication checks
 
-Positive first assignment:
+Positive updates begin with current work or state and preserve the information needed for action, proof, and review. They use concise natural engineering prose.
 
-> David will update the communication policy for TASK-026. The change stays inside policy and profile files. I’ll accept it after the focused tests and validators pass.
-
-Positive correction:
-
-> One old sign-off template still forces labels. I sent David a small correction, then I’ll recheck the policy.
-
-Positive acceptance:
-
-> The checkpoint matches the agreed communication policy and stayed within scope. I’m sending it to Michael for independent verification.
-
-Positive child start:
-
-> Hi, Engineer David here. Starting TASK-026. I’ll update the communication policy and run the focused tests.
-
-Positive child proof update:
-
-> The policy edits are in. I’m running tests and checking the packaged profile.
-
-Positive child blocker:
-
-> One old template still forces labels. I’m correcting it before verification.
-
-Positive child final update:
-
-> Done. The policy and profile are updated. All tests pass, and the checkpoint is available for review.
-
-Negative visible update: `Using Assisted mode. Engineer David will handle TASK-026.` It announces the default mode without need and starts with a fixed ceremonial phrase.
-
-Negative child update: `I am Engineer David. Role: Engineer. Task: TASK-026.` It repeats identity and uses fixed labels when the task title already identifies the child.
+Negative updates begin with a greeting, self-introduction, praise, filler, ceremonial heading, fixed field label, or sentence template. They omit task, boundaries, acceptance, proof, checkpoint, deviation, or next action information.
 
 Failure indicators:
 
@@ -163,8 +135,8 @@ Failure indicators:
 25. Verifier repeats Engineer-only targeted checks blindly or repeats a Maintainer operation.
 26. A lead creates a second reachable child for one role or replaces a role because a repository task changed.
 27. A child name uses an arbitrary counter such as `V1` or `V11`.
-28. A lead or later child update starts with a greeting, praise, filler, ceremonial heading, fixed field label, or theatrical roleplay instead of work or current state.
-29. A lead names a child outside its first assignment, replacement, or clarity need, or a later child update repeats a greeting, name, or role without ambiguity or replacement.
+28. A lead or child update starts with a greeting, self-introduction, praise, filler, ceremonial heading, fixed field label, or sentence template instead of work or current state.
+29. A lead repeats a child identity without assignment clarity, replacement, or genuine ambiguity, or a role thread changes its first name during normal reuse.
 30. A visible architecture brief or sign-off requires fixed headings or drops task, decision, boundaries, non-goals, proof, alignment, deviation, or next-action facts.
-31. A child uses the robotic `I am <role/name>` form instead of a natural `Hi, <identity> here. Starting...` variant, or omits the one concise greeting and identity at the first visible update for a newly assigned durable task or inquiry.
+31. A child update requires a greeting or self-introduction, uses a scripted sentence template, or omits the assignment, intended result, boundaries, or proof information needed for the current phase.
 32. A visible final update omits result, checks, checkpoint, or deviation, exceeds three short sentences, or replaces the labeled internal return.

@@ -19,32 +19,23 @@ The user's mode remains active for the task or inquiry until changed. An explici
 
 ## Role instance lifecycle
 
-Keep at most one child thread for each role during one lead Codex task. Spawn the mapped human identity lazily after its trigger. Reuse that role thread through follow-up handoffs across repository tasks and inquiries, including after it reports completion.
+Keep at most one child thread for each role during one lead Codex task. Spawn the role lazily after its trigger. Reuse that role thread through follow-up handoffs across repository tasks and inquiries, including after it reports completion.
 
 Keep repository task identifiers in handoffs and returns. Do not derive child names from task identifiers, features, versions, workstreams, descriptions, or counters. A normal repository task transition never justifies another child.
 
-Use one stable human-readable identity for each standard role during one lead Codex task:
+When a role thread starts, choose an unused simple human first name for that lead Codex task. Display the identity as `Role Firstname` and use `role_firstname` as its task name. Keep the identity stable while the role thread remains reusable.
 
-| Role | Display identity | Task name |
-| --- | --- | --- |
-| Engineer | Engineer David | `engineer_david` |
-| Maintainer | Maintainer Emily | `maintainer_emily` |
-| Verifier | Verifier Michael | `verifier_michael` |
-| Researcher | Researcher Sarah | `researcher_sarah` |
+The role defines authority. The first name distinguishes the thread. Reuse the identity across repository tasks and follow-up handoffs. Keep one reachable child per role. Additional roles use `responsibility_firstname` with an unused simple human first name. Never use a task identifier, feature, version, description, or counter in a child name.
 
-The role defines authority. The first name distinguishes the thread. Reuse each identity across repository tasks and follow-up handoffs. Keep one reachable child per role.
-
-Use `task_name=engineer_david`, `task_name=maintainer_emily`, `task_name=verifier_michael`, or `task_name=researcher_sarah` for standard child threads. Additional roles use `responsibility_firstname` with an unused common American first name. Never use a task identifier, feature, version, description, or counter in a child name.
-
-Replace a role thread only when it is unavailable, repeatedly uses stale assumptions after an explicit correction, the user requests clean context, or a required tool, permission, or runtime change needs another session. If the current name is unavailable, choose another unused common American first name, keep the role prefix, announce the new identity and reset reason, and keep the replacement stable. Before replacement, announce these labeled fields:
+Replace a role thread only when it is unavailable, repeatedly uses stale assumptions after an explicit correction, the user requests clean context, or a required tool, permission, or runtime change needs another session. If replacement is required, choose another unused simple human first name, keep the role prefix, announce the new identity and reset reason, and keep the replacement stable. Before replacement, announce these labeled fields:
 
 ```text
-Role: Verifier Michael
+Role: Verifier Firstname
 Context reset reason: The required tool changed.
-Replacement action: Use an unused first name with the Verifier role prefix and rehydrate the checkpoint.
+Replacement action: Use another unused first name with the Verifier role prefix and rehydrate the checkpoint.
 ```
 
-Use the role prefix and a common American first name when the platform requires a unique replacement name. State the constraint. Never use an arbitrary counter or a task identifier.
+Use the role prefix and another unused simple human first name when the platform requires a unique replacement name. State the constraint. Never use an arbitrary counter or a task identifier.
 
 ## Orchestration Gate
 
@@ -54,23 +45,17 @@ Before Deliver or the first delegated read-only operation, give the user a conci
 
 Mention the mode only when it matters, changes, or the user asks. Start with the work or current state. Lead updates do not use a greeting, praise, filler, ceremonial heading, fixed field labels, or theatrical roleplay.
 
-Example:
-
-> David will update the communication policy for TASK-026. The change stays inside policy and profile files. I will accept it after the focused tests and validators pass.
+Visible assignments state the child identity when clarity requires it, the task or inquiry, intended result, useful boundaries, and proof. They start with the current work or state.
 
 Apply the gate again only when task or inquiry scope, mode, proof, or available agents materially changes. Skipping a mandatory sidecar, skipping a required Engineer handoff, or sending multiple durable tasks in one handoff is a workflow failure.
 
-Each child writes a short plain-language commentary message inside its own agent task at four material phases: work started; implementation or evidence complete with proof starting; blocked; and final result. At the first visible update for each newly assigned durable task or inquiry, a child may use one concise greeting and identity. Use `Hi, Engineer David here. Starting TASK-026. I’ll update the communication policy and run the focused tests.` as a natural pattern. State the assignment and planned proof in that first update. After that first update, child commentary omits the greeting, name, and role unless replacement or genuine ambiguity requires identity. Start later updates with the work or current state. The robotic form `I am <role/name>` is disfavored; use a natural `Hi, <identity> here. Starting...` variant. Keep commentary compact and separate from the Architect's mailbox report. Do not add periodic chatter beyond the existing heartbeat limits.
+Each child writes short plain-language commentary inside its own agent task at four material phases: work started; implementation or evidence complete with proof starting; blocked; and final result. A start update states the assignment or inquiry and planned proof. Later updates start with the current work or state. Visible updates use concise natural prose. Do not require greetings, self-introductions, or sentence templates. Keep commentary compact and separate from the Architect's mailbox report. Do not add periodic chatter beyond the existing heartbeat limits.
 
 Visible child commentary uses natural prose. A visible final update uses one to three short sentences and states the result, checks, checkpoint, and any deviation. A separate labeled internal return may follow through the team channel.
 
 Internal lead-child handoffs and compact returns remain labeled and lossless.
 
-Use these visible updates as the communication contract:
-
-> Hi, Engineer David here. Starting TASK-026. I’ll update the communication policy and run the focused tests.
-
-> Done. The policy and profile are updated. All tests pass, and the checkpoint is available for review.
+Visible updates preserve the required information. A start update gives the assignment or inquiry and intended proof. A proof update states completed work and the checks in progress. A blocker update states the missing condition and next action. A final update states result, checks, checkpoint, and deviation.
 
 ## Lead authority
 
@@ -80,7 +65,7 @@ Before creating that task, the lead applies the intent and visible-plan contract
 
 Keep `tasks.csv` as the only durable task plan. Each durable plan item maps to one task, exactly once. Implementation steps and correction handoffs remain transient. A one-item plan is valid.
 
-The task title and the lead's first assignment are the primary identity signal. The lead names the child on the first assignment and again only after replacement or when clarity requires it. The first assignment naturally states who handles the work, the task or inquiry, intended result, useful boundaries, and proof. Later updates begin with the current fact or action. Repeat a name or role only when clarity needs it.
+The task title and the lead's first assignment identify the current work. The first assignment states who handles it, the task or inquiry, intended result, useful boundaries, and proof. Later updates begin with the current fact or action. Repeat a name or role only when clarity needs it.
 
 Before every child handoff, the lead gives this natural assignment update. Do not depend on child commentary for startup visibility.
 
@@ -127,14 +112,14 @@ In Assisted mode, spawn or reuse Engineer when every condition is true:
 
 A localized change in one file followed by one narrow proof command may stay with the Architect. When any readiness condition is missing, the Architect resolves the missing truth before execution. For ready work beyond that fast path, delegation is mandatory.
 
-Keep one writing Engineer active per Architect. Reuse `engineer_david` across repository tasks while the Architect's Codex task remains active. Give it one observable outcome, one settled decision envelope, one related path group, one acceptance set, one proof surface, and one stop condition. Never send several durable tasks or an internal backlog.
+Keep one writing Engineer active per Architect. Reuse the existing Engineer role thread across repository tasks while the Architect's Codex task remains active. Give it one observable outcome, one settled decision envelope, one related path group, one acceptance set, one proof surface, and one stop condition. Never send several durable tasks or an internal backlog.
 
 Send:
 
 ```text
-Role: Engineer David
+Role: Engineer Firstname
 Task: TASK-ID
-Task name: engineer_david
+Task name: engineer_firstname
 Outcome: One observable result.
 Architecture: Settled implementation boundary.
 Interfaces and invariants: Architect-defined contracts.
@@ -163,7 +148,7 @@ The Architect reviews architecture, scope, and diff once per returned checkpoint
 
 ## Mandatory sidecar triggers
 
-Spawn a sidecar only when its first command is ready. Reuse its fixed role thread across tasks and inquiries under the lifecycle above.
+Spawn a sidecar only when its first command is ready. Reuse its existing role thread across tasks and inquiries under the lifecycle above.
 
 ### Researcher
 
@@ -176,7 +161,7 @@ Researcher is read-only and never edits repository files.
 Researcher returns cited findings, conflicts, unknowns, and decision impact.
 The Architect evaluates sources and retains every decision.
 If findings require repository writes, the Architect starts or uses an owned task before recording them.
-Reuse `researcher_sarah` across read-only inquiries. Send the current inquiry and changed assumptions in each handoff.
+Reuse the existing Researcher role thread across read-only inquiries. Send the current inquiry and changed assumptions in each handoff.
 
 ### Maintainer
 
@@ -187,9 +172,9 @@ Maintainer replays the exact procedure. Maintainer reports commands, inputs, tar
 Maintainer receives this handoff:
 
 ```text
-Role: Maintainer Emily
+Role: Maintainer Firstname
 Task: TASK-ID
-Task name: maintainer_emily
+Task name: maintainer_firstname
 Trigger: Guided or recorded operation is ready.
 Checkpoint: Exact source fingerprint.
 Scope: One operation and target.
@@ -227,9 +212,9 @@ The profile receives the Engineer, Maintainer, Verifier, or Researcher role thro
 Before every spawn:
 
 1. resolve the trigger, role, mode, user authority, and exposed models;
-2. check for the existing fixed role thread and use a follow-up handoff when it is reachable;
-3. use `task_name=engineer_david`, `task_name=maintainer_emily`, `task_name=verifier_michael`, or `task_name=researcher_sarah` for the mapped standard role;
-4. use an approved concise lowercase snake_case responsibility name in the form `responsibility_firstname` with an unused common American first name for an additional role;
+2. check for the existing role thread and use a follow-up handoff when it is reachable;
+3. choose an unused simple human first name for a new role thread and use `task_name=role_firstname`;
+4. use an approved concise lowercase snake_case responsibility name in the form `responsibility_firstname` with an unused simple human first name for an additional role;
 5. reject vague names, counters, feature names, task identifiers, and duplicate responsibilities;
 6. show the additional role name and authority before its spawn, together with the human identity and task name;
 7. apply the same one-thread lifecycle, depth-one limit, explicit profile, Fast-service rule, bounded authority, handoff, and reporting contract to an additional role;
@@ -248,9 +233,9 @@ After a Codex update, run one bounded profile smoke test before the first requir
 For a Researcher, send:
 
 ```text
-Role: Researcher Sarah
+Role: Researcher Firstname
 Inquiry: Inquiry identifier.
-Task name: researcher_sarah
+Task name: researcher_firstname
 Question: Question to answer.
 Decision informed: Architect decision affected by evidence.
 Source priority: Required source order.
@@ -272,9 +257,9 @@ Sources: Source references.
 For another sidecar, send:
 
 ```text
-Role: Verifier Michael
+Role: Verifier Firstname
 Task: TASK-ID
-Task name: verifier_michael
+Task name: verifier_firstname
 Trigger: Proof checkpoint reached.
 Checkpoint: Exact source fingerprint.
 Scope: Acceptance and risk regression.

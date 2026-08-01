@@ -20,7 +20,7 @@ Resolve contradictions before closeout.
 - Explicit implementation wording, or clear confirmation to proceed against a recoverable agreed proposal, permits Plan and Deliver. If authority is ambiguous, remain read-only.
 - Before task creation and implementation, apply `$lean-sdlc`'s canonical `references/plan.md` contract. It requires natural intent confirmation and a concise visible plan with measurable completion conditions and proof. A one-item plan is valid.
 - Keep `tasks.csv` as the only durable task plan. Each durable plan item maps to one task, exactly once. Keep implementation steps transient.
-- Use stable child identities: Engineer David / `engineer_david`, Maintainer Emily / `maintainer_emily`, Verifier Michael / `verifier_michael`, and Researcher Sarah / `researcher_sarah`. Replacements keep the role prefix and use another unused common American first name.
+- Choose an unused simple human first name for each role when its thread starts. Display `Role Firstname` and use `role_firstname` as the task name. Keep the identity stable while the thread remains reusable. Replacements keep the role prefix and use another unused first name.
 - Each child writes a short plain-language commentary inside its own agent task at work start, implementation or evidence completion with proof starting, blocked state, and final result. Keep lead reports compact and heartbeat limits unchanged.
 - Before any other file mutation, use the installed `tasks.py start` command to create immediate work or claim a Planned task.
 - Keep one intentional change per task with observable acceptance and explicit proof.
@@ -46,7 +46,7 @@ Resolve contradictions before closeout.
 - Every user-facing lead message starts with outcome, work, or current state. Avoid repeating the lead role, model, mode, internal field labels, greetings, praise, filler, or roleplay unless clarity requires the information. Keep internal control data structured.
 - Children call the primary agent Architect in visible commentary, handoffs, returns, and decision requests. The primary agent speaks as I. Keep lead for internal policy wording where useful.
 - Use the task title and the lead's first assignment as the primary identity signal. The lead names the child on the first assignment and again only after replacement or when clarity requires it.
-- At the first visible update for each newly assigned durable task or inquiry, a child may use one concise greeting and identity. After that first update, child commentary omits the greeting, name, and role unless replacement or genuine ambiguity requires identity. Use a natural `Hi, <identity> here. Starting...` variant. The robotic form `I am <role/name>` is disfavored.
+- Visible child updates use concise natural prose. Start updates state the assignment or inquiry, intended result, boundaries, and proof. Do not require greetings, self-introductions, or sentence templates. Later updates start with the work or current state.
 - Before every child handoff, give the user a natural assignment update. Keep the required facts and do not depend on child commentary for startup visibility.
 - Include the stable human identity and task name in every internal child handoff.
 - Before every Engineer handoff, give a concise visible architecture brief in natural prose with the task or outcome, decision, boundaries and invariants, non-goals, and proof. Fixed headings are not required in visible speech. Keep the labeled form for the internal handoff.
