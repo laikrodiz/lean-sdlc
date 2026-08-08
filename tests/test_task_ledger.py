@@ -19,7 +19,7 @@ SCRIPTS = SKILL / "scripts"
 TASKS = SCRIPTS / "tasks.py"
 CHECK = SCRIPTS / "lean_check.py"
 INIT = SCRIPTS / "init_repo.py"
-OWNER_HOOK = SCRIPTS / "session_owner.py"
+OWNER_HOOK = SCRIPTS / "session_state.py"
 CONFIGURE_CODEX = SCRIPTS / "configure_codex.py"
 LUNA_PROFILE = SKILL / "assets/lean_sdlc_luna.toml"
 PLUGIN_HOOKS = PLUGIN / "hooks/hooks.json"
@@ -573,7 +573,11 @@ class TaskLedgerTests(unittest.TestCase):
         hooks = json.loads(PLUGIN_HOOKS.read_text(encoding="utf-8"))
         command = hooks["hooks"]["SessionStart"][0]["hooks"][0]["command"]
         self.assertIn("${PLUGIN_ROOT}", command)
+        self.assertIn("session_state.py", command)
         self.assertNotIn("CODEX_HOME", command)
+        pre_tool_use = hooks["hooks"]["PreToolUse"][0]
+        self.assertEqual(pre_tool_use["matcher"], "Agent")
+        self.assertIn("spawn_guard.py", pre_tool_use["hooks"][0]["command"])
 
     def test_initializer_creates_only_minimal_contract_and_is_idempotent(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -813,15 +817,17 @@ class PackageContractTests(unittest.TestCase):
         )
 
         for phrase in [
-            "one durable task represents one independently accepted repository state.",
-            "the task owns one observable outcome, one coherent change boundary, one acceptance set, one proof set, and one close decision.",
-            "the task must resume from repository truth and its ledger row after compaction.",
-            "split a task when a part can fail, ship, revert, resume, or close independently.",
-            "split a task when a part needs different proof.",
-            "split a task when a part crosses a contract.",
-            "split a task when a part needs another durable decision.",
-            "merge rows when they only describe inseparable coding mechanics.",
-            "avoid fixed limits based on time, lines, or file count.",
+            "one ledger task represents one engineer checkpoint.",
+            "require settled architecture, one coherent outcome, one independent bounded proof, and one accept-or-reject review.",
+            "keep one task resumable from repository truth and its ledger row after compaction.",
+            "split a task for independent behavior, module outcome, proof, or work that needs an architect checkpoint.",
+            "split a task when a part can fail, ship, revert, resume, or close independently, crosses a contract, or needs another durable decision.",
+            "merge pieces without independent value or proof.",
+            "keep implementation tests inside the task.",
+            "keep maintainer and verifier work attached unless it is independently deliverable.",
+            "keep acceptance corrections in the current task.",
+            "create a new task for new behavior or a new decision.",
+            "do not use time or line-count limits.",
             "shape the nearest dependency frontier fully. keep later work coarse until its dependencies become current.",
             "use [subagents.md](subagents.md) for child triggers, scheduling, handoffs, profiles, checkpoints, and reporting.",
             "keep local implementation steps and correction handoffs transient.",
@@ -840,8 +846,26 @@ class PackageContractTests(unittest.TestCase):
         ]:
             self.assertIn(phrase, contracts)
 
-        self.assertIn("triggered assisted child with two independent scopes", evaluations)
-        self.assertIn("shared scope, dependency, or uncertain time reduction", evaluations)
+        self.assertIn("assisted parallel work", evaluations)
+        self.assertIn("verifier and maintainer sidecars", evaluations)
+
+    def test_task_sizing_and_session_state_routes_use_canonical_sources(self) -> None:
+        dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
+        subagents = (
+            SKILL / "references/subagents.md"
+        ).read_text(encoding="utf-8").lower()
+        evaluations = (
+            SKILL / "references/trigger-evals.md"
+        ).read_text(encoding="utf-8").lower()
+
+        self.assertIn("valid engineer checkpoint", evaluations)
+        self.assertIn("oversized task", evaluations)
+        for token in [
+            "scripts/session_state.py --owner owner --mode assisted|solo",
+            "scripts/session_state.py --owner owner --fast-children",
+            "--no-fast-children",
+        ]:
+            self.assertIn(token, dispatcher + subagents)
 
     def test_implementation_authority_and_visible_plan_gate_are_explicit(self) -> None:
         dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
@@ -890,16 +914,12 @@ class PackageContractTests(unittest.TestCase):
             "the task matches one durable plan item",
             plan + subagents + deliver,
         )
-        self.assertIn("discussion or proposal request", evaluations)
-        self.assertIn("ambiguous implementation authority", evaluations)
-        self.assertIn("i am thinking about x; what do you think?", evaluations)
-        self.assertIn("implement the agreed x proposal", evaluations)
         self.assertIn(
-            "restate intent and show the visible plan before task creation",
+            "discussion, proposal, or non-concrete proceed request",
             evaluations,
         )
-        self.assertIn("proceed” with no recoverable proposal", evaluations)
-        self.assertIn("one-item visible plan", evaluations)
+        self.assertIn("task or implementation request", evaluations)
+        self.assertIn("valid engineer checkpoint", evaluations)
         self.assertIn("engineer direct path", evaluations)
         self.assertEqual(root_agents, template_agents)
 
@@ -936,19 +956,21 @@ class PackageContractTests(unittest.TestCase):
             "shared handoff envelope",
             "outcome, boundary, contract, proof, and stop conditions",
             "without a fixed runtime template",
-            "the ordered pool is",
-            "role label",
+            "the architect owns each child name at spawn time",
+            "allocates the next never-used label",
+            "task_name=engineer_beta",
             "context reset reason",
             "replacement action",
             "rehydrate an allowed replacement",
             "counter-based",
             "before every spawn",
-            "fork_turns",
             "routing failure",
             "gpt-5.6-luna",
-            "gpt-5.6 terra `xhigh`",
+            "gpt-5.6-terra",
             "user-selected lead",
-            "agent_type=lean_sdlc_luna",
+            "lean_sdlc_luna",
+            "luna max uses standard service by default",
+            "normal spawns omit `service_tier`",
             "service_tier=priority",
             "material phase changes",
             "at most two useful heartbeats",
@@ -964,7 +986,7 @@ class PackageContractTests(unittest.TestCase):
         ]:
             self.assertIn(term, verify)
         for term in [
-            "allow at most two active children",
+            "assisted parallel work",
             "custom role request",
         ]:
             self.assertIn(term, evaluations)
@@ -1010,8 +1032,9 @@ class PackageContractTests(unittest.TestCase):
             "## Return and stop conditions",
         ]:
             self.assertIn(heading, subagents)
-        self.assertIn("Display `Role label`", subagents)
-        self.assertIn("Display `Role label`", profile)
+        self.assertIn("The Architect owns each child name at spawn time", subagents)
+        self.assertIn("task_name=engineer_beta", subagents)
+        self.assertIn("stable label and exact child name", profile)
         self.assertIn("Every child update starts with work or current state", subagents)
         self.assertIn("Every update starts with work or current state", profile)
         self.assertIn(
@@ -1063,7 +1086,7 @@ class PackageContractTests(unittest.TestCase):
         )
         for stale in ["Research" + "er", "research" + "er_", "First" + "name", "role_first" + "name"]:
             self.assertNotIn(stale, policy)
-        self.assertIn("the ordered pool is", policy.lower())
+        self.assertIn("allocates the next never-used label", policy.lower())
         self.assertIn("scout/scout", policy.lower())
 
     def test_readme_stays_public_and_links_detailed_policy(self) -> None:
@@ -1080,10 +1103,10 @@ class PackageContractTests(unittest.TestCase):
         for pattern in [
             r"multi-agent v2",
             r"\bgpt-\d",
-            r"\b(?:luna|terra|xhigh|service_tier|priority|reasoning_effort)\b",
+            r"\b(?:service_tier|reasoning_effort)\b",
             r"\b(?:greeting|self-introduction|sentence template)\b",
             r"\b(?:heartbeat|two minutes)\b",
-            r"\b(?:handoff|checkpoint|deviation|task name)\b",
+            r"\b(?:handoff|deviation|task name)\b",
         ]:
             self.assertIsNone(re.search(pattern, lowered), pattern)
 
@@ -1104,7 +1127,9 @@ class PackageContractTests(unittest.TestCase):
         self.assertEqual(profile["model"], "gpt-5.6-luna")
         self.assertEqual(profile["model_reasoning_effort"], "max")
         self.assertIn("Engineer, Maintainer, Verifier, or Scout", profile["description"])
-        self.assertIn("agent_type=lean_sdlc_luna", subagents)
+        self.assertIn("lean_sdlc_luna", subagents)
+        self.assertIn("Luna Max uses Standard service by default", subagents)
+        self.assertIn("normal spawns omit `service_tier`", subagents)
         self.assertIn("gpt-5.6-terra", subagents)
         self.assertIn("reasoning_effort=xhigh", subagents)
         self.assertNotIn("model_catalog_json", configure)
@@ -1130,11 +1155,11 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.11.0")
+        self.assertEqual(version, "1.12.0")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
         self.assertIn(
-            "- Version goal: Release bounded task-ledger reads and simplified child orchestration with shared-document stewardship and combined checkpoint proof.",
+            "- Version goal: Release persistent orchestration state, Architect-owned child names, Standard Luna service by default, and explicit Fast-child opt-in with shared-document stewardship.",
             project,
         )
 

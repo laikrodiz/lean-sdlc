@@ -71,7 +71,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant(
         "luna max primary and terra xhigh fallback",
         SUBAGENTS,
-        ("gpt-5.6-luna", "agent_type=lean_sdlc_luna", "service_tier=priority", "non-full-history `fork_turns`", "retry luna max", "gpt-5.6-terra", "terra `xhigh`", "directly spawn `gpt-5.6-terra` at `xhigh`", "without `service_tier` or `agent_type`"),
+        ("gpt-5.6-luna", "luna max uses standard service by default", "normal spawns omit `service_tier`", "service_tier=priority", "retry luna max", "gpt-5.6-terra", "terra `xhigh`", "directly spawn `gpt-5.6-terra` at `xhigh`", "without `service_tier` or `agent_type`"),
     ),
     FrozenInvariant(
         "one reusable child per role",
@@ -81,7 +81,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant(
         "stable child label and update start",
         SUBAGENTS,
-        ("the ordered pool is", "display `role label`", "`role_label` as the task name", "a replacement takes the next label", "recycle the earliest label from an unreachable thread", "every child update starts with work or current state"),
+        ("the architect owns each child name at spawn time", "valid name uses one lowercase role prefix", "allocates the next never-used label", "exact `task_name`", "a replacement takes the next label", "recycle the earliest label from an unreachable thread", "every child update starts with work or current state"),
     ),
     FrozenInvariant(
         "exact checkpoint barrier",
@@ -121,7 +121,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant(
         "task sizing and compaction resume",
         "plugins/lean-sdlc/skills/lean-sdlc/references/plan.md",
-        ("one durable task represents one independently accepted repository state", "one observable outcome, one coherent change boundary, one acceptance set", "the task must resume from repository truth and its ledger row after compaction", "split a task when a part can fail, ship, revert, resume, or close independently", "avoid fixed limits based on time, lines, or file count"),
+        ("one ledger task represents one engineer checkpoint", "require settled architecture, one coherent outcome, one independent bounded proof, and one accept-or-reject review", "keep one task resumable from repository truth and its ledger row after compaction", "split a task for independent behavior, module outcome, proof, or work that needs an architect checkpoint", "do not use time or line-count limits"),
     ),
     FrozenInvariant(
         "qualified parallel writing and shared documentation",
@@ -187,7 +187,7 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
 
     def test_child_label_pool_is_ordered_unique_and_recycles_unreachable_labels(self) -> None:
         policy = _read(SUBAGENTS)
-        match = re.search(r"the ordered pool is .*?`([^`]+)`", policy, re.I)
+        match = re.search(r"allocates the next never-used label from `([^`]+)`", policy, re.I)
         self.assertIsNotNone(match)
         labels = tuple(label.strip() for label in match.group(1).split(","))
         expected = ("alpha", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta", "iota", "kappa", "lambda", "mu", "nu", "xi", "omicron", "pi", "rho", "sigma", "tau", "upsilon", "phi", "chi", "psi", "omega")

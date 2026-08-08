@@ -27,7 +27,9 @@ The initializer also adds `/tasks.csv` and `/.tasks.lock` to `.gitignore`. Featu
 
 ## Modes and roles
 
-Assisted mode is the default. It invokes the roles needed for the request. Solo mode keeps execution with the lead under the same task and safety rules. Assisted and Solo are the only orchestration modes.
+Assisted mode is the default and persists until the user selects Solo. Solo mode keeps execution with the lead under the same task and safety rules. Assisted and Solo are the only orchestration modes.
+
+Session state restores the owner, mode, and child tier after lifecycle events. Missing or invalid state restores Assisted with Standard children. Luna uses Standard service by default. Fast children are opt-in; new or normally replaced Luna children use the priority tier after that choice, while reachable threads remain available.
 
 | Role | Responsibility |
 | --- | --- |
@@ -44,21 +46,22 @@ Assisted mode delegates bounded independent work through the canonical child-age
 
 1. Intent defines the outcome, scope, constraints, and observable success.
 2. Plan and tasks turn approved intent into measurable work, owned task rows, and reproducible proof. The human-readable `tasks.csv` remains authoritative.
-3. Delegation routes ready work to the standard roles when assisted execution helps. Solo execution stays with the Architect.
-4. Integration review combines accepted changes after child work stops and checks scope and contract alignment.
-5. Documentation synchronization updates shared project, feature, decision, architecture, interface, README, and operations documents affected by accepted changes.
-6. Verification runs acceptance proof and one planned regression command. The full suite runs only when the task or repository contract requires it.
-7. Operations replay required recorded build, package, deploy, flash, runtime, or smoke procedures against accepted source.
-8. Closeout resolves evidence, updates repository truth, and closes the owned task.
+3. Each ledger task maps to one Engineer checkpoint under the [Plan contract](plugins/lean-sdlc/skills/lean-sdlc/references/plan.md). Keep tests and attached Maintainer or Verifier work in the task unless independently deliverable.
+4. Delegation routes ready work to the standard roles when assisted execution helps. Solo execution stays with the Architect.
+5. Integration review combines accepted changes after child work stops and checks scope and contract alignment.
+6. Documentation synchronization updates shared project, feature, decision, architecture, interface, README, and operations documents affected by accepted changes.
+7. Verification runs acceptance proof and one planned regression command. The full suite runs only when the task or repository contract requires it.
+8. Operations replay required recorded build, package, deploy, flash, runtime, or smoke procedures against accepted source.
+9. Closeout resolves evidence, updates repository truth, and closes the owned task.
 
 ## Install
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-Install the immutable `v1.11.0` release:
+Install the immutable `v1.12.0` release:
 
 ```bash
-git clone --depth 1 --branch v1.11.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.12.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 python3 plugins/lean-sdlc/skills/lean-sdlc/scripts/configure_codex.py
 python3 plugins/lean-sdlc/skills/lean-sdlc/scripts/configure_codex.py --check

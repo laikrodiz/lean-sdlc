@@ -17,9 +17,11 @@ Require the information, not fixed labels. Use natural prose for the outcome, im
 
 ## Task sizing
 
-One durable task represents one independently accepted repository state. The task owns one observable outcome, one coherent change boundary, one acceptance set, one proof set, and one close decision. The task must resume from repository truth and its ledger row after compaction.
+One ledger task represents one Engineer checkpoint. Require settled architecture, one coherent outcome, one independent bounded proof, and one accept-or-reject review. Keep implementation tests inside the task. Keep Maintainer and Verifier work attached unless it is independently deliverable.
 
-Split a task when a part can fail, ship, revert, resume, or close independently. Split a task when a part needs different proof. Split a task when a part crosses a contract. Split a task when a part needs another durable decision. Merge rows when they only describe inseparable coding mechanics. Avoid fixed limits based on time, lines, or file count. Shape the nearest dependency frontier fully. Keep later work coarse until its dependencies become current.
+Split a task for independent behavior, module outcome, proof, or work that needs an Architect checkpoint. Split a task when a part can fail, ship, revert, resume, or close independently, crosses a contract, or needs another durable decision. Merge pieces without independent value or proof. Do not use time or line-count limits. Keep one task resumable from repository truth and its ledger row after compaction.
+
+Keep acceptance corrections in the current task. Create a new task for new behavior or a new decision. Shape the nearest dependency frontier fully. Keep later work coarse until its dependencies become current.
 
 ## Execution shape
 

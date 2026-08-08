@@ -1,5 +1,5 @@
 {
-  "description": "Provide a stable Lean-SDLC task owner for each Codex task.",
+  "description": "Restore Lean-SDLC session state and validate Agent spawn arguments.",
   "hooks": {
     "SessionStart": [
       {
@@ -7,8 +7,21 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${PLUGIN_ROOT}/skills/lean-sdlc/scripts/session_owner.py\"",
-            "commandWindows": "py -3 \"%PLUGIN_ROOT%\\skills\\lean-sdlc\\scripts\\session_owner.py\"",
+            "command": "python3 \"${PLUGIN_ROOT}/skills/lean-sdlc/scripts/session_state.py\"",
+            "commandWindows": "py -3 \"%PLUGIN_ROOT%\\skills\\lean-sdlc\\scripts\\session_state.py\"",
+            "timeout": 3
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${PLUGIN_ROOT}/skills/lean-sdlc/scripts/spawn_guard.py\"",
+            "commandWindows": "py -3 \"%PLUGIN_ROOT%\\skills\\lean-sdlc\\scripts\\spawn_guard.py\"",
             "timeout": 3
           }
         ]

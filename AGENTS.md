@@ -16,9 +16,12 @@ Read `docs/PROJECT.md` and relevant feature, decision, or operations documents. 
 - Use `Project`, `FEAT-*`, `DEC-*`, or `Bootstrap` in `Context`.
 - Each task is one independently accepted repository state and remains resumable from repository truth and its ledger row after compaction.
 - Split independently accepted and independently proved work. Keep inseparable coding steps transient.
+- Size ledger work as one Engineer checkpoint under the Plan contract; keep tests and attached Maintainer or Verifier work with it unless independently deliverable.
+- Assisted mode and Standard children are the defaults. Persist mode and the Fast-children preference until the user changes them.
+- Lifecycle restoration covers startup, resume, clear, and compaction. It restores owner, mode, and child tier; reload `references/subagents.md` before Deliver.
 
 ## Child gate
 
 Read `references/subagents.md` before Deliver or the first delegated read-only operation. Solo planning does not load child policy. Assisted delegation loads it before child use.
 
-The Architect owns architecture, interfaces, task state, acceptance, integration, and closeout. Read the canonical child policy for bounded delegation, handoff facts, checkpoints, and sidecar limits.
+The Architect owns architecture, interfaces, task state, acceptance, integration, and closeout. The Architect assigns each child a valid lowercase role prefix and one Greek suffix, such as `task_name=engineer_beta`. Read the canonical child policy for bounded delegation, handoff facts, checkpoints, and sidecar limits.

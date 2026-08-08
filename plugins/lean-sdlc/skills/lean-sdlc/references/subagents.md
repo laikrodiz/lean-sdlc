@@ -7,8 +7,13 @@ This file is the sole authority for child roles, triggers, profiles, spawns, han
 - The Architect is the user-selected lead and principal engineer. The Architect owns product intent, architecture, interfaces, invariants, task state, acceptance, integration, and closeout.
 - The standard child roles are Engineer, Maintainer, Verifier, and Scout.
 - A custom role requires direct user authority. The Architect records its responsibility, depth, profile, handoff, return, and checkpoint rules before use.
-- Assisted mode is the default and uses every triggered role, including Engineer. Solo mode is lead-only under the same implementation, proof, research, and operation contracts.
-- Assisted and Solo are the only orchestration modes. Keep the selected mode until the user changes it.
+- Engineer receives one ledger task after architecture, outcome, proof, and acceptance are settled. See [plan.md](plan.md) for task sizing, split, merge, and correction rules.
+- Assisted mode is the default and uses every triggered role, including Engineer. Keep Assisted until the user selects Solo.
+- Session state stores the selected mode and the Fast-children preference. Missing or invalid state restores Assisted with Standard children.
+- Lifecycle restoration runs after startup, resume, clear, and compaction. It restores owner, mode, and child tier. After restoration, the Architect reloads this policy before Deliver.
+- When mode changes, the Architect runs `scripts/session_state.py --owner OWNER --mode assisted|solo` with the selected mode. When the child tier changes, the Architect runs `scripts/session_state.py --owner OWNER --fast-children` or `--no-fast-children`.
+- Assisted and Solo are the only orchestration modes. Solo mode is lead-only under the same implementation, proof, research, and operation contracts.
+- Fast children require explicit user opt-in. Keep reachable child threads after a tier change. Apply the new tier to new or normally replaced threads.
 - An explicit user profile pins the Architect. Apply one required profile to every child, or use Solo when the profile is unavailable.
 
 ## Role-trigger matrix
@@ -41,8 +46,9 @@ Apply every row before the first command. Delegation is mandatory beyond the Eng
 - A child cannot widen a trigger, choose another role, or hand work to a sibling. Changed assumptions require a new Architect decision.
 - Keep one reachable child thread for each role. A qualified pair may use two Engineer threads, two Scout threads, or one of each; sidecars remain one each.
 - Only the Architect spawns, steers, or redirects children. Depth is one. Children never spawn or hand work to siblings.
-- The ordered pool is `alpha, beta, gamma, delta, epsilon, zeta, eta, theta, iota, kappa, lambda, mu, nu, xi, omicron, pi, rho, sigma, tau, upsilon, phi, chi, psi, omega`; allocate its next never-used label.
-- Display `Role label` and use `role_label` as the task name with `task_name=role_label`. Keep the label with its reusable thread. A replacement takes the next label.
+- The Architect owns each child name at spawn time. A valid name uses one lowercase role prefix (`engineer`, `maintainer`, `verifier`, or `scout`) and one Greek suffix.
+- The Architect allocates the next never-used label from `alpha, beta, gamma, delta, epsilon, zeta, eta, theta, iota, kappa, lambda, mu, nu, xi, omicron, pi, rho, sigma, tau, upsilon, phi, chi, psi, omega`.
+- The Architect supplies the exact `task_name` and keeps it with the reusable thread. Example: Engineer beta uses `task_name=engineer_beta`. A child never chooses or changes its task name. A replacement takes the next label.
 - After all 24 labels, recycle the earliest label from an unreachable thread. Never duplicate a reachable label.
 - Rehydrate an allowed replacement from its role, task or inquiry, procedure, checkpoint, and latest unresolved result.
 - Replace a role only for unavailability, repeated stale assumptions after correction, a user reset, or a required tool, permission, or runtime change. Announce the role, identity, context reset reason, and replacement action before replacement.
@@ -98,11 +104,11 @@ Apply every row before the first command. Delegation is mandatory beyond the Eng
 
 - Before the first Assisted task, run `scripts/configure_codex.py`. It registers `lean_sdlc_luna` and enables Multi-Agent V2. Restart Codex after configuration. Do not patch the model catalog.
 - Every child role uses `lean_sdlc_luna`, which pins GPT-5.6 Luna `max` (`gpt-5.6-luna`). The fallback is GPT-5.6 Terra `xhigh`. Never use `low` or silently reduce a profile.
-- The profile receives the Engineer, Maintainer, Verifier, or Scout role. Fast service maps to `service_tier=priority`.
-- Primary Luna uses `agent_type=lean_sdlc_luna`, `service_tier=priority`, and non-full-history `fork_turns`. Omit direct model and reasoning fields.
-- If priority is unavailable or rejected, announce it and retry Luna max without `service_tier`.
+- The profile receives the Engineer, Maintainer, Verifier, or Scout role. Luna Max uses Standard service by default, so normal spawns omit `service_tier`.
+- When the user explicitly enables Fast children, the Architect records that session preference and new or normally replaced Luna spawns use `service_tier=priority`.
+- If a Fast Luna spawn with priority is unavailable or rejected, announce it and retry Luna max without `service_tier` as a Standard retry.
 - If Luna remains unavailable, announce it and directly spawn `gpt-5.6-terra` at `xhigh` with `model=gpt-5.6-terra` and `reasoning_effort=xhigh`, without `service_tier` or `agent_type`.
-- Terra `xhigh` and Sol omit `service_tier` unless the user overrides it. Full history, automatic defaults, inherited Architect profiles, silent fallback, effort downgrade, and incompatible forks are routing failures.
+- Terra `xhigh` fallback and the Architect remain Standard unless the user separately overrides them. Full history, automatic defaults, inherited Architect profiles, silent fallback, effort downgrade, and incompatible forks are routing failures.
 - Preserve the user-selected Architect model and tier. Keep architecture, task setting, integration, and other consequential decisions with the Architect.
 - After a Codex update, run one bounded profile smoke test before the first Luna handoff. Confirm Luna `max`; announce failure before fallback.
 
