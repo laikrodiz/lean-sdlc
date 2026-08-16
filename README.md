@@ -1,10 +1,10 @@
 # Lean-SDLC for Codex
 
-Lean-SDLC is a small software engineering workflow for Codex optimized for token cost reduction, full transparency of the process and actually finishing work that was requested. It keeps a repository tied to a real outcome, a named owner, and evidence that another person or agent can inspect.
+Lean-SDLC is a small software engineering workflow for Codex. It reduces token waste, makes the active process visible, and helps finish requested work. It keeps a repository tied to a real outcome, a named owner, and evidence that another person or agent can inspect.
 
 The workflow helps you answer simple questions before work starts. What problem are you solving? Who benefits? What must change? What must stay unchanged? How will you know that the result is correct? It keeps these answers close to the task ledger and the repository documents that own them.
 
-Sol is recommended as an architect agent. Spawned child agents always use Luna Max.
+The user controls the Architect model. If the user makes no explicit choice, the Architect uses Sol High. Standard child roles use Luna Max. Terra XHigh is the availability fallback.
 
 ## Six lanes
 
