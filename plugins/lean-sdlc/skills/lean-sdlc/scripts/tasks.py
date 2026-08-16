@@ -12,8 +12,11 @@ from pathlib import Path
 sys.dont_write_bytecode = True
 
 from task_ledger import (
+    QUICK_FIX_CONTEXT,
+    QUICK_FIX_PENDING_MARKER,
     TASK_COLUMNS,
     TaskError,
+    append_evidence_marker,
     clean,
     current_rows,
     dependency_ids,
@@ -24,6 +27,9 @@ from task_ledger import (
     next_task_id,
     read_ledger,
     require_integrity,
+    quick_fix_review_cursor,
+    quick_fix_review_marker,
+    unresolved_quick_fixes_through,
     task_path,
     thread_owner,
     write_ledger,
@@ -85,10 +91,19 @@ def parser() -> argparse.ArgumentParser:
         help="Close another thread's task after a direct user request",
     )
     close.add_argument("--override-reason")
+    close.add_argument(
+        "--review-through",
+        help="Record shared review through one completed Quick Fix task",
+    )
 
     subparsers.add_parser(
         "open",
         help="Print Planned and In Progress tasks",
+    )
+
+    subparsers.add_parser(
+        "quick-fixes",
+        help="Print completed Quick Fixes awaiting batch review",
     )
 
     show = subparsers.add_parser(
@@ -227,6 +242,30 @@ def close_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
         raise TaskError(f"{args.task_id} must be In Progress before it can close")
 
     require_finished_dependencies(task, rows)
+    quick_fix_review_cursor(rows)
+
+    review_target = None
+    if args.review_through is not None:
+        review_target = find_task(rows, args.review_through)
+        if review_target.get("Context") != QUICK_FIX_CONTEXT:
+            raise TaskError(
+                f"review target {args.review_through} must have Quick Fix context"
+            )
+        is_self = review_target.get("Task ID") == task.get("Task ID")
+        if not is_self and review_target.get("Status") != "Done":
+            raise TaskError(
+                f"review target {args.review_through} must be Done before review"
+            )
+        unresolved = unresolved_quick_fixes_through(
+            rows,
+            review_target.get("Task ID", ""),
+            exempt_task_id=task.get("Task ID") if is_self else None,
+        )
+        if unresolved:
+            raise TaskError(
+                "review-through blocked by unresolved Quick Fix tasks: "
+                + ", ".join(unresolved)
+            )
 
     supplied_owner = thread_owner(
         args.owner,
@@ -247,6 +286,14 @@ def close_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
         if args.override_reason:
             raise TaskError("--override-reason requires --user-override")
         evidence = clean(args.evidence, "Evidence")
+
+    if task.get("Context") == QUICK_FIX_CONTEXT:
+        evidence = append_evidence_marker(evidence, QUICK_FIX_PENDING_MARKER)
+    if review_target is not None:
+        evidence = append_evidence_marker(
+            evidence,
+            quick_fix_review_marker(review_target.get("Task ID", "")),
+        )
 
     task["Status"] = "Done"
     task["Evidence"] = evidence
@@ -283,6 +330,17 @@ def emit_rows(rows: list[dict[str, str]]) -> None:
     )
     writer.writeheader()
     writer.writerows(rows)
+
+
+def pending_quick_fixes(rows: list[dict[str, str]]) -> list[dict[str, str]]:
+    cursor = quick_fix_review_cursor(rows)
+    return [
+        row
+        for row in rows
+        if row.get("Status") == "Done"
+        and row.get("Context") == QUICK_FIX_CONTEXT
+        and int(row.get("Task ID", "TASK--1").split("-", 1)[1]) > cursor
+    ]
 
 
 def authorize_upgrade(
@@ -373,7 +431,7 @@ def main() -> int:
     try:
         if args.command == "upgrade":
             message = upgrade_ledger(root, args)
-        elif args.command in {"open", "show"}:
+        elif args.command in {"open", "show", "quick-fixes"}:
             columns, rows = read_ledger(task_path(root))
             if columns != list(TASK_COLUMNS):
                 raise TaskError("run tasks.py upgrade before reading tasks")
@@ -386,6 +444,8 @@ def main() -> int:
                         if row.get("Status") in {"Planned", "In Progress"}
                     ]
                 )
+            elif args.command == "quick-fixes":
+                emit_rows(pending_quick_fixes(rows))
             else:
                 emit_rows(dependency_closure(rows, args.task_id))
         else:

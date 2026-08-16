@@ -174,7 +174,48 @@ FROZEN_INVARIANTS = (
     FrozenInvariant(
         "deterministic ledger plan projection",
         "plugins/lean-sdlc/skills/lean-sdlc/references/plan.md",
-        ("## plan view projection", "`tasks.py open` supplies unresolved `planned` and `in progress` rows", "update_plan", "task-nnn — title", "planned` to `pending", "in progress` to `in_progress", "closing row `completed`", "before or with `tasks.py close`", "active close transition", "only unresolved rows", "do not load full `done` history", "startup, resume, clear, or compaction", "brainstorming and rephrasing remain read-only", "qualified parallel pair", "it remains authoritative"),
+        ("## plan view projection", "`tasks.py open` supplies unresolved `planned` and `in progress` rows", "update_plan", "task-nnn — title", "planned` to `pending", "in progress` to `in_progress", "closing row `completed`", "before or with `tasks.py close`", "active close transition", "only unresolved rows", "do not load full `done` history", "startup, resume, clear, or compaction", "brainstorming and rephrasing remain read-only", "qualified parallel pair", "`tasks.csv` remains authoritative"),
+    ),
+    FrozenInvariant(
+        "quick fix plan classification",
+        "plugins/lean-sdlc/skills/lean-sdlc/references/plan.md",
+        (
+            "Quick Fix is inline Plan classification",
+            "not a mode, lane, task type, or prompt",
+            "Record Context `Quick Fix`",
+            "exact requested outcome",
+            "local reversible scope",
+            "no unresolved product, design, architecture, public interface, schema, migration, dependency, security, generated-file, or external-state choice",
+            "one immediate narrow proof",
+            "request to use Quick Fix never bypasses eligibility",
+            "one visible plan item",
+            "one owned task",
+            "lean_check.py --before-write",
+            "Architect may execute Quick Fix in Assisted or Solo",
+            "Do not spawn Engineer, Maintainer, or Verifier per Quick Fix",
+            "Shared batch may reuse or start Verifier when normal proof trigger applies",
+            "Review diff and run narrow proof before close",
+            "Quick-only multi-fix batch",
+            "Standalone remains pending",
+            "names exact",
+            "`TASK-NNN — Title`",
+        ),
+    ),
+    FrozenInvariant(
+        "quick fix batch assurance",
+        "plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md",
+        (
+            "Closing a Quick Fix records pending broad batch review",
+            "`tasks.py quick-fixes` lists completed Quick Fixes that remain unreviewed",
+            "Standard checkpoint reviews every pending Quick Fix",
+            "`--review-through TASK-NNN`",
+            "review prefix must contain only `Done` Quick Fix tasks through the target",
+            "Invalid review references fail without ledger mutation",
+            "several Quick Fixes may defer broad checks until one shared checkpoint",
+            "A standalone Quick Fix may remain pending",
+            "failed shared review creates a Standard correction task",
+            "Deferred Quick Fix assurance is not automatic technical debt",
+        ),
     ),
    FrozenInvariant(
        "qualified parallel writing and shared documentation",
@@ -208,7 +249,7 @@ def _lane_names(text: str) -> tuple[str, ...]:
 class FrozenInvariantHarnessTests(unittest.TestCase):
     def test_every_invariant_has_one_canonical_source(self) -> None:
         names = [invariant.name for invariant in FROZEN_INVARIANTS]
-        self.assertEqual(len(FROZEN_INVARIANTS), 23)
+        self.assertEqual(len(FROZEN_INVARIANTS), 25)
         self.assertEqual(len(names), len(set(names)))
         for invariant in FROZEN_INVARIANTS:
             with self.subTest(invariant=invariant.name):
@@ -237,7 +278,7 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
             name: _read(f"plugins/lean-sdlc/skills/lean-sdlc/references/{name}.md")
             for name in ("shape", "plan", "deliver", "verify")
         }
-        self.assertLessEqual(sum(len(text.split()) for text in lanes.values()), 1200)
+        self.assertLessEqual(sum(len(text.split()) for text in lanes.values()), 1400)
         for term in [
             "shape owns the complete intent gate",
             "material assumption affects behavior, scope, or architecture",

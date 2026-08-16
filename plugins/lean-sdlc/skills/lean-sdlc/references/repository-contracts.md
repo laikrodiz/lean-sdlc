@@ -40,7 +40,7 @@ Use exactly:
 
 `Task ID,Title,Status,Context,Dependencies,Owner,Acceptance Criteria,Proof,Evidence`
 
-Use `Project`, `FEAT-*`, `DEC-*`, or `Bootstrap` as `Context`.
+Use `Project`, `FEAT-*`, `DEC-*`, `Bootstrap`, or `Quick Fix` as `Context`.
 
 Use `tasks.py open` for current `Planned` and `In Progress` work. Use `tasks.py show TASK-ID` for one task and its recursive dependencies. These read-only views keep the existing human-readable CSV shape and avoid loading full `Done` history. The human-readable `tasks.csv` remains authoritative.
 
@@ -55,6 +55,14 @@ Use `tasks.py open` for current `Planned` and `In Progress` work. Use `tasks.py 
 
 The command serializes writers with a short root lock for ledger updates, reads the latest ledger under that lock, validates dependencies, changes one transaction, and replaces the file atomically. The ledger lock is not a source-file lock. Owner IDs coordinate threads; they are not a security boundary.
 One root `tasks.csv` remains authoritative. It may hold two ready tasks for one Architect owner after the resource gate passes. The Architect alone mutates or closes both rows.
+
+## Quick Fix ledger
+
+Quick Fix is an inline Plan classification. It is not a new task type. Closing a Quick Fix records pending broad batch review. `tasks.py quick-fixes` lists completed Quick Fixes that remain unreviewed.
+
+A Standard checkpoint reviews every pending Quick Fix through the highest listed task in Verifier regression and documentation/interaction review. Close that checkpoint with `--review-through TASK-NNN`. The review prefix must contain only `Done` Quick Fix tasks through the target. Invalid review references fail without ledger mutation.
+
+A request with several Quick Fixes may defer broad checks until one shared checkpoint. A standalone Quick Fix may remain pending until a later Standard checkpoint. A failed shared review creates a Standard correction task. Deferred Quick Fix assurance is not automatic technical debt.
 
 ## Work hierarchy
 

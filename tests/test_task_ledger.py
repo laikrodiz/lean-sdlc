@@ -261,6 +261,327 @@ class TaskLedgerTests(unittest.TestCase):
             self.assertEqual(row["Status"], "Done")
             self.assertIn("Direct user override", row["Evidence"])
 
+    def test_quick_fix_close_records_pending_marker_and_lists_the_task(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            write_ledger(repository, "")
+
+            started = task(
+                repository,
+                "start",
+                "--owner",
+                "12345678",
+                "--title",
+                "Change a color",
+                "--context",
+                "Quick Fix",
+                "--acceptance",
+                "The color changes",
+                "--proof",
+                "Run the focused UI check",
+            )
+            self.assertEqual(started.returncode, 0, started.stderr)
+            closed = task(
+                repository,
+                "close",
+                "TASK-000",
+                "--owner",
+                "12345678",
+                "--evidence",
+                "Focused UI check passed",
+            )
+            self.assertEqual(closed.returncode, 0, closed.stderr)
+
+            row = read_rows(repository)[0]
+            self.assertIn("[Quick Fix batch review pending]", row["Evidence"])
+            listed = task(repository, "quick-fixes")
+            self.assertEqual(listed.returncode, 0, listed.stderr)
+            self.assertEqual(
+                [row["Task ID"] for row in csv.DictReader(listed.stdout.splitlines())],
+                ["TASK-000"],
+            )
+
+    def test_review_through_clears_only_the_reviewed_prefix(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            write_ledger(repository, "")
+            for title in ("First fix", "Second fix"):
+                started = task(
+                    repository,
+                    "start",
+                    "--owner",
+                    "12345678",
+                    "--title",
+                    title,
+                    "--context",
+                    "Quick Fix",
+                    "--acceptance",
+                    "The fix works",
+                    "--proof",
+                    "Run the focused check",
+                )
+                self.assertEqual(started.returncode, 0, started.stderr)
+                task_id = "TASK-000" if title == "First fix" else "TASK-001"
+                closed = task(
+                    repository,
+                    "close",
+                    task_id,
+                    "--owner",
+                    "12345678",
+                    "--evidence",
+                    "Focused check passed",
+                )
+                self.assertEqual(closed.returncode, 0, closed.stderr)
+
+            reviewed_first = task(
+                repository,
+                "start",
+                "--owner",
+                "12345678",
+                "--title",
+                "Review first fix",
+                "--context",
+                "Project",
+                "--acceptance",
+                "The first fix is reviewed",
+                "--proof",
+                "Run the shared check",
+            )
+            self.assertEqual(reviewed_first.returncode, 0, reviewed_first.stderr)
+            closed_first = task(
+                repository,
+                "close",
+                "TASK-002",
+                "--owner",
+                "12345678",
+                "--evidence",
+                "Shared check passed",
+                "--review-through",
+                "TASK-000",
+            )
+            self.assertEqual(closed_first.returncode, 0, closed_first.stderr)
+            listed = task(repository, "quick-fixes")
+            self.assertEqual(listed.returncode, 0, listed.stderr)
+            self.assertEqual(
+                [row["Task ID"] for row in csv.DictReader(listed.stdout.splitlines())],
+                ["TASK-001"],
+            )
+
+            reviewed_second = task(
+                repository,
+                "start",
+                "--owner",
+                "12345678",
+                "--title",
+                "Review second fix",
+                "--context",
+                "Project",
+                "--acceptance",
+                "The second fix is reviewed",
+                "--proof",
+                "Run the shared check",
+            )
+            self.assertEqual(reviewed_second.returncode, 0, reviewed_second.stderr)
+            closed_second = task(
+                repository,
+                "close",
+                "TASK-003",
+                "--owner",
+                "12345678",
+                "--evidence",
+                "Shared check passed",
+                "--review-through",
+                "TASK-001",
+            )
+            self.assertEqual(closed_second.returncode, 0, closed_second.stderr)
+            self.assertEqual(
+                list(csv.DictReader(task(repository, "quick-fixes").stdout.splitlines())),
+                [],
+            )
+
+    def test_quick_fix_can_close_and_review_through_itself(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            write_ledger(repository, "")
+            started = task(
+                repository,
+                "start",
+                "--owner",
+                "12345678",
+                "--title",
+                "Self-reviewed fix",
+                "--context",
+                "Quick Fix",
+                "--acceptance",
+                "The fix works",
+                "--proof",
+                "Run the focused check",
+            )
+            self.assertEqual(started.returncode, 0, started.stderr)
+            closed = task(
+                repository,
+                "close",
+                "TASK-000",
+                "--owner",
+                "12345678",
+                "--evidence",
+                "Focused check passed",
+                "--review-through",
+                "TASK-000",
+            )
+            self.assertEqual(closed.returncode, 0, closed.stderr)
+            row = read_rows(repository)[0]
+            self.assertIn("[Quick Fix batch review through TASK-000]", row["Evidence"])
+            self.assertEqual(
+                list(csv.DictReader(task(repository, "quick-fixes").stdout.splitlines())),
+                [],
+            )
+
+    def test_invalid_quick_fix_review_does_not_mutate_the_ledger(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            write_ledger(
+                repository,
+                "TASK-000,Fix,Done,Quick Fix,,12345678,Done,Check,"
+                "Focused check passed [Quick Fix batch review pending]\n"
+                "TASK-001,Review,In Progress,Project,,12345678,Done,Check,\n",
+            )
+            before = repository.joinpath("tasks.csv").read_text(encoding="utf-8")
+            missing = task(
+                repository,
+                "close",
+                "TASK-001",
+                "--owner",
+                "12345678",
+                "--evidence",
+                "Shared check passed",
+                "--review-through",
+                "TASK-999",
+            )
+            self.assertNotEqual(missing.returncode, 0)
+            self.assertEqual(
+                repository.joinpath("tasks.csv").read_text(encoding="utf-8"),
+                before,
+            )
+
+            malformed = before.replace(
+                "Focused check passed [Quick Fix batch review pending]",
+                "Focused check passed [Quick Fix batch review through BAD]",
+            )
+            repository.joinpath("tasks.csv").write_text(malformed, encoding="utf-8")
+            listed = task(repository, "quick-fixes")
+            self.assertNotEqual(listed.returncode, 0)
+            self.assertEqual(
+                repository.joinpath("tasks.csv").read_text(encoding="utf-8"),
+                malformed,
+            )
+
+    def test_concurrent_quick_fix_closes_keep_both_markers(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            write_ledger(
+                repository,
+                "TASK-001,Second fix,In Progress,Quick Fix,,12345678,Done,Check,\n"
+                "TASK-000,First fix,In Progress,Quick Fix,,12345678,Done,Check,\n",
+            )
+            processes: list[subprocess.Popen[str]] = []
+            for task_id in ("TASK-001", "TASK-000"):
+                processes.append(
+                    subprocess.Popen(
+                        [
+                            sys.executable,
+                            str(TASKS),
+                            "--repo",
+                            str(repository),
+                            "close",
+                            task_id,
+                            "--owner",
+                            "12345678",
+                            "--evidence",
+                            "Focused check passed",
+                        ],
+                        cwd=ROOT,
+                        text=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        env={
+                            **os.environ,
+                            "PYTHONDONTWRITEBYTECODE": "1",
+                        },
+                    )
+                )
+
+            results = [process.communicate(timeout=15) for process in processes]
+            self.assertTrue(
+                all(process.returncode == 0 for process in processes),
+                results,
+            )
+            rows = read_rows(repository)
+            self.assertEqual({row["Status"] for row in rows}, {"Done"})
+            self.assertTrue(
+                all(
+                    "[Quick Fix batch review pending]" in row["Evidence"]
+                    for row in rows
+                )
+            )
+            self.assertFalse(repository.joinpath(".tasks.lock").exists())
+
+    def test_review_through_rejects_an_older_planned_quick_fix(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            write_ledger(
+                repository,
+                "TASK-002,Target fix,Done,Quick Fix,,12345678,Done,Check,Done\n"
+                "TASK-000,Older fix,Planned,Quick Fix,,,Ready,Check,\n"
+                "TASK-003,Review,In Progress,Project,,12345678,Done,Check,\n",
+            )
+            before = repository.joinpath("tasks.csv").read_text(encoding="utf-8")
+            result = task(
+                repository,
+                "close",
+                "TASK-003",
+                "--owner",
+                "12345678",
+                "--evidence",
+                "Shared check passed",
+                "--review-through",
+                "TASK-002",
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("TASK-000", result.stderr)
+            self.assertEqual(
+                repository.joinpath("tasks.csv").read_text(encoding="utf-8"),
+                before,
+            )
+
+    def test_review_through_rejects_an_older_active_quick_fix(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            write_ledger(
+                repository,
+                "TASK-002,Target fix,Done,Quick Fix,,12345678,Done,Check,Done\n"
+                "TASK-000,Older fix,In Progress,Quick Fix,,12345678,Ready,Check,\n"
+                "TASK-003,Review,In Progress,Project,,12345678,Done,Check,\n",
+            )
+            before = repository.joinpath("tasks.csv").read_text(encoding="utf-8")
+            result = task(
+                repository,
+                "close",
+                "TASK-003",
+                "--owner",
+                "12345678",
+                "--evidence",
+                "Shared check passed",
+                "--review-through",
+                "TASK-002",
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("TASK-000", result.stderr)
+            self.assertEqual(
+                repository.joinpath("tasks.csv").read_text(encoding="utf-8"),
+                before,
+            )
+
     def test_dependencies_must_exist_remain_acyclic_and_finish_before_close(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             repository = Path(directory)
@@ -844,6 +1165,76 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("ascii pseudographics", contracts)
         self.assertIn("plausible edge cases", evaluations)
 
+    def test_quick_fix_policy_is_inline_and_batch_review_is_bounded(self) -> None:
+        plan = (SKILL / "references/plan.md").read_text(encoding="utf-8")
+        contracts = (
+            SKILL / "references/repository-contracts.md"
+        ).read_text(encoding="utf-8")
+        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
+        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8")
+        ledger = (SCRIPTS / "task_ledger.py").read_text(encoding="utf-8")
+        tasks_script = (SCRIPTS / "tasks.py").read_text(encoding="utf-8")
+
+        for phrase in [
+            "Quick Fix is inline Plan classification",
+            "not a mode, lane, task type, or prompt",
+            "Record Context `Quick Fix`",
+            "exact requested outcome",
+            "local reversible scope",
+            "no unresolved product, design, architecture, public interface, schema, migration, dependency, security, generated-file, or external-state choice",
+            "one immediate narrow proof",
+            "request to use Quick Fix never bypasses eligibility",
+            "one visible plan item",
+            "one owned task",
+            "lean_check.py --before-write",
+            "Architect may execute Quick Fix in Assisted or Solo",
+            "Do not spawn Engineer, Maintainer, or Verifier per Quick Fix",
+            "Shared batch may reuse or start Verifier when normal proof trigger applies",
+            "Review diff and run narrow proof before close",
+            "Quick-only multi-fix batch",
+            "Standalone remains pending",
+            "names exact",
+            "`TASK-NNN — Title`",
+        ]:
+            self.assertIn(phrase.casefold(), plan.casefold())
+
+        for phrase in [
+            "Closing a Quick Fix records pending broad batch review",
+            "`tasks.py quick-fixes` lists completed Quick Fixes that remain unreviewed",
+            "Standard checkpoint reviews every pending Quick Fix",
+            "`--review-through TASK-NNN`",
+            "review prefix must contain only `Done` Quick Fix tasks through the target",
+            "Invalid review references fail without ledger mutation",
+            "several Quick Fixes may defer broad checks until one shared checkpoint",
+            "A standalone Quick Fix may remain pending",
+            "failed shared review creates a Standard correction task",
+            "Deferred Quick Fix assurance is not automatic technical debt",
+        ]:
+            self.assertIn(phrase.casefold(), contracts.casefold())
+
+        for phrase in [
+            "Quick Fix",
+            "SPECIAL_CONTEXTS",
+            "QUICK_FIX_PENDING_MARKER",
+        ]:
+            self.assertIn(phrase.casefold(), ledger.casefold())
+        for phrase in ["quick-fixes", "review-through"]:
+            self.assertIn(phrase.casefold(), tasks_script.casefold())
+        self.assertIn("Quick Fix classification", evaluations)
+        self.assertIn("Quick Fix batch review", evaluations)
+        self.assertIn("Do not spawn Engineer, Maintainer, or Verifier per Quick Fix", subagents)
+
+        readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
+        quick_fix_sentences = [
+            sentence
+            for sentence in re.findall(r"[^.!?]*(?:Quick Fix|Quick Fixes)[^.!?]*[.!?]", readme)
+            if sentence.strip()
+        ]
+        self.assertGreaterEqual(len(quick_fix_sentences), 1)
+        self.assertLessEqual(len(quick_fix_sentences), 2)
+        for cli_detail in ["tasks.py quick-fixes", "--review-through", "[Quick Fix batch"]:
+            self.assertNotIn(cli_detail.casefold(), readme.casefold())
+
     def test_work_boundaries_keep_tasks_atomic_and_steps_transient(self) -> None:
         dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
         agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8").lower()
@@ -1264,7 +1655,7 @@ class PackageContractTests(unittest.TestCase):
             for line in evaluations.splitlines()
             if line.startswith("| ") and not line.startswith("| ---") and "Scenario" not in line
         ]
-        self.assertLess(len(scenarios), 40)
+        self.assertLess(len(scenarios), 45)
 
     def test_ledger_plan_view_projection_is_deterministic_and_read_only_for_brainstorming(self) -> None:
         dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
@@ -1310,7 +1701,7 @@ class PackageContractTests(unittest.TestCase):
         subagents = subagents_path.read_text(encoding="utf-8")
 
         self.assertGreaterEqual(len(subagents.splitlines()), 100)
-        self.assertLessEqual(len(subagents.splitlines()), 150)
+        self.assertLessEqual(len(subagents.splitlines()), 170)
         for heading in [
             "## Role-trigger matrix",
             "## Independence gate",
@@ -1343,7 +1734,7 @@ class PackageContractTests(unittest.TestCase):
             if line.startswith("| ") and not line.startswith("| ---") and "Scenario" not in line
         ]
         self.assertGreaterEqual(len(scenarios), 20)
-        self.assertLessEqual(len(scenarios), 40)
+        self.assertLessEqual(len(scenarios), 45)
         self.assertNotIn("Failure indicators", evaluations)
 
         subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
@@ -1449,11 +1840,11 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.15.0")
+        self.assertEqual(version, "1.16.0")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
         self.assertIn(
-            "- Version goal: Release the compact runtime contract, abstract output fact patterns, and human product narrative.",
+            "- Version goal: Release Quick Fix routing with deferred batch verification.",
             project,
         )
 

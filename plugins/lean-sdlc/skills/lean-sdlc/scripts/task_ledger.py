@@ -54,7 +54,13 @@ TASK_ID_PATTERN = re.compile(r"TASK-(\d+)$")
 THREAD_OWNER_PATTERN = re.compile(r"\d{8}$")
 CONTEXT_PATTERN = re.compile(r"(?:FEAT|DEC)-[A-Za-z0-9][A-Za-z0-9._-]*$")
 TASK_STATUSES = {"Planned", "In Progress", "Done"}
-SPECIAL_CONTEXTS = {"Project", "Bootstrap"}
+SPECIAL_CONTEXTS = {"Project", "Bootstrap", "Quick Fix"}
+QUICK_FIX_CONTEXT = "Quick Fix"
+QUICK_FIX_PENDING_MARKER = "[Quick Fix batch review pending]"
+QUICK_FIX_REVIEW_MARKER_PREFIX = "[Quick Fix batch review through"
+QUICK_FIX_REVIEW_MARKER_PATTERN = re.compile(
+    r"\[Quick Fix batch review through(?:\s+([^\]]*))?\]"
+)
 LEGACY_CONTEXTS = {"REPO": "Project", "BOOTSTRAP": "Bootstrap"}
 LOCK_TIMEOUT_SECONDS = 10
 STALE_LOCK_SECONDS = 60
@@ -259,6 +265,112 @@ def find_task(rows: list[dict[str, str]], task_id: str) -> dict[str, str]:
     return matches[0]
 
 
+def quick_fix_review_marker(task_id: str) -> str:
+    return f"[Quick Fix batch review through {clean(task_id, 'Task ID')}]"
+
+
+def append_evidence_marker(evidence: str, marker: str) -> str:
+    if marker in evidence:
+        return evidence
+    return f"{evidence} {marker}"
+
+
+def review_marker_errors(rows: list[dict[str, str]]) -> list[str]:
+    """Return errors for persisted Quick Fix review markers."""
+
+    rows_by_id = {row.get("Task ID", ""): row for row in rows}
+    errors: list[str] = []
+    for row in rows:
+        evidence = row.get("Evidence", "")
+        marker_start = 0
+        while True:
+            marker_start = evidence.find(QUICK_FIX_REVIEW_MARKER_PREFIX, marker_start)
+            if marker_start < 0:
+                break
+            if "]" not in evidence[marker_start:]:
+                task_id = row.get("Task ID", "<empty>")
+                errors.append(
+                    f"{task_id} has an unterminated Quick Fix review marker"
+                )
+                break
+            marker_start += len(QUICK_FIX_REVIEW_MARKER_PREFIX)
+        for match in QUICK_FIX_REVIEW_MARKER_PATTERN.finditer(evidence):
+            target_id = (match.group(1) or "").strip()
+            marker = match.group(0)
+            task_id = row.get("Task ID", "<empty>")
+            if not TASK_ID_PATTERN.fullmatch(target_id):
+                errors.append(
+                    f"{task_id} has invalid Quick Fix review marker {marker}"
+                )
+                continue
+            target = rows_by_id.get(target_id)
+            if target is None:
+                errors.append(
+                    f"{task_id} reviews missing Quick Fix task {target_id}"
+                )
+            elif target.get("Status") != "Done":
+                errors.append(
+                    f"{task_id} reviews unfinished Quick Fix task {target_id}"
+                )
+            elif target.get("Context") != QUICK_FIX_CONTEXT:
+                errors.append(
+                    f"{task_id} reviews non-Quick Fix task {target_id}"
+                )
+            if row.get("Status") != "Done":
+                errors.append(
+                    f"{task_id} has a Quick Fix review marker before closure"
+                )
+    return errors
+
+
+def quick_fix_review_cursor(rows: list[dict[str, str]]) -> int:
+    """Return the highest valid reviewed-through Quick Fix number."""
+
+    errors = review_marker_errors(rows)
+    if errors:
+        raise TaskError("; ".join(errors))
+
+    highest = -1
+    for row in rows:
+        for match in QUICK_FIX_REVIEW_MARKER_PATTERN.finditer(
+            row.get("Evidence", "")
+        ):
+            target_id = match.group(1).strip()
+            highest = max(highest, int(TASK_ID_PATTERN.fullmatch(target_id).group(1)))
+    return highest
+
+
+def unresolved_quick_fixes_through(
+    rows: list[dict[str, str]],
+    target_id: str,
+    *,
+    exempt_task_id: str | None = None,
+) -> list[str]:
+    """Return unfinished Quick Fixes at or below a review target."""
+
+    match = TASK_ID_PATTERN.fullmatch(target_id)
+    if match is None:
+        raise TaskError(f"invalid Quick Fix review target: {target_id}")
+    target_number = int(match.group(1))
+    unresolved: list[tuple[int, str]] = []
+    for row in rows:
+        if row.get("Context") != QUICK_FIX_CONTEXT:
+            continue
+        task_id = row.get("Task ID", "<empty>")
+        row_match = TASK_ID_PATTERN.fullmatch(task_id)
+        if row_match is None:
+            unresolved.append((-1, task_id))
+            continue
+        if int(row_match.group(1)) > target_number:
+            continue
+        if task_id == exempt_task_id:
+            continue
+        if row.get("Status") != "Done":
+            unresolved.append((int(row_match.group(1)), task_id))
+    unresolved.sort()
+    return [task_id for _, task_id in unresolved]
+
+
 def next_task_id(rows: list[dict[str, str]]) -> str:
     highest = -1
     for row in rows:
@@ -337,6 +449,7 @@ def integrity_errors(rows: list[dict[str, str]]) -> list[str]:
         if state.get(task_id, 0) == 0:
             visit(task_id)
 
+    errors.extend(review_marker_errors(rows))
     return errors
 
 

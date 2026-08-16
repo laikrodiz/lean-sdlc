@@ -4,6 +4,8 @@ Lean-SDLC is a small software engineering workflow for Codex. It reduces token w
 
 The workflow helps you answer simple questions before work starts. What problem are you solving? Who benefits? What must change? What must stay unchanged? How will you know that the result is correct? It keeps these answers close to the task ledger and the repository documents that own them.
 
+For a trivial settled edit, Plan can classify it inline as Quick Fix. It uses one narrow immediate check and a later batch review instead of the full workflow each time.
+
 The user controls the Architect model. If the user makes no explicit choice, the Architect uses Sol High. Standard child roles use Luna Max. Terra XHigh is the availability fallback.
 
 ## Six lanes
@@ -81,10 +83,10 @@ Read the [Shape contract](plugins/lean-sdlc/skills/lean-sdlc/references/shape.md
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-Install the immutable `v1.15.0` release:
+Install the immutable `v1.16.0` release:
 
 ```bash
-git clone --depth 1 --branch v1.15.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.16.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc

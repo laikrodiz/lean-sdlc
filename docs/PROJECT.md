@@ -21,6 +21,7 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 - Conservative parallel work for separate scopes and resources. Shared files, changing interfaces, migrations, generated output, and external targets remain serial. Child work stays in one shared worktree.
 - Substantial external-tool work keeps decisions with the Architect. The matching role handles bounded discovery, approved mutation, repeated operations, or independent checking. One agent owns each mutable external target.
 - Readable checkpoint reports with exact machine proof retained for verification. Integration, documentation synchronization, verification, operations, and closeout run serially.
+- Inline Quick Fix classification during Plan for trivial settled edits, with immediate narrow proof and deferred shared review.
 
 ## Constraints
 
@@ -43,11 +44,12 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 - The plan view mirrors each unresolved ledger task ID and title during implementation. Brainstorming creates no task view.
 - Tasks remain atomic, owner-aware, dependency-valid, and cycle-free.
 - The Architect retains decisions. Delegated external-tool work has one mutable-target owner and returns bounded evidence.
+- Eligible Quick Fixes receive narrow proof immediately and broad review in a later Standard or final batch checkpoint.
 - Checkpoint reports stay readable, exact machine proof remains available, and serial closeout uses repository truth.
 
 ## Current promise
 
 - Stage: Evolution
-- Version: 1.15.0
-- Version goal: Release the compact runtime contract, abstract output fact patterns, and human product narrative.
+- Version: 1.16.0
+- Version goal: Release Quick Fix routing with deferred batch verification.
 - Exit evidence: Tests, skill and plugin validation, local installation, accepted checkpoints, repository checks, tagged commit, and successful push.
