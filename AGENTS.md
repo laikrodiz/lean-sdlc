@@ -8,6 +8,8 @@ Read `docs/PROJECT.md` and relevant feature, decision, or operations documents. 
 
 - Task commands are control transactions. Never edit `tasks.csv` directly.
 - Discussion and proposal requests remain read-only. Explicit implementation authority permits Plan and Deliver. If authority is ambiguous, remain read-only.
+- Shape owns the complete natural intent gate: why -> what -> how -> proof. Material assumptions that affect behavior, scope, or architecture require user confirmation.
+- Brainstorming and rephrasing remain read-only.
 - Before any other repository mutation, use the installed `tasks.py start` command to create immediate work or claim planned work.
 - Before task creation or implementation, apply the canonical Plan contract. Show natural intent confirmation and a concise visible plan with observable completion conditions and proof.
 - Keep `tasks.csv` as the only durable task plan. Map each durable plan item to one task. Keep implementation steps transient.
@@ -19,6 +21,8 @@ Read `docs/PROJECT.md` and relevant feature, decision, or operations documents. 
 - Size ledger work as one Engineer checkpoint under the Plan contract; keep tests and attached Maintainer or Verifier work with it unless independently deliverable.
 - Assisted mode and Standard children are the defaults. Persist mode and the Fast-children preference until the user changes them.
 - Lifecycle restoration covers startup, resume, clear, and compaction. It restores owner, mode, and child tier; reload `references/subagents.md` before Deliver.
+- Dependencies must be `Done` before a task starts. The ledger lock is not a source lock.
+- Assisted parallel work permits at most two children only after the resource gate passes. One Architect writer group owns the worktree.
 
 ## Child gate
 

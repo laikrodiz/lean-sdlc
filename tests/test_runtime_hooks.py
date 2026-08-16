@@ -94,16 +94,55 @@ class RuntimeHookTests(unittest.TestCase):
                 )
 
     def test_engineer_beta_is_accepted(self) -> None:
-        self.assertIsNone(self.guard({"task_name": "engineer_beta"}))
+        self.assertIsNone(
+            self.guard(
+                {
+                    "task_name": "engineer_beta",
+                    "model": "gpt-5.6-luna",
+                    "reasoning_effort": "max",
+                    "fork_turns": "none",
+                }
+            )
+        )
+
+    def test_all_standard_roles_use_native_luna_fields(self) -> None:
+        for role in ("engineer", "maintainer", "verifier", "scout"):
+            with self.subTest(role=role):
+                self.assertIsNone(
+                    self.guard(
+                        {
+                            "task_name": f"{role}_beta",
+                            "model": "gpt-5.6-luna",
+                            "reasoning_effort": "max",
+                            "fork_turns": "none",
+                        }
+                    )
+                )
 
     def test_standard_priority_is_rejected(self) -> None:
-        denied = self.guard({"task_name": "engineer_beta", "service_tier": "priority"})
+        denied = self.guard(
+            {
+                "task_name": "engineer_beta",
+                "model": "gpt-5.6-luna",
+                "reasoning_effort": "max",
+                "fork_turns": "none",
+                "service_tier": "priority",
+            }
+        )
         self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
 
     def test_fast_priority_is_accepted(self) -> None:
         self.set_state("--fast-children")
         self.assertIsNone(
-            self.guard({"task_name": "engineer_beta", "service_tier": "priority"})
+            self.guard(
+                {
+                    "task_name": "engineer_beta",
+                    "model": "gpt-5.6-luna",
+                    "reasoning_effort": "max",
+                    "fork_turns": "none",
+                    "service_tier": "priority",
+                }
+            )
         )
 
     def test_solo_mode_denies_agent_spawns(self) -> None:
@@ -111,33 +150,69 @@ class RuntimeHookTests(unittest.TestCase):
         denied = self.guard({"task_name": "engineer_beta"})
         self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
 
-    def test_invalid_luna_role_is_rejected(self) -> None:
-        denied = self.guard(
-            {
-                "task_name": "researcher_beta",
-                "agent_type": "lean_sdlc_luna",
-                "fork_turns": "none",
-            }
-        )
-        self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
+    def test_direct_user_custom_role_is_accepted(self) -> None:
+        self.assertIsNone(self.guard({"task_name": "researcher_beta"}))
 
-    def test_full_history_luna_spawn_is_rejected(self) -> None:
+    def test_direct_user_custom_role_can_use_custom_routing(self) -> None:
+        self.assertIsNone(
+            self.guard(
+                {
+                    "task_name": "researcher_beta",
+                    "agent_type": "custom_profile",
+                }
+            )
+        )
+
+    def test_missing_native_model_is_rejected(self) -> None:
         denied = self.guard(
             {
                 "task_name": "engineer_beta",
-                "agent_type": "lean_sdlc_luna",
                 "fork_turns": "all",
             }
         )
         self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
 
-    def test_direct_luna_routing_fields_are_rejected(self) -> None:
+    def test_wrong_native_model_is_rejected(self) -> None:
         denied = self.guard(
             {
                 "task_name": "engineer_beta",
-                "agent_type": "lean_sdlc_luna",
+                "model": "gpt-5.6-sol",
+                "reasoning_effort": "max",
                 "fork_turns": "none",
+            }
+        )
+        self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
+
+    def test_wrong_native_reasoning_is_rejected(self) -> None:
+        denied = self.guard(
+            {
+                "task_name": "engineer_beta",
                 "model": "gpt-5.6-luna",
+                "reasoning_effort": "high",
+                "fork_turns": "none",
+            }
+        )
+        self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
+
+    def test_agent_type_is_rejected_for_standard_role(self) -> None:
+        denied = self.guard(
+            {
+                "task_name": "engineer_beta",
+                "model": "gpt-5.6-luna",
+                "reasoning_effort": "max",
+                "fork_turns": "none",
+                "agent_type": "custom",
+            }
+        )
+        self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
+
+    def test_full_history_native_spawn_is_rejected(self) -> None:
+        denied = self.guard(
+            {
+                "task_name": "engineer_beta",
+                "model": "gpt-5.6-luna",
+                "reasoning_effort": "max",
+                "fork_turns": "all",
             }
         )
         self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
@@ -147,11 +222,49 @@ class RuntimeHookTests(unittest.TestCase):
             self.guard(
                 {
                     "task_name": "engineer_beta",
-                    "agent_type": "lean_sdlc_luna",
+                    "model": "gpt-5.6-luna",
+                    "reasoning_effort": "max",
                     "fork_turns": "none",
                 }
             )
         )
+
+    def test_fast_standard_retry_can_omit_service_tier(self) -> None:
+        self.set_state("--fast-children")
+        self.assertIsNone(
+            self.guard(
+                {
+                    "task_name": "engineer_beta",
+                    "model": "gpt-5.6-luna",
+                    "reasoning_effort": "max",
+                    "fork_turns": "none",
+                }
+            )
+        )
+
+    def test_terra_fallback_is_accepted_without_profile_fields(self) -> None:
+        self.assertIsNone(
+            self.guard(
+                {
+                    "task_name": "engineer_beta",
+                    "model": "gpt-5.6-terra",
+                    "reasoning_effort": "xhigh",
+                    "fork_turns": "none",
+                }
+            )
+        )
+
+    def test_terra_fallback_rejects_service_tier(self) -> None:
+        denied = self.guard(
+            {
+                "task_name": "engineer_beta",
+                "model": "gpt-5.6-terra",
+                "reasoning_effort": "xhigh",
+                "fork_turns": "none",
+                "service_tier": "priority",
+            }
+        )
+        self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
 
     def test_default_restoration(self) -> None:
         event = {

@@ -4,7 +4,8 @@ This file is the sole authority for child roles, triggers, profiles, spawns, han
 
 ## Scope and modes
 
-- The Architect is the user-selected lead and principal engineer. The Architect owns product intent, architecture, interfaces, invariants, task state, acceptance, integration, and closeout.
+- The Architect is the user-selected lead and principal engineer. The Architect always owns intent, public behavior, architecture, tasks, acceptance, integration, and closeout.
+- The Architect never sends unresolved user input to a child, writes inside an active child boundary, accepts unreviewed output, or replaces independent proof with confidence.
 - The standard child roles are Engineer, Maintainer, Verifier, and Scout.
 - A custom role requires direct user authority. The Architect records its responsibility, depth, profile, handoff, return, and checkpoint rules before use.
 - Engineer receives one ledger task after architecture, outcome, proof, and acceptance are settled. See [plan.md](plan.md) for task sizing, split, merge, and correction rules.
@@ -15,6 +16,8 @@ This file is the sole authority for child roles, triggers, profiles, spawns, han
 - Assisted and Solo are the only orchestration modes. Solo mode is lead-only under the same implementation, proof, research, and operation contracts.
 - Fast children require explicit user opt-in. Keep reachable child threads after a tier change. Apply the new tier to new or normally replaced threads.
 - An explicit user profile pins the Architect. Apply one required profile to every child, or use Solo when the profile is unavailable.
+- Assisted mode normally delegates routine discovery, evidence, implementation, checks, documentation, and recorded operations.
+- The Architect may implement under these exceptions: Solo mode; the existing mechanical direct path; a small architecture-bearing experiment or inseparable seam; after explicit user direction that the Architect itself implement; or after the required child and fallback are unavailable. Settled separable work remains Engineer work.
 
 ## Role-trigger matrix
 
@@ -29,17 +32,17 @@ Apply every row before the first command. Delegation is mandatory beyond the Eng
 
 ## Independence gate
 
-- At most two active children may run when each child has an exclusive primary scope, a settled contract, no dependency on the other child, and useful time reduction.
-- This universal independence gate permits Engineer/Engineer, Engineer/Scout, and Scout/Scout pairs.
-- The gate never permits a third active child. Otherwise schedule children serially.
-- Implementation writers stop before integration. No writer overlaps documentation synchronization, verification, or stateful operations.
-- Shared tests, docs, generators, and operations run serially after the checkpoint.
-- A Scout may overlap one Verifier or Maintainer only for future work with separate resources.
-- Keep at most one reusable Verifier and at most one reusable Maintainer. They remain single sidecars and never create a second sidecar.
-- If scope, dependency, contract, or time reduction is uncertain, pause writers and ask the Architect. Continue with one child only after the Architect resolves the uncertainty.
+- At most two active children run only after one resource gate passes: this is the universal independence gate. Each child has an exclusive primary scope, a settled contract, all dependencies are `Done`, and elapsed time should decrease.
+- Two Engineers require separate mutable code and test paths, stable read paths, incidental outputs or caches, commands, services, ports, devices, and external targets; they cannot share a public interface, schema, manifest, lockfile, generator, migration, or mutable fixture, and they need independent acceptance and proof.
+- The Architect is a writer and must not edit child-owned paths. One Architect writer group owns a worktree. The `tasks.csv` lock protects only the ledger.
+- Engineer/Engineer requires strict isolation. Engineer/Scout requires a stable separate read boundary. Scout/Scout may overlap stable sources for independent questions. A Scout may overlap one Verifier or Maintainer only for future work with separate resources.
+- The gate never permits a third active child. Maintainer and Verifier remain single and serial with writers. Project-native command or test parallelism stays inside one child when resource-safe.
+- Implementation writers stop before integration. No writer overlaps documentation synchronization, verification, or stateful operations. Shared tests, docs, generators, and operations run serially after the checkpoint. One Verifier checks the combined checkpoint.
+- If scope, dependency, a shared resource, or elapsed-time reduction is uncertain, name it and work serially. Do not score the choice or add a mode.
 
 ## Child lifecycle
 
+- Keep at most one reusable Verifier and at most one reusable Maintainer. They remain single sidecars and never create a second sidecar.
 - Reuse or start Engineer, Verifier, Maintainer, or read-only Scout when its Assisted trigger is true. Send a follow-up to a reachable role thread before starting a replacement.
 - Skip a sidecar only when its trigger is false or Solo mode is active. The Architect applies its contract locally in Solo.
 - Before delegation, confirm authority, task or inquiry, paths or source boundary, acceptance, proof, and stop condition.
@@ -59,7 +62,7 @@ Apply every row before the first command. Delegation is mandatory beyond the Eng
 - Children call the primary agent Architect in visible commentary, handoffs, returns, and decision requests. The Architect speaks as I.
 - The Architect is the sole authority for product intent, architecture, interfaces, invariants, task state, acceptance, integration, and closeout.
 - Discussion or proposal requests remain read-only. Clear confirmation to proceed against a recoverable agreed proposal permits implementation. If authority is ambiguous, remain read-only.
-- Before every handoff, state the outcome, boundary, contract, proof, and stop conditions in concise natural prose without a fixed runtime template.
+- Each child handoff begins with a short settled purpose, then states the outcome, boundary, contract, proof, and stop conditions in natural prose without a fixed runtime template. Each writer handoff also names mutable paths, stable read paths, incidental output or cache, commands, external targets, and stop conditions.
 - Before Deliver or the first delegated read-only operation, state the child action, task or inquiry, intended result, boundaries, and proof. Before every handoff, include role identity, acceptance, and stop condition.
 - Each payload comes from the Architect. Children do not infer decisions, dependencies, public behavior, acceptance, or paths. Before Engineer handoff, show the architecture brief.
 - After each checkpoint, the Architect reviews the diff, architecture, scope, and contract alignment in concise natural prose.
@@ -84,6 +87,7 @@ Apply every row before the first command. Delegation is mandatory beyond the Eng
 ### Scout
 
 - The Architect supplies a question and source boundary without a preferred answer. Scout is read-only and never edits repository files.
+- Scout supports bounded repo or contract mapping, external research, reproduction or log reduction, change, documentation, or test impact, edge-case or test candidates, and task-size or architecture contradiction review. Avoid Scout for a trivial one-file lookup.
 - Scout returns cited findings, conflicts, unknowns, decision impact, and sources. The Architect evaluates evidence and retains the decision.
 - A Scout inquiry needs no task until its findings require a repository write.
 
@@ -102,12 +106,11 @@ Apply every row before the first command. Delegation is mandatory beyond the Eng
 
 ## Model and spawn
 
-- Before the first Assisted task, run `scripts/configure_codex.py`. It registers `lean_sdlc_luna` and enables Multi-Agent V2. Restart Codex after configuration. Do not patch the model catalog.
-- Every child role uses `lean_sdlc_luna`, which pins GPT-5.6 Luna `max` (`gpt-5.6-luna`). The fallback is GPT-5.6 Terra `xhigh`. Never use `low` or silently reduce a profile.
-- The profile receives the Engineer, Maintainer, Verifier, or Scout role. Luna Max uses Standard service by default, so normal spawns omit `service_tier`.
+- Standard child roles use direct native routing. Set `model=gpt-5.6-luna`, `reasoning_effort=max`, and non-full-history `fork_turns`. Omit `agent_type`.
+- Luna Max uses Standard service by default, so normal spawns omit `service_tier`. Never use `low` or silently reduce the requested model or effort.
 - When the user explicitly enables Fast children, the Architect records that session preference and new or normally replaced Luna spawns use `service_tier=priority`.
 - If a Fast Luna spawn with priority is unavailable or rejected, announce it and retry Luna max without `service_tier` as a Standard retry.
-- If Luna remains unavailable, announce it and directly spawn `gpt-5.6-terra` at `xhigh` with `model=gpt-5.6-terra` and `reasoning_effort=xhigh`, without `service_tier` or `agent_type`.
+- If Luna remains unavailable, announce it and directly spawn `gpt-5.6-terra` at `xhigh` with non-full-history `fork_turns`, `model=gpt-5.6-terra`, and `reasoning_effort=xhigh`, without `service_tier` or `agent_type`.
 - Terra `xhigh` fallback and the Architect remain Standard unless the user separately overrides them. Full history, automatic defaults, inherited Architect profiles, silent fallback, effort downgrade, and incompatible forks are routing failures.
 - Preserve the user-selected Architect model and tier. Keep architecture, task setting, integration, and other consequential decisions with the Architect.
 - After a Codex update, run one bounded profile smoke test before the first Luna handoff. Confirm Luna `max`; announce failure before fallback.
@@ -121,7 +124,7 @@ Before every spawn, resolve role, trigger, mode, authority, exposed models, reac
 3. Run any shared source-changing formatter or generator serially; Architect reviews resulting changes.
 4. Maintainer synchronizes affected shared docs through an impact-directed pass.
 5. Pause all writers and identify the checkpoint by commit or exact working-tree fingerprint as the final checkpoint; require the sidecar to confirm the identity before acting.
-6. Verifier checks both acceptance sets for a qualified pair, or the one active acceptance set, plus assigned-path separation, semantic interaction, and documentation parity. Run the full suite only when required by the task or repository contract.
+6. One Verifier checks both acceptance sets for a qualified pair, or the one active acceptance set, plus assigned-path separation, semantic interaction, and documentation parity. Run the full suite only when required by the task or repository contract.
 7. Maintainer runs required build, package, deploy, flash, runtime, or smoke operations serially against that exact accepted source checkpoint. Invalidate the result after any relevant source change.
 
 ## Return and stop conditions
@@ -131,3 +134,5 @@ Before every spawn, resolve role, trigger, mode, authority, exposed models, reac
 - The Architect reviews and consumes every return before integration or closeout. Later dependent work waits for architecture review and independent checkpoint verification.
 - Preserve stable role instructions, tools, profiles, architecture, and invariants. Put volatile task or inquiry data last and send only incremental deltas.
 - Sidecars consume the exact checkpoint and stop when relevant source changes invalidate it.
+- On overlap, stop before the shared resource and report the collision and checkpoint. If bytes changed, pause affected writers.
+- The Architect chooses serial order or revises scope. Invalidate read findings after a source change. A child never integrates sibling work.

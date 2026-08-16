@@ -140,6 +140,21 @@ def plan_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
     return f"planned {task_id}"
 
 
+def require_finished_dependencies(
+    task: dict[str, str],
+    rows: list[dict[str, str]],
+) -> None:
+    rows_by_id = {row.get("Task ID", ""): row for row in rows}
+    unfinished = [
+        dependency
+        for dependency in dependency_ids(task.get("Dependencies", ""))
+        if dependency in rows_by_id
+        and rows_by_id[dependency].get("Status") != "Done"
+    ]
+    if unfinished:
+        raise TaskError("unfinished dependencies: " + ", ".join(unfinished))
+
+
 def start_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
     owner = thread_owner(args.owner)
     if args.task_id:
@@ -154,11 +169,13 @@ def start_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
         task = find_task(rows, args.task_id)
         if task.get("Status") != "Planned" or task.get("Owner"):
             raise TaskError(f"{args.task_id} must be unowned and Planned")
+        require_finished_dependencies(task, rows)
         task["Status"] = "In Progress"
         task["Owner"] = owner
         return f"started {args.task_id} for owner {owner}"
 
     task_id = new_task(rows, args, status="In Progress", owner=owner)
+    require_finished_dependencies(find_task(rows, task_id), rows)
     return f"started {task_id} for owner {owner}"
 
 
@@ -209,15 +226,7 @@ def close_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
     if task.get("Status") != "In Progress":
         raise TaskError(f"{args.task_id} must be In Progress before it can close")
 
-    dependencies = dependency_ids(task.get("Dependencies", ""))
-    rows_by_id = {row.get("Task ID", ""): row for row in rows}
-    incomplete = [
-        dependency
-        for dependency in dependencies
-        if rows_by_id.get(dependency, {}).get("Status") != "Done"
-    ]
-    if incomplete:
-        raise TaskError("unfinished dependencies: " + ", ".join(incomplete))
+    require_finished_dependencies(task, rows)
 
     supplied_owner = thread_owner(
         args.owner,

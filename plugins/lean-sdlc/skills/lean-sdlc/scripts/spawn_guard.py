@@ -40,6 +40,10 @@ GREEK_LABELS = (
     "omega",
 )
 ROLE_PREFIXES = frozenset({"engineer", "maintainer", "verifier", "scout"})
+LUNA_MODEL = "gpt-5.6-luna"
+LUNA_REASONING = "max"
+TERRA_MODEL = "gpt-5.6-terra"
+TERRA_REASONING = "xhigh"
 LABEL_PATTERN = re.compile(
     r"^(?P<prefix>[a-z0-9]+(?:_[a-z0-9]+)*)_(?P<label>"
     + "|".join(GREEK_LABELS)
@@ -90,19 +94,36 @@ def _validate_tool_input(tool_input: Any, fast_children: bool) -> str | None:
         return error
 
     task_prefix = LABEL_PATTERN.fullmatch(task_name).group("prefix").casefold()
-    if tool_input.get("agent_type") == "lean_sdlc_luna":
-        if task_prefix not in ROLE_PREFIXES:
-            return "Use Engineer, Maintainer, Verifier, or Scout before the Greek label for Luna."
-        if "model" in tool_input or "reasoning_effort" in tool_input:
-            return "Remove direct model and reasoning fields from lean_sdlc_luna spawns."
-        if "fork_turns" not in tool_input or not _fork_turns_is_non_full_history(
-            tool_input["fork_turns"]
-        ):
-            return "Set fork_turns to none or a positive non-full-history value for Luna."
+    if task_prefix not in ROLE_PREFIXES:
+        return None
+
+    model = tool_input.get("model")
+    reasoning_effort = tool_input.get("reasoning_effort")
+    if model == LUNA_MODEL:
+        expected_reasoning = LUNA_REASONING
+    elif model == TERRA_MODEL:
+        expected_reasoning = TERRA_REASONING
+    else:
+        return "Set model to gpt-5.6-luna for a standard child or gpt-5.6-terra for fallback."
+
+    if reasoning_effort != expected_reasoning:
+        return f"Set reasoning_effort to {expected_reasoning} for {model}."
+    if "agent_type" in tool_input:
+        return "Remove agent_type from direct native model spawns."
+    if "fork_turns" not in tool_input or not _fork_turns_is_non_full_history(
+        tool_input["fork_turns"]
+    ):
+        return "Set fork_turns to none or a positive non-full-history value."
 
     service_tier = tool_input.get("service_tier")
-    if service_tier == "priority" and not fast_children:
-        return "Omit service_tier for the standard child tier, or enable Fast children first."
+    if model == TERRA_MODEL:
+        if "service_tier" in tool_input:
+            return "Remove service_tier from direct Terra fallback spawns."
+    elif "service_tier" in tool_input:
+        if service_tier != "priority":
+            return "Omit service_tier for Standard Luna or set priority for Fast Luna."
+        if not fast_children:
+            return "Omit service_tier for the standard child tier, or enable Fast children first."
     return None
 
 

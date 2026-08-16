@@ -16,15 +16,17 @@ README remains project-owned.
 
 ## Document ownership
 
-- Project value, behavior boundary, scope, stage, and version promise -> `docs/PROJECT.md`.
-- Durable behavior detail -> an optional feature document.
-- Durable costly choice -> an optional decision document.
+- Project purpose, value, behavior boundary, scope, stage, and version promise -> `docs/PROJECT.md`.
+- Durable behavior detail -> an optional Feature document.
+- Technical rationale and durable costly choice -> an optional Decision document.
 - Repeatable procedure -> `docs/OPERATIONS.md`.
 - Shared mapping or interface -> technical documentation.
-- Local mechanism -> code, tests, or comments.
+- Local corrections -> outcome-focused task truth, code, tests, or comments.
 - Engineer owns code-local truth such as tests, comments, docstrings, annotations, and local examples.
 - Maintainer owns shared narrative truth in `docs/PROJECT.md`, feature, decision, architecture, interface, README, and operations documents.
 - The Architect supplies the behavior and decision delta. Maintainer synchronizes only affected documents through an impact-directed pass.
+
+Keep durable intent in these existing owners. Do not add a file or task column for intent.
 
 Resolve conflicting truth in the authoritative source before synchronization.
 
@@ -46,13 +48,13 @@ Use `tasks.py open` for current `Planned` and `In Progress` work. Use `tasks.py 
 2. `plan` creates unowned `Planned` work. `start` creates `In Progress` work or claims a planned task.
 3. `update` requires the task owner for In Progress work.
 4. `close` belongs to the owner after verification. A direct user request may override with a recorded reason.
-5. Dependencies must exist, remain acyclic, and be `Done` before close.
+5. Dependencies must exist, remain acyclic, and be `Done` before start or close.
 6. Task transactions are the formal exception to task-before-write.
 
 `tasks.py upgrade` accepts the previous `Parent` header and older planning header. It maps `REPO` to `Project` and `BOOTSTRAP` to `Bootstrap`, then atomically writes one root CSV under the existing lock.
 
-The command serializes writers with a short root lock, reads the latest ledger under that lock, validates dependencies, changes one transaction, and replaces the file atomically. Owner IDs coordinate threads; they are not a security boundary.
-A qualified parallel group may hold two `In Progress` rows under one Architect owner. One root `tasks.csv` remains authoritative, and the Architect alone mutates or closes both rows.
+The command serializes writers with a short root lock for ledger updates, reads the latest ledger under that lock, validates dependencies, changes one transaction, and replaces the file atomically. The ledger lock is not a source-file lock. Owner IDs coordinate threads; they are not a security boundary.
+One root `tasks.csv` remains authoritative. It may hold two ready tasks for one Architect owner after the resource gate passes. The Architect alone mutates or closes both rows.
 
 ## Work hierarchy
 

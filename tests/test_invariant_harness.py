@@ -34,6 +34,11 @@ FROZEN_INVARIANTS = (
         ("explicit implementation authority", "discussion and proposal requests remain read-only", "if authority is ambiguous, remain read-only", "natural intent confirmation", "concise visible plan"),
     ),
     FrozenInvariant(
+        "natural intent gate",
+        "plugins/lean-sdlc/skills/lean-sdlc/references/shape.md",
+        ("shape owns the complete intent gate", "why -> what -> how -> proof", "shape settles why and what", "decide and plan add how and proof", "present problem or opportunity and affected user or business value", "smallest observable outcome plus constraints and non-goals", "technical approach and task shape after why and what are stable", "proof: acceptance and verification", "material assumption affects behavior, scope, or architecture", "stop for user confirmation", "intent is clear and implementation authority is explicit", "brainstorming and rephrasing remain read-only"),
+    ),
+    FrozenInvariant(
         "owned task before writes",
         "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md",
         ("before any other repository mutation", "run `tasks.py start` or claim planned work", "require an owned `in progress` task", "run `lean_check.py --before-write"),
@@ -42,6 +47,11 @@ FROZEN_INVARIANTS = (
         "atomic tasks.csv transactions",
         "plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md",
         ("serializes writers with a short root lock", "replaces the file atomically", "under the existing lock", "one root `tasks.csv` remains authoritative"),
+    ),
+    FrozenInvariant(
+        "durable intent owners",
+        "plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md",
+        ("project purpose, value, behavior boundary, scope, stage, and version promise", "durable behavior detail", "technical rationale and durable costly choice", "local corrections -> outcome-focused task truth", "keep durable intent in these existing owners", "do not add a file or task column for intent"),
     ),
     FrozenInvariant(
         "stable owner after compaction",
@@ -61,7 +71,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant(
         "architect owns decisions",
         SUBAGENTS,
-        ("the architect is the sole authority for product intent", "the architect supplies a question and source boundary", "keep architecture, task setting, integration, and other consequential decisions with the architect"),
+        ("the architect is the sole authority for product intent", "the architect always owns intent, public behavior, architecture, tasks, acceptance, integration, and closeout", "never sends unresolved user input to a child", "writes inside an active child boundary", "accepts unreviewed output", "replaces independent proof with confidence", "the architect supplies a question and source boundary", "keep architecture, task setting, integration, and other consequential decisions with the architect"),
     ),
     FrozenInvariant(
         "engineer, maintainer, verifier, and scout roles",
@@ -71,7 +81,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant(
         "luna max primary and terra xhigh fallback",
         SUBAGENTS,
-        ("gpt-5.6-luna", "luna max uses standard service by default", "normal spawns omit `service_tier`", "service_tier=priority", "retry luna max", "gpt-5.6-terra", "terra `xhigh`", "directly spawn `gpt-5.6-terra` at `xhigh`", "without `service_tier` or `agent_type`"),
+        ("model=gpt-5.6-luna", "reasoning_effort=max", "non-full-history `fork_turns`", "omit `agent_type`", "luna max uses standard service by default", "normal spawns omit `service_tier`", "service_tier=priority", "retry luna max", "gpt-5.6-terra", "terra `xhigh`", "directly spawn `gpt-5.6-terra` at `xhigh`", "without `service_tier` or `agent_type`"),
     ),
     FrozenInvariant(
         "one reusable child per role",
@@ -126,7 +136,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant(
         "qualified parallel writing and shared documentation",
         SUBAGENTS,
-        ("at most two active children", "universal independence gate", "engineer/engineer", "engineer/scout", "scout/scout", "a scout may overlap one verifier or maintainer only for future work with separate resources", "implementation writers stop before integration", "no writer overlaps documentation synchronization, verification, or stateful operations", "shared tests, docs, generators, and operations run serially", "named architect decision requires distinct source sets or enough material, data, or logs to pollute lead context", "maintainer synchronizes affected shared narrative documents", "engineer edits only assigned implementation paths", "maintainer edits only assigned shared-document paths", "verifier and scout are read-only", "no child edits `tasks.csv`"),
+        ("at most two active children", "universal independence gate", "resource gate passes", "all dependencies are `done`", "separate mutable code and test paths", "stable read paths", "incidental outputs or caches", "public interface, schema, manifest, lockfile, generator, migration, or mutable fixture", "independent acceptance and proof", "engineer/engineer", "engineer/scout", "scout/scout", "a scout may overlap one verifier or maintainer only for future work with separate resources", "implementation writers stop before integration", "no writer overlaps documentation synchronization, verification, or stateful operations", "shared tests, docs, generators, and operations run serially", "named architect decision requires distinct source sets or enough material, data, or logs to pollute lead context", "maintainer synchronizes affected shared narrative documents", "engineer edits only assigned implementation paths", "maintainer edits only assigned shared-document paths", "verifier and scout are read-only", "no child edits `tasks.csv`", "stop before the shared resource and report the collision and checkpoint", "invalidate read findings after a source change", "a child never integrates sibling work"),
     ),
 )
 
@@ -155,7 +165,7 @@ def _lane_names(text: str) -> tuple[str, ...]:
 class FrozenInvariantHarnessTests(unittest.TestCase):
     def test_every_invariant_has_one_canonical_source(self) -> None:
         names = [invariant.name for invariant in FROZEN_INVARIANTS]
-        self.assertEqual(len(FROZEN_INVARIANTS), 19)
+        self.assertEqual(len(FROZEN_INVARIANTS), 21)
         self.assertEqual(len(names), len(set(names)))
         for invariant in FROZEN_INVARIANTS:
             with self.subTest(invariant=invariant.name):
@@ -199,13 +209,11 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
 
     def test_handoffs_require_facts_without_fixed_labels(self) -> None:
         policy = _read(SUBAGENTS)
-        profile = _read("plugins/lean-sdlc/skills/lean-sdlc/assets/lean_sdlc_luna.toml")
-        for text in (policy, profile):
-            self.assertIn("outcome, boundary, contract, proof, and stop conditions", text)
-            self.assertIn("concise natural prose", text)
-            self.assertNotIn("Architecture alignment:", text)
-            self.assertNotIn("Return labels remain explicit", text)
-            self.assertNotIn("labeled report", text)
+        self.assertIn("outcome, boundary, contract, proof, and stop conditions", policy)
+        self.assertIn("concise natural prose", policy)
+        self.assertNotIn("Architecture alignment:", policy)
+        self.assertNotIn("Return labels remain explicit", policy)
+        self.assertNotIn("labeled report", policy)
 
 
 if __name__ == "__main__":

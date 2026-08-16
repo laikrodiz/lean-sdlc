@@ -36,21 +36,23 @@ Session state restores the owner, mode, and child tier after lifecycle events. M
 | Engineer | Implements an approved task. |
 | Maintainer | Synchronizes affected shared documents and runs recorded operational procedures. |
 | Verifier | Checks acceptance independently. |
-| Scout | Collects cited evidence for complex inquiries. |
+| Scout | Collects bounded, cited evidence for non-trivial inquiries. |
 
 See the [canonical child-agent policy](plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md) for role lifecycle and communication rules.
 
 Assisted mode delegates bounded independent work through the canonical child-agent policy. Solo mode keeps execution with the Architect. The Maintainer keeps shared documents current and runs recorded procedures.
 
+The Architect owns intent, architecture, task boundaries, acceptance, integration, proof, and closeout.
+
 ## Workflow
 
-1. Intent defines the outcome, scope, constraints, and observable success.
+1. Before changes, the Architect confirms why -> what -> how -> proof. This covers user or business value, outcome and boundaries, technical approach, and acceptance evidence.
 2. Plan and tasks turn approved intent into measurable work, owned task rows, and reproducible proof. The human-readable `tasks.csv` remains authoritative.
 3. Each ledger task maps to one Engineer checkpoint under the [Plan contract](plugins/lean-sdlc/skills/lean-sdlc/references/plan.md). Keep tests and attached Maintainer or Verifier work in the task unless independently deliverable.
-4. Delegation routes ready work to the standard roles when assisted execution helps. Solo execution stays with the Architect.
-5. Integration review combines accepted changes after child work stops and checks scope and contract alignment.
-6. Documentation synchronization updates shared project, feature, decision, architecture, interface, README, and operations documents affected by accepted changes.
-7. Verification runs acceptance proof and one planned regression command. The full suite runs only when the task or repository contract requires it.
+4. Assisted mode uses bounded Scout evidence for non-trivial inquiries. At most two independent children may work in the same worktree only after one resource gate passes. Solo stays with the Architect.
+5. Children stop before integration. The Architect reviews accepted work for scope and contract alignment.
+6. The Maintainer synchronizes affected shared documents.
+7. Integration and verification run serially. Verification runs acceptance proof and one planned regression command. The full suite runs only when required.
 8. Operations replay required recorded build, package, deploy, flash, runtime, or smoke procedures against accepted source.
 9. Closeout resolves evidence, updates repository truth, and closes the owned task.
 
@@ -58,18 +60,14 @@ Assisted mode delegates bounded independent work through the canonical child-age
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-Install the immutable `v1.12.0` release:
+Install the immutable `v1.13.0` release:
 
 ```bash
-git clone --depth 1 --branch v1.12.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.13.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
-python3 plugins/lean-sdlc/skills/lean-sdlc/scripts/configure_codex.py
-python3 plugins/lean-sdlc/skills/lean-sdlc/scripts/configure_codex.py --check
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc
 ```
-
-The configurator prepares Codex for the plugin. It preserves unrelated settings and backs up changed owned files with a `.bak` suffix. Use `--codex-home` for an alternate Codex home.
 
 Restart Codex after installation. Review and trust the plugin hook. Then begin a new task.
 

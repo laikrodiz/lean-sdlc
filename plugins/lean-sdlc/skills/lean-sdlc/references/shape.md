@@ -4,7 +4,18 @@ Use Shape when the project problem, user, value, behavior, scope, stage, or curr
 
 Discussion or proposal requests remain read-only. Brainstorming requests use the same read-only path. Plan and Deliver require explicit implementation authority, explicit implementation wording, or clear confirmation to proceed against a recoverable agreed proposal. If authority is ambiguous, remain read-only.
 
-Apply the intent and visible-plan contract in [Plan](plan.md) before creating a task. Keep implementation steps transient, and keep `tasks.csv` as the only durable task plan.
+Apply this intent contract, then the visible-plan contract in [Plan](plan.md), before creating a task. Keep implementation steps transient, and keep `tasks.csv` as the only durable task plan.
+
+## Intent contract
+
+Shape owns the complete intent gate. Before the Architect creates a task or mutates the repository, the Architect naturally confirms `why -> what -> how -> proof`. Shape settles Why and What. Decide and Plan add How and Proof before task creation or mutation:
+
+- Why: the present problem or opportunity and affected user or business value.
+- What: the smallest observable outcome plus constraints and non-goals.
+- How: the technical approach and task shape after Why and What are stable.
+- Proof: acceptance and verification that show the outcome.
+
+Use natural prose. Do not require fixed headings. If a material assumption affects behavior, scope, or architecture, stop for user confirmation. If intent is clear and implementation authority is explicit, continue without another round trip. Brainstorming and rephrasing remain read-only.
 
 Use Sol `high` for framing. Escalate to `xhigh` only when the business risk or ambiguity warrants it.
 

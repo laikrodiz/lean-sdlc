@@ -7,7 +7,6 @@ import re
 import subprocess
 import sys
 import tempfile
-import tomllib
 import unittest
 from pathlib import Path
 
@@ -20,8 +19,6 @@ TASKS = SCRIPTS / "tasks.py"
 CHECK = SCRIPTS / "lean_check.py"
 INIT = SCRIPTS / "init_repo.py"
 OWNER_HOOK = SCRIPTS / "session_state.py"
-CONFIGURE_CODEX = SCRIPTS / "configure_codex.py"
-LUNA_PROFILE = SKILL / "assets/lean_sdlc_luna.toml"
 PLUGIN_HOOKS = PLUGIN / "hooks/hooks.json"
 HEADER = (
     "Task ID,Title,Status,Context,Dependencies,Owner,"
@@ -43,12 +40,6 @@ def run(*arguments: str, input_text: str | None = None) -> subprocess.CompletedP
 
 def task(repository: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
     return run(str(TASKS), "--repo", str(repository), *arguments)
-
-
-def configure_codex(
-    codex_home: Path, *arguments: str
-) -> subprocess.CompletedProcess[str]:
-    return run(str(CONFIGURE_CODEX), "--codex-home", str(codex_home), *arguments)
 
 
 def write_ledger(repository: Path, body: str, *, legacy_path: bool = False) -> Path:
@@ -298,14 +289,23 @@ class TaskLedgerTests(unittest.TestCase):
                 "Second",
                 "--context",
                 "Project",
-                "--dependencies",
-                "TASK-000",
                 "--acceptance",
                 "Done",
                 "--proof",
                 "Check",
             )
             self.assertEqual(second.returncode, 0, second.stderr)
+
+            linked = task(
+                repository,
+                "update",
+                "TASK-001",
+                "--owner",
+                "12345678",
+                "--dependencies",
+                "TASK-000",
+            )
+            self.assertEqual(linked.returncode, 0, linked.stderr)
 
             blocked_close = task(
                 repository,
@@ -347,6 +347,81 @@ class TaskLedgerTests(unittest.TestCase):
             self.assertIn("depends on missing task TASK-999", missing.stderr)
 
             self.assertEqual(len(read_rows(repository)), 2)
+
+    def test_planned_start_rejects_unfinished_dependencies(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            write_ledger(
+                repository,
+                "TASK-001,Dependency,Planned,Project,,,"
+                "Ready,Check,\n"
+                "TASK-000,Child,Planned,Project,TASK-001,,Ready,Check,\n",
+            )
+
+            result = task(repository, "start", "TASK-000", "--owner", "12345678")
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("unfinished dependencies: TASK-001", result.stderr)
+            rows = read_rows(repository)
+            self.assertEqual(rows[1]["Status"], "Planned")
+            self.assertEqual(rows[1]["Owner"], "")
+
+    def test_immediate_start_rejects_unfinished_dependencies(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            write_ledger(
+                repository,
+                "TASK-000,Dependency,Planned,Project,,,"
+                "Ready,Check,\n",
+            )
+
+            result = task(
+                repository,
+                "start",
+                "--owner",
+                "12345678",
+                "--title",
+                "Child",
+                "--context",
+                "Project",
+                "--dependencies",
+                "TASK-000",
+                "--acceptance",
+                "Ready",
+                "--proof",
+                "Check",
+            )
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("unfinished dependencies: TASK-000", result.stderr)
+            rows = read_rows(repository)
+            self.assertEqual([row["Task ID"] for row in rows], ["TASK-000"])
+
+    def test_immediate_start_keeps_missing_dependency_error(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            write_ledger(repository, "")
+
+            result = task(
+                repository,
+                "start",
+                "--owner",
+                "12345678",
+                "--title",
+                "Child",
+                "--context",
+                "Project",
+                "--dependencies",
+                "TASK-999",
+                "--acceptance",
+                "Ready",
+                "--proof",
+                "Check",
+            )
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("depends on missing task TASK-999", result.stderr)
+            self.assertEqual(read_rows(repository), [])
 
     def test_open_prints_header_and_only_planned_or_in_progress_rows(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -968,7 +1043,10 @@ class PackageContractTests(unittest.TestCase):
             "gpt-5.6-luna",
             "gpt-5.6-terra",
             "user-selected lead",
-            "lean_sdlc_luna",
+            "model=gpt-5.6-luna",
+            "reasoning_effort=max",
+            "non-full-history `fork_turns`",
+            "omit `agent_type`",
             "luna max uses standard service by default",
             "normal spawns omit `service_tier`",
             "service_tier=priority",
@@ -1011,16 +1089,127 @@ class PackageContractTests(unittest.TestCase):
                     f"{document}: {line}",
                 )
 
+    def test_intent_contract_owners_and_architect_boundary_are_explicit(self) -> None:
+        shape = (SKILL / "references/shape.md").read_text(encoding="utf-8").lower()
+        plan = (SKILL / "references/plan.md").read_text(encoding="utf-8").lower()
+        decide = (SKILL / "references/decide.md").read_text(encoding="utf-8").lower()
+        contracts = (
+            SKILL / "references/repository-contracts.md"
+        ).read_text(encoding="utf-8").lower()
+        subagents = (
+            SKILL / "references/subagents.md"
+        ).read_text(encoding="utf-8").lower()
+        evaluations = (
+            SKILL / "references/trigger-evals.md"
+        ).read_text(encoding="utf-8").lower()
+
+        for phrase in [
+            "shape owns the complete intent gate",
+            "why -> what -> how -> proof",
+            "present problem or opportunity",
+            "affected user or business value",
+            "shape settles why and what",
+            "decide and plan add how and proof",
+            "smallest observable outcome plus constraints and non-goals",
+            "technical approach and task shape after why and what are stable",
+            "proof: acceptance and verification",
+            "material assumption affects behavior, scope, or architecture",
+            "stop for user confirmation",
+            "intent is clear and implementation authority is explicit",
+            "brainstorming and rephrasing remain read-only",
+        ]:
+            self.assertIn(phrase, shape)
+        self.assertIn("derive observable acceptance from the confirmed outcome and affected value", plan)
+        self.assertIn(
+            "implementation mechanisms, changed files, and test commands support acceptance but do not define it alone",
+            plan,
+        )
+        for phrase in [
+            "when at least two tasks are ready",
+            "checks the next ready pair",
+            "resource gate passes",
+            "elapsed time should decrease",
+            "name the shared resource or dependency",
+            "do not score the choice or add a mode",
+        ]:
+            self.assertIn(phrase, plan)
+        self.assertIn("tie each technical choice to the confirmed intent or constraint it serves", decide)
+        for phrase in [
+            "project purpose, value, behavior boundary, scope, stage, and version promise",
+            "durable behavior detail",
+            "technical rationale and durable costly choice",
+            "local corrections -> outcome-focused task truth",
+            "keep durable intent in these existing owners",
+            "do not add a file or task column for intent",
+            "dependencies must exist, remain acyclic, and be `done` before start or close",
+            "the ledger lock is not a source-file lock",
+            "one root `tasks.csv` remains authoritative",
+            "two ready tasks for one architect owner",
+        ]:
+            self.assertIn(phrase, contracts)
+        for phrase in [
+            "the architect always owns intent, public behavior, architecture, tasks, acceptance, integration, and closeout",
+            "never sends unresolved user input to a child",
+            "writes inside an active child boundary",
+            "accepts unreviewed output",
+            "replaces independent proof with confidence",
+            "assisted mode normally delegates routine discovery, evidence, implementation, checks, documentation, and recorded operations",
+            "architect may implement under these exceptions",
+            "after explicit user direction that the architect itself implement",
+            "after the required child and fallback are unavailable",
+            "settled separable work remains engineer work",
+            "each child handoff begins with a short settled purpose",
+            "at most two active children",
+            "resource gate passes",
+            "all dependencies are `done`",
+            "separate mutable code and test paths",
+            "stable read paths",
+            "incidental outputs or caches",
+            "public interface, schema, manifest, lockfile, generator, migration, or mutable fixture",
+            "independent acceptance and proof",
+            "the architect is a writer and must not edit child-owned paths",
+            "one architect writer group owns a worktree",
+            "the `tasks.csv` lock protects only the ledger",
+            "engineer/engineer requires strict isolation",
+            "engineer/scout requires a stable separate read boundary",
+            "scout/scout may overlap stable sources for independent questions",
+            "one verifier checks the combined checkpoint",
+            "scout supports bounded repo or contract mapping",
+            "avoid scout for a trivial one-file lookup",
+            "stop before the shared resource and report the collision and checkpoint",
+            "pause affected writers",
+            "invalidate read findings after a source change",
+            "a child never integrates sibling work",
+        ]:
+            self.assertIn(phrase, subagents)
+        for phrase in [
+            "brain-dump discussion",
+            "architect restates the understandable why and what in natural prose",
+            "clear implementation authority",
+            "material ambiguity",
+            "behavior-based acceptance",
+            "architect implementation exception",
+            "safe engineer pair",
+            "overlapping read-only scouts",
+            "bounded scout evidence",
+            "dependency start block",
+            "architect writer barrier",
+            "collision stop",
+        ]:
+            self.assertIn(phrase, evaluations)
+        scenarios = [
+            line
+            for line in evaluations.splitlines()
+            if line.startswith("| ") and not line.startswith("| ---") and "Scenario" not in line
+        ]
+        self.assertLess(len(scenarios), 40)
+
     def test_child_policy_compaction_bounds_and_identity_contract(self) -> None:
         subagents_path = SKILL / "references/subagents.md"
-        profile_path = SKILL / "assets/lean_sdlc_luna.toml"
         subagents = subagents_path.read_text(encoding="utf-8")
-        profile = profile_path.read_text(encoding="utf-8")
 
         self.assertGreaterEqual(len(subagents.splitlines()), 100)
         self.assertLessEqual(len(subagents.splitlines()), 140)
-        self.assertGreaterEqual(len(profile.splitlines()), 18)
-        self.assertLessEqual(len(profile.splitlines()), 22)
         for heading in [
             "## Role-trigger matrix",
             "## Independence gate",
@@ -1034,19 +1223,16 @@ class PackageContractTests(unittest.TestCase):
             self.assertIn(heading, subagents)
         self.assertIn("The Architect owns each child name at spawn time", subagents)
         self.assertIn("task_name=engineer_beta", subagents)
-        self.assertIn("stable label and exact child name", profile)
         self.assertIn("Every child update starts with work or current state", subagents)
-        self.assertIn("Every update starts with work or current state", profile)
         self.assertIn(
-            "Before every handoff, state the outcome, boundary, contract, proof, and stop conditions",
+            "Each child handoff begins with a short settled purpose, then states the outcome, boundary, contract, proof, and stop conditions",
             subagents,
         )
-        self.assertIn("without a fixed runtime template", profile)
-        self.assertIn("at most two useful Luna heartbeats at two-minute intervals", profile)
-        self.assertNotIn("Architecture alignment:", subagents + profile)
-        self.assertNotIn("Return labels remain explicit", subagents + profile)
-        self.assertNotIn("labeled report", profile)
-        self.assertNotIn("First" + "name", subagents + profile)
+        self.assertIn("at most two useful heartbeats at two-minute intervals", subagents)
+        self.assertNotIn("Architecture alignment:", subagents)
+        self.assertNotIn("Return labels remain explicit", subagents)
+        self.assertNotIn("labeled report", subagents)
+        self.assertNotIn("First" + "name", subagents)
 
     def test_trigger_evals_and_proof_ownership_are_compact(self) -> None:
         evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8")
@@ -1079,7 +1265,6 @@ class PackageContractTests(unittest.TestCase):
                 SKILL / "SKILL.md",
                 SKILL / "references/subagents.md",
                 SKILL / "references/trigger-evals.md",
-                SKILL / "assets/lean_sdlc_luna.toml",
                 ROOT / "README.md",
                 ROOT / "docs/PROJECT.md",
             ]
@@ -1110,9 +1295,7 @@ class PackageContractTests(unittest.TestCase):
         ]:
             self.assertIsNone(re.search(pattern, lowered), pattern)
 
-    def test_luna_profile_and_technical_english_rules_are_packaged(self) -> None:
-        profile = tomllib.loads(LUNA_PROFILE.read_text(encoding="utf-8"))
-        configure = CONFIGURE_CODEX.read_text(encoding="utf-8")
+    def test_native_luna_routing_and_hard_cut_are_packaged(self) -> None:
         subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
         policy = "\n".join(
             path.read_text(encoding="utf-8")
@@ -1123,16 +1306,20 @@ class PackageContractTests(unittest.TestCase):
             ]
         ).lower()
 
-        self.assertEqual(profile["name"], "lean_sdlc_luna")
-        self.assertEqual(profile["model"], "gpt-5.6-luna")
-        self.assertEqual(profile["model_reasoning_effort"], "max")
-        self.assertIn("Engineer, Maintainer, Verifier, or Scout", profile["description"])
-        self.assertIn("lean_sdlc_luna", subagents)
+        self.assertFalse((SCRIPTS / "configure_codex.py").exists())
+        self.assertFalse((SKILL / "assets/lean_sdlc_luna.toml").exists())
+        self.assertNotIn("configure_codex", subagents)
+        self.assertNotIn("lean_sdlc_luna", subagents)
+        self.assertIn("model=gpt-5.6-luna", subagents)
+        self.assertIn("reasoning_effort=max", subagents)
+        self.assertIn("non-full-history `fork_turns`", subagents)
+        self.assertIn("Omit `agent_type`", subagents)
         self.assertIn("Luna Max uses Standard service by default", subagents)
         self.assertIn("normal spawns omit `service_tier`", subagents)
         self.assertIn("gpt-5.6-terra", subagents)
         self.assertIn("reasoning_effort=xhigh", subagents)
-        self.assertNotIn("model_catalog_json", configure)
+        self.assertNotIn("configure_codex", policy)
+        self.assertNotIn("lean_sdlc_luna", policy)
         for phrase in [
             "asd-ste100 issue 9",
             "active voice",
@@ -1155,220 +1342,13 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.12.0")
+        self.assertEqual(version, "1.13.0")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
         self.assertIn(
-            "- Version goal: Release persistent orchestration state, Architect-owned child names, Standard Luna service by default, and explicit Fast-child opt-in with shared-document stewardship.",
+            "- Version goal: Release the native Luna hard cut, confirmed why -> what -> how -> proof intent gate, expanded bounded evidence delegation, safe same-worktree concurrency, and dependency-before-start enforcement.",
             project,
         )
-
-
-class CodexConfigurationTests(unittest.TestCase):
-    def assert_v2_configuration(self, config: dict[str, object]) -> None:
-        features = config["features"]
-        self.assertIsInstance(features, dict)
-        self.assertTrue(features["multi_agent"])
-        multi_agent_v2 = features["multi_agent_v2"]
-        self.assertIsInstance(multi_agent_v2, dict)
-        expected = {
-            "enabled": True,
-            "tool_namespace": "agents",
-            "hide_spawn_agent_metadata": False,
-            "expose_spawn_agent_model_overrides": True,
-            "wait_agent_enabled": True,
-        }
-        for key, value in expected.items():
-            self.assertEqual(multi_agent_v2[key], value)
-
-    def test_configuration_creation_enables_luna_profile(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            codex_home = Path(directory) / "codex"
-            configured = configure_codex(codex_home)
-            self.assertEqual(configured.returncode, 0, configured.stderr)
-
-            config = tomllib.loads(
-                codex_home.joinpath("config.toml").read_text(encoding="utf-8")
-            )
-            self.assert_v2_configuration(config)
-            self.assertEqual(
-                config["agents"]["lean_sdlc_luna"]["config_file"],
-                "agents/lean_sdlc_luna.toml",
-            )
-            source_profile = tomllib.loads(LUNA_PROFILE.read_text(encoding="utf-8"))
-            generated_description = config["agents"]["lean_sdlc_luna"]["description"]
-            self.assertEqual(generated_description, source_profile["description"])
-            self.assertIn("Architect", generated_description)
-            self.assertIn("Scout", generated_description)
-            self.assertNotIn("lead", generated_description.lower())
-            self.assertEqual(
-                codex_home.joinpath("agents/lean_sdlc_luna.toml").read_text(
-                    encoding="utf-8"
-                ),
-                LUNA_PROFILE.read_text(encoding="utf-8"),
-            )
-
-    def test_legacy_agent_boolean_converts_to_profile_metadata(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            codex_home = Path(directory)
-            config_path = codex_home / "config.toml"
-            config_path.write_text(
-                "[agents]\nlean_sdlc_luna = false\nmax_threads = 3\n",
-                encoding="utf-8",
-            )
-
-            configured = configure_codex(codex_home)
-            self.assertEqual(configured.returncode, 0, configured.stderr)
-            content = config_path.read_text(encoding="utf-8")
-            self.assertNotIn("lean_sdlc_luna = false", content)
-            self.assertIn("max_threads = 3", content)
-            self.assertIn("[agents.lean_sdlc_luna]", content)
-            self.assertIsInstance(
-                tomllib.loads(content)["agents"]["lean_sdlc_luna"], dict
-            )
-
-    def test_legacy_v2_boolean_converts_to_configured_table(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            codex_home = Path(directory)
-            config_path = codex_home / "config.toml"
-            config_path.write_text(
-                "[features]\nmulti_agent_v2 = false\nkeep = true\n",
-                encoding="utf-8",
-            )
-
-            configured = configure_codex(codex_home)
-            self.assertEqual(configured.returncode, 0, configured.stderr)
-            content = config_path.read_text(encoding="utf-8")
-            self.assertNotIn("multi_agent_v2 = false", content)
-            self.assertIn("keep = true", content)
-            self.assertIn("[features.multi_agent_v2]", content)
-            self.assert_v2_configuration(tomllib.loads(content))
-
-    def test_existing_tables_update_in_place(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            codex_home = Path(directory)
-            config_path = codex_home / "config.toml"
-            original = (
-                'title = "Personal"\n\n'
-                "[features]\n"
-                "multi_agent = false # old value\n"
-                "keep = true\n\n"
-                "[features.multi_agent_v2]\n"
-                "enabled = false\n"
-                'tool_namespace = "collaboration"\n'
-                "hide_spawn_agent_metadata = true\n"
-                "expose_spawn_agent_model_overrides = false\n"
-                "wait_agent_enabled = false\n"
-                'custom_v2 = "kept"\n\n'
-                "[agents.lean_sdlc_luna]\n"
-                'description = "old"\n'
-                'config_file = "old.toml"\n'
-                'custom = "kept"\n'
-            )
-            config_path.write_text(original, encoding="utf-8")
-
-            configured = configure_codex(codex_home)
-            self.assertEqual(configured.returncode, 0, configured.stderr)
-            content = config_path.read_text(encoding="utf-8")
-            self.assertIn('title = "Personal"', content)
-            self.assertIn("multi_agent = true # old value", content)
-            self.assertIn("keep = true", content)
-            self.assertIn('custom_v2 = "kept"', content)
-            self.assertIn('custom = "kept"', content)
-            self.assert_v2_configuration(tomllib.loads(content))
-            self.assertEqual(
-                config_path.with_name("config.toml.bak").read_text(encoding="utf-8"),
-                original,
-            )
-
-    def test_configuration_is_idempotent(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            codex_home = Path(directory)
-            first = configure_codex(codex_home)
-            self.assertEqual(first.returncode, 0, first.stderr)
-            before = {
-                path.relative_to(codex_home): path.read_bytes()
-                for path in codex_home.rglob("*")
-                if path.is_file()
-            }
-
-            second = configure_codex(codex_home)
-            self.assertEqual(second.returncode, 0, second.stderr)
-            self.assertIn("kept", second.stdout)
-            after = {
-                path.relative_to(codex_home): path.read_bytes()
-                for path in codex_home.rglob("*")
-                if path.is_file()
-            }
-            self.assertEqual(after, before)
-
-    def test_check_mode_reports_missing_and_valid_configuration(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            codex_home = Path(directory) / "codex"
-            missing = configure_codex(codex_home, "--check")
-            self.assertNotEqual(missing.returncode, 0)
-            self.assertFalse(codex_home.exists())
-
-            configured = configure_codex(codex_home)
-            self.assertEqual(configured.returncode, 0, configured.stderr)
-            before = {
-                path.relative_to(codex_home): path.read_bytes()
-                for path in codex_home.rglob("*")
-                if path.is_file()
-            }
-            checked = configure_codex(codex_home, "--check")
-            self.assertEqual(checked.returncode, 0, checked.stderr)
-            self.assertIn("is configured", checked.stdout)
-            after = {
-                path.relative_to(codex_home): path.read_bytes()
-                for path in codex_home.rglob("*")
-                if path.is_file()
-            }
-            self.assertEqual(after, before)
-
-    def test_existing_owned_profile_is_backed_up_before_installation(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            codex_home = Path(directory)
-            profile_path = codex_home / "agents/lean_sdlc_luna.toml"
-            profile_path.parent.mkdir()
-            original = (
-                'name = "lean_sdlc_luna"\n'
-                'description = "old profile"\n'
-                'developer_instructions = "old"\n'
-            )
-            profile_path.write_text(original, encoding="utf-8")
-
-            configured = configure_codex(codex_home)
-            self.assertEqual(configured.returncode, 0, configured.stderr)
-            self.assertEqual(
-                profile_path.with_name("lean_sdlc_luna.toml.bak").read_text(
-                    encoding="utf-8"
-                ),
-                original,
-            )
-            self.assertEqual(
-                profile_path.read_text(encoding="utf-8"),
-                LUNA_PROFILE.read_text(encoding="utf-8"),
-            )
-
-    def test_unrelated_configuration_is_preserved(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            codex_home = Path(directory)
-            config_path = codex_home / "config.toml"
-            unrelated = (
-                'model = "gpt-5.6-sol"\n'
-                "[mcp_servers.example]\n"
-                'command = "example"\n\n'
-                '[projects."/work"]\n'
-                'trust_level = "trusted"\n'
-            )
-            config_path.write_text(unrelated, encoding="utf-8")
-
-            configured = configure_codex(codex_home)
-            self.assertEqual(configured.returncode, 0, configured.stderr)
-            content = config_path.read_text(encoding="utf-8")
-            self.assertTrue(content.startswith(unrelated))
-            tomllib.loads(content)
 
 
 if __name__ == "__main__":
