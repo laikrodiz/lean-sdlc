@@ -38,7 +38,16 @@ Apply every row before the first command. Delegation is mandatory beyond the Eng
 - Engineer/Engineer requires strict isolation. Engineer/Scout requires a stable separate read boundary. Scout/Scout may overlap stable sources for independent questions. A Scout may overlap one Verifier or Maintainer only for future work with separate resources.
 - The gate never permits a third active child. Maintainer and Verifier remain single and serial with writers. Project-native command or test parallelism stays inside one child when resource-safe.
 - Implementation writers stop before integration. No writer overlaps documentation synchronization, verification, or stateful operations. Shared tests, docs, generators, and operations run serially after the checkpoint. One Verifier checks the combined checkpoint.
-- If scope, dependency, a shared resource, or elapsed-time reduction is uncertain, name it and work serially. Do not score the choice or add a mode.
+
+## External tools
+
+- External-tool routing starts before substantial plugin, MCP, connector, CAD, database, deployment, or similar work. The Architect keeps the target, permissions, constraints, architecture, decisions, and final acceptance. The Architect may make one bounded probe when the tool contract is unknown.
+- Delegate the remaining sequence when another routine call is needed. Delegate before work when more than three external calls are expected. Delegate for large schemas/logs/inventories/search results or when one operation repeats across objects. Delegate when tool discovery is required, error recovery needs several diagnostic calls, or output needs reduction before a decision.
+- Route read-heavy discovery and reduction to Scout. Route approved mutations to Engineer. Route repeated build/export/import/deploy/flash procedures to Maintainer. Route independent checks to Verifier.
+- Use bounded programmatic tool calling when available and supported for deterministic reads or reductions. Inside the assigned child, use direct calls for mutations, approvals, or judgment-sensitive steps. Routine mutation calls belong to the assigned Engineer or Maintainer, not the Architect.
+- One agent owns each mutable external target. Never let two agents mutate the same project, database, deployment, or hardware target.
+- A child returns conclusions, relevant errors, artifact paths or IDs, and unresolved questions, not a raw transcript. Reuse the same child for the same tool and project. Replace it only after a material tool or target change under existing lifecycle rules.
+- Token-waste signals include compaction during tool work, several direct routine calls, repeated large output, and two failed tool attempts. They also include the Architect summarizing data instead of deciding. On a signal, stop routine direct calls. Reroute remaining work to Luna Max or bounded programmatic calls. Mention optimization only when routing changes.
 
 ## Child lifecycle
 
@@ -71,6 +80,7 @@ Apply every row before the first command. Delegation is mandatory beyond the Eng
 
 - Every child update starts with work or current state. Use concise natural prose without greetings, scripted openings, fixed labels, praise, or roleplay.
 - Report only material phase changes. For a silent command, use at most two useful heartbeats at two-minute intervals and keep logs bounded.
+- Routine user commentary, child updates, child return messages, and final answers omit full checkpoint fingerprints. Use concise status such as "verification is running against unchanged source", "verification passed", or "source changed and the check stopped". Show a full fingerprint only when the user explicitly asks for audit or debugging detail.
 - Engineer returns one checkpoint with the result, changed paths, targeted checks, task checkpoint, and deviation or decision needed in concise natural prose.
 - Scout adds cited findings, conflicts, unknowns, decision impact, and sources in concise natural prose. Maintainer adds operation commands and artifacts. Verifier adds operation status, evidence or artifacts, issue or risk, and next Architect action.
 
@@ -123,8 +133,8 @@ Before every spawn, resolve role, trigger, mode, authority, exposed models, reac
 2. Architect reviews the combined implementation and scopes.
 3. Run any shared source-changing formatter or generator serially; Architect reviews resulting changes.
 4. Maintainer synchronizes affected shared docs through an impact-directed pass.
-5. Pause all writers and identify the checkpoint by commit or exact working-tree fingerprint as the final checkpoint; require the sidecar to confirm the identity before acting.
-6. One Verifier checks both acceptance sets for a qualified pair, or the one active acceptance set, plus assigned-path separation, semantic interaction, and documentation parity. Run the full suite only when required by the task or repository contract.
+5. Pause all writers and identify the checkpoint by commit or exact working-tree fingerprint as the final checkpoint for machine verification. The Architect hands that exact identity to the Verifier; require the sidecar to confirm the identity before acting and machine-check equality. After commit, use the release tag or short commit ID for normal durable identity.
+6. One Verifier confirms checkpoint equality without repeating the full fingerprint in the visible return, then checks both acceptance sets for a qualified pair, or the one active acceptance set, plus assigned-path separation, semantic interaction, and documentation parity. Run the full suite only when required by the task or repository contract.
 7. Maintainer runs required build, package, deploy, flash, runtime, or smoke operations serially against that exact accepted source checkpoint. Invalidate the result after any relevant source change.
 
 ## Return and stop conditions

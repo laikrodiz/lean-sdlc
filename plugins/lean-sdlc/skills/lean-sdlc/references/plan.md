@@ -17,6 +17,14 @@ Use the confirmed Shape contract `why -> what -> how -> proof`. Plan adds task s
 7. Keep `tasks.csv` as the only durable task plan. Each durable plan item maps to one task, exactly once.
 8. Keep requirements and design detail in their owning documents.
 
+## Plan view projection
+
+During implementation, `tasks.py open` supplies unresolved `Planned` and `In Progress` rows. Project each row into `update_plan` with the exact name `TASK-NNN — Title`. Map `Planned` to `pending` and `In Progress` to `in_progress`.
+
+Call `update_plan` after task creation or start, split, merge, or a material plan change. Before or with `tasks.py close`, mark the closing row `completed`; this is an active close transition, not a rebuild state. On startup, resume, clear, or compaction, call `tasks.py open` and rebuild only unresolved rows before Deliver. Do not load full `Done` history. Brainstorming and rephrasing remain read-only and create no task view.
+
+When a qualified parallel pair is active, combine its two ledger rows into one active view row, such as `TASK-045 + TASK-046 — <shared outcome>`. Keep both ledger rows in `tasks.csv`; it remains authoritative.
+
 ## Task sizing
 
 One ledger task represents one Engineer checkpoint. Require settled architecture, one coherent outcome, one independent bounded proof, and one accept-or-reject review. Keep implementation tests inside the task. Keep Maintainer and Verifier work attached unless it is independently deliverable.

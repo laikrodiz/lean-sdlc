@@ -9,6 +9,9 @@ Codex repository work can drift from user intent, lose ownership, or claim compl
 - Shape, Decide, Plan, Diagnose, Deliver, and Verify lanes.
 - Minimal initialization, legacy migration, atomic private task-ledger transactions, and bounded read-only task views.
 - Human-readable `Context` values and one durable task per independently accepted state.
+- During implementation, unresolved ledger task IDs and titles project into Codex's plan view. Brainstorming and rephrasing remain read-only and create no task view.
+- Checkpoint reporting stays readable while exact machine proof remains available for verification.
+- Substantial external-tool work keeps decisions with the Architect. Scout handles bounded discovery, Engineer approved mutations, Maintainer repeated operations, and Verifier independent checks. One agent owns each mutable external target.
 - Architect ownership of intent, architecture, interfaces, invariants, acceptance, integration, proof, and closeout. The primary agent is Architect. Use Architect in visible commentary, handoffs, returns, and decision requests; the Architect speaks as I.
 - Before changes, the Architect confirms why -> what -> how -> proof. Why states user or business value. What states the observable outcome and boundaries. How states the technical approach. Proof states acceptance and verification.
 - Engineer, Maintainer, Verifier, and Scout roles under one canonical policy. Custom roles require direct user authority.
@@ -45,6 +48,9 @@ Codex repository work can drift from user intent, lose ownership, or claim compl
 - Explicit invocation or repository rules trigger Lean-SDLC.
 - A new repository needs only `AGENTS.md`, `docs/PROJECT.md`, and root `tasks.csv`.
 - Agents use bounded `tasks.py open` and `tasks.py show TASK-ID` reads while the human-readable `tasks.csv` remains authoritative.
+- During implementation, Codex's plan view mirrors each unresolved ledger task ID and title. Brainstorming creates no task view.
+- Checkpoint reports stay readable while exact machine proof remains available for verification.
+- Substantial external-tool work keeps decisions with the Architect, routes bounded work to the matching role, and gives each mutable external target one owner.
 - Task transactions remain atomic, owner-aware, dependency-valid, and cycle-free.
 - If a dependency is unfinished, task start is blocked.
 - One root `tasks.csv` remains authoritative for qualified parallel groups, and the Architect alone starts, updates, and closes both tasks.
@@ -58,6 +64,6 @@ Codex repository work can drift from user intent, lose ownership, or claim compl
 ## Current promise
 
 - Stage: Evolution
-- Version: 1.13.0
-- Version goal: Release the native Luna hard cut, confirmed why -> what -> how -> proof intent gate, expanded bounded evidence delegation, safe same-worktree concurrency, and dependency-before-start enforcement.
+- Version: 1.14.0
+- Version goal: Release deterministic ledger plan views, readable checkpoint reporting, and bounded external-tool delegation.
 - Exit evidence: Tests, skill and plugin validation, local installation, accepted checkpoints, repository checks, tagged commit, and successful push.

@@ -1050,12 +1050,54 @@ class PackageContractTests(unittest.TestCase):
             "luna max uses standard service by default",
             "normal spawns omit `service_tier`",
             "service_tier=priority",
+            "## external tools",
+            "external-tool routing",
+            "before substantial plugin, mcp, connector, cad, database, deployment, or similar work",
+            "target, permissions, constraints, architecture, decisions, and final acceptance",
+            "one bounded probe",
+            "more than three external calls",
+            "large schemas/logs/inventories/search results",
+            "one operation repeats across objects",
+            "tool discovery is required",
+            "error recovery needs several diagnostic calls",
+            "output needs reduction before a decision",
+            "read-heavy discovery and reduction to scout",
+            "approved mutations to engineer",
+            "repeated build/export/import/deploy/flash procedures to maintainer",
+            "independent checks to verifier",
+            "bounded programmatic tool calling",
+            "direct calls for mutations, approvals, or judgment-sensitive steps",
+            "inside the assigned child",
+            "routine mutation calls belong to the assigned engineer or maintainer, not the architect",
+            "one agent owns each mutable external target",
+            "never let two agents mutate the same project, database, deployment, or hardware target",
+            "not a raw transcript",
+            "same tool and project",
+            "material tool or target change",
+            "compaction during tool work",
+            "several direct routine calls",
+            "repeated large output",
+            "two failed tool attempts",
+            "architect summarizing data instead of deciding",
+            "reroute remaining work to luna max or bounded programmatic calls",
+            "mention optimization only when routing changes",
             "material phase changes",
             "at most two useful heartbeats",
             "every child update starts with work or current state",
             "maintainer synchronizes affected shared narrative documents",
             "no child edits `tasks.csv`",
-        ]:
+            "routine user commentary",
+            "child return messages",
+            "final answers omit full checkpoint fingerprints",
+            "verification is running against unchanged source",
+            "verification passed",
+            "source changed and the check stopped",
+            "machine verification",
+            "architect hands that exact identity to the verifier",
+            "checkpoint equality",
+            "release tag or short commit id",
+            "without repeating the full fingerprint in the visible return",
+       ]:
             self.assertIn(term, subagents)
         for term in [
             "acceptance-defining proof",
@@ -1066,6 +1108,10 @@ class PackageContractTests(unittest.TestCase):
         for term in [
             "assisted parallel work",
             "custom role request",
+            "proof and integration checkpoint",
+            "external-tool routing and token-waste signals",
+            "machine verification",
+            "routine reports omit full fingerprints",
         ]:
             self.assertIn(term, evaluations)
         self.assertIn("retry luna max", subagents)
@@ -1204,12 +1250,51 @@ class PackageContractTests(unittest.TestCase):
         ]
         self.assertLess(len(scenarios), 40)
 
+    def test_ledger_plan_view_projection_is_deterministic_and_read_only_for_brainstorming(self) -> None:
+        dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
+        plan = (SKILL / "references/plan.md").read_text(encoding="utf-8").lower()
+        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8").lower()
+        root_agents = ROOT.joinpath("AGENTS.md").read_text(encoding="utf-8").lower()
+        template_agents = (SKILL / "assets/AGENTS.md").read_text(encoding="utf-8").lower()
+
+        for phrase in [
+            "task-nnn — title",
+            "update_plan",
+            "unresolved",
+            "planned",
+           "in_progress",
+           "completed",
+            "mark the closing row",
+            "active close transition",
+            "rebuild only unresolved rows",
+            "do not load full",
+            "startup, resume, clear, or compaction",
+            "tasks.py open",
+            "brainstorming and rephrasing remain read-only and create no task view",
+            "qualified parallel pair",
+            "remains authoritative",
+        ]:
+            self.assertIn(phrase, dispatcher + plan)
+
+        for phrase in [
+            "brain-dump discussion",
+            "creates no task or plan view",
+            "ledger-to-plan projection",
+            "into exact",
+        ]:
+            self.assertIn(phrase, evaluations)
+
+        self.assertEqual(root_agents, template_agents)
+        self.assertIn("project unresolved", root_agents)
+        self.assertIn("rebuild only unresolved rows from", root_agents)
+        self.assertIn("brainstorming remains read-only and creates no task view", root_agents)
+
     def test_child_policy_compaction_bounds_and_identity_contract(self) -> None:
         subagents_path = SKILL / "references/subagents.md"
         subagents = subagents_path.read_text(encoding="utf-8")
 
         self.assertGreaterEqual(len(subagents.splitlines()), 100)
-        self.assertLessEqual(len(subagents.splitlines()), 140)
+        self.assertLessEqual(len(subagents.splitlines()), 150)
         for heading in [
             "## Role-trigger matrix",
             "## Independence gate",
@@ -1342,11 +1427,11 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.13.0")
+        self.assertEqual(version, "1.14.0")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
         self.assertIn(
-            "- Version goal: Release the native Luna hard cut, confirmed why -> what -> how -> proof intent gate, expanded bounded evidence delegation, safe same-worktree concurrency, and dependency-before-start enforcement.",
+            "- Version goal: Release deterministic ledger plan views, readable checkpoint reporting, and bounded external-tool delegation.",
             project,
         )
 

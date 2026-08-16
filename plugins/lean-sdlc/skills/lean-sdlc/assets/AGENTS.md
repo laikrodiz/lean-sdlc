@@ -23,6 +23,9 @@ Read `docs/PROJECT.md` and relevant feature, decision, or operations documents. 
 - Lifecycle restoration covers startup, resume, clear, and compaction. It restores owner, mode, and child tier; reload `references/subagents.md` before Deliver.
 - Dependencies must be `Done` before a task starts. The ledger lock is not a source lock.
 - Assisted parallel work permits at most two children only after the resource gate passes. One Architect writer group owns the worktree.
+- During implementation, after task creation or start, split, merge, or material plan change, project unresolved `tasks.csv` rows into `update_plan` with exact `TASK-NNN — Title` rows and matching `Planned`/`In Progress` states.
+- Before or with ledger close, mark the row completed. After startup, resume, clear, or compaction, rebuild only unresolved rows from `tasks.py open`; do not load Done history.
+- Brainstorming remains read-only and creates no task view. A qualified pair uses one combined active row while `tasks.csv` remains authoritative.
 
 ## Child gate
 

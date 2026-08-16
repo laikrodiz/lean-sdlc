@@ -47,23 +47,22 @@ The Architect owns intent, architecture, task boundaries, acceptance, integratio
 ## Workflow
 
 1. Before changes, the Architect confirms why -> what -> how -> proof. This covers user or business value, outcome and boundaries, technical approach, and acceptance evidence.
-2. Plan and tasks turn approved intent into measurable work, owned task rows, and reproducible proof. The human-readable `tasks.csv` remains authoritative.
-3. Each ledger task maps to one Engineer checkpoint under the [Plan contract](plugins/lean-sdlc/skills/lean-sdlc/references/plan.md). Keep tests and attached Maintainer or Verifier work in the task unless independently deliverable.
-4. Assisted mode uses bounded Scout evidence for non-trivial inquiries. At most two independent children may work in the same worktree only after one resource gate passes. Solo stays with the Architect.
-5. Children stop before integration. The Architect reviews accepted work for scope and contract alignment.
-6. The Maintainer synchronizes affected shared documents.
-7. Integration and verification run serially. Verification runs acceptance proof and one planned regression command. The full suite runs only when required.
-8. Operations replay required recorded build, package, deploy, flash, runtime, or smoke procedures against accepted source.
-9. Closeout resolves evidence, updates repository truth, and closes the owned task.
+2. During implementation, the workflow mirrors unresolved ledger task IDs and titles into Codex's plan view. Brainstorming creates no task view.
+3. Plan and tasks turn approved intent into measurable work, owned task rows, and reproducible proof. Each ledger task maps to one Engineer checkpoint under the [Plan contract](plugins/lean-sdlc/skills/lean-sdlc/references/plan.md).
+4. For substantial external-tool work, the Architect keeps decisions. Scout handles bounded discovery, Engineer approved mutations, Maintainer repeated operations, and Verifier independent checks.
+5. Children stop before integration. The Architect reviews accepted work for scope and contract alignment. The Maintainer synchronizes affected shared documents.
+6. Integration and verification run serially. Verification runs acceptance proof and one planned regression command. The full suite runs only when required.
+7. Operations replay required recorded build, package, deploy, flash, runtime, or smoke procedures against accepted source.
+8. Closeout resolves evidence, updates repository truth, and closes the owned task.
 
 ## Install
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-Install the immutable `v1.13.0` release:
+Install the immutable `v1.14.0` release:
 
 ```bash
-git clone --depth 1 --branch v1.13.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.14.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc

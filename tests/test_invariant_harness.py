@@ -96,7 +96,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant(
         "exact checkpoint barrier",
         SUBAGENTS,
-        ("## checkpoint barrier", "identify the checkpoint by commit or exact working-tree fingerprint", "require the sidecar to confirm the identity before acting", "invalidate the result after any relevant source change"),
+        ("## checkpoint barrier", "identify the checkpoint by commit or exact working-tree fingerprint", "machine verification", "architect hands that exact identity to the verifier", "checkpoint equality", "release tag or short commit id", "without repeating the full fingerprint in the visible return", "require the sidecar to confirm the identity before acting", "invalidate the result after any relevant source change"),
         ordered_terms=(
             "require all active work children to stop before integration",
             "architect reviews the combined implementation and scopes",
@@ -104,8 +104,46 @@ FROZEN_INVARIANTS = (
             "architect reviews resulting changes",
             "maintainer synchronizes affected shared docs",
             "pause all writers and identify the checkpoint by commit or exact working-tree fingerprint",
-            "verifier checks both acceptance sets",
+            "architect hands that exact identity to the verifier",
+            "one verifier confirms checkpoint equality",
+            "then checks both acceptance sets",
             "maintainer runs required build, package, deploy, flash, runtime, or smoke operations serially",
+        ),
+    ),
+    FrozenInvariant(
+        "external-tool routing",
+        SUBAGENTS,
+        (
+            "## external tools",
+            "external-tool routing starts before substantial",
+            "target, permissions, constraints, architecture, decisions, and final acceptance",
+            "one bounded probe",
+            "more than three external calls",
+            "large schemas/logs/inventories/search results",
+            "one operation repeats across objects",
+            "tool discovery is required",
+            "error recovery needs several diagnostic calls",
+            "output needs reduction before a decision",
+            "read-heavy discovery and reduction to scout",
+            "approved mutations to engineer",
+            "repeated build/export/import/deploy/flash procedures to maintainer",
+            "independent checks to verifier",
+            "bounded programmatic tool calling",
+            "direct calls for mutations, approvals, or judgment-sensitive steps",
+            "inside the assigned child",
+            "routine mutation calls belong to the assigned engineer or maintainer, not the architect",
+            "one agent owns each mutable external target",
+            "never let two agents mutate the same project, database, deployment, or hardware target",
+            "not a raw transcript",
+            "same tool and project",
+            "material tool or target change",
+            "compaction during tool work",
+            "several direct routine calls",
+            "repeated large output",
+            "two failed tool attempts",
+            "architect summarizing data instead of deciding",
+            "reroute remaining work to luna max or bounded programmatic calls",
+            "mention optimization only when routing changes",
         ),
     ),
     FrozenInvariant(
@@ -128,13 +166,18 @@ FROZEN_INVARIANTS = (
         "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md",
         ("smallest cohesive units", "avoid project-size tiers, speculative interfaces, and pass-through modules", "plausible edge cases", "classify plausible edge cases as `handle`, `reject`, `defer`, or `impossible by invariant`", "small mermaid diagrams", "never use ascii pseudographics"),
     ),
+   FrozenInvariant(
+       "task sizing and compaction resume",
+       "plugins/lean-sdlc/skills/lean-sdlc/references/plan.md",
+       ("one ledger task represents one engineer checkpoint", "require settled architecture, one coherent outcome, one independent bounded proof, and one accept-or-reject review", "keep one task resumable from repository truth and its ledger row after compaction", "split a task for independent behavior, module outcome, proof, or work that needs an architect checkpoint", "do not use time or line-count limits"),
+   ),
     FrozenInvariant(
-        "task sizing and compaction resume",
+        "deterministic ledger plan projection",
         "plugins/lean-sdlc/skills/lean-sdlc/references/plan.md",
-        ("one ledger task represents one engineer checkpoint", "require settled architecture, one coherent outcome, one independent bounded proof, and one accept-or-reject review", "keep one task resumable from repository truth and its ledger row after compaction", "split a task for independent behavior, module outcome, proof, or work that needs an architect checkpoint", "do not use time or line-count limits"),
+        ("## plan view projection", "`tasks.py open` supplies unresolved `planned` and `in progress` rows", "update_plan", "task-nnn — title", "planned` to `pending", "in progress` to `in_progress", "closing row `completed`", "before or with `tasks.py close`", "active close transition", "only unresolved rows", "do not load full `done` history", "startup, resume, clear, or compaction", "brainstorming and rephrasing remain read-only", "qualified parallel pair", "it remains authoritative"),
     ),
-    FrozenInvariant(
-        "qualified parallel writing and shared documentation",
+   FrozenInvariant(
+       "qualified parallel writing and shared documentation",
         SUBAGENTS,
         ("at most two active children", "universal independence gate", "resource gate passes", "all dependencies are `done`", "separate mutable code and test paths", "stable read paths", "incidental outputs or caches", "public interface, schema, manifest, lockfile, generator, migration, or mutable fixture", "independent acceptance and proof", "engineer/engineer", "engineer/scout", "scout/scout", "a scout may overlap one verifier or maintainer only for future work with separate resources", "implementation writers stop before integration", "no writer overlaps documentation synchronization, verification, or stateful operations", "shared tests, docs, generators, and operations run serially", "named architect decision requires distinct source sets or enough material, data, or logs to pollute lead context", "maintainer synchronizes affected shared narrative documents", "engineer edits only assigned implementation paths", "maintainer edits only assigned shared-document paths", "verifier and scout are read-only", "no child edits `tasks.csv`", "stop before the shared resource and report the collision and checkpoint", "invalidate read findings after a source change", "a child never integrates sibling work"),
     ),
@@ -165,7 +208,7 @@ def _lane_names(text: str) -> tuple[str, ...]:
 class FrozenInvariantHarnessTests(unittest.TestCase):
     def test_every_invariant_has_one_canonical_source(self) -> None:
         names = [invariant.name for invariant in FROZEN_INVARIANTS]
-        self.assertEqual(len(FROZEN_INVARIANTS), 21)
+        self.assertEqual(len(FROZEN_INVARIANTS), 23)
         self.assertEqual(len(names), len(set(names)))
         for invariant in FROZEN_INVARIANTS:
             with self.subTest(invariant=invariant.name):
