@@ -26,12 +26,12 @@ FROZEN_INVARIANTS = (
     FrozenInvariant(
         "six lanes",
         "README.md",
-        ("## Lanes", "| Lane | Purpose |", "| Shape |", "| Decide |", "| Plan |", "| Diagnose |", "| Deliver |", "| Verify |"),
+        ("## Six lanes", "| Lane | Purpose |", "| Shape |", "| Decide |", "| Plan |", "| Diagnose |", "| Deliver |", "| Verify |"),
     ),
     FrozenInvariant(
         "explicit implementation authority",
-        "plugins/lean-sdlc/skills/lean-sdlc/references/plan.md",
-        ("explicit implementation authority", "discussion and proposal requests remain read-only", "if authority is ambiguous, remain read-only", "natural intent confirmation", "concise visible plan"),
+        "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md",
+        ("require explicit implementation authority before task creation or changes", "discussion and proposals remain read-only", "if ambiguous, remain read-only"),
     ),
     FrozenInvariant(
         "natural intent gate",
@@ -56,7 +56,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant(
         "stable owner after compaction",
         "AGENTS.md",
-        ("stable 8-digit task owner supplied by the plugin hook", "remains resumable from repository truth and its ledger row after compaction"),
+        ("plugin hook supplies a stable 8-digit task owner",),
     ),
     FrozenInvariant(
         "owner-only close",
@@ -71,7 +71,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant(
         "architect owns decisions",
         SUBAGENTS,
-        ("the architect is the sole authority for product intent", "the architect always owns intent, public behavior, architecture, tasks, acceptance, integration, and closeout", "never sends unresolved user input to a child", "writes inside an active child boundary", "accepts unreviewed output", "replaces independent proof with confidence", "the architect supplies a question and source boundary", "keep architecture, task setting, integration, and other consequential decisions with the architect"),
+        ("the architect is the sole authority for product intent", "the architect always owns intent, public behavior, architecture, tasks, acceptance, integration, and closeout", "never sends unresolved user input to a child", "writes inside an active child boundary", "accepts unreviewed output", "replaces independent proof with confidence", "the architect supplies a question and source boundary"),
     ),
     FrozenInvariant(
         "engineer, maintainer, verifier, and scout roles",
@@ -232,11 +232,53 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
             ("shape", "decide", "plan", "diagnose", "deliver", "verify"),
         )
 
+    def test_lane_contracts_keep_ownership_within_the_compact_word_cap(self) -> None:
+        lanes = {
+            name: _read(f"plugins/lean-sdlc/skills/lean-sdlc/references/{name}.md")
+            for name in ("shape", "plan", "deliver", "verify")
+        }
+        self.assertLessEqual(sum(len(text.split()) for text in lanes.values()), 1200)
+        for term in [
+            "shape owns the complete intent gate",
+            "material assumption affects behavior, scope, or architecture",
+        ]:
+            self.assertIn(term, lanes["shape"].casefold())
+        for term in ["tasks.py", "update_plan", "one engineer checkpoint"]:
+            self.assertIn(term, lanes["plan"].casefold())
+        self.assertIn("owned `in progress` task", lanes["deliver"].casefold())
+        self.assertIn("architect reviews scope, architecture, contract alignment", lanes["deliver"].casefold())
+        for term in [
+            "acceptance-defining proof",
+            "documentation parity",
+            "close the accepted task through `tasks.py close`",
+        ]:
+            self.assertIn(term, lanes["verify"].casefold())
+
     def test_policy_loading_is_conditional_on_delegation(self) -> None:
         dispatcher = _normalized(_read("plugins/lean-sdlc/skills/lean-sdlc/SKILL.md"))
+        agents = _normalized(_read("AGENTS.md"))
         self.assertIn("solo planning does not load child policy", dispatcher)
         self.assertIn("assisted delegation loads it before child use", dispatcher)
         self.assertIn("references/repository-contracts.md) only for initialization, legacy migration, or document ownership", dispatcher)
+        for phrase in [
+            "[shape](references/shape.md)",
+            "[plan](references/plan.md)",
+            "tasks.py",
+            "lean_check.py --before-write",
+            "update_plan",
+            "scripts/session_state.py --owner owner --mode assisted|solo",
+        ]:
+            self.assertIn(_normalized(phrase), dispatcher)
+        for phrase in [
+            "tasks.py",
+            "references/repository-contracts.md",
+            "subagents.md",
+            "dependencies must be `done` before start",
+        ]:
+            self.assertIn(_normalized(phrase), agents)
+        self.assertNotIn("github.com/laikrodiz", agents)
+        self.assertIn("references/repository-contracts.md", agents)
+        self.assertIn("references/subagents.md", agents)
 
     def test_child_label_pool_is_ordered_unique_and_recycles_unreachable_labels(self) -> None:
         policy = _read(SUBAGENTS)
@@ -252,7 +294,45 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
 
     def test_handoffs_require_facts_without_fixed_labels(self) -> None:
         policy = _read(SUBAGENTS)
-        self.assertIn("outcome, boundary, contract, proof, and stop conditions", policy)
+        shape = _read("plugins/lean-sdlc/skills/lean-sdlc/references/shape.md")
+        verify = _read("plugins/lean-sdlc/skills/lean-sdlc/references/verify.md")
+        operations = _read("plugins/lean-sdlc/skills/lean-sdlc/references/operations.md")
+        evaluations = _read("plugins/lean-sdlc/skills/lean-sdlc/references/trigger-evals.md")
+
+        self.assertIn(
+            "Intent fact order: `<reason> -> <outcome> -> <boundary> -> <approach> -> <proof>`",
+            shape,
+        )
+        self.assertIn(
+            "Angle-bracket terms are abstract fact slots. Replace them with project facts; never copy the wording or show slot labels.",
+            shape,
+        )
+        self.assertIn(
+            "Arrow sequence is fact order, not output wording: `<task or inquiry> -> <outcome> -> <owned boundary> -> <contract> -> <proof> -> <stop>`",
+            policy,
+        )
+        self.assertIn(
+            "Checkpoint fact order: `<alignment> -> <checks> -> <deviation or risk> -> <next Architect action>`",
+            verify,
+        )
+        self.assertIn(
+            "Closeout fact order: `<outcome> -> <acceptance> -> <regression> -> <documentation> -> <remaining risk> -> <release or next action>`",
+            verify,
+        )
+        for document in (verify, operations):
+            self.assertIn("Arrow sequence is fact order, not output wording", document)
+            self.assertIn("replace slots with project facts and omit slot labels", document)
+        self.assertIn(
+            "Visible operation result order: `<status> -> <target> -> <artifact> -> <next Architect action>`",
+            operations,
+        )
+        self.assertIn("internal machine handoff", operations)
+        self.assertIn("Omit it from visible operation reports", operations)
+        self.assertNotIn("Request these labeled fields", operations)
+        self.assertNotIn("Return these labeled fields", operations)
+        self.assertNotIn("```", operations)
+        self.assertIn("Use canonical fact orders in natural prose", evaluations)
+        self.assertIn("replace slots with project facts and omit slot labels", policy)
         self.assertIn("concise natural prose", policy)
         self.assertNotIn("Architecture alignment:", policy)
         self.assertNotIn("Return labels remain explicit", policy)

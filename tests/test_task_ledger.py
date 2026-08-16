@@ -860,18 +860,22 @@ class PackageContractTests(unittest.TestCase):
             SKILL / "references/trigger-evals.md"
         ).read_text(encoding="utf-8").lower()
 
-        self.assertIn(
-            "each task is one independently accepted repository state; local implementation steps stay transient.",
-            dispatcher,
-        )
-        self.assertIn(
-            "each task is one independently accepted repository state and remains resumable from repository truth and its ledger row after compaction.",
-            agents,
-        )
-        self.assertIn(
-            "split independently accepted and independently proved work. keep inseparable coding steps transient.",
-            agents,
-        )
+        for phrase in [
+            "`tasks.py` is the only ledger mutation path",
+            "plan view",
+            "lean_check.py --before-write",
+            "one engineer checkpoint",
+        ]:
+            self.assertIn(phrase, dispatcher)
+        for phrase in [
+            "tasks.py",
+            "in progress",
+            "dependencies must be `done` before start",
+            "update_plan",
+            "rebuild only unresolved rows",
+            "scripts/session_state.py",
+        ]:
+            self.assertIn(phrase, agents)
         self.assertEqual(agents, template)
 
         for phrase in [
@@ -899,14 +903,9 @@ class PackageContractTests(unittest.TestCase):
             "split a task when a part can fail, ship, revert, resume, or close independently, crosses a contract, or needs another durable decision.",
             "merge pieces without independent value or proof.",
             "keep implementation tests inside the task.",
-            "keep maintainer and verifier work attached unless it is independently deliverable.",
-            "keep acceptance corrections in the current task.",
-            "create a new task for new behavior or a new decision.",
+            "keep maintainer and verifier work attached unless independently deliverable.",
             "do not use time or line-count limits.",
-            "shape the nearest dependency frontier fully. keep later work coarse until its dependencies become current.",
-            "use [subagents.md](subagents.md) for child triggers, scheduling, handoffs, profiles, checkpoints, and reporting.",
             "keep local implementation steps and correction handoffs transient.",
-            "never send several tasks or an internal backlog.",
         ]:
             self.assertIn(phrase, plan)
 
@@ -959,25 +958,21 @@ class PackageContractTests(unittest.TestCase):
         ).read_text(encoding="utf-8").lower()
 
         for phrase in [
-            "require the information, not fixed labels",
-            "use natural prose for the outcome, important constraints, and exclusions",
+            "require information, not fixed labels",
+            "use natural prose for outcome, constraints, and exclusions",
             "only the plan needs visible structure",
-            "before creating a task or implementing work",
-            "natural intent confirmation",
             "concise visible plan",
             "define each durable plan item in natural prose",
             "observable completion condition and verification method",
             "the verification method is its proof",
-            "each durable item includes observable completion conditions and proof",
             "a one-item plan is valid",
             "only durable task plan",
         ]:
             self.assertIn(phrase, plan)
 
         self.assertIn("explicit implementation authority", dispatcher + shape + deliver)
-        self.assertIn("discussion or proposal requests remain read-only", shape + deliver)
-        self.assertIn("clear confirmation to proceed against a recoverable agreed proposal", dispatcher + shape + subagents)
-        self.assertIn("if authority is ambiguous, remain read-only", dispatcher + shape + subagents)
+        self.assertIn("discussion and proposals remain read-only", dispatcher)
+        self.assertIn("brainstorming and rephrasing remain read-only", shape)
         self.assertIn("each durable plan item maps to one task", plan)
         self.assertIn("keep local implementation steps and correction handoffs transient", plan + subagents)
 
@@ -1014,11 +1009,20 @@ class PackageContractTests(unittest.TestCase):
             "role-trigger matrix",
             "independence gate",
             "at most two active children",
+            "apply every role trigger before the first command",
+            "assisted delegation is mandatory beyond the engineer direct path",
+            "a guided or recorded build, package, ci, deploy, flash, runtime, or smoke operation is ready",
+            "an accepted checkpoint has shared-document impact",
+            "documentation-only work is ready",
+            "changed code, configuration, schema, generated artifacts, or behavior reaches a proof checkpoint",
+            "proof has multiple commands or noisy output",
             "universal independence gate",
             "engineer/engineer",
             "engineer/scout",
             "scout/scout",
             "scout may overlap one verifier or maintainer only for future work with separate resources",
+            "keep one reachable child thread for each role",
+            "a qualified pair may use two engineers, two scouts, or one of each",
             "at most one reusable verifier",
             "at most one reusable maintainer",
             "implementation writers stop before integration",
@@ -1029,8 +1033,12 @@ class PackageContractTests(unittest.TestCase):
             "direct user authority",
             "one mechanical bounded change",
             "shared handoff envelope",
-            "outcome, boundary, contract, proof, and stop conditions",
-            "without a fixed runtime template",
+            "arrow sequence is fact order, not output wording",
+            "replace slots with project facts and omit slot labels",
+            "children call the lead architect",
+            "the architect speaks as i",
+            "payloads come from the architect",
+            "children do not infer decisions, public behavior, acceptance, or paths",
             "the architect owns each child name at spawn time",
             "allocates the next never-used label",
             "task_name=engineer_beta",
@@ -1043,6 +1051,8 @@ class PackageContractTests(unittest.TestCase):
             "gpt-5.6-luna",
             "gpt-5.6-terra",
             "user-selected lead",
+            "explicit user architect profile controls it",
+            "apply the required child profile before delegation",
             "model=gpt-5.6-luna",
             "reasoning_effort=max",
             "non-full-history `fork_turns`",
@@ -1069,6 +1079,8 @@ class PackageContractTests(unittest.TestCase):
             "direct calls for mutations, approvals, or judgment-sensitive steps",
             "inside the assigned child",
             "routine mutation calls belong to the assigned engineer or maintainer, not the architect",
+            "delegate remaining routine work after it",
+            "delegate before work when more than three external calls are expected",
             "one agent owns each mutable external target",
             "never let two agents mutate the same project, database, deployment, or hardware target",
             "not a raw transcript",
@@ -1089,14 +1101,18 @@ class PackageContractTests(unittest.TestCase):
             "routine user commentary",
             "child return messages",
             "final answers omit full checkpoint fingerprints",
-            "verification is running against unchanged source",
-            "verification passed",
-            "source changed and the check stopped",
+            "abstract status facts",
+            "source identity without full fingerprint",
+            "running/passed/stopped state",
+            "mismatch reason",
             "machine verification",
             "architect hands that exact identity to the verifier",
             "checkpoint equality",
             "release tag or short commit id",
             "without repeating the full fingerprint in the visible return",
+            "run the full suite only when the task or repository contract requires it",
+            "consume maintainer evidence",
+            "no child edits `tasks.csv` or runs git operations",
        ]:
             self.assertIn(term, subagents)
         for term in [
@@ -1310,7 +1326,7 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("task_name=engineer_beta", subagents)
         self.assertIn("Every child update starts with work or current state", subagents)
         self.assertIn(
-            "Each child handoff begins with a short settled purpose, then states the outcome, boundary, contract, proof, and stop conditions",
+            "Arrow sequence is fact order, not output wording",
             subagents,
         )
         self.assertIn("at most two useful heartbeats at two-minute intervals", subagents)
@@ -1340,6 +1356,12 @@ class PackageContractTests(unittest.TestCase):
             "repeat only a disputed operation",
         ]:
             self.assertIn(term, subagents)
+        for phrase in [
+            "verification is running against unchanged source",
+            "verification passed",
+            "source changed and the check stopped",
+        ]:
+            self.assertNotIn(phrase, subagents)
         for name in ["deliver", "verify", "operations"]:
             lane = (SKILL / "references" / f"{name}.md").read_text(encoding="utf-8")
             self.assertIn("subagents.md", lane)
@@ -1427,11 +1449,11 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.14.0")
+        self.assertEqual(version, "1.15.0")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
         self.assertIn(
-            "- Version goal: Release deterministic ledger plan views, readable checkpoint reporting, and bounded external-tool delegation.",
+            "- Version goal: Release the compact runtime contract, abstract output fact patterns, and human product narrative.",
             project,
         )
 

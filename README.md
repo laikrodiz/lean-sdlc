@@ -1,82 +1,94 @@
 # Lean-SDLC for Codex
 
-Lean-SDLC is an installable Codex plugin for software work with clear intent, owned tasks, and reproducible proof.
+AI can write code quickly. The harder part is keeping intent, ownership, and proof coherent as the work changes. Lean-SDLC is a small workflow for Codex. It keeps a repository tied to a real outcome, a named owner, and evidence that another person can inspect.
 
-## Lanes
+The workflow helps you answer simple questions before work starts. What problem are you solving? Who benefits? What must change? What must stay unchanged? How will you know that the result is correct? It keeps these answers close to the task ledger and the repository documents that own them.
 
-The plugin routes each request through the earliest unresolved lane.
+## Six lanes
+
+Lean-SDLC routes a request through the first lane that still needs work.
 
 | Lane | Purpose |
 | --- | --- |
-| Shape | Define the problem, user, scope, promise, and observable success. |
+| Shape | Define the problem, affected user, scope, promise, and observable success. |
 | Decide | Record technical choices that need durable agreement. |
-| Plan | Create owned tasks and choose a safe execution shape. |
-| Diagnose | Bound an uncertain failure before selecting a fix. |
+| Plan | Turn approved intent into owned tasks and a safe execution shape. |
+| Diagnose | Bound an uncertain failure before choosing a fix. |
 | Deliver | Implement one approved change and synchronize affected truth. |
 | Verify | Check acceptance, reconcile repository truth, and close with evidence. |
 
-## Project files
+The lanes are gates, not ceremony. A clear request can move through them quickly. An unclear request stops at Shape until the missing outcome or boundary is understood.
 
-Initialization creates three control files:
+## A clear path from intent to proof
 
-- `AGENTS.md` contains durable repository rules.
-- `docs/PROJECT.md` contains the problem, scope, promise, and success criteria.
-- `tasks.csv` contains the human-readable task overview and changes only through bundled task commands. Use `tasks.py open` for current work or `tasks.py show TASK-ID` for one task plus recursive dependencies instead of loading full `Done` history.
+Before a change, the Architect confirms four connected parts:
 
-The initializer also adds `/tasks.csv` and `/.tasks.lock` to `.gitignore`. Feature, decision, and operations documents remain optional.
+- Why states the user or business value.
+- What states the smallest observable outcome, constraints, and non-goals.
+- How states the technical approach and task shape.
+- Proof states the acceptance conditions and verification method.
 
-## Modes and roles
+The Architect owns this contract. The Architect also owns architecture, interfaces, task boundaries, integration, acceptance, and closeout. A child never invents a product decision or widens its assigned work.
 
-Assisted mode is the default and persists until the user selects Solo. Solo mode keeps execution with the lead under the same task and safety rules. Assisted and Solo are the only orchestration modes.
+During implementation, unresolved ledger task IDs and titles appear in Codex's plan view. Brainstorming and rephrasing stay read-only and create no task view. This keeps the visible plan connected to the human-readable ledger while the ledger remains authoritative.
 
-Session state restores the owner, mode, and child tier after lifecycle events. Missing or invalid state restores Assisted with Standard children. Luna uses Standard service by default. Fast children are opt-in; new or normally replaced Luna children use the priority tier after that choice, while reachable threads remain available.
+```mermaid
+flowchart LR
+    A[Intent] --> B[Owned task]
+    B --> C[Change]
+    C --> D[Evidence]
+    D --> E[Closeout]
+```
+
+The ledger is atomic. Each task describes one independently accepted repository state, one owner, one acceptance set, and one proof set. Dependencies must be complete before a task starts. Task commands protect the ledger during updates, so contributors do not edit `tasks.csv` by hand.
+
+Every initialized repository has three required files:
+
+- `AGENTS.md` stores durable repository rules.
+- `docs/PROJECT.md` stores the problem, scope, outcome, and success criteria.
+- `tasks.csv` stores the current human-readable task ledger.
+
+Feature, decision, architecture, interface, and operations documents remain optional. Add them when shared pressure makes the detail worth keeping.
+
+## People and modes
+
+The Architect is the lead. Four standard roles support the lead when their work is useful:
 
 | Role | Responsibility |
 | --- | --- |
-| Engineer | Implements an approved task. |
-| Maintainer | Synchronizes affected shared documents and runs recorded operational procedures. |
-| Verifier | Checks acceptance independently. |
-| Scout | Collects bounded, cited evidence for non-trivial inquiries. |
+| Engineer | Implements one approved task and reports a bounded checkpoint. |
+| Maintainer | Synchronizes shared documents and replays recorded operations. |
+| Verifier | Checks acceptance independently and reports evidence or risk. |
+| Scout | Collects bounded, cited evidence for a defined question. |
 
-See the [canonical child-agent policy](plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md) for role lifecycle and communication rules.
+Assisted mode is the default. It delegates suitable work through these roles and keeps the Architect responsible for decisions. Solo mode keeps execution with the Architect when the user selects it. Both modes use the same task, safety, acceptance, and proof rules.
 
-Assisted mode delegates bounded independent work through the canonical child-agent policy. Solo mode keeps execution with the Architect. The Maintainer keeps shared documents current and runs recorded procedures.
+Parallel work is conservative. It is allowed only when tasks have separate scopes, settled contracts, independent proof, and no shared mutable resource. Shared files, changing interfaces, migrations, fixtures, generated output, and external targets stay serial. Integration, documentation synchronization, verification, operations, and closeout stay serial as well. If safety or time savings are unclear, the workflow chooses serial work.
 
-The Architect owns intent, architecture, task boundaries, acceptance, integration, proof, and closeout.
+Substantial external-tool work follows the same boundary. The Architect keeps the decision. Scout handles bounded discovery. Engineer handles approved mutations. Maintainer handles repeated operations. Verifier handles independent checks. One agent owns each mutable external target.
 
-## Workflow
+When Codex resumes or compacts a task, Lean-SDLC returns to durable repository truth. It reads the project rules, reloads unresolved ledger work, rebuilds the visible plan, and restores the task mode and owner before delivery continues. This prevents lost context from becoming an unrecorded decision.
 
-1. Before changes, the Architect confirms why -> what -> how -> proof. This covers user or business value, outcome and boundaries, technical approach, and acceptance evidence.
-2. During implementation, the workflow mirrors unresolved ledger task IDs and titles into Codex's plan view. Brainstorming creates no task view.
-3. Plan and tasks turn approved intent into measurable work, owned task rows, and reproducible proof. Each ledger task maps to one Engineer checkpoint under the [Plan contract](plugins/lean-sdlc/skills/lean-sdlc/references/plan.md).
-4. For substantial external-tool work, the Architect keeps decisions. Scout handles bounded discovery, Engineer approved mutations, Maintainer repeated operations, and Verifier independent checks.
-5. Children stop before integration. The Architect reviews accepted work for scope and contract alignment. The Maintainer synchronizes affected shared documents.
-6. Integration and verification run serially. Verification runs acceptance proof and one planned regression command. The full suite runs only when required.
-7. Operations replay required recorded build, package, deploy, flash, runtime, or smoke procedures against accepted source.
-8. Closeout resolves evidence, updates repository truth, and closes the owned task.
+## Evidence and detailed contracts
+
+The Engineer checks local mechanics. The Maintainer records operation evidence. The Verifier reruns acceptance proof and one planned regression command. The Architect reviews the returned checkpoint, resolves deviations, and closes the owned task only after the evidence matches the contract.
+
+Read the [Shape contract](plugins/lean-sdlc/skills/lean-sdlc/references/shape.md), [Plan contract](plugins/lean-sdlc/skills/lean-sdlc/references/plan.md), [repository contract](plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md), [canonical child-agent policy](plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md), and [trigger evaluations](plugins/lean-sdlc/skills/lean-sdlc/references/trigger-evals.md) for detailed rules.
 
 ## Install
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-Install the immutable `v1.14.0` release:
+Install the immutable `v1.15.0` release:
 
 ```bash
-git clone --depth 1 --branch v1.14.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.15.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc
 ```
 
-Restart Codex after installation. Review and trust the plugin hook. Then begin a new task.
-
-If an older standalone copy exists, move it outside the skills directory after the plugin installs:
-
-```bash
-mkdir -p "${CODEX_HOME:-$HOME/.codex}/legacy-skills"
-mv "${CODEX_HOME:-$HOME/.codex}/skills/lean-sdlc" \
-  "${CODEX_HOME:-$HOME/.codex}/legacy-skills/lean-sdlc"
-```
+Restart Codex after installation. Then begin a new task.
 
 ## Use
 
@@ -89,8 +101,7 @@ Use $lean-sdlc to initialize this repository and shape the project.
 For existing work:
 
 ```text
-Use $lean-sdlc to continue the project safely.
-Use $lean-sdlc to investigate this failing test.
+Use $lean-sdlc to continue this repository task safely.
 Use $lean-sdlc in solo mode and verify the change.
 ```
 

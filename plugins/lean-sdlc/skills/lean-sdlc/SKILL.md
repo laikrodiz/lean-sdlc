@@ -9,14 +9,12 @@ Keep intent, work, implementation, and proof coherent with the smallest useful p
 
 ## Start and route
 
-1. Read `AGENTS.md` and `docs/PROJECT.md`. Use `tasks.py open` for current work and `tasks.py show TASK-ID` for one task plus recursive dependencies instead of loading full Done history. The human-readable `tasks.csv` remains authoritative. During implementation, follow [Plan view projection](references/plan.md). Identify outcome, repository truth, active task, and mode.
-2. Assisted mode is the default and persists until the user selects Solo. Missing or invalid state restores Assisted with Standard children. Fast children require explicit user opt-in; normal Luna spawns omit `service_tier`. Lifecycle restoration restores owner, mode, and child tier after startup, resume, clear, or compaction; reload `references/subagents.md` before Deliver.
-3. Before task creation or file changes, require explicit implementation authority. Discussion and proposal requests remain read-only. If authority is ambiguous, remain read-only.
-4. Apply the complete [Shape intent gate](references/shape.md), then [Plan](references/plan.md): confirm intent with natural prose, show a concise visible plan, and define observable completion conditions and proof. A one-item plan is valid.
-5. Read [repository-contracts.md](references/repository-contracts.md) only for initialization, legacy migration, or document ownership. For an older ledger, run [scripts/tasks.py](scripts/tasks.py) `upgrade`.
-6. Read [subagents.md](references/subagents.md) only before actual delegation. Solo planning does not load child policy. Assisted delegation loads it before child use.
-
-Use the earliest unresolved lane, then continue when later gates are ready.
+1. Read `AGENTS.md`, `docs/PROJECT.md`, and current work with `tasks.py open`. Use `tasks.py show TASK-ID` for one task and recursive dependencies. Follow [Plan view projection](references/plan.md).
+2. Assisted mode is the default. Lifecycle restoration restores owner, mode, and tier. Missing state restores Assisted with Standard children. Fast children require opt-in; normal Luna omits `service_tier`. Reload [subagents.md](references/subagents.md) before Deliver.
+3. Require explicit implementation authority before task creation or changes. Discussion and proposals remain read-only. If ambiguous, remain read-only.
+4. Apply [Shape](references/shape.md), then [Plan](references/plan.md), before task creation. Confirm `why -> what -> how -> proof`; show a concise plan; define acceptance and proof.
+5. Read [repository-contracts.md](references/repository-contracts.md) only for initialization, legacy migration, or document ownership.
+6. Read [subagents.md](references/subagents.md) before delegation. Solo planning does not load child policy. Assisted delegation loads it before child use.
 
 | Lane | Use when |
 | --- | --- |
@@ -27,24 +25,20 @@ Use the earliest unresolved lane, then continue when later gates are ready.
 | Deliver | Cause, scope, acceptance, proof, and owned task are ready. |
 | Verify | Completion is claimed, truth conflicts, or a task may close. |
 
-Read the lane reference only when active: [shape.md](references/shape.md), [decide.md](references/decide.md), [diagnose.md](references/diagnose.md), [deliver.md](references/deliver.md), [verify.md](references/verify.md), or [operations.md](references/operations.md). Read [model-routing.md](references/model-routing.md) for substantial decisions.
+Read only the active lane reference: [shape.md](references/shape.md), [decide.md](references/decide.md), [diagnose.md](references/diagnose.md), [deliver.md](references/deliver.md), [verify.md](references/verify.md), or [operations.md](references/operations.md).
 
 ## Hard gates
 
-Treat task-ledger commands as control transactions. Confirm the natural `why -> what -> how -> proof` contract before mutation. Before any other repository mutation, run `tasks.py start` or claim planned work; never edit `tasks.csv` directly. Require an owned `In Progress` task, measurable acceptance, explicit proof, and a matching visible plan. Each task is one independently accepted repository state; local implementation steps stay transient. Follow [Plan view projection](references/plan.md) for `update_plan` synchronization. Run `lean_check.py --before-write --task TASK-ID --owner OWNER` before the first non-control write. Diagnose an unknown cause before a fix. Verify acceptance and documentation parity before closure. Only the owner closes a task; a direct user request may override with a recorded reason.
+Treat ledger commands as control transactions. Confirm natural `why -> what -> how -> proof` before mutation. Before any other repository mutation, run `tasks.py start` or claim planned work; `tasks.py` is the only ledger mutation path. Require an owned `In Progress` task, acceptance, proof, and a visible plan. Follow [Plan view projection](references/plan.md) for `update_plan`. Run `lean_check.py --before-write` before the first non-control write. Diagnose unknown causes before fixes. Verify acceptance and documentation parity before closure. Only the owner closes; a direct user request may override with a recorded reason.
 
-Size each ledger task as one Engineer checkpoint under the [Plan contract](references/plan.md); keep tests and attached sidecars with it unless independently deliverable.
-
-When mode changes, the Architect runs `scripts/session_state.py --owner OWNER --mode assisted|solo` with the selected mode. When the child tier changes, the Architect runs `scripts/session_state.py --owner OWNER --fast-children` or `--no-fast-children`.
+One ledger task is one Engineer checkpoint. Mode: `scripts/session_state.py --owner OWNER --mode assisted|solo`. Tier: `scripts/session_state.py --owner OWNER --fast-children` or `--no-fast-children`.
 
 ## Child boundary
 
-The canonical [subagent policy](references/subagents.md) is the sole authority for child roles, triggers, profiles, spawn payloads, handoffs, reuse, visible communication, and failure conditions. The user-selected lead acts as principal engineer and owns product intent, architecture, interfaces, invariants, task boundaries, integration, acceptance, and closeout.
-
-Children call the primary agent Architect; the Architect speaks as I. Assisted and Solo are the only orchestration modes. Assisted normally uses one Engineer; a qualified parallel group may use two under the canonical child policy. Keep one reusable child thread per sidecar role and normally one Engineer. The Architect assigns each child a valid lowercase role prefix and one Greek suffix at spawn, such as `task_name=engineer_beta` for Engineer beta.
+The canonical [subagent policy](references/subagents.md) is the sole authority for roles, triggers, profiles, spawns, handoffs, reuse, communication, and failures. The Architect owns product intent, architecture, interfaces, tasks, integration, acceptance, and closeout. Assisted delegates routine work; Solo keeps execution with the Architect.
 
 ## Engineering and technical English
 
-Build the smallest cohesive units with narrow contracts and a readable orchestrator. Avoid project-size tiers, speculative interfaces, and pass-through modules. Classify plausible edge cases as `Handle`, `Reject`, `Defer`, or `Impossible by invariant` before choosing behavior. Use small Mermaid diagrams when they materially clarify flow, state, ownership, sequence, or dependencies. Never use ASCII pseudographics.
+Build smallest cohesive units and readable orchestrator. Avoid project-size tiers, speculative interfaces, and pass-through modules. Classify plausible edge cases as `Handle`, `Reject`, `Defer`, or `Impossible by invariant`. Use small Mermaid diagrams. Never use ASCII pseudographics.
 
-Apply applicable ASD-STE100 Issue 9 guidance. Use active voice, one term for one meaning, condition-first instructions, and American English spelling. State conditions before actions. Avoid idioms, unnecessary synonyms, and vague pronouns. Keep procedural sentences to 20 words or fewer and descriptive sentences to 25 words or fewer. Preserve code, commands, paths, identifiers, protocol fields, quotations, and required terms. Do not claim certified or full controlled-dictionary compliance without an ASD-STE100 checker.
+Apply ASD-STE100 Issue 9: active voice, one term for one meaning, conditions before actions, and American English spelling. Avoid idioms, unnecessary synonyms, and vague pronouns. Keep procedural sentences to 20 words or fewer and descriptive sentences to 25 words or fewer. Preserve code, commands, paths, identifiers, protocol fields, quotations. Do not claim certified or full controlled-dictionary compliance.

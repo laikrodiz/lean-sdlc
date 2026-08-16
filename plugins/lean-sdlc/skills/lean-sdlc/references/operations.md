@@ -34,27 +34,11 @@ Do not store secrets. Redact tokens, passwords, keys, authorization headers, con
 
 ## Run contract
 
-Request these labeled fields on separate lines:
+Keep the task, operation, exact source fingerprint, target, expected signal, and recovery context in the internal machine handoff. Keep the exact fingerprint internal. Omit it from visible operation reports.
 
-```text
-Task: TASK-ID
-Operation: Operation name.
-Checkpoint: Exact source fingerprint.
-Exact target: Target identifier.
-Expected signal: Observable success signal.
-```
+Visible operation result order: `<status> -> <target> -> <artifact> -> <next Architect action>`. Add failure-log context only when needed.
 
-Return these labeled fields on separate lines:
-
-```text
-Status: Operation status.
-Source fingerprint: Exact source fingerprint.
-Artifact path or hash: Artifact reference, or None.
-Target: Target identifier.
-Signal: Observed success or failure signal.
-Saved failure log: Temporary log reference, or None.
-Next: Required Architect action, or None.
-```
+Arrow sequence is fact order, not output wording; replace slots with project facts and omit slot labels.
 
 Run one state-changing operation at a time for the same `task + operation + target`. Never guess a target, silently change a procedure, or retry a state-changing failure without authority and a recorded recovery rule.
 
@@ -68,4 +52,4 @@ Infer the operation sequence from task proof:
 - artifact: Deliver -> Verify -> build or package;
 - operational: Deliver -> Verify -> build -> deploy or flash -> smoke.
 
-In Solo mode, the lead follows the same recorded procedures and return fields locally.
+In Solo mode, the lead follows the same recorded procedures and visible result order.
