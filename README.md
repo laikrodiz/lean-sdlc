@@ -1,8 +1,10 @@
 # Lean-SDLC for Codex
 
-AI can write code quickly. The harder part is keeping intent, ownership, and proof coherent as the work changes. Lean-SDLC is a small workflow for Codex. It keeps a repository tied to a real outcome, a named owner, and evidence that another person can inspect.
+Lean-SDLC is a small software engineering workflow for Codex optimized for token cost reduction, full transparency of the process and actually finishing work that was requested. It keeps a repository tied to a real outcome, a named owner, and evidence that another person or agent can inspect.
 
 The workflow helps you answer simple questions before work starts. What problem are you solving? Who benefits? What must change? What must stay unchanged? How will you know that the result is correct? It keeps these answers close to the task ledger and the repository documents that own them.
+
+Sol is recommended as an architect agent. Spawned child agents always use Luna Max.
 
 ## Six lanes
 
@@ -17,18 +19,18 @@ Lean-SDLC routes a request through the first lane that still needs work.
 | Deliver | Implement one approved change and synchronize affected truth. |
 | Verify | Check acceptance, reconcile repository truth, and close with evidence. |
 
-The lanes are gates, not ceremony. A clear request can move through them quickly. An unclear request stops at Shape until the missing outcome or boundary is understood.
+The lanes are gates. A clear request can move through them quickly. An unclear request stops at Shape until the missing outcome or boundary is understood.
 
 ## A clear path from intent to proof
 
-Before a change, the Architect confirms four connected parts:
+Before a change, the Architect agent confirms four connected parts:
 
-- Why states the user or business value.
-- What states the smallest observable outcome, constraints, and non-goals.
-- How states the technical approach and task shape.
-- Proof states the acceptance conditions and verification method.
+- **Why** states the user or business value.
+- **What** states the smallest observable outcome, constraints, and non-goals.
+- **How** states the technical approach and task shape.
+- **Proof** states the acceptance conditions and verification method.
 
-The Architect owns this contract. The Architect also owns architecture, interfaces, task boundaries, integration, acceptance, and closeout. A child never invents a product decision or widens its assigned work.
+The Architect owns this contract. The Architect also owns architecture, interfaces, task boundaries, integration, acceptance, and closeout. A child agent never invents a product decision or widens its assigned work.
 
 During implementation, unresolved ledger task IDs and titles appear in Codex's plan view. Brainstorming and rephrasing stay read-only and create no task view. This keeps the visible plan connected to the human-readable ledger while the ledger remains authoritative.
 
@@ -40,7 +42,7 @@ flowchart LR
     D --> E[Closeout]
 ```
 
-The ledger is atomic. Each task describes one independently accepted repository state, one owner, one acceptance set, and one proof set. Dependencies must be complete before a task starts. Task commands protect the ledger during updates, so contributors do not edit `tasks.csv` by hand.
+The task ledger is atomic. Each task describes one independently accepted repository state, one owner, one acceptance set, and one proof set. Dependencies must be complete before a task starts. Task commands protect the ledger during updates, so contributors do not edit `tasks.csv` by hand.
 
 Every initialized repository has three required files:
 
@@ -52,7 +54,7 @@ Feature, decision, architecture, interface, and operations documents remain opti
 
 ## People and modes
 
-The Architect is the lead. Four standard roles support the lead when their work is useful:
+The Architect agent is the lead. Four standard subagents support the lead when their work is useful:
 
 | Role | Responsibility |
 | --- | --- |
@@ -61,7 +63,7 @@ The Architect is the lead. Four standard roles support the lead when their work 
 | Verifier | Checks acceptance independently and reports evidence or risk. |
 | Scout | Collects bounded, cited evidence for a defined question. |
 
-Assisted mode is the default. It delegates suitable work through these roles and keeps the Architect responsible for decisions. Solo mode keeps execution with the Architect when the user selects it. Both modes use the same task, safety, acceptance, and proof rules.
+Assisted Lean-SDLC mode is the default. It delegates suitable work through these roles and keeps the Architect responsible for decisions. Solo mode keeps execution with the Architect when the user selects it. Both modes use the same task, safety, acceptance, and proof rules. User can switch between the modes by requesting the change.
 
 Parallel work is conservative. It is allowed only when tasks have separate scopes, settled contracts, independent proof, and no shared mutable resource. Shared files, changing interfaces, migrations, fixtures, generated output, and external targets stay serial. Integration, documentation synchronization, verification, operations, and closeout stay serial as well. If safety or time savings are unclear, the workflow chooses serial work.
 
