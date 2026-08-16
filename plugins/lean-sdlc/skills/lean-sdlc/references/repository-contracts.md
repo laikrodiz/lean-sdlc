@@ -6,25 +6,58 @@ Read this reference for initialization, legacy migration, or document ownership.
 
 An initialized project requires only `AGENTS.md`, `docs/PROJECT.md`, and root `tasks.csv`. The initializer preserves existing files, adds `/tasks.csv` and `/.tasks.lock` to `.gitignore`, and closes `TASK-000` as owner `bootstrap` before the session restarts.
 
-Optional documents appear only under durable shared pressure:
+`docs/PROJECT.md` remains the only mandatory shared project document. `AGENTS.md` and root `tasks.csv` remain required repository files. README remains project-owned.
 
-- `docs/features/FEAT-*.md` for behavior too detailed for `PROJECT.md`.
-- `docs/decisions/DEC-*.md` for costly or easily forgotten choices.
-- `docs/OPERATIONS.md` after the first guided build, package, deploy, flash, runtime, or smoke procedure.
+Optional documents appear only when a concrete need-based trigger exists. Use semantic sizing: one document holds one cohesive meaning, not an arbitrary line or time limit.
 
-README remains project-owned.
+- `docs/features/FEAT-*.md` for one durable behavior too detailed for `PROJECT.md`.
+- `docs/decisions/DEC-*.md` for one costly or easily forgotten choice.
+- `docs/architecture/ARCH-*.md` for one shared system shape or boundary.
+- `docs/state-machines/STATE-*.md` for one named lifecycle with meaningful transitions.
+- `docs/interfaces/IFACE-*.md` for one shared or external contract.
+- `docs/data/DATA-*.md` for one shared data model or lifecycle.
+- `docs/operations/OPS-*.md` for one repeatable procedure that needs durable detail.
+- `docs/ARCHITECTURE.md` and `docs/OPERATIONS.md` remain conditional overview documents.
+- `docs/SECURITY.md`, `docs/GLOSSARY.md`, and `docs/VERIFICATION.md` remain conditional documents.
+
+Create a family only when its trigger is present. Name each document `PREFIX-NNN-slug.md`, and never reuse an ID. Create `INDEX.md` with the first numbered document. Use the columns `ID`, `Title`, `Status`, `Owns`, and `Related`. List every current numbered document exactly once. The index is navigation, not specification.
+
+Size a document by one independent outcome, reversal boundary, system shape, lifecycle, contract, model, or procedure. Split when outcomes, owners, acceptance clusters, change reasons, or update cadences differ. Merge when neither part has independent value, proof, or maintenance pressure. Do not create a numbered document for a task note, local implementation detail, or transient diagnosis.
+
+### Conditional documents
+
+Create `docs/ARCHITECTURE.md` when responsibilities or data flow are non-obvious and need one system overview. Keep one subsystem needing independent detail in a numbered architecture document.
+
+Create `docs/OPERATIONS.md` after the first guided build, package, deploy, flash, runtime, or smoke procedure. It owns the first simple recorded procedure and shared operation map. Use a numbered operation document when a procedure has an independent target, recovery rule, lifecycle, or useful standalone detail.
+
+Create `docs/SECURITY.md` when security boundaries or controls span more than one document or need a shared review gate. Create `docs/GLOSSARY.md` when repeated terms create material ambiguity. Create `docs/VERIFICATION.md` when proof rules span several tasks or document families. Do not create any of these for a single local note.
+
+### Source archives
+
+Normal replacement deletes old code and relies on Git. Do not create an archive for normal replacement.
+
+Create repository-root `archive/` only after an explicit user request. Store each snapshot at `archive/<capability>/<snapshot>/ARCHIVE.md`. Require `archive/INDEX.md` when `archive/` exists. A source archive is inert and excluded from active imports, builds, packaging, and normal tests. Keep only source, focused tests, fixtures, small configuration, and notes needed to understand or restore the snapshot. Do not archive build output, installed dependencies, caches, credentials, or unrelated files.
+
+Do not create a documentation archive policy beyond optional supporting copies inside a source snapshot.
 
 ## Document ownership
 
 - Project purpose, value, behavior boundary, scope, stage, and version promise -> `docs/PROJECT.md`.
 - Durable behavior detail -> an optional Feature document.
 - Technical rationale and durable costly choice -> an optional Decision document.
-- Repeatable procedure -> `docs/OPERATIONS.md`.
-- Shared mapping or interface -> technical documentation.
+- System responsibility and flow -> conditional `docs/ARCHITECTURE.md`; independent subsystem detail -> an optional Architecture document.
+- State transitions -> an optional State Machine document.
+- Shared or external contract -> an optional Interface document.
+- Persistent or exchanged data contract -> an optional Data document.
+- Simple recorded procedure and operation map -> conditional `docs/OPERATIONS.md`; independent procedure -> an optional Operation document.
+- Shared trust boundaries, terminology, or manual proof -> conditional Security, Glossary, or Verification documents.
 - Local corrections -> outcome-focused task truth, code, tests, or comments.
 - Engineer owns code-local truth such as tests, comments, docstrings, annotations, and local examples.
-- Maintainer owns shared narrative truth in `docs/PROJECT.md`, feature, decision, architecture, interface, README, and operations documents.
-- The Architect supplies the behavior and decision delta. Maintainer synchronizes only affected documents through an impact-directed pass.
+- Maintainer owns shared narrative truth in project, feature, decision, architecture, state-machine, interface, data, operations, security, glossary, verification, and README documents.
+- Maintainer owns each collection `INDEX.md` and synchronizes shared narrative truth through an impact-directed pass.
+- Maintainer owns `archive/INDEX.md` and each snapshot `ARCHIVE.md` after the Architect approves an explicit archive request and boundary.
+- Maintainer detects a missing trigger, stale document, or oversized semantic unit. Maintainer never invents product or architecture.
+- The Architect supplies the behavior and decision delta and approves meaning and document splits. Maintainer synchronizes only affected documents through an impact-directed pass.
 
 Keep durable intent in these existing owners. Do not add a file or task column for intent.
 

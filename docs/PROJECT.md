@@ -22,6 +22,12 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 - Substantial external-tool work keeps decisions with the Architect. The matching role handles bounded discovery, approved mutation, repeated operations, or independent checking. One agent owns each mutable external target.
 - Readable checkpoint reports with exact machine proof retained for verification. Integration, documentation synchronization, verification, operations, and closeout run serially.
 - Inline Quick Fix classification during Plan for trivial settled edits, with immediate narrow proof and deferred shared review.
+- `docs/PROJECT.md` is the only mandatory shared project document.
+- Optional document families use concrete triggers and semantic sizing.
+- Each numbered family gets a small `INDEX.md` with its first document.
+- The Maintainer owns shared narrative truth and indexes.
+- The Architect approves document meaning and splits.
+- Root `archive/` requires an explicit user request and remains inert.
 
 ## Constraints
 
@@ -34,7 +40,8 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 ## Deferred
 
 - Hosted task services or issue-tracker replacement.
-- Mandatory feature, decision, architecture, or operations documents.
+- Mandatory feature, decision, architecture, state-machine, interface, data, operations, security, glossary, or verification documents.
+- A repository-wide documentation archive policy.
 - CI enforcement, dashboards, telemetry, cache accounting, and project-specific operational recipes.
 
 ## Success
@@ -51,5 +58,5 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 
 - Stage: Evolution
 - Version: 1.16.0
-- Version goal: Release Quick Fix routing with deferred batch verification.
+- Version goal: Add optional document contracts, templates, and source archive validation.
 - Exit evidence: Tests, skill and plugin validation, local installation, accepted checkpoints, repository checks, tagged commit, and successful push.

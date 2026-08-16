@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
 
@@ -24,6 +25,21 @@ from task_ledger import (
 
 REQUIRED_FILES = ("AGENTS.md", "docs/PROJECT.md", "tasks.csv", ".gitignore")
 REQUIRED_IGNORES = {"/tasks.csv", "/.tasks.lock"}
+DOCUMENT_FAMILIES = (
+    ("features", "FEAT"),
+    ("decisions", "DEC"),
+    ("architecture", "ARCH"),
+    ("state-machines", "STATE"),
+    ("interfaces", "IFACE"),
+    ("data", "DATA"),
+    ("operations", "OPS"),
+)
+INDEX_HEADER = "| ID | Title | Status | Owns | Related |"
+ARCHIVE_INDEX_HEADER = (
+    "| Capability | Snapshot | Archived | Reason | Replacement | Link |"
+)
+ARCHIVE_NAME = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*\Z")
+MARKDOWN_LINK = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 
 
 def parse_args() -> argparse.Namespace:
@@ -58,6 +74,206 @@ def context_document_exists(root: Path, context: str) -> bool:
     )
 
 
+def markdown_targets(path: Path, errors: list[str]) -> list[str]:
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError as exc:
+        errors.append(f"{path}: cannot read file: {exc}")
+        return []
+
+    targets: list[str] = []
+    for match in MARKDOWN_LINK.finditer(text):
+        target = match.group(1).strip()
+        if target.startswith("<") and target.endswith(">"):
+            target = target[1:-1]
+        else:
+            target = target.split(maxsplit=1)[0]
+        targets.append(target.split("#", 1)[0])
+    return targets
+
+
+def relative_target(base: Path, target: str) -> Path | None:
+    if not target or target.startswith(("/", "#")) or "://" in target:
+        return None
+    if ".." in Path(target).parts:
+        return None
+    resolved = (base / target).resolve()
+    try:
+        resolved.relative_to(base.resolve())
+    except ValueError:
+        return None
+    return resolved
+
+
+def document_collection_errors(root: Path) -> list[str]:
+    errors: list[str] = []
+    for folder, prefix in DOCUMENT_FAMILIES:
+        directory = root / "docs" / folder
+        if not directory.exists():
+            continue
+        if not directory.is_dir():
+            errors.append(f"docs/{folder}: expected a directory")
+            continue
+
+        pattern = re.compile(
+            rf"{re.escape(prefix)}-(\d{{3}})-[a-z0-9]+(?:-[a-z0-9]+)*\.md\Z"
+        )
+        documents: list[Path] = []
+        ids: dict[str, list[str]] = {}
+        for path in sorted(directory.iterdir()):
+            if not path.is_file() or path.suffix.casefold() != ".md":
+                continue
+            if not path.name.startswith(f"{prefix}-"):
+                continue
+            match = pattern.fullmatch(path.name)
+            if match is None:
+                errors.append(
+                    f"docs/{folder}: malformed document name {path.name}; "
+                    f"expected {prefix}-NNN-lowercase-slug.md"
+                )
+                continue
+            document_id = f"{prefix}-{match.group(1)}"
+            ids.setdefault(document_id, []).append(path.name)
+            documents.append(path)
+
+        for document_id, names in ids.items():
+            if len(names) > 1:
+                errors.append(
+                    f"docs/{folder}: duplicate id {document_id}: " + ", ".join(names)
+                )
+
+        if not documents:
+            continue
+        index = directory / "INDEX.md"
+        if not index.is_file():
+            errors.append(f"docs/{folder}: missing INDEX.md")
+            continue
+        try:
+            lines = index.read_text(encoding="utf-8").splitlines()
+        except OSError as exc:
+            errors.append(f"docs/{folder}/INDEX.md: cannot read file: {exc}")
+            continue
+        if INDEX_HEADER not in {line.strip() for line in lines}:
+            errors.append(
+                f"docs/{folder}/INDEX.md: expected header {INDEX_HEADER}"
+            )
+
+        linked_names: list[str] = []
+        for target in markdown_targets(index, errors):
+            if Path(target).name.startswith(f"{prefix}-"):
+                resolved = relative_target(directory, target)
+                if resolved is None or resolved.parent != directory.resolve():
+                    errors.append(
+                        f"docs/{folder}/INDEX.md: invalid family link {target}"
+                    )
+                    continue
+                if not resolved.is_file():
+                    errors.append(
+                        f"docs/{folder}/INDEX.md: linked file does not exist: {target}"
+                    )
+                    continue
+                linked_names.append(resolved.name)
+
+        for document in documents:
+            count = linked_names.count(document.name)
+            if count == 0:
+                errors.append(
+                    f"docs/{folder}/INDEX.md: missing link to {document.name}"
+                )
+            elif count > 1:
+                errors.append(
+                    f"docs/{folder}/INDEX.md: duplicate link to {document.name}"
+                )
+    return errors
+
+
+def source_archive_errors(root: Path) -> list[str]:
+    archive = root / "archive"
+    if not archive.exists():
+        return []
+    if not archive.is_dir():
+        return ["archive: expected a directory"]
+
+    errors: list[str] = []
+    index = archive / "INDEX.md"
+    if not index.is_file():
+        errors.append("archive: missing INDEX.md")
+
+    manifests: list[Path] = []
+    for capability in sorted(archive.iterdir()):
+        if capability.name == "INDEX.md":
+            continue
+        if not capability.is_dir():
+            errors.append(f"archive: unexpected file {capability.name}")
+            continue
+        if ARCHIVE_NAME.fullmatch(capability.name) is None:
+            errors.append(f"archive: malformed capability name {capability.name}")
+        for snapshot in sorted(capability.iterdir()):
+            if not snapshot.is_dir():
+                errors.append(
+                    f"archive/{capability.name}: unexpected file {snapshot.name}"
+                )
+                continue
+            if ARCHIVE_NAME.fullmatch(snapshot.name) is None:
+                errors.append(
+                    f"archive/{capability.name}: malformed snapshot name {snapshot.name}"
+                )
+            manifest = snapshot / "ARCHIVE.md"
+            if not manifest.is_file():
+                errors.append(
+                    f"archive/{capability.name}/{snapshot.name}: missing ARCHIVE.md"
+                )
+                continue
+            manifests.append(manifest.resolve())
+
+    if not manifests:
+        errors.append("archive: no source snapshots")
+    if not index.is_file():
+        return errors
+
+    try:
+        lines = index.read_text(encoding="utf-8").splitlines()
+    except OSError as exc:
+        errors.append(f"archive/INDEX.md: cannot read file: {exc}")
+        return errors
+    if ARCHIVE_INDEX_HEADER not in {line.strip() for line in lines}:
+        errors.append(
+            f"archive/INDEX.md: expected header {ARCHIVE_INDEX_HEADER}"
+        )
+
+    linked_manifests: list[Path] = []
+    for target in markdown_targets(index, errors):
+        if Path(target).name != "ARCHIVE.md":
+            continue
+        resolved = relative_target(archive, target)
+        if resolved is None:
+            errors.append(f"archive/INDEX.md: invalid snapshot link {target}")
+            continue
+        try:
+            relative = resolved.relative_to(archive.resolve())
+        except ValueError:
+            errors.append(f"archive/INDEX.md: invalid snapshot link {target}")
+            continue
+        if len(relative.parts) != 3:
+            errors.append(f"archive/INDEX.md: invalid snapshot link {target}")
+            continue
+        if not resolved.is_file():
+            errors.append(
+                f"archive/INDEX.md: linked manifest does not exist: {target}"
+            )
+            continue
+        linked_manifests.append(resolved)
+
+    for manifest in manifests:
+        count = linked_manifests.count(manifest)
+        relative = manifest.relative_to(root.resolve())
+        if count == 0:
+            errors.append(f"archive/INDEX.md: missing link to {relative}")
+        elif count > 1:
+            errors.append(f"archive/INDEX.md: duplicate link to {relative}")
+    return errors
+
+
 def main() -> int:
     args = parse_args()
     root = Path(args.repository).resolve()
@@ -84,6 +300,10 @@ def main() -> int:
         else:
             for entry in sorted(REQUIRED_IGNORES - ignores):
                 errors.append(f".gitignore: missing required entry {entry}")
+
+    if not args.before_write:
+        errors.extend(document_collection_errors(root))
+        errors.extend(source_archive_errors(root))
 
     tasks: list[dict[str, str]] = []
     path = task_path(root)

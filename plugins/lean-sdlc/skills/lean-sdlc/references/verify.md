@@ -15,4 +15,6 @@ Arrow sequence is fact order, not output wording; replace slots with project fac
 5. Trace behavior to owning docs; run structural checker.
 6. The owning lead alone decide task disposition and close the accepted task through `tasks.py close` with evidence. A direct-user override requires an explicit request and recorded reason.
 
+For documentation work, verify the concrete trigger, one semantic unit, current links, and `INDEX.md` navigation. Verify that `docs/PROJECT.md` remains the only mandatory shared project document. If `/archive` exists, verify explicit user authority and inertness from imports, builds, packaging, and normal tests.
+
 Standard final checkpoint reviews pending Quick Fixes through highest listed task in Verifier regression and documentation/interaction review. Close with `--review-through TASK-NNN` only when prefix is `Done`; failed review creates Standard correction task.

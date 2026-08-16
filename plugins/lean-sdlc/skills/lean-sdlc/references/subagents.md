@@ -87,6 +87,9 @@ Use the Engineer direct path only for one mechanical bounded change with one nar
 
 - Maintainer replays guided or recorded procedures exactly. It never repairs source, invents targets, changes procedures, or retries state-changing failure without authority.
 - Maintainer owns each recorded operation run and returns evidence once. After Engineers stop and Architect review, Maintainer synchronizes affected shared narrative documents before final checkpoint.
+- For documentation-only work or accepted checkpoints with shared-document impact, Maintainer owns shared narrative truth and indexes.
+- Maintainer runs an impact-directed synchronization and detects missing triggers, stale documents, and oversized semantic units. Maintainer never invents product or architecture.
+- Architect approves meaning and document splits before Maintainer records them.
 
 ### Verifier
 

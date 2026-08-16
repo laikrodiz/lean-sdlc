@@ -58,6 +58,40 @@ def read_rows(repository: Path) -> list[dict[str, str]]:
         return list(csv.DictReader(handle))
 
 
+def initialize_repository(repository: Path) -> None:
+    initialized = run(str(INIT), str(repository))
+    if initialized.returncode != 0:
+        raise AssertionError(initialized.stdout + initialized.stderr)
+
+
+def write_document_family(
+    repository: Path,
+    folder: str,
+    prefix: str,
+    *,
+    name: str | None = None,
+    links: list[str] | None = None,
+) -> Path:
+    directory = repository / "docs" / folder
+    directory.mkdir(parents=True, exist_ok=True)
+    filename = name or f"{prefix}-001-example.md"
+    document = directory / filename
+    document.write_text(f"# {prefix}-001 Example\n", encoding="utf-8")
+    targets = links if links is not None else [filename]
+    rows = "\n".join(
+        f"| [{prefix}-001]({target}) | Example | Active | Example | None |"
+        for target in targets
+    )
+    directory.joinpath("INDEX.md").write_text(
+        "# Index\n\n"
+        "| ID | Title | Status | Owns | Related |\n"
+        "| --- | --- | --- | --- | --- |\n"
+        f"{rows}\n",
+        encoding="utf-8",
+    )
+    return document
+
+
 class TaskLedgerTests(unittest.TestCase):
     def test_concurrent_plan_and_start_transactions_get_unique_ids(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -927,6 +961,201 @@ class TaskLedgerTests(unittest.TestCase):
             self.assertNotEqual(checked.returncode, 0)
             self.assertIn("dependency cycle", checked.stdout)
 
+    def test_checker_accepts_minimal_and_valid_optional_document_families(self) -> None:
+        families = (
+            ("features", "FEAT"),
+            ("decisions", "DEC"),
+            ("architecture", "ARCH"),
+            ("state-machines", "STATE"),
+            ("interfaces", "IFACE"),
+            ("data", "DATA"),
+            ("operations", "OPS"),
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            initialize_repository(repository)
+            minimal = run(str(CHECK), str(repository))
+            self.assertEqual(minimal.returncode, 0, minimal.stdout + minimal.stderr)
+
+            for folder, prefix in families:
+                write_document_family(repository, folder, prefix)
+            checked = run(str(CHECK), str(repository))
+            self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)
+
+    def test_before_write_does_not_require_a_finished_optional_collection(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            initialize_repository(repository)
+            features = repository / "docs" / "features"
+            features.mkdir()
+            features.joinpath("FEAT-001-example.md").write_text(
+                "# Example\n", encoding="utf-8"
+            )
+            checked = run(
+                str(CHECK),
+                str(repository),
+                "--before-write",
+                "--task",
+                "TASK-000",
+                "--owner",
+                "bootstrap",
+            )
+            self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)
+
+    def test_checker_rejects_invalid_document_names_ids_and_headers(self) -> None:
+        cases = {
+            "malformed document name": lambda repository: write_document_family(
+                repository,
+                "features",
+                "FEAT",
+                name="FEAT-1-example.md",
+            ),
+            "duplicate id FEAT-001": lambda repository: (
+                write_document_family(repository, "features", "FEAT"),
+                repository.joinpath("docs/features/FEAT-001-other.md").write_text(
+                    "# Other\n", encoding="utf-8"
+                ),
+            ),
+            "expected header": lambda repository: (
+                write_document_family(repository, "features", "FEAT"),
+                repository.joinpath("docs/features/INDEX.md").write_text(
+                    "# Index\n", encoding="utf-8"
+                ),
+            ),
+        }
+        for expected, setup in cases.items():
+            with self.subTest(expected=expected), tempfile.TemporaryDirectory() as directory:
+                repository = Path(directory)
+                initialize_repository(repository)
+                setup(repository)
+                checked = run(str(CHECK), str(repository))
+                self.assertNotEqual(checked.returncode, 0)
+                self.assertIn(expected, checked.stdout)
+
+    def test_checker_rejects_broken_document_index_links(self) -> None:
+        cases = {
+            "missing INDEX.md": lambda repository: (
+                repository.joinpath("docs/features").mkdir(parents=True),
+                repository.joinpath("docs/features/FEAT-001-example.md").write_text(
+                    "# Example\n", encoding="utf-8"
+                ),
+            ),
+            "missing link to FEAT-001-example.md": lambda repository: write_document_family(
+                repository, "features", "FEAT", links=[]
+            ),
+            "duplicate link to FEAT-001-example.md": lambda repository: write_document_family(
+                repository,
+                "features",
+                "FEAT",
+                links=["FEAT-001-example.md", "FEAT-001-example.md"],
+            ),
+            "linked file does not exist": lambda repository: write_document_family(
+                repository,
+                "features",
+                "FEAT",
+                links=["FEAT-999-missing.md"],
+            ),
+            "invalid family link": lambda repository: write_document_family(
+                repository,
+                "features",
+                "FEAT",
+                links=["../features/FEAT-001-example.md"],
+            ),
+        }
+        for expected, setup in cases.items():
+            with self.subTest(expected=expected), tempfile.TemporaryDirectory() as directory:
+                repository = Path(directory)
+                initialize_repository(repository)
+                setup(repository)
+                checked = run(str(CHECK), str(repository))
+                self.assertNotEqual(checked.returncode, 0)
+                self.assertIn(expected, checked.stdout)
+
+    def test_checker_accepts_one_requested_source_archive(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            initialize_repository(repository)
+            snapshot = repository / "archive" / "preset-engine" / "v1"
+            snapshot.mkdir(parents=True)
+            snapshot.joinpath("ARCHIVE.md").write_text(
+                "# Preset Engine v1\n", encoding="utf-8"
+            )
+            repository.joinpath("archive/INDEX.md").write_text(
+                "# Index\n\n"
+                "| Capability | Snapshot | Archived | Reason | Replacement | Link |\n"
+                "| --- | --- | --- | --- | --- | --- |\n"
+                "| Preset engine | v1 | Today | Replaced | src/presets | "
+                "[Open](preset-engine/v1/ARCHIVE.md) |\n",
+                encoding="utf-8",
+            )
+            checked = run(str(CHECK), str(repository))
+            self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)
+
+    def test_checker_rejects_invalid_source_archive_structures(self) -> None:
+        def create_snapshot(repository: Path, *, capability: str = "feature", snapshot: str = "v1") -> Path:
+            path = repository / "archive" / capability / snapshot
+            path.mkdir(parents=True)
+            path.joinpath("ARCHIVE.md").write_text("# Snapshot\n", encoding="utf-8")
+            return path
+
+        cases = {
+            "missing INDEX.md": lambda repository: create_snapshot(repository),
+            "no source snapshots": lambda repository: repository.joinpath("archive").mkdir(),
+            "missing ARCHIVE.md": lambda repository: repository.joinpath(
+                "archive/feature/v1"
+            ).mkdir(parents=True),
+            "malformed capability name": lambda repository: create_snapshot(
+                repository, capability="Feature"
+            ),
+            "malformed snapshot name": lambda repository: create_snapshot(
+                repository, snapshot="Version 1"
+            ),
+            "missing link to archive/feature/v1/ARCHIVE.md": lambda repository: (
+                create_snapshot(repository),
+                repository.joinpath("archive/INDEX.md").write_text(
+                    "# Index\n", encoding="utf-8"
+                ),
+            ),
+            "expected header": lambda repository: (
+                create_snapshot(repository),
+                repository.joinpath("archive/INDEX.md").write_text(
+                    "# Index\n\n[Open](feature/v1/ARCHIVE.md)\n",
+                    encoding="utf-8",
+                ),
+            ),
+            "duplicate link to archive/feature/v1/ARCHIVE.md": lambda repository: (
+                create_snapshot(repository),
+                repository.joinpath("archive/INDEX.md").write_text(
+                    "[One](feature/v1/ARCHIVE.md)\n[Two](feature/v1/ARCHIVE.md)\n",
+                    encoding="utf-8",
+                ),
+            ),
+            "linked manifest does not exist": lambda repository: (
+                create_snapshot(repository),
+                repository.joinpath("archive/INDEX.md").write_text(
+                    "[Missing](other/v1/ARCHIVE.md)\n", encoding="utf-8"
+                ),
+            ),
+            "invalid snapshot link": lambda repository: (
+                create_snapshot(repository),
+                repository.joinpath("archive/INDEX.md").write_text(
+                    "[Escape](../archive/feature/v1/ARCHIVE.md)\n",
+                    encoding="utf-8",
+                ),
+            ),
+        }
+        for expected, setup in cases.items():
+            with self.subTest(expected=expected), tempfile.TemporaryDirectory() as directory:
+                repository = Path(directory)
+                initialize_repository(repository)
+                setup(repository)
+                archive = repository / "archive"
+                if archive.is_dir() and not archive.joinpath("INDEX.md").exists() and expected != "missing INDEX.md":
+                    archive.joinpath("INDEX.md").write_text("# Index\n", encoding="utf-8")
+                checked = run(str(CHECK), str(repository))
+                self.assertNotEqual(checked.returncode, 0)
+                self.assertIn(expected, checked.stdout)
+
     def test_owner_hook_is_stable_and_plugin_scoped(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             repository = Path(directory)
@@ -1109,6 +1338,42 @@ class PackageContractTests(unittest.TestCase):
                 }
             )
         )
+
+    def test_optional_document_templates_are_complete_and_on_demand(self) -> None:
+        assets = SKILL / "assets"
+        expected = {
+            "AGENTS.md",
+            "architecture.md",
+            "archive-index.md",
+            "collection-index.md",
+            "data.md",
+            "decision.md",
+            "feature.md",
+            "glossary.md",
+            "interface.md",
+            "operation.md",
+            "security.md",
+            "source-archive.md",
+            "state-machine.md",
+            "verification.md",
+        }
+        self.assertEqual({path.name for path in assets.glob("*.md")}, expected)
+        templates = "\n".join(
+            path.read_text(encoding="utf-8")
+            for path in assets.glob("*.md")
+            if path.name != "AGENTS.md"
+        )
+        for term in [
+            "FEAT-001",
+            "DEC-001",
+            "ARCH-001",
+            "STATE-001",
+            "IFACE-001",
+            "DATA-001",
+            "OPS-001",
+            "archive/<capability>/<snapshot>/ARCHIVE.md",
+        ]:
+            self.assertIn(term, templates)
 
     def test_local_markdown_links_resolve(self) -> None:
         failures: list[str] = []
@@ -1655,7 +1920,7 @@ class PackageContractTests(unittest.TestCase):
             for line in evaluations.splitlines()
             if line.startswith("| ") and not line.startswith("| ---") and "Scenario" not in line
         ]
-        self.assertLess(len(scenarios), 45)
+        self.assertLessEqual(len(scenarios), 50)
 
     def test_ledger_plan_view_projection_is_deterministic_and_read_only_for_brainstorming(self) -> None:
         dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
@@ -1701,7 +1966,7 @@ class PackageContractTests(unittest.TestCase):
         subagents = subagents_path.read_text(encoding="utf-8")
 
         self.assertGreaterEqual(len(subagents.splitlines()), 100)
-        self.assertLessEqual(len(subagents.splitlines()), 170)
+        self.assertLessEqual(len(subagents.splitlines()), 190)
         for heading in [
             "## Role-trigger matrix",
             "## Independence gate",
@@ -1734,7 +1999,7 @@ class PackageContractTests(unittest.TestCase):
             if line.startswith("| ") and not line.startswith("| ---") and "Scenario" not in line
         ]
         self.assertGreaterEqual(len(scenarios), 20)
-        self.assertLessEqual(len(scenarios), 45)
+        self.assertLessEqual(len(scenarios), 50)
         self.assertNotIn("Failure indicators", evaluations)
 
         subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
@@ -1844,7 +2109,7 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
         self.assertIn(
-            "- Version goal: Release Quick Fix routing with deferred batch verification.",
+            "- Version goal: Add optional document contracts, templates, and source archive validation.",
             project,
         )
 

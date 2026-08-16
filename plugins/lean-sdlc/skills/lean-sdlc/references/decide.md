@@ -27,3 +27,5 @@ Keep a choice local when it is cheap to reverse and clear in code, tests, or tec
 Return to Shape when uncertainty concerns desired behavior or value.
 
 Ready means delivery can proceed without hiding a consequential choice inside implementation.
+
+Use a numbered architecture document only for a shared system shape or boundary that needs durable detail. Keep `docs/ARCHITECTURE.md` as a conditional overview. The repository contract owns optional-family triggers and semantic sizing.

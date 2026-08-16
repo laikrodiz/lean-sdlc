@@ -18,6 +18,8 @@ For the first build, package, deploy, flash, runtime, or smoke operation:
 
 Update the recorded procedure after another guided success when reality changes. Stop when a procedure is missing, ambiguous, or stale.
 
+Use `docs/operations/OPS-*.md` for a procedure with an independent target, recovery rule, lifecycle, or useful standalone detail. Create `docs/operations/INDEX.md` with the first numbered procedure. Keep `docs/OPERATIONS.md` for the first simple recorded procedure and shared operation map.
+
 ## Procedure record
 
 For each operation, keep:

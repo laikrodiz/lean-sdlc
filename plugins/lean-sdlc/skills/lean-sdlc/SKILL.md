@@ -13,7 +13,7 @@ Keep intent, work, implementation, and proof coherent with the smallest useful p
 2. Assisted mode is the default. Restore owner, mode, and tier after lifecycle events. Missing state restores Assisted with Standard children. Fast children require opt-in. Reload [subagents.md](references/subagents.md) before Deliver.
 3. Require explicit implementation authority before task creation or changes. Discussion and proposals remain read-only. If ambiguous, remain read-only.
 4. Apply [Shape](references/shape.md), then [Plan](references/plan.md), before task creation. Confirm `why -> what -> how -> proof`; show a concise plan; define acceptance and proof.
-5. Read [repository-contracts.md](references/repository-contracts.md) only for initialization, legacy migration, or document ownership.
+5. Read [repository-contracts.md](references/repository-contracts.md) only for initialization, legacy migration, or document ownership. It is also canonical for optional-document triggers, semantic sizing, indexes, and source-archive boundaries.
 6. Read [subagents.md](references/subagents.md) before delegation. Solo planning does not load child policy. Assisted delegation loads it before child use.
 7. During Plan, classify eligible trivial settled edits inline as Quick Fix; see [Plan](references/plan.md) for eligibility. Record Context `Quick Fix`.
 

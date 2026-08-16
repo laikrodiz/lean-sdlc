@@ -24,3 +24,5 @@ Read `docs/PROJECT.md` and behavior documents. Identify the problem, affected us
 Group the current outcome in the project promise. Use an optional Feature document when one durable behavior spans tasks. Split a Feature when a part has an independent promise, test, or change. Merge Feature candidates when neither part has useful behavior alone.
 
 Ready means the smallest outcome, boundary, acceptance, and promise are clear enough to decide or plan.
+
+For optional documentation, use the concrete need-based triggers and semantic sizing in the repository contract. Keep `docs/PROJECT.md` as the only mandatory shared project document. If a document trigger or split changes meaning, stop for Architect approval.

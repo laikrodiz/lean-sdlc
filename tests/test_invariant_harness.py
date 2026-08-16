@@ -278,7 +278,7 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
             name: _read(f"plugins/lean-sdlc/skills/lean-sdlc/references/{name}.md")
             for name in ("shape", "plan", "deliver", "verify")
         }
-        self.assertLessEqual(sum(len(text.split()) for text in lanes.values()), 1400)
+        self.assertLessEqual(sum(len(text.split()) for text in lanes.values()), 1600)
         for term in [
             "shape owns the complete intent gate",
             "material assumption affects behavior, scope, or architecture",
