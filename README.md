@@ -52,7 +52,7 @@ Every initialized repository has three required files:
 
 Feature, decision, architecture, interface, and operations documents remain optional. Add them when shared pressure makes the detail worth keeping.
 
-## People and modes
+## Roles and operating modes
 
 The Architect agent is the lead. Four standard subagents support the lead when their work is useful:
 
