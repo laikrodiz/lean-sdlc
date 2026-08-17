@@ -803,6 +803,162 @@ class TaskLedgerTests(unittest.TestCase):
                 before,
             )
 
+    def test_backlog_add_lists_sparse_rows_and_keeps_them_out_of_open(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            write_ledger(repository, "")
+
+            added = task(repository, "backlog-add", "--title", "Future idea")
+            self.assertEqual(added.returncode, 0, added.stderr)
+            row = read_rows(repository)[0]
+            self.assertEqual(row["Status"], "Backlog")
+            self.assertEqual(row["Context"], "Project")
+            self.assertTrue(all(not row[field] for field in (
+                "Dependencies",
+                "Owner",
+                "Acceptance Criteria",
+                "Proof",
+                "Evidence",
+            )))
+
+            listed = task(repository, "backlog")
+            self.assertEqual(listed.returncode, 0, listed.stderr)
+            self.assertEqual(
+                listed.stdout,
+                "Task ID,Title,Context\nTASK-000,Future idea,Project\n",
+            )
+            self.assertEqual(task(repository, "open").stdout, HEADER)
+
+    def test_backlog_update_is_sparse_and_promotion_to_planned_is_atomic(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            write_ledger(repository, "")
+            self.assertEqual(
+                task(repository, "backlog-add", "--title", "Broad idea").returncode,
+                0,
+            )
+
+            updated = task(
+                repository,
+                "update",
+                "TASK-000",
+                "--title",
+                "Refined idea",
+                "--context",
+                "FEAT-001",
+            )
+            self.assertEqual(updated.returncode, 0, updated.stderr)
+            before = repository.joinpath("tasks.csv").read_text(encoding="utf-8")
+            rejected = task(
+                repository,
+                "update",
+                "TASK-000",
+                "--acceptance",
+                "Must not be accepted in Backlog",
+            )
+            self.assertNotEqual(rejected.returncode, 0)
+            self.assertEqual(
+                repository.joinpath("tasks.csv").read_text(encoding="utf-8"),
+                before,
+            )
+
+            promoted = task(
+                repository,
+                "promote",
+                "TASK-000",
+                "--to",
+                "planned",
+                "--title",
+                "Sized task",
+                "--context",
+                "Project",
+                "--acceptance",
+                "The task is accepted",
+                "--proof",
+                "Run the focused check",
+            )
+            self.assertEqual(promoted.returncode, 0, promoted.stderr)
+            row = read_rows(repository)[0]
+            self.assertEqual(row["Status"], "Planned")
+            self.assertEqual(row["Title"], "Sized task")
+            self.assertEqual(row["Acceptance Criteria"], "The task is accepted")
+
+    def test_promote_in_progress_requires_owner_and_finished_dependencies(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            write_ledger(
+                repository,
+                "TASK-001,Idea,Backlog,Project,,,,,\n"
+                "TASK-000,Dependency,Done,Project,,11111111,Done,Check,Evidence\n",
+            )
+            before = repository.joinpath("tasks.csv").read_text(encoding="utf-8")
+            missing_owner = task(
+                repository,
+                "promote",
+                "TASK-001",
+                "--to",
+                "in-progress",
+                "--acceptance",
+                "Ready",
+                "--proof",
+                "Check",
+            )
+            self.assertNotEqual(missing_owner.returncode, 0)
+            self.assertIn("--owner is required", missing_owner.stderr)
+            self.assertEqual(
+                repository.joinpath("tasks.csv").read_text(encoding="utf-8"),
+                before,
+            )
+
+            promoted = task(
+                repository,
+                "promote",
+                "TASK-001",
+                "--to",
+                "in-progress",
+                "--owner",
+                "12345678",
+                "--dependencies",
+                "TASK-000",
+                "--acceptance",
+                "Ready",
+                "--proof",
+                "Check",
+            )
+            self.assertEqual(promoted.returncode, 0, promoted.stderr)
+            row = next(row for row in read_rows(repository) if row["Task ID"] == "TASK-001")
+            self.assertEqual(row["Status"], "In Progress")
+            self.assertEqual(row["Owner"], "12345678")
+            self.assertEqual(row["Dependencies"], "TASK-000")
+
+    def test_backlog_integrity_rejects_forbidden_fields_and_dependencies(self) -> None:
+        cases = {
+            "Bootstrap context": (
+                "TASK-000,Idea,Backlog,Bootstrap,,,,,\n",
+                "cannot use Bootstrap context",
+            ),
+            "Quick Fix context": (
+                "TASK-000,Idea,Backlog,Quick Fix,,,,,\n",
+                "cannot use Quick Fix context",
+            ),
+            "sparse fields": (
+                "TASK-000,Idea,Backlog,Project,,12345678,Ready,,\n",
+                "Backlog row must leave Owner empty",
+            ),
+            "dependency": (
+                "TASK-001,Idea,Backlog,Project,,,,,\n"
+                "TASK-000,Child,Planned,Project,TASK-001,,Ready,Check,\n",
+                "depends on Backlog task TASK-001",
+            ),
+        }
+        for name, (body, expected) in cases.items():
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
+                repository = Path(directory)
+                write_ledger(repository, body)
+                result = task(repository, "backlog")
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn(expected, result.stderr)
+
     def test_show_prints_selected_task_then_recursive_dependencies_in_field_order(
         self,
     ) -> None:
@@ -960,6 +1116,25 @@ class TaskLedgerTests(unittest.TestCase):
             checked = run(str(CHECK), str(repository), "--task", "TASK-001")
             self.assertNotEqual(checked.returncode, 0)
             self.assertIn("dependency cycle", checked.stdout)
+
+    def test_checker_accepts_sparse_backlog_and_rejects_non_sparse_rows(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            initialize_repository(repository)
+            added = task(repository, "backlog-add", "--title", "Future idea")
+            self.assertEqual(added.returncode, 0, added.stderr)
+            checked = run(str(CHECK), str(repository))
+            self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)
+
+            repository.joinpath("tasks.csv").write_text(
+                HEADER
+                + "TASK-001,Future idea,Backlog,Project,,11111111,Ready,,\n"
+                + "TASK-000,Initial setup,Done,Bootstrap,,bootstrap,Done,Check,Done\n",
+                encoding="utf-8",
+            )
+            rejected = run(str(CHECK), str(repository))
+            self.assertNotEqual(rejected.returncode, 0)
+            self.assertIn("Backlog row must leave Owner empty", rejected.stdout)
 
     def test_checker_accepts_minimal_and_valid_optional_document_families(self) -> None:
         families = (
@@ -1938,7 +2113,7 @@ class PackageContractTests(unittest.TestCase):
            "completed",
             "mark the closing row",
             "active close transition",
-            "rebuild only unresolved rows",
+            "rebuild only unresolved non-backlog rows",
             "do not load full",
             "startup, resume, clear, or compaction",
             "tasks.py open",
@@ -2105,11 +2280,11 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.16.0")
+        self.assertEqual(version, "1.17.0")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
         self.assertIn(
-            "- Version goal: Add optional document contracts, templates, and source archive validation.",
+            "- Version goal: Add a controlled Backlog lane for parked ideas, explicit promotion, duplicate checks, and plan-overlay exclusion.",
             project,
         )
 

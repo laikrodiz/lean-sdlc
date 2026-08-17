@@ -17,6 +17,8 @@ Keep intent, work, implementation, and proof coherent with the smallest useful p
 6. Read [subagents.md](references/subagents.md) before delegation. Solo planning does not load child policy. Assisted delegation loads it before child use.
 7. During Plan, classify eligible trivial settled edits inline as Quick Fix; see [Plan](references/plan.md) for eligibility. Record Context `Quick Fix`.
 
+Backlog is parked work. `tasks.py backlog` is its compact view. Only a direct user request may add or promote Backlog work. An Architect may propose placement only for a substantial reason and must wait for approval. Backlog never authorizes planning or implementation. Before new Standard work, read the compact view and check duplicates, broader items, or related ideas. Do not load Backlog on startup, resume, brainstorming, or Quick Fix work.
+
 | Lane | Use when |
 | --- | --- |
 | Shape | Problem, user, behavior, scope, stage, or promise is unclear. |

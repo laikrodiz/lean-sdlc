@@ -53,9 +53,18 @@ PREVIOUS_TO_CURRENT = dict(zip(PREVIOUS_COLUMNS, TASK_COLUMNS))
 TASK_ID_PATTERN = re.compile(r"TASK-(\d+)$")
 THREAD_OWNER_PATTERN = re.compile(r"\d{8}$")
 CONTEXT_PATTERN = re.compile(r"(?:FEAT|DEC)-[A-Za-z0-9][A-Za-z0-9._-]*$")
-TASK_STATUSES = {"Planned", "In Progress", "Done"}
+TASK_STATUSES = {"Backlog", "Planned", "In Progress", "Done"}
 SPECIAL_CONTEXTS = {"Project", "Bootstrap", "Quick Fix"}
 QUICK_FIX_CONTEXT = "Quick Fix"
+BACKLOG_STATUS = "Backlog"
+BACKLOG_FORBIDDEN_CONTEXTS = {"Bootstrap", QUICK_FIX_CONTEXT}
+BACKLOG_EMPTY_FIELDS = (
+    "Dependencies",
+    "Owner",
+    "Acceptance Criteria",
+    "Proof",
+    "Evidence",
+)
 QUICK_FIX_PENDING_MARKER = "[Quick Fix batch review pending]"
 QUICK_FIX_REVIEW_MARKER_PREFIX = "[Quick Fix batch review through"
 QUICK_FIX_REVIEW_MARKER_PATTERN = re.compile(
@@ -403,6 +412,22 @@ def integrity_errors(rows: list[dict[str, str]]) -> list[str]:
 
     graph: dict[str, list[str]] = {}
     for task_id, row in row_by_id.items():
+        if row.get("Status") == BACKLOG_STATUS:
+            if not row.get("Title"):
+                errors.append(f"{task_id} Backlog row has empty title")
+            context = row.get("Context", "")
+            if not context:
+                errors.append(f"{task_id} Backlog row has empty context")
+            elif context in BACKLOG_FORBIDDEN_CONTEXTS:
+                errors.append(
+                    f"{task_id} Backlog row cannot use {context} context"
+                )
+            for field in BACKLOG_EMPTY_FIELDS:
+                if row.get(field):
+                    errors.append(
+                        f"{task_id} Backlog row must leave {field} empty"
+                    )
+
         dependencies = dependency_ids(row.get("Dependencies", ""))
         graph[task_id] = []
         local_seen: set[str] = set()
@@ -416,6 +441,10 @@ def integrity_errors(rows: list[dict[str, str]]) -> list[str]:
             elif dependency not in row_by_id:
                 errors.append(f"{task_id} depends on missing task {dependency}")
             else:
+                if row_by_id[dependency].get("Status") == BACKLOG_STATUS:
+                    errors.append(
+                        f"{task_id} depends on Backlog task {dependency}"
+                    )
                 graph[task_id].append(dependency)
             local_seen.add(dependency)
 

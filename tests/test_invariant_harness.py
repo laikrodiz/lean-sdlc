@@ -49,6 +49,23 @@ FROZEN_INVARIANTS = (
         ("serializes writers with a short root lock", "replaces the file atomically", "under the existing lock", "one root `tasks.csv` remains authoritative"),
     ),
     FrozenInvariant(
+        "sparse user-controlled backlog",
+        "plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md",
+        (
+            "A Backlog row has Status `Backlog`",
+            "carries values only for `Task ID`, `Title`, `Status`, and `Context`",
+            "`Bootstrap` and `Quick Fix` are invalid Backlog contexts",
+            "No task may depend on a Backlog task",
+            "Only a direct user request may add or promote Backlog work",
+            "matching an existing Backlog title is promotion authority without an exact ID",
+            "Before creating new Standard work",
+            "Do not load Backlog on startup, resume, brainstorming, or Quick Fix work",
+            "Promotion adds proper title sizing, acceptance, proof, and dependencies",
+            "Promotion to In Progress adds an owner",
+            "Planned promotion is not implementation authority",
+        ),
+    ),
+    FrozenInvariant(
         "durable intent owners",
         "plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md",
         ("project purpose, value, behavior boundary, scope, stage, and version promise", "durable behavior detail", "technical rationale and durable costly choice", "local corrections -> outcome-focused task truth", "keep durable intent in these existing owners", "do not add a file or task column for intent"),
@@ -174,7 +191,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant(
         "deterministic ledger plan projection",
         "plugins/lean-sdlc/skills/lean-sdlc/references/plan.md",
-        ("## plan view projection", "`tasks.py open` supplies unresolved `planned` and `in progress` rows", "update_plan", "task-nnn — title", "planned` to `pending", "in progress` to `in_progress", "closing row `completed`", "before or with `tasks.py close`", "active close transition", "only unresolved rows", "do not load full `done` history", "startup, resume, clear, or compaction", "brainstorming and rephrasing remain read-only", "qualified parallel pair", "`tasks.csv` remains authoritative"),
+        ("## plan view projection", "`tasks.py open` supplies unresolved `planned` and `in progress` rows", "excludes backlog", "update_plan", "task-nnn — title", "planned` to `pending", "in progress` to `in_progress", "closing row `completed`", "before or with `tasks.py close`", "active close transition", "only unresolved non-backlog rows", "do not load full `done` history", "startup, resume, clear, or compaction", "brainstorming and rephrasing remain read-only", "qualified parallel pair", "`tasks.csv` remains authoritative"),
     ),
     FrozenInvariant(
         "quick fix plan classification",
@@ -249,7 +266,7 @@ def _lane_names(text: str) -> tuple[str, ...]:
 class FrozenInvariantHarnessTests(unittest.TestCase):
     def test_every_invariant_has_one_canonical_source(self) -> None:
         names = [invariant.name for invariant in FROZEN_INVARIANTS]
-        self.assertEqual(len(FROZEN_INVARIANTS), 25)
+        self.assertEqual(len(FROZEN_INVARIANTS), 26)
         self.assertEqual(len(names), len(set(names)))
         for invariant in FROZEN_INVARIANTS:
             with self.subTest(invariant=invariant.name):

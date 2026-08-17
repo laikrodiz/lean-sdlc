@@ -12,6 +12,8 @@ from pathlib import Path
 sys.dont_write_bytecode = True
 
 from task_ledger import (
+    BACKLOG_FORBIDDEN_CONTEXTS,
+    BACKLOG_STATUS,
     QUICK_FIX_CONTEXT,
     QUICK_FIX_PENDING_MARKER,
     TASK_COLUMNS,
@@ -73,9 +75,17 @@ def parser() -> argparse.ArgumentParser:
     plan = subparsers.add_parser("plan", help="Create an unowned Planned task")
     add_definition_arguments(plan, required=True)
 
+    backlog_add = subparsers.add_parser(
+        "backlog-add",
+        help="Create a sparse Backlog task",
+    )
+    backlog_add.add_argument("--title", required=True)
+    backlog_add.add_argument("--context", default="Project")
+
     update = subparsers.add_parser(
         "update",
-        help="Correct a Planned task or an owned In Progress task",
+        help="Correct a Backlog title/context, Planned task, "
+        "or owned In Progress task",
     )
     update.add_argument("task_id")
     update.add_argument("--owner")
@@ -102,9 +112,27 @@ def parser() -> argparse.ArgumentParser:
     )
 
     subparsers.add_parser(
+        "backlog",
+        help="Print Backlog task titles and contexts",
+    )
+
+    subparsers.add_parser(
         "quick-fixes",
         help="Print completed Quick Fixes awaiting batch review",
     )
+
+    promote = subparsers.add_parser(
+        "promote",
+        help="Promote one Backlog task to Planned or In Progress",
+    )
+    promote.add_argument("task_id")
+    promote.add_argument("--to", choices=("planned", "in-progress"), required=True)
+    promote.add_argument("--title")
+    promote.add_argument("--context")
+    promote.add_argument("--dependencies")
+    promote.add_argument("--owner")
+    promote.add_argument("--acceptance", required=True)
+    promote.add_argument("--proof", required=True)
 
     show = subparsers.add_parser(
         "show",
@@ -155,6 +183,34 @@ def plan_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
     return f"planned {task_id}"
 
 
+def backlog_context(value: str) -> str:
+    context = clean(value, "Context")
+    if context in BACKLOG_FORBIDDEN_CONTEXTS:
+        raise TaskError(
+            f"Backlog tasks cannot use {context} context"
+        )
+    return context
+
+
+def backlog_add_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
+    task_id = next_task_id(rows)
+    rows.insert(
+        0,
+        {
+            "Task ID": task_id,
+            "Title": clean(args.title, "Title"),
+            "Status": BACKLOG_STATUS,
+            "Context": backlog_context(args.context),
+            "Dependencies": "",
+            "Owner": "",
+            "Acceptance Criteria": "",
+            "Proof": "",
+            "Evidence": "",
+        },
+    )
+    return f"added {task_id} to Backlog"
+
+
 def require_finished_dependencies(
     task: dict[str, str],
     rows: list[dict[str, str]],
@@ -182,6 +238,8 @@ def start_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
                 "use update first"
             )
         task = find_task(rows, args.task_id)
+        if task.get("Status") == BACKLOG_STATUS:
+            raise TaskError(f"{args.task_id} is Backlog; promote it before start")
         if task.get("Status") != "Planned" or task.get("Owner"):
             raise TaskError(f"{args.task_id} must be unowned and Planned")
         require_finished_dependencies(task, rows)
@@ -209,6 +267,21 @@ def require_owner(task: dict[str, str], supplied: str) -> str:
 def update_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
     task = find_task(rows, args.task_id)
     status = task.get("Status")
+    if status == BACKLOG_STATUS:
+        if args.owner:
+            raise TaskError("Backlog update accepts only --title and --context")
+        if any(
+            getattr(args, field) is not None
+            for field in ("dependencies", "acceptance", "proof")
+        ):
+            raise TaskError("Backlog update accepts only --title and --context")
+        if args.title is None and args.context is None:
+            raise TaskError("update requires at least one changed field")
+        if args.title is not None:
+            task["Title"] = clean(args.title, "Title")
+        if args.context is not None:
+            task["Context"] = backlog_context(args.context)
+        return f"updated {args.task_id}"
     if status == "In Progress":
         if not args.owner:
             raise TaskError("--owner is required for an In Progress task")
@@ -234,6 +307,49 @@ def update_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
     for column, value in supplied.items():
         task[column] = value.strip() if column == "Dependencies" else clean(value, column)
     return f"updated {args.task_id}"
+
+
+def promote_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
+    task = find_task(rows, args.task_id)
+    if task.get("Status") != BACKLOG_STATUS:
+        raise TaskError(f"{args.task_id} must be Backlog before promotion")
+
+    context = (
+        clean(args.context, "Context")
+        if args.context is not None
+        else task.get("Context", "")
+    )
+    if args.to == "planned":
+        if args.owner is not None:
+            raise TaskError("--owner is only required for --to in-progress")
+        owner = ""
+    else:
+        if args.owner is None:
+            raise TaskError("--owner is required for --to in-progress")
+        owner = thread_owner(
+            args.owner,
+            allow_bootstrap=context == "Bootstrap",
+        )
+
+    task["Title"] = clean(
+        args.title if args.title is not None else task.get("Title", ""),
+        "Title",
+    )
+    task["Status"] = "Planned" if args.to == "planned" else "In Progress"
+    task["Context"] = clean(context, "Context")
+    task["Dependencies"] = (
+        args.dependencies.strip()
+        if args.dependencies is not None
+        else ""
+    )
+    task["Owner"] = owner
+    task["Acceptance Criteria"] = clean(args.acceptance, "Acceptance Criteria")
+    task["Proof"] = clean(args.proof, "Proof")
+    task["Evidence"] = ""
+
+    if args.to == "in-progress":
+        require_finished_dependencies(task, rows)
+    return f"promoted {args.task_id} to {task['Status']}"
 
 
 def close_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
@@ -327,6 +443,17 @@ def emit_rows(rows: list[dict[str, str]]) -> None:
         sys.stdout,
         fieldnames=TASK_COLUMNS,
         lineterminator="\n",
+    )
+    writer.writeheader()
+    writer.writerows(rows)
+
+
+def emit_backlog(rows: list[dict[str, str]]) -> None:
+    writer = csv.DictWriter(
+        sys.stdout,
+        fieldnames=("Task ID", "Title", "Context"),
+        lineterminator="\n",
+        extrasaction="ignore",
     )
     writer.writeheader()
     writer.writerows(rows)
@@ -431,12 +558,16 @@ def main() -> int:
     try:
         if args.command == "upgrade":
             message = upgrade_ledger(root, args)
-        elif args.command in {"open", "show", "quick-fixes"}:
+        elif args.command in {"backlog", "open", "show", "quick-fixes"}:
             columns, rows = read_ledger(task_path(root))
             if columns != list(TASK_COLUMNS):
                 raise TaskError("run tasks.py upgrade before reading tasks")
             require_integrity(rows)
-            if args.command == "open":
+            if args.command == "backlog":
+                emit_backlog(
+                    [row for row in rows if row.get("Status") == BACKLOG_STATUS]
+                )
+            elif args.command == "open":
                 emit_rows(
                     [
                         row
@@ -454,7 +585,11 @@ def main() -> int:
                 columns, rows = read_ledger(path)
                 if columns != list(TASK_COLUMNS):
                     raise TaskError("run tasks.py upgrade before changing tasks")
-                if args.command == "plan":
+                if args.command == "backlog-add":
+                    message = backlog_add_task(args, rows)
+                elif args.command == "promote":
+                    message = promote_task(args, rows)
+                elif args.command == "plan":
                     message = plan_task(args, rows)
                 elif args.command == "start":
                     message = start_task(args, rows)

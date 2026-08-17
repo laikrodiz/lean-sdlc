@@ -73,9 +73,19 @@ Use exactly:
 
 `Task ID,Title,Status,Context,Dependencies,Owner,Acceptance Criteria,Proof,Evidence`
 
-Use `Project`, `FEAT-*`, `DEC-*`, `Bootstrap`, or `Quick Fix` as `Context`.
+Use `Project`, `FEAT-*`, `DEC-*`, `Bootstrap`, or `Quick Fix` as `Context` for active work. A Backlog row defaults to `Project` context.
 
-Use `tasks.py open` for current `Planned` and `In Progress` work. Use `tasks.py show TASK-ID` for one task and its recursive dependencies. These read-only views keep the existing human-readable CSV shape and avoid loading full `Done` history. The human-readable `tasks.csv` remains authoritative.
+Use `tasks.py backlog` for the compact Backlog view. Use `tasks.py open` for current `Planned` and `In Progress` work. Use `tasks.py show TASK-ID` for one task and its recursive dependencies. These read-only views keep the existing human-readable CSV shape and avoid loading full `Done` history. The human-readable `tasks.csv` remains authoritative.
+
+### Backlog contract
+
+A Backlog row has Status `Backlog` and carries values only for `Task ID`, `Title`, `Status`, and `Context`. `Dependencies`, `Owner`, `Acceptance Criteria`, `Proof`, and `Evidence` stay empty. The default Context is `Project`; `Bootstrap` and `Quick Fix` are invalid Backlog contexts. No task may depend on a Backlog task.
+
+`tasks.py backlog-add` adds a sparse Backlog row. `tasks.py backlog` prints the compact Backlog view. `tasks.py promote` promotes a Backlog idea through Shape and Plan, not through a raw status flip. Title and context correction changes only those Backlog fields and keeps the row sparse.
+
+Only a direct user request may add or promote Backlog work. An Architect may propose Backlog placement only for a substantial reason and must wait for approval. A clear implementation request matching an existing Backlog title is promotion authority without an exact ID. Before creating new Standard work, the Architect reads `tasks.py backlog` and checks duplicates, broader items, or related ideas. Do not load Backlog on startup, resume, brainstorming, or Quick Fix work.
+
+Promotion adds proper title sizing, acceptance, proof, and dependencies. Promotion to In Progress adds an owner and requires explicit implementation authority. Planned promotion is not implementation authority. If a Backlog idea is broad, promote the original ID as the first coherent task and create sibling tasks for independent outcomes. A Feature document remains optional under its existing trigger.
 
 1. Use `tasks.py`; never edit the CSV directly.
 2. `plan` creates unowned `Planned` work. `start` creates `In Progress` work or claims a planned task.

@@ -6,7 +6,11 @@ Invoke `$lean-sdlc` before planning, diagnosing, changing, verifying, or closing
 
 Read `docs/PROJECT.md` and work with `tasks.py open`. Use `tasks.py show TASK-ID` for one task. Do not load full `Done` history. Keep root `tasks.csv` authoritative; change it only through `tasks.py`. Read `references/repository-contracts.md` only for initialization, legacy migration, or document ownership.
 
+`tasks.py backlog` is the compact Backlog view. `tasks.py open` and the Codex plan overlay exclude Backlog. Before new Standard work, read `tasks.py backlog` and check duplicates, broader items, or related ideas. Do not load Backlog on startup, resume, brainstorming, or Quick Fix work.
+
 Discussion and proposal requests remain read-only. Require explicit implementation authority before Shape and Plan. If ambiguous, remain read-only. Shape owns `why -> what -> how -> proof`; assumptions affecting behavior, scope, or architecture require confirmation. Show a visible plan before task creation. Each durable plan item maps to one task.
+
+Backlog never authorizes planning or implementation. Only a direct user request may add or promote Backlog work. An Architect may propose Backlog placement only for a substantial reason and must wait for approval.
 
 ## Task gate
 

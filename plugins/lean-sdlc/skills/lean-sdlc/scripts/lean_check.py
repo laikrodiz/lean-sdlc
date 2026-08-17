@@ -333,7 +333,7 @@ def main() -> int:
         if status not in TASK_STATUSES:
             errors.append(
                 f"tasks.csv:{number}: {task_id} has invalid status {status!r}; "
-                "expected Planned, In Progress, or Done"
+                "expected Backlog, Planned, In Progress, or Done"
             )
 
         context = task.get("Context", "")
@@ -365,10 +365,11 @@ def main() -> int:
         if status == "Done" and not owner:
             errors.append(f"tasks.csv:{number}: {task_id} has empty owner")
 
-        if not task.get("Acceptance Criteria"):
-            errors.append(f"tasks.csv:{number}: {task_id} has empty acceptance")
-        if not task.get("Proof"):
-            errors.append(f"tasks.csv:{number}: {task_id} has empty proof")
+        if status != "Backlog":
+            if not task.get("Acceptance Criteria"):
+                errors.append(f"tasks.csv:{number}: {task_id} has empty acceptance")
+            if not task.get("Proof"):
+                errors.append(f"tasks.csv:{number}: {task_id} has empty proof")
         if status == "Done" and not task.get("Evidence"):
             errors.append(f"tasks.csv:{number}: {task_id} is Done without evidence")
 
