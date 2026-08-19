@@ -12,7 +12,8 @@ The user-selected lead owns causal reasoning and the repair decision. Without an
 6. Classify the cause as behavior, durable decision, boundary, operation, or implementation.
 7. Read-only diagnosis needs no task. Start or claim a task before changing any repository file.
 8. Add the smallest failing test or equivalent evidence when practical.
-9. Hand off to Deliver only after cause, scope, acceptance, and proof are settled.
+9. When an equivalent failure repeats without new evidence, stop the patch loop. Reassess the hypothesis and fault boundary.
+10. Hand off to Deliver only after cause, scope, acceptance, and proof are settled.
 
 Maintainer stops unknown, ambiguous, source-changing, or new retry behavior and routes it to Diagnose, Scout, and Architect.
 

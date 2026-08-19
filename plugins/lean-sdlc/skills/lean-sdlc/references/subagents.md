@@ -11,6 +11,7 @@
 - Fast children need user opt-in.
 - The Architect is the user-selected lead. An explicit user Architect profile controls it. Apply the required child profile before delegation; if unavailable, use Solo.
 - The Architect may implement under these exceptions: Solo mode; mechanical direct path; small architecture-bearing experiment or inseparable seam; after explicit user direction that the Architect itself implement; or after the required child and fallback are unavailable. Settled separable work remains Engineer work.
+- The Architect approves an automation contract before scripting and approves any meaning change.
 
 ## Quick Fix
 
@@ -21,7 +22,7 @@
 | Role | Trigger | Contract |
 | --- | --- | --- |
 | Engineer | An owned ready implementation task has settled design, paths, proof, and no decision. | Focused semantic changes and targeted check results. |
-| Maintainer | A guided or recorded build, package, CI, deploy, flash, runtime, or smoke operation is ready; an accepted checkpoint has shared-document impact; or documentation-only work is ready. | Replay; classify recorded failure signals and run authorized recovery only. |
+| Maintainer | A guided or recorded build, package, CI, deploy, flash, runtime, or smoke operation is ready; an approved automation needs recording or replay; an accepted checkpoint has shared-document impact; or documentation-only work is ready. | Record and replay the canonical command; classify recorded failure signals and run authorized recovery only. |
 | Verifier | Changed code, configuration, schema, generated artifacts, or behavior reaches a proof checkpoint, or proof has multiple commands or noisy output. | Independent checkpoint capture, acceptance proof, and one regression command. |
 | Scout | A named Architect decision requires distinct source sets or enough material, data, or logs to pollute lead context. | Reduced cross-boundary source or log evidence with citations. |
 
@@ -46,6 +47,14 @@ Use the Engineer direct path only for one mechanical bounded change with one nar
 - One agent owns each mutable external target. Never let two agents mutate the same project, database, deployment, or hardware target.
 - Child returns conclusions, errors, artifact paths or IDs, and unresolved questions, not a raw transcript. Reuse the same child for the same tool and project. Replace after a material tool or target change.
 - Token-waste signals include compaction during tool work, several direct routine calls, repeated large output, two failed tool attempts, or the Architect summarizing data instead of deciding. Reroute remaining work to Luna Max or bounded programmatic calls. Mention optimization only when routing changes.
+
+## Execution economy
+
+- Group independent read-only discovery into bounded calls. Use follow-ups only for unresolved questions.
+- Bound output only when shape or presence is enough. Require complete reads for selected skill instructions, contracts, acceptance, proof, patches, and exact evidence.
+- Permit one grouped read-only environment probe before setup. Setup and installation require owned authority. Never install dependencies automatically.
+- Use bounded adaptive waits. Avoid rapid polling.
+- Route repeated equivalent failures to Diagnose. Stop patch loops.
 
 ## Child lifecycle
 
@@ -80,6 +89,7 @@ Use the Engineer direct path only for one mechanical bounded change with one nar
 
 - Engineer cannot start until the visible plan exists; the task matches one durable plan item. It receives one task and settled decision envelope.
 - Engineer owns targeted development checks and code-local truth. It returns focused semantic changes and targeted check results, including contract-sensitive semantic changes for Architect review. Stop only when another decision is required.
+- For approved automation, Engineer implements the script and one focused runnable check. The script does not grant authority.
 
 ### Scout
 
@@ -92,6 +102,8 @@ Use the Engineer direct path only for one mechanical bounded change with one nar
 - Maintainer replays guided or recorded procedures exactly. It never repairs source, invents targets, changes procedures, or retries state-changing failure without authority.
 - Maintainer may classify a failure only when it matches a recorded operation failure signal. It may run only an already-authorized recorded recovery.
 - Unknown, ambiguous, source-changing, or new retry behavior stops and routes to Diagnose/Scout and Architect.
+- Maintainer records the canonical command in `docs/OPERATIONS.md` or an existing `OPS-*` document, then later replays that record. Solo follows the same record.
+- Maintainer marks an automation as stale when its contract, dependency, environment, target, or output changes. Architect approves meaning changes.
 - Maintainer owns each recorded operation run and returns evidence once. After Engineers stop and Architect review, Maintainer synchronizes affected shared narrative documents before final checkpoint.
 - For documentation-only work or accepted checkpoints with shared-document impact, Maintainer owns shared narrative truth and indexes.
 - Maintainer runs an impact-directed synchronization and detects missing triggers, stale documents, and oversized semantic units. Maintainer never invents product or architecture.

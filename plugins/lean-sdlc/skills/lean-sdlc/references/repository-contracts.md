@@ -28,7 +28,7 @@ Size a document by one independent outcome, reversal boundary, system shape, lif
 
 Create `docs/ARCHITECTURE.md` when responsibilities or data flow are non-obvious and need one system overview. Keep one subsystem needing independent detail in a numbered architecture document.
 
-Create `docs/OPERATIONS.md` after the first guided build, package, deploy, flash, runtime, or smoke procedure. It owns the first simple recorded procedure and shared operation map. Use a numbered operation document when a procedure has an independent target, recovery rule, lifecycle, or useful standalone detail.
+Create `docs/OPERATIONS.md` after the first guided build, package, deploy, flash, runtime, or smoke procedure, or after the first approved and recorded automation. It owns the first simple recorded procedure, automation catalog, and shared operation map. Use a numbered operation document when a procedure has an independent target, recovery rule, lifecycle, or useful standalone detail.
 
 Create `docs/SECURITY.md` when security boundaries or controls span more than one document or need a shared review gate. Create `docs/GLOSSARY.md` when repeated terms create material ambiguity. Create `docs/VERIFICATION.md` when proof rules span several tasks or document families. Do not create any of these for a single local note.
 
@@ -49,17 +49,19 @@ Do not create a documentation archive policy beyond optional supporting copies i
 - State transitions -> an optional State Machine document.
 - Shared or external contract -> an optional Interface document.
 - Persistent or exchanged data contract -> an optional Data document.
-- Simple recorded procedure and operation map -> conditional `docs/OPERATIONS.md`; independent procedure -> an optional Operation document.
+- Simple recorded procedure, automation catalog, and operation map -> conditional `docs/OPERATIONS.md`; independent procedure -> an optional Operation document.
 - Shared trust boundaries, terminology, or manual proof -> conditional Security, Glossary, or Verification documents.
 - Local corrections -> outcome-focused task truth, code, tests, or comments.
 - Engineer owns code-local truth such as tests, comments, docstrings, annotations, and local examples.
 - Maintainer owns shared narrative truth in project, feature, decision, architecture, state-machine, interface, data, operations, security, glossary, verification, and README documents.
 - Maintainer owns each collection `INDEX.md` and synchronizes shared narrative truth through an impact-directed pass.
 - Maintainer owns `archive/INDEX.md` and each snapshot `ARCHIVE.md` after the Architect approves an explicit archive request and boundary.
-- Maintainer detects a missing trigger, stale document, or oversized semantic unit. Maintainer never invents product or architecture.
+- Maintainer detects a missing trigger, stale document, stale automation, or oversized semantic unit. Maintainer never invents product or architecture.
 - The Architect supplies the behavior and decision delta and approves meaning and document splits. Maintainer synchronizes only affected documents through an impact-directed pass.
 
 Keep durable intent in these existing owners. Do not add a file or task column for intent.
+
+Recorded operations are the only automation catalog. Do not add another automation file, registry, hook, state field, role, mode, dependency, or runtime framework.
 
 Resolve conflicting truth in the authoritative source before synchronization.
 

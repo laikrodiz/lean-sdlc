@@ -20,6 +20,8 @@ class FrozenInvariant:
 
 
 SUBAGENTS = "plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md"
+OPERATIONS = "plugins/lean-sdlc/skills/lean-sdlc/references/operations.md"
+TRIGGER_EVALS = "plugins/lean-sdlc/skills/lean-sdlc/references/trigger-evals.md"
 
 
 FROZEN_INVARIANTS = (
@@ -224,9 +226,116 @@ FROZEN_INVARIANTS = (
         ),
     ),
     FrozenInvariant(
+        "complete authoritative reads",
+        SUBAGENTS,
+        (
+            "group independent read-only discovery into bounded calls",
+            "follow-ups only for unresolved questions",
+            "bound output only when shape or presence is enough",
+            "complete reads for selected skill instructions, contracts, acceptance, proof, patches, and exact evidence",
+        ),
+    ),
+    FrozenInvariant(
+        "bounded probes and waits",
+        SUBAGENTS,
+        (
+            "execution economy",
+            "one grouped read-only environment probe before setup",
+            "setup and installation require owned authority",
+            "never install dependencies automatically",
+            "bounded adaptive waits",
+            "avoid rapid polling",
+        ),
+    ),
+    FrozenInvariant(
+        "diagnostic retry routing",
+        "plugins/lean-sdlc/skills/lean-sdlc/references/diagnose.md",
+        (
+            "equivalent failure repeats without new evidence",
+            "stop the patch loop",
+            "reassess the hypothesis and fault boundary",
+        ),
+    ),
+    FrozenInvariant(
+        "proof anchor and justified forward checks",
+        "plugins/lean-sdlc/skills/lean-sdlc/references/verify.md",
+        (
+            "task proof as the acceptance anchor",
+            "required acceptance, regression, structure, and documentation layers",
+            "stop after all required proof passes",
+            "add an always-on rule only for an observed failure",
+            "smallest behavioral evaluation that fails before the rule and passes after it",
+        ),
+        ordered_terms=(
+            "task proof as the acceptance anchor",
+            "required acceptance, regression, structure, and documentation layers",
+            "stop after all required proof passes",
+        ),
+    ),
+    FrozenInvariant(
         "learned operations",
-        "plugins/lean-sdlc/skills/lean-sdlc/references/operations.md",
+        OPERATIONS,
         ("unknown -> guided success -> recorded -> verified -> repeatable -> stale", "after success, the maintainer returns a short procedure draft", "the lead records it in optional `docs/OPERATIONS.md`", "later maintainer runs replay the recorded procedure exactly"),
+    ),
+    FrozenInvariant(
+        "recorded automation catalog",
+        OPERATIONS,
+        (
+            "reuse recorded operations as the only automation catalog",
+            "second equivalent successful execution",
+            "direct evidence that the mechanic will recur",
+            "transient candidate",
+            "candidates do not enter durable docs or backlog automatically",
+            "architect approves the contract before scripting",
+            "existing project command or target",
+            "existing script",
+            "native or installed tool",
+            "smallest new script",
+            "stable repeated mechanic",
+            "a script never grants authority",
+        ),
+    ),
+    FrozenInvariant(
+        "automation runtime and failure contract",
+        OPERATIONS,
+        (
+            "explicit inputs and safe defaults",
+            "validate the target",
+            "stable exit status",
+            "run noninteractive",
+            "write output atomically when practical",
+            "omit secrets and machine-specific paths",
+            "bound default output",
+            "detailed logs only on failure or explicit request",
+            "dry-run only when mutation risk is meaningful",
+            "transient signal may retry only under recorded recovery",
+            "recorded failure follows authorized recovery",
+            "script defect goes to engineer",
+            "changed contract or unknown cause stops and returns to architect/diagnose",
+        ),
+    ),
+    FrozenInvariant(
+        "automation role routing",
+        SUBAGENTS,
+        (
+            "architect approves an automation contract before scripting",
+            "for approved automation, engineer implements the script and one focused runnable check",
+            "maintainer records the canonical command",
+            "solo follows the same record",
+            "maintainer marks an automation as stale",
+            "architect approves meaning changes",
+        ),
+    ),
+    FrozenInvariant(
+        "automation trigger evaluations",
+        TRIGGER_EVALS,
+        (
+            "automation lifecycle",
+            "recorded operations as the only automation catalog",
+            "second equivalent successful execution",
+            "explicit inputs, safe defaults, target validation, stable exit status",
+            "changed contract or unknown cause stops and returns to Architect/Diagnose",
+        ),
     ),
     FrozenInvariant(
         "legacy ledger migration",
@@ -347,7 +456,7 @@ def _lane_names(text: str) -> tuple[str, ...]:
 class FrozenInvariantHarnessTests(unittest.TestCase):
     def test_every_invariant_has_one_canonical_source(self) -> None:
         names = [invariant.name for invariant in FROZEN_INVARIANTS]
-        self.assertEqual(len(FROZEN_INVARIANTS), 27)
+        self.assertEqual(len(FROZEN_INVARIANTS), 35)
         self.assertEqual(len(names), len(set(names)))
         for invariant in FROZEN_INVARIANTS:
             with self.subTest(invariant=invariant.name):

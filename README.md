@@ -71,6 +71,8 @@ Parallel work is conservative. It is allowed only when tasks have separate scope
 
 Substantial external-tool work follows the same boundary. The Architect keeps the decision. Scout handles bounded discovery. Engineer handles approved mutations. Maintainer handles repeated operations. Verifier handles independent checks. One agent owns each mutable external target.
 
+Stable repeated repository mechanics can become maintained, recorded deterministic automations. Later work reuses each automation's canonical command.
+
 When Codex resumes or compacts a task, Lean-SDLC returns to durable repository truth. It reads the project rules, reloads unresolved ledger work, rebuilds the visible plan, and restores the task mode and owner before delivery continues. This prevents lost context from becoming an unrecorded decision.
 
 ## Evidence and detailed contracts
@@ -83,10 +85,10 @@ Read the [Shape contract](plugins/lean-sdlc/skills/lean-sdlc/references/shape.md
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-Install the immutable `v1.18.0` release:
+Install the immutable `v1.19.0` release:
 
 ```bash
-git clone --depth 1 --branch v1.18.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.19.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc

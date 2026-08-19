@@ -1550,6 +1550,71 @@ class PackageContractTests(unittest.TestCase):
         ]:
             self.assertIn(term, templates)
 
+    def test_automation_lifecycle_uses_recorded_operations_and_bounds_authority(self) -> None:
+        operations = (SKILL / "references/operations.md").read_text(encoding="utf-8").lower()
+        contracts = (SKILL / "references/repository-contracts.md").read_text(encoding="utf-8").lower()
+        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8").lower()
+        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8").lower()
+        asset = (SKILL / "assets/operation.md").read_text(encoding="utf-8").lower()
+
+        for phrase in [
+            "reuse recorded operations as the only automation catalog",
+            "status and maintenance owner",
+            "second equivalent successful execution",
+            "direct evidence that the mechanic will recur",
+            "candidates do not enter durable docs or backlog automatically",
+            "architect approves the contract before scripting",
+            "existing project command or target",
+            "existing script",
+            "native or installed tool",
+            "smallest new script",
+            "engineer implements an approved script and one focused runnable check",
+            "maintainer records and later replays the canonical command",
+            "later work reads recorded operations first",
+            "solo follows the same record",
+            "maintainer marks an automation as stale",
+            "explicit inputs and safe defaults",
+            "validate the target",
+            "stable exit status",
+            "run noninteractive",
+            "write output atomically when practical",
+            "omit secrets and machine-specific paths",
+            "bound default output",
+            "transient signal may retry only under recorded recovery",
+            "recorded failure follows authorized recovery",
+            "script defect goes to engineer",
+            "changed contract or unknown cause stops and returns to architect/diagnose",
+        ]:
+            self.assertIn(phrase, operations)
+
+        for phrase in [
+            "first approved and recorded automation",
+            "recorded operations are the only automation catalog",
+            "do not add another automation file, registry, hook, state field, role, mode, dependency, or runtime framework",
+        ]:
+            self.assertIn(phrase, contracts)
+
+        for phrase in [
+            "architect approves an automation contract before scripting",
+            "engineer implements the script and one focused runnable check",
+            "maintainer records the canonical command",
+            "solo follows the same record",
+            "architect approves meaning changes",
+        ]:
+            self.assertIn(phrase, subagents)
+
+        self.assertIn("automation lifecycle", evaluations)
+
+        for heading in [
+            "## maintenance owner",
+            "## canonical command",
+            "## inputs and defaults",
+            "## outputs and artifacts",
+            "## failure and recovery",
+            "## last verified",
+        ]:
+            self.assertIn(heading, asset)
+
     def test_local_markdown_links_resolve(self) -> None:
         failures: list[str] = []
         for document in SKILL.rglob("*.md"):
@@ -2391,11 +2456,11 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.18.0")
+        self.assertEqual(version, "1.19.0")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
         self.assertIn(
-            "- Version goal: Delegate routine evidence and checkpoint capture, add event-driven child progress, strengthen single-area task sizing, and add a cached read-only update advisory.",
+            "- Version goal: Reduce execution token cost through bounded evidence gathering and maintained deterministic automation.",
             project,
         )
 

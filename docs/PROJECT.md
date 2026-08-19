@@ -20,6 +20,8 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 - Assisted mode as the default and Solo mode as the lead-only alternative. Both modes use the same task and proof rules.
 - Conservative parallel work for separate scopes and resources. Shared files, changing interfaces, migrations, generated output, and external targets remain serial. Child work stays in one shared worktree.
 - Substantial external-tool work keeps decisions with the Architect. The matching role handles bounded discovery, approved mutation, repeated operations, or independent checking. One agent owns each mutable external target.
+- Bounded read-only evidence work stays limited to its defined question, groups independent discovery, and preserves complete authoritative reads.
+- Stable repeated repository mechanics can become maintained, recorded deterministic automations with an owner, state, canonical command, and bounded output.
 - Readable checkpoint reports with exact machine proof retained for verification. Integration, documentation synchronization, verification, operations, and closeout run serially.
 - Inline Quick Fix classification during Plan for trivial settled edits, with immediate narrow proof and deferred shared review.
 - `docs/PROJECT.md` is the only mandatory shared project document.
@@ -51,12 +53,14 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 - The plan view mirrors each unresolved ledger task ID and title during implementation. Brainstorming creates no task view.
 - Tasks remain atomic, owner-aware, dependency-valid, and cycle-free.
 - The Architect retains decisions. Delegated external-tool work has one mutable-target owner and returns bounded evidence.
+- Read-only evidence work returns bounded, question-specific evidence without mutation authority and preserves authoritative reads.
+- Recorded deterministic automations retain an owner, state, canonical command, and maintenance evidence that later work can reuse.
 - Eligible Quick Fixes receive narrow proof immediately and broad review in a later Standard or final batch checkpoint.
 - Checkpoint reports stay readable, exact machine proof remains available, and serial closeout uses repository truth.
 
 ## Current promise
 
 - Stage: Evolution
-- Version: 1.18.0
-- Version goal: Delegate routine evidence and checkpoint capture, add event-driven child progress, strengthen single-area task sizing, and add a cached read-only update advisory.
+- Version: 1.19.0
+- Version goal: Reduce execution token cost through bounded evidence gathering and maintained deterministic automation.
 - Exit evidence: Tests, skill and plugin validation, local installation, accepted checkpoints, repository checks, tagged commit, and successful push.

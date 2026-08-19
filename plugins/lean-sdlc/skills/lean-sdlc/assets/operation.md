@@ -2,11 +2,27 @@
 
 ## Status
 
-<Draft, active, superseded, or complete>
+<Draft, active, stale, superseded, or complete>
+
+## Maintenance Owner
+
+State the person or role that keeps this procedure current.
 
 ## Purpose and Target
 
 State the repeatable procedure, exact target, and expected outcome.
+
+## Canonical Command
+
+State the exact command that later work must replay.
+
+## Inputs and Defaults
+
+List explicit inputs and safe defaults.
+
+## Outputs and Artifacts
+
+List outputs, artifacts, and their exact locations without secrets or machine-specific paths.
 
 ## Prerequisites
 
@@ -20,9 +36,9 @@ State the repeatable procedure, exact target, and expected outcome.
 
 State the observable signal, artifact, and final target state.
 
-## Recovery
+## Failure and Recovery
 
-State the safe stop, retry, rollback, or recovery rule.
+State the failure signal and the authorized safe stop, retry, rollback, or recovery rule.
 
 ## Last Verified
 
