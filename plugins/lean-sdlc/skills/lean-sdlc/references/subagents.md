@@ -2,7 +2,7 @@
 
 ## Scope and modes
 
-- The Architect is the sole authority for product intent. The Architect always owns intent, public behavior, architecture, tasks, acceptance, integration, and closeout.
+- The Architect is the sole authority for product intent, public behavior, architecture, assumptions, acceptance, permissions, task ownership, conflict resolution, and final signoff. The Architect always owns intent, public behavior, architecture, tasks, acceptance, integration, and closeout. It retains those decisions through every child handoff and reviews contract-sensitive semantic changes before integration.
 - The Architect never sends unresolved user input to a child, writes inside an active child boundary, accepts unreviewed output, or replaces independent proof with confidence.
 - The standard child roles are Engineer, Maintainer, Verifier, and Scout. Custom roles need direct user authority.
 - Assisted mode normally delegates routine discovery, evidence, implementation, checks, documentation, and recorded operations. Assisted mode is the default.
@@ -20,10 +20,10 @@
 
 | Role | Trigger | Contract |
 | --- | --- | --- |
-| Engineer | An owned ready implementation task has settled design, paths, proof, and no decision. | Task and checkpoint. |
-| Maintainer | A guided or recorded build, package, CI, deploy, flash, runtime, or smoke operation is ready; an accepted checkpoint has shared-document impact; or documentation-only work is ready. | Replay; return evidence. |
-| Verifier | Changed code, configuration, schema, generated artifacts, or behavior reaches a proof checkpoint, or proof has multiple commands or noisy output. | Independent proof; regression command. |
-| Scout | A named Architect decision requires distinct source sets or enough material, data, or logs to pollute lead context. | Read-only evidence. |
+| Engineer | An owned ready implementation task has settled design, paths, proof, and no decision. | Focused semantic changes and targeted check results. |
+| Maintainer | A guided or recorded build, package, CI, deploy, flash, runtime, or smoke operation is ready; an accepted checkpoint has shared-document impact; or documentation-only work is ready. | Replay; classify recorded failure signals and run authorized recovery only. |
+| Verifier | Changed code, configuration, schema, generated artifacts, or behavior reaches a proof checkpoint, or proof has multiple commands or noisy output. | Independent checkpoint capture, acceptance proof, and one regression command. |
+| Scout | A named Architect decision requires distinct source sets or enough material, data, or logs to pollute lead context. | Reduced cross-boundary source or log evidence with citations. |
 
 Use the Engineer direct path only for one mechanical bounded change with one narrow proof command.
 
@@ -41,7 +41,7 @@ Use the Engineer direct path only for one mechanical bounded change with one nar
 
 - External-tool routing starts before substantial plugin, MCP, connector, CAD, database, deployment, or similar work. Architect keeps target, permissions, constraints, architecture, decisions, and final acceptance. Architect may make one bounded probe; delegate remaining routine work after it.
 - Delegate before work when more than three external calls are expected; large schemas/logs/inventories/search results; one operation repeats across objects; tool discovery is required; error recovery needs several diagnostic calls; or output needs reduction before a decision.
-- Route read-heavy discovery and reduction to Scout, approved mutations to Engineer, repeated build/export/import/deploy/flash procedures to Maintainer, independent checks to Verifier.
+- Route read-heavy discovery and reduction to Scout, including cross-boundary source and log evidence; route approved mutations to Engineer, repeated build/export/import/deploy/flash procedures to Maintainer, and independent checks to Verifier.
 - Use bounded programmatic tool calling for deterministic reads or reductions. Inside the assigned child, use direct calls for mutations, approvals, or judgment-sensitive steps. Routine mutation calls belong to the assigned Engineer or Maintainer, not the Architect.
 - One agent owns each mutable external target. Never let two agents mutate the same project, database, deployment, or hardware target.
 - Child returns conclusions, errors, artifact paths or IDs, and unresolved questions, not a raw transcript. Reuse the same child for the same tool and project. Replace after a material tool or target change.
@@ -62,30 +62,36 @@ Use the Engineer direct path only for one mechanical bounded change with one nar
 ## Shared handoff envelope
 
 - Arrow sequence is fact order, not output wording: `<task or inquiry> -> <outcome> -> <owned boundary> -> <contract> -> <proof> -> <stop>`. Each child handoff begins with a short settled purpose and natural prose; replace slots with project facts and omit slot labels. Writer handoffs name mutable paths, stable read paths, incidental output/cache, commands, external targets, and stop conditions.
+- Engineer handoffs state focused semantic changes and targeted check results. Scout handoffs state reduced source or log evidence and citations. Verifier handoffs state acceptance and regression results with checkpoint equality or a stop reason. Maintainer handoffs state the recorded failure signal and authorized recovery status.
 - Children call the lead Architect. The Architect speaks as I. Payloads come from the Architect; children do not infer decisions, public behavior, acceptance, or paths.
 - After each checkpoint, the Architect reviews the diff, architecture, scope, and contract alignment in concise natural prose.
 
 ## Communication
 
-- Every child update starts with work or current state. Report material phase changes. Use at most two useful heartbeats at two-minute intervals for silent commands.
-- Routine user commentary, child updates, child return messages, and final answers omit full checkpoint fingerprints. Report abstract status facts: source identity without full fingerprint, running/passed/stopped state, mismatch reason, and next action. Show details only for explicit audit or debugging.
+- Each child update stays 1–3 natural sentences. State the current action, why it matters, observed result or next action.
+- A child reports at start, on material phase changes, before a long silent operation, on evidence that changes the next action, on a blocker or conflict, after about two minutes of otherwise silent work, and at completion. Continued silent work may send another short update; do not impose a total cap.
+- No child update includes greetings, role repetition, raw logs, full fingerprints, or scripted phrases. Keep communication concise. Do not create rigid templates.
+- Routine user commentary, child return messages, and final answers omit full checkpoint fingerprints. Report abstract status facts: source identity without full fingerprint, running/passed/stopped state, mismatch reason, and next action. Do not repeat the full fingerprint in the visible return. Show details only for explicit audit or debugging.
+- The Verifier retains its candidate checkpoint fingerprint locally. Do not persist fingerprints or expose them in routine reports.
 
 ## Role-specific rules
 
 ### Engineer
 
 - Engineer cannot start until the visible plan exists; the task matches one durable plan item. It receives one task and settled decision envelope.
-- Engineer owns targeted development checks and code-local truth. Stop for missing architecture, interface, dependency, behavior, acceptance, path, or scope.
+- Engineer owns targeted development checks and code-local truth. It returns focused semantic changes and targeted check results, including contract-sensitive semantic changes for Architect review. Stop only when another decision is required.
 
 ### Scout
 
 - The Architect supplies a question and source boundary without a preferred answer. Scout is read-only and never edits repository files.
-- Scout supports bounded repo or contract mapping, research, reproduction or log reduction, change impact, edge-case or test candidates, and task-size or architecture contradiction review. Avoid Scout for a trivial one-file lookup.
+- Scout supports bounded repo or contract mapping, research, reproduction or log reduction, cross-boundary source or log evidence reduction, change impact, edge-case or test candidates, and task-size or architecture contradiction review. Avoid Scout for a trivial one-file lookup.
 - Scout returns citations, conflicts, unknowns, decision impact, and sources. Architect decides. No task until findings require a write.
 
 ### Maintainer
 
 - Maintainer replays guided or recorded procedures exactly. It never repairs source, invents targets, changes procedures, or retries state-changing failure without authority.
+- Maintainer may classify a failure only when it matches a recorded operation failure signal. It may run only an already-authorized recorded recovery.
+- Unknown, ambiguous, source-changing, or new retry behavior stops and routes to Diagnose/Scout and Architect.
 - Maintainer owns each recorded operation run and returns evidence once. After Engineers stop and Architect review, Maintainer synchronizes affected shared narrative documents before final checkpoint.
 - For documentation-only work or accepted checkpoints with shared-document impact, Maintainer owns shared narrative truth and indexes.
 - Maintainer runs an impact-directed synchronization and detects missing triggers, stale documents, and oversized semantic units. Maintainer never invents product or architecture.
@@ -93,7 +99,8 @@ Use the Engineer direct path only for one mechanical bounded change with one nar
 
 ### Verifier
 
-- Verifier receives acceptance and the exact checkpoint. It independently reruns acceptance proof and one planned regression command, skips Engineer-only targeted checks, and may repeat only a disputed operation.
+- Verifier receives acceptance and the settled source boundary. When verification begins, it independently computes a candidate checkpoint fingerprint and retains it locally. It independently reruns acceptance proof and one planned regression command, skips Engineer-only targeted checks, and may repeat only a disputed operation.
+- Verifier recomputes the fingerprint before return and blocks if it changed. It does not persist fingerprints. Do not make the Architect calculate them.
 - Run the full suite only when the task or repository contract requires it. Consume Maintainer evidence.
 
 ## Model and spawn
@@ -112,9 +119,10 @@ Use the Engineer direct path only for one mechanical bounded change with one nar
 2. Architect reviews the combined implementation and scopes.
 3. Run any shared source-changing formatter or generator serially; Architect reviews resulting changes.
 4. Maintainer synchronizes affected shared docs through an impact-directed pass.
-5. Pause all writers and identify the checkpoint by commit or exact working-tree fingerprint for machine verification. The Architect hands that exact identity to the Verifier; require the sidecar to confirm the identity before acting and machine-check equality. After commit, use the release tag or short commit ID.
-6. One Verifier confirms checkpoint equality without repeating the full fingerprint in the visible return, then checks both acceptance sets, assigned-path separation, semantic interaction, and documentation parity.
-7. Maintainer runs required build, package, deploy, flash, runtime, or smoke operations serially against that accepted source checkpoint. Invalidate the result after any relevant source change.
+5. Pause all writers for machine verification. When verification begins, the Verifier independently computes a candidate checkpoint fingerprint and retains it locally. Do not persist it. Do not make the Architect calculate it.
+6. The Verifier checks both acceptance sets, assigned-path separation, semantic interaction, and documentation parity. It recomputes the fingerprint before return and blocks if it changed.
+7. After commit, use the release tag or short commit ID for later source identity.
+8. Maintainer runs required build, package, deploy, flash, runtime, or smoke operations serially against that accepted source checkpoint. Invalidate the result after any relevant source change.
 
 ## Return and stop conditions
 

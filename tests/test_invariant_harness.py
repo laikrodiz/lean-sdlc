@@ -78,7 +78,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant(
         "owner-only close",
         "plugins/lean-sdlc/skills/lean-sdlc/references/verify.md",
-        ("owning lead alone decide task disposition", "close the accepted task through `tasks.py close`", "direct-user override requires an explicit request and recorded reason"),
+        ("owning lead alone decides task disposition", "close the accepted task through `tasks.py close`", "direct-user override requires an explicit request and recorded reason"),
     ),
     FrozenInvariant(
         "assisted and solo only",
@@ -89,6 +89,34 @@ FROZEN_INVARIANTS = (
         "architect owns decisions",
         SUBAGENTS,
         ("the architect is the sole authority for product intent", "the architect always owns intent, public behavior, architecture, tasks, acceptance, integration, and closeout", "never sends unresolved user input to a child", "writes inside an active child boundary", "accepts unreviewed output", "replaces independent proof with confidence", "the architect supplies a question and source boundary"),
+    ),
+    FrozenInvariant(
+        "delegated evidence and checkpoint capture",
+        SUBAGENTS,
+        (
+            "product intent, public behavior, architecture, assumptions, acceptance, permissions, task ownership, conflict resolution, and final signoff",
+            "cross-boundary source and log evidence",
+            "focused semantic changes and targeted check results",
+            "contract-sensitive semantic changes",
+            "independently computes a candidate checkpoint fingerprint",
+            "when verification begins",
+            "retains it locally",
+            "recomputes the fingerprint before return",
+            "blocks if it changed",
+            "do not persist fingerprints",
+            "do not make the architect calculate them",
+            "recorded operation failure signal",
+            "already-authorized recorded recovery",
+            "unknown, ambiguous, source-changing, or new retry behavior",
+            "routes to Diagnose/Scout and Architect",
+        ),
+        ordered_terms=(
+            "when verification begins",
+            "independently computes a candidate checkpoint fingerprint",
+            "retains it locally",
+            "recomputes the fingerprint before return",
+            "blocks if it changed",
+        ),
     ),
     FrozenInvariant(
         "engineer, maintainer, verifier, and scout roles",
@@ -106,24 +134,55 @@ FROZEN_INVARIANTS = (
         ("keep one reachable child thread for each role", "reuse or start engineer, verifier, maintainer, or read-only scout", "send a follow-up to a reachable role thread", "at most one reusable verifier", "at most one reusable maintainer"),
     ),
     FrozenInvariant(
-        "stable child label and update start",
+        "stable child label and event-driven progress",
         SUBAGENTS,
-        ("the architect owns each child name at spawn time", "valid name uses one lowercase role prefix", "allocates the next never-used label", "exact `task_name`", "a replacement takes the next label", "recycle the earliest label from an unreachable thread", "every child update starts with work or current state"),
+        (
+            "the architect owns each child name at spawn time",
+            "valid name uses one lowercase role prefix",
+            "allocates the next never-used label",
+            "exact `task_name`",
+            "a replacement takes the next label",
+            "recycle the earliest label from an unreachable thread",
+            "1–3 natural sentences",
+            "current action, why it matters, observed result or next action",
+            "at start",
+            "material phase changes",
+            "before a long silent operation",
+            "evidence that changes the next action",
+            "blocker or conflict",
+            "after about two minutes of otherwise silent work",
+            "at completion",
+            "continued silent work may send another short update",
+            "do not impose a total cap",
+            "no child update includes greetings, role repetition, raw logs, full fingerprints, or scripted phrases",
+            "do not create rigid templates",
+        ),
+        ordered_terms=(
+            "at start",
+            "material phase changes",
+            "before a long silent operation",
+            "evidence that changes the next action",
+            "blocker or conflict",
+            "after about two minutes of otherwise silent work",
+            "at completion",
+            "continued silent work may send another short update",
+            "do not impose a total cap",
+        ),
     ),
     FrozenInvariant(
         "exact checkpoint barrier",
         SUBAGENTS,
-        ("## checkpoint barrier", "identify the checkpoint by commit or exact working-tree fingerprint", "machine verification", "architect hands that exact identity to the verifier", "checkpoint equality", "release tag or short commit id", "without repeating the full fingerprint in the visible return", "require the sidecar to confirm the identity before acting", "invalidate the result after any relevant source change"),
+        ("## checkpoint barrier", "when verification begins, the verifier independently computes a candidate checkpoint fingerprint", "retains it locally", "recomputes the fingerprint before return", "blocks if it changed", "do not persist it", "do not make the architect calculate it", "release tag or short commit id", "invalidate the result after any relevant source change"),
         ordered_terms=(
             "require all active work children to stop before integration",
             "architect reviews the combined implementation and scopes",
             "run any shared source-changing formatter or generator serially",
             "architect reviews resulting changes",
             "maintainer synchronizes affected shared docs",
-            "pause all writers and identify the checkpoint by commit or exact working-tree fingerprint",
-            "architect hands that exact identity to the verifier",
-            "one verifier confirms checkpoint equality",
-            "then checks both acceptance sets",
+            "pause all writers for machine verification. when verification begins, the verifier independently computes a candidate checkpoint fingerprint and retains it locally",
+            "the verifier checks both acceptance sets, assigned-path separation",
+            "it recomputes the fingerprint before return and blocks if it changed",
+            "after commit, use the release tag or short commit id",
             "maintainer runs required build, package, deploy, flash, runtime, or smoke operations serially",
         ),
     ),
@@ -142,6 +201,7 @@ FROZEN_INVARIANTS = (
             "error recovery needs several diagnostic calls",
             "output needs reduction before a decision",
             "read-heavy discovery and reduction to scout",
+            "cross-boundary source and log evidence",
             "approved mutations to engineer",
             "repeated build/export/import/deploy/flash procedures to maintainer",
             "independent checks to verifier",
@@ -184,9 +244,30 @@ FROZEN_INVARIANTS = (
         ("smallest cohesive units", "avoid project-size tiers, speculative interfaces, and pass-through modules", "plausible edge cases", "classify plausible edge cases as `handle`, `reject`, `defer`, or `impossible by invariant`", "small mermaid diagrams", "never use ascii pseudographics"),
     ),
    FrozenInvariant(
-       "task sizing and compaction resume",
+       "single-area task sizing and compaction resume",
        "plugins/lean-sdlc/skills/lean-sdlc/references/plan.md",
-       ("one ledger task represents one engineer checkpoint", "require settled architecture, one coherent outcome, one independent bounded proof, and one accept-or-reject review", "keep one task resumable from repository truth and its ledger row after compaction", "split a task for independent behavior, module outcome, proof, or work that needs an architect checkpoint", "do not use time or line-count limits"),
+       (
+           "before task creation",
+           "one behavior, one contract boundary, one proof cluster, and one accept-or-reject decision",
+           "split on any independent answer",
+           "and` in a title as a review signal, not an automatic split",
+           "one ledger task represents one engineer checkpoint",
+           "one independently accepted behavior change",
+           "one owning contract boundary",
+           "one proof cluster",
+           "one close decision",
+           "may touch several files, tests, documentation, or migration steps",
+           "only when all work is inseparable for that behavior",
+           "split a task when a part can succeed, fail, defer, revert, release, or be accepted independently",
+           "belongs to another behavior or contract area",
+           "needs another architect decision",
+           "keep a correction in the same task",
+           "only satisfies unchanged acceptance",
+           "a new behavior needs a new task",
+           "never size by elapsed time, file count, line count, or command count",
+           "require settled architecture, one coherent outcome, one independent bounded proof, and one accept-or-reject review",
+           "keep one task resumable from repository truth and its ledger row after compaction",
+       ),
    ),
     FrozenInvariant(
         "deterministic ledger plan projection",
@@ -266,7 +347,7 @@ def _lane_names(text: str) -> tuple[str, ...]:
 class FrozenInvariantHarnessTests(unittest.TestCase):
     def test_every_invariant_has_one_canonical_source(self) -> None:
         names = [invariant.name for invariant in FROZEN_INVARIANTS]
-        self.assertEqual(len(FROZEN_INVARIANTS), 26)
+        self.assertEqual(len(FROZEN_INVARIANTS), 27)
         self.assertEqual(len(names), len(set(names)))
         for invariant in FROZEN_INVARIANTS:
             with self.subTest(invariant=invariant.name):
@@ -385,7 +466,7 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
             operations,
         )
         self.assertIn("internal machine handoff", operations)
-        self.assertIn("Omit it from visible operation reports", operations)
+        self.assertIn("Omit them from visible operation reports", operations)
         self.assertNotIn("Request these labeled fields", operations)
         self.assertNotIn("Return these labeled fields", operations)
         self.assertNotIn("```", operations)

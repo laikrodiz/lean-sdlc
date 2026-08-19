@@ -8,12 +8,13 @@ Closeout fact order: `<outcome> -> <acceptance> -> <regression> -> <documentatio
 
 Arrow sequence is fact order, not output wording; replace slots with project facts and omit slot labels.
 
-1. Read active task/checkpoint with acceptance and proof. Require exact proof or a recorded procedure.
-2. Compare acceptance, semantic interaction, and documentation parity.
-3. Reuse or start Verifier for independent acceptance-defining proof and one planned regression command. The Verifier skips Engineer-only targeted checks.
-4. Run the full suite once under Verifier only when the task or repository contract requires it. Check change locality.
-5. Trace behavior to owning docs; run structural checker.
-6. The owning lead alone decide task disposition and close the accepted task through `tasks.py close` with evidence. A direct-user override requires an explicit request and recorded reason.
+1. Read the active task and source boundary with acceptance and proof. Require exact proof or a recorded procedure.
+2. When verification begins, Verifier independently computes a candidate checkpoint fingerprint and retains it locally.
+3. Reuse or start Verifier for independent acceptance-defining proof and one planned regression command. Verifier skips Engineer-only targeted checks.
+4. Recompute the fingerprint before return. Block if it changed. Do not persist fingerprints or make Architect calculate them.
+5. Compare acceptance, semantic interaction, documentation parity, and change locality.
+6. Run the full suite once under Verifier only when the task or repository contract requires it. Trace behavior to owning docs and run the structural checker.
+7. The owning lead alone decides task disposition. Close the accepted task through `tasks.py close` with evidence. A direct-user override requires an explicit request and recorded reason.
 
 For documentation work, verify the concrete trigger, one semantic unit, current links, and `INDEX.md` navigation. Verify that `docs/PROJECT.md` remains the only mandatory shared project document. If `/archive` exists, verify explicit user authority and inertness from imports, builds, packaging, and normal tests.
 

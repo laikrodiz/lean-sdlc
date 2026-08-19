@@ -24,6 +24,10 @@ Before new Standard work, the Architect reads `tasks.py backlog` and checks dupl
 
 Promotion is Shape and Plan, not a raw status flip. It adds proper title sizing, acceptance, proof, and dependencies. Promotion to In Progress adds an owner and requires explicit implementation authority. Planned promotion is not implementation authority. If a Backlog idea is broad, promote the original ID as the first coherent task and create sibling tasks for other independent outcomes. A Feature document remains optional under its existing trigger.
 
+## Task preflight
+
+Before task creation, ask whether one behavior, one contract boundary, one proof cluster, and one accept-or-reject decision cover all work. Split on any independent answer. Treat `and` in a title as a review signal, not an automatic split.
+
 ## Task transaction
 
 Use `tasks.py plan` for work and `tasks.py start` for immediate or claimed work. Use `tasks.py update` for corrections and `tasks.py close` only after Verify. Never edit `tasks.csv`. Each task has observable acceptance and explicit proof. Add dependencies only when sequencing is real. Keep `tasks.csv` as the only durable task plan; each durable plan item maps to one task.
@@ -38,9 +42,13 @@ Combine a qualified parallel pair into one view row; `tasks.csv` remains authori
 
 ## Task sizing
 
-One ledger task represents one Engineer checkpoint. Require settled architecture, one coherent outcome, one independent bounded proof, and one accept-or-reject review. Keep implementation tests inside the task. Keep Maintainer and Verifier work attached unless independently deliverable. Keep one task resumable from repository truth and its ledger row after compaction.
+One ledger task represents one Engineer checkpoint. One ledger task equals one independently accepted behavior change under one owning contract boundary, one proof cluster, and one close decision. It may touch several files, tests, documentation, or migration steps only when all work is inseparable for that behavior.
 
-Split a task for independent behavior, module outcome, proof, or work that needs an Architect checkpoint. Split a task when a part can fail, ship, revert, resume, or close independently, crosses a contract, or needs another durable decision. Merge pieces without independent value or proof. Do not use time or line-count limits.
+Require settled architecture, one coherent outcome, one independent bounded proof, and one accept-or-reject review. Keep implementation tests inside the task. Keep Maintainer and Verifier work attached unless independently deliverable. Keep one task resumable from repository truth and its ledger row after compaction.
+
+Split a task when a part can succeed, fail, defer, revert, release, or be accepted independently; belongs to another behavior or contract area; or needs another Architect decision. Merge pieces without independent value or proof.
+
+Keep a correction in the same task when it only satisfies unchanged acceptance. A new behavior needs a new task. Never size by elapsed time, file count, line count, or command count.
 
 ## Ready work
 

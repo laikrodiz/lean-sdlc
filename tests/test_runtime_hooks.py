@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.util
+import io
 import json
 import os
 import subprocess
@@ -8,12 +10,26 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "plugins/lean-sdlc/skills/lean-sdlc/scripts"
 SESSION_STATE = SCRIPTS / "session_state.py"
 SPAWN_GUARD = SCRIPTS / "spawn_guard.py"
+VERSION_ADVISORY = SCRIPTS / "version_advisory.py"
+
+
+def load_version_advisory():
+    spec = importlib.util.spec_from_file_location("version_advisory", VERSION_ADVISORY)
+    if spec is None or spec.loader is None:
+        raise AssertionError("cannot load version advisory")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+VERSION = load_version_advisory()
 
 
 def run_script(
@@ -307,6 +323,199 @@ class RuntimeHookTests(unittest.TestCase):
         message = json.loads(result.stdout)["systemMessage"]
         self.assertIn("Mode: assisted", message)
         self.assertIn("Child tier: Standard", message)
+
+    def test_version_advisory_requires_genuine_startup(self) -> None:
+        def opener() -> None:
+            self.fail("non-startup event must not fetch")
+
+        for source in ("resume", "clear", "compact", None):
+            event = {"hook_event_name": "SessionStart"}
+            if source is not None:
+                event["source"] = source
+            with self.subTest(source=source), patch.dict(
+                os.environ, {"CODEX_HOME": str(self.codex_home)}
+            ), patch("sys.stdin", io.StringIO(json.dumps(event))), patch(
+                "sys.stdout", new_callable=io.StringIO
+            ) as output, patch.object(VERSION, "check_for_update", new=opener):
+                self.assertEqual(VERSION.main(), 0)
+                self.assertEqual(output.getvalue(), "")
+
+    def test_version_advisory_returns_system_message(self) -> None:
+        event = {"hook_event_name": "SessionStart", "source": "startup"}
+        with patch("sys.stdin", io.StringIO(json.dumps(event))), patch(
+            "sys.stdout", new_callable=io.StringIO
+        ) as output, patch.object(
+            VERSION, "check_for_update", return_value="upgrade notice"
+        ):
+            self.assertEqual(VERSION.main(), 0)
+        self.assertEqual(json.loads(output.getvalue()), {"systemMessage": "upgrade notice"})
+
+    def test_version_advisory_reports_highest_exact_newer_tag(self) -> None:
+        manifest = self.root / "plugin.json"
+        manifest.write_text(json.dumps({"version": "1.9.0"}), encoding="utf-8")
+
+        class Response:
+            status = 200
+
+            def read(self, limit: int) -> bytes:
+                self.limit = limit
+                return json.dumps(
+                    [
+                        {"name": "v1.10.0"},
+                        {"name": "v1.9.9"},
+                        {"name": "1.20.0"},
+                        {"name": "v1.11.0-rc.1"},
+                        {"name": "release-1.20.0"},
+                    ]
+                ).encode("utf-8")
+
+            def close(self) -> None:
+                pass
+
+        calls: list[tuple[object, int]] = []
+
+        def opener(request: object, timeout: int) -> Response:
+            calls.append((request, timeout))
+            return Response()
+
+        with patch.dict(os.environ, {"CODEX_HOME": str(self.codex_home)}), patch.object(
+            VERSION.time, "time", return_value=1000
+        ), patch.object(VERSION.urllib.request, "urlopen", side_effect=opener):
+            message = VERSION.check_for_update(manifest=manifest)
+        self.assertIn("Lean-SDLC v1.10.0 is available", message)
+        self.assertIn("propose an upgrade", message)
+        self.assertIn("repo contract compatibility", message)
+        self.assertEqual(len(calls), 1)
+        cache = self.codex_home / "state/lean-sdlc/version_advisory.json"
+        self.assertTrue(cache.is_file())
+
+    def test_version_advisory_rejects_bare_git_tag(self) -> None:
+        manifest = self.root / "plugin.json"
+        manifest.write_text(json.dumps({"version": "1.17.0"}), encoding="utf-8")
+
+        class Response:
+            status = 200
+
+            def read(self, limit: int) -> bytes:
+                return b'[{"name":"1.18.0"}]'
+
+            def close(self) -> None:
+                pass
+
+        with patch.dict(os.environ, {"CODEX_HOME": str(self.codex_home)}):
+            message = VERSION.check_for_update(
+                now=1000, opener=lambda request, timeout: Response(), manifest=manifest
+            )
+        self.assertIsNone(message)
+        cache = json.loads(
+            (self.codex_home / "state/lean-sdlc/version_advisory.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertIsNone(cache["latest"])
+
+    def test_version_advisory_cache_suppresses_repeat_until_expiry(self) -> None:
+        manifest = self.root / "plugin.json"
+        manifest.write_text(json.dumps({"version": "1.17.0"}), encoding="utf-8")
+        responses = iter((b'[{"name":"v1.18.0"}]', b'[{"name":"v1.18.0"}]'))
+        calls = 0
+
+        class Response:
+            status = 200
+
+            def read(self, limit: int) -> bytes:
+                return next(responses)
+
+            def close(self) -> None:
+                pass
+
+        def opener(request: object, timeout: int) -> Response:
+            nonlocal calls
+            calls += 1
+            return Response()
+
+        with patch.dict(os.environ, {"CODEX_HOME": str(self.codex_home)}):
+            first = VERSION.check_for_update(now=1000, opener=opener, manifest=manifest)
+            second = VERSION.check_for_update(now=1001, opener=opener, manifest=manifest)
+            third = VERSION.check_for_update(
+                now=1000 + VERSION.CACHE_SECONDS,
+                opener=opener,
+                manifest=manifest,
+            )
+        self.assertIsNotNone(first)
+        self.assertIsNone(second)
+        self.assertIsNotNone(third)
+        self.assertEqual(calls, 2)
+
+    def test_version_advisory_failures_are_silent(self) -> None:
+        manifest = self.root / "plugin.json"
+        manifest.write_text(json.dumps({"version": "1.17.0"}), encoding="utf-8")
+
+        class Response:
+            def __init__(self, body: bytes, status: int = 200) -> None:
+                self.body = body
+                self.status = status
+
+            def read(self, limit: int) -> bytes:
+                return self.body
+
+            def close(self) -> None:
+                pass
+
+        def offline(request: object, timeout: int) -> Response:
+            raise OSError("offline")
+
+        openers = (
+            offline,
+            lambda request, timeout: Response(b"not json"),
+            lambda request, timeout: Response(b'{"message":"rate limit"}'),
+            lambda request, timeout: Response(b"[]", status=429),
+            lambda request, timeout: Response(b"[{\"tag_name\":\"v1.18.0\"}]"),
+        )
+        with patch.dict(os.environ, {"CODEX_HOME": str(self.codex_home)}):
+            for number, opener in enumerate(openers):
+                with self.subTest(opener=opener):
+                    self.assertIsNone(
+                        VERSION.check_for_update(
+                            now=1000,
+                            opener=opener,
+                            manifest=manifest,
+                            cache=self.root / f"cache-{number}.json",
+                        )
+                    )
+
+    def test_version_advisory_caches_network_failure(self) -> None:
+        manifest = self.root / "plugin.json"
+        manifest.write_text(json.dumps({"version": "1.17.0"}), encoding="utf-8")
+        calls = 0
+
+        def offline(request: object, timeout: int) -> None:
+            nonlocal calls
+            calls += 1
+            raise OSError("offline")
+
+        with patch.dict(os.environ, {"CODEX_HOME": str(self.codex_home)}):
+            first = VERSION.check_for_update(now=1000, opener=offline, manifest=manifest)
+            second = VERSION.check_for_update(now=1001, opener=offline, manifest=manifest)
+        self.assertIsNone(first)
+        self.assertIsNone(second)
+        self.assertEqual(calls, 1)
+        cache = json.loads(
+            (self.codex_home / "state/lean-sdlc/version_advisory.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(cache, {"checked_at": 1000, "latest": None, "notified_for": None})
+
+    def test_hook_config_limits_version_advisory_to_startup(self) -> None:
+        hooks = json.loads(
+            (ROOT / "plugins/lean-sdlc/hooks/hooks.json").read_text(encoding="utf-8")
+        )
+        entries = hooks["hooks"]["SessionStart"]
+        advisory = [entry for entry in entries if "version_advisory.py" in entry["hooks"][0]["command"]]
+        self.assertEqual(len(advisory), 1)
+        self.assertEqual(advisory[0]["matcher"], "startup")
+        self.assertIn("${PLUGIN_ROOT}", advisory[0]["hooks"][0]["command"])
 
 
 if __name__ == "__main__":

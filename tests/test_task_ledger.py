@@ -1727,15 +1727,29 @@ class PackageContractTests(unittest.TestCase):
         )
 
         for phrase in [
+            "before task creation",
+            "one behavior, one contract boundary, one proof cluster, and one accept-or-reject decision",
+            "split on any independent answer",
+            "and` in a title as a review signal, not an automatic split",
             "one ledger task represents one engineer checkpoint.",
+            "one independently accepted behavior change",
+            "one owning contract boundary",
+            "one proof cluster",
+            "one close decision",
+            "may touch several files, tests, documentation, or migration steps",
+            "only when all work is inseparable for that behavior",
             "require settled architecture, one coherent outcome, one independent bounded proof, and one accept-or-reject review.",
             "keep one task resumable from repository truth and its ledger row after compaction.",
-            "split a task for independent behavior, module outcome, proof, or work that needs an architect checkpoint.",
-            "split a task when a part can fail, ship, revert, resume, or close independently, crosses a contract, or needs another durable decision.",
+            "split a task when a part can succeed, fail, defer, revert, release, or be accepted independently",
+            "belongs to another behavior or contract area",
+            "needs another architect decision",
             "merge pieces without independent value or proof.",
+            "keep a correction in the same task",
+            "only satisfies unchanged acceptance",
+            "a new behavior needs a new task",
             "keep implementation tests inside the task.",
             "keep maintainer and verifier work attached unless independently deliverable.",
-            "do not use time or line-count limits.",
+            "never size by elapsed time, file count, line count, or command count.",
             "keep local implementation steps and correction handoffs transient.",
         ]:
             self.assertIn(phrase, plan)
@@ -1753,6 +1767,28 @@ class PackageContractTests(unittest.TestCase):
 
         self.assertIn("assisted parallel work", evaluations)
         self.assertIn("verifier and maintainer sidecars", evaluations)
+
+    def test_task_sizing_preflight_and_split_rules_are_operational(self) -> None:
+        plan = (SKILL / "references/plan.md").read_text(encoding="utf-8")
+        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8")
+
+        self.assertIn("## Task preflight", plan)
+        self.assertIn("Before task creation", plan)
+        self.assertIn("Task preflight", evaluations)
+        for phrase in [
+            "one independently accepted behavior change under one owning contract boundary",
+            "one proof cluster, and one close decision",
+            "can succeed, fail, defer, revert, release, or be accepted independently",
+            "belongs to another behavior or contract area",
+            "needs another Architect decision",
+            "Keep a correction in the same task when it only satisfies unchanged acceptance",
+            "A new behavior needs a new task",
+            "Never size by elapsed time, file count, line count, or command count",
+            "Treat `and` in a title as a review signal, not an automatic split",
+        ]:
+            self.assertIn(phrase, plan)
+        self.assertNotIn("Split on elapsed time", plan)
+        self.assertNotIn("Split on file count", plan)
 
     def test_task_sizing_and_session_state_routes_use_canonical_sources(self) -> None:
         dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
@@ -1925,8 +1961,14 @@ class PackageContractTests(unittest.TestCase):
             "reroute remaining work to luna max or bounded programmatic calls",
             "mention optimization only when routing changes",
             "material phase changes",
-            "at most two useful heartbeats",
-            "every child update starts with work or current state",
+            "1–3 natural sentences",
+            "current action, why it matters, observed result or next action",
+            "before a long silent operation",
+            "after about two minutes of otherwise silent work",
+            "continued silent work may send another short update",
+            "do not impose a total cap",
+            "no child update includes greetings, role repetition, raw logs, full fingerprints, or scripted phrases",
+            "do not create rigid templates",
             "maintainer synchronizes affected shared narrative documents",
             "no child edits `tasks.csv`",
             "routine user commentary",
@@ -1937,10 +1979,10 @@ class PackageContractTests(unittest.TestCase):
             "running/passed/stopped state",
             "mismatch reason",
             "machine verification",
-            "architect hands that exact identity to the verifier",
+            "candidate checkpoint fingerprint",
             "checkpoint equality",
             "release tag or short commit id",
-            "without repeating the full fingerprint in the visible return",
+            "do not repeat the full fingerprint in the visible return",
             "run the full suite only when the task or repository contract requires it",
             "consume maintainer evidence",
             "no child edits `tasks.csv` or runs git operations",
@@ -2155,12 +2197,14 @@ class PackageContractTests(unittest.TestCase):
             self.assertIn(heading, subagents)
         self.assertIn("The Architect owns each child name at spawn time", subagents)
         self.assertIn("task_name=engineer_beta", subagents)
-        self.assertIn("Every child update starts with work or current state", subagents)
+        self.assertIn("Each child update stays 1–3 natural sentences", subagents)
+        self.assertIn("A child reports at start", subagents)
         self.assertIn(
             "Arrow sequence is fact order, not output wording",
             subagents,
         )
-        self.assertIn("at most two useful heartbeats at two-minute intervals", subagents)
+        self.assertIn("Continued silent work may send another short update; do not impose a total cap", subagents)
+        self.assertNotIn("at most two useful heartbeats", subagents)
         self.assertNotIn("Architecture alignment:", subagents)
         self.assertNotIn("Return labels remain explicit", subagents)
         self.assertNotIn("labeled report", subagents)
@@ -2182,7 +2226,7 @@ class PackageContractTests(unittest.TestCase):
             "Engineer owns targeted development checks",
             "After each checkpoint, the Architect reviews the diff, architecture, scope, and contract alignment in concise natural prose.",
             "Maintainer owns each recorded operation run and returns evidence once",
-            "Verifier receives acceptance and the exact checkpoint",
+            "Verifier receives acceptance and the settled source boundary",
             "independently reruns acceptance proof and one planned regression command",
             "repeat only a disputed operation",
         ]:
@@ -2211,6 +2255,73 @@ class PackageContractTests(unittest.TestCase):
             self.assertNotIn(stale, policy)
         self.assertIn("allocates the next never-used label", policy.lower())
         self.assertIn("scout/scout", policy.lower())
+
+    def test_delegated_evidence_and_checkpoint_capture_are_bounded(self) -> None:
+        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
+        diagnose = (SKILL / "references/diagnose.md").read_text(encoding="utf-8")
+        verify = (SKILL / "references/verify.md").read_text(encoding="utf-8")
+        operations = (SKILL / "references/operations.md").read_text(encoding="utf-8")
+        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8")
+
+        for phrase in [
+            "product intent, public behavior, architecture, assumptions, acceptance, permissions, task ownership, conflict resolution, and final signoff",
+            "cross-boundary source and log evidence",
+            "focused semantic changes and targeted check results",
+            "contract-sensitive semantic changes",
+            "independently computes a candidate checkpoint fingerprint",
+            "when verification begins",
+            "retains it locally",
+            "recomputes the fingerprint before return",
+            "blocks if it changed",
+            "do not persist fingerprints",
+            "do not make the Architect calculate them",
+            "recorded operation failure signal",
+            "already-authorized recorded recovery",
+            "unknown, ambiguous, source-changing, or new retry behavior",
+            "routes to Diagnose/Scout and Architect",
+        ]:
+            self.assertIn(phrase.casefold(), subagents.casefold())
+
+        lowered = subagents.casefold()
+        self.assertLess(
+            lowered.index("when verification begins"),
+            lowered.index("recomputes the fingerprint before return"),
+        )
+        self.assertIn("candidate checkpoint fingerprint and retains it locally", verify)
+        self.assertIn("Do not persist fingerprints or make Architect calculate them", verify)
+        self.assertIn("Maintainer stops unknown, ambiguous, source-changing, or new retry behavior", diagnose)
+        self.assertIn("Maintainer classifies failures only by matching a recorded operation failure signal", operations)
+        self.assertIn("Omit them from visible operation reports", operations)
+        self.assertIn("Verifier independently computes a local candidate checkpoint fingerprint", evaluations)
+        self.assertIn("Do not persist fingerprints or make Architect calculate them", evaluations)
+        self.assertNotIn("Architect records an exact commit or working-tree fingerprint", evaluations)
+
+    def test_child_progress_is_event_driven_and_not_template_bound(self) -> None:
+        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
+        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8")
+
+        for phrase in [
+            "1–3 natural sentences",
+            "current action, why it matters, observed result or next action",
+            "at start",
+            "material phase changes",
+            "before a long silent operation",
+            "evidence that changes the next action",
+            "blocker or conflict",
+            "after about two minutes of otherwise silent work",
+            "at completion",
+            "continued silent work may send another short update",
+            "do not impose a total cap",
+            "no child update includes greetings, role repetition, raw logs, full fingerprints, or scripted phrases",
+            "do not create rigid templates",
+        ]:
+            self.assertIn(phrase.casefold(), subagents.casefold())
+
+        self.assertIn("Child visible update", evaluations)
+        self.assertIn("do not impose a total cap", evaluations.casefold())
+        self.assertNotIn("at most two useful heartbeats", subagents.casefold())
+        self.assertNotIn("sentence template", subagents.casefold())
+        self.assertIn("role repetition", evaluations.casefold())
 
     def test_readme_stays_public_and_links_detailed_policy(self) -> None:
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
@@ -2280,11 +2391,11 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.17.0")
+        self.assertEqual(version, "1.18.0")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
         self.assertIn(
-            "- Version goal: Add a controlled Backlog lane for parked ideas, explicit promotion, duplicate checks, and plan-overlay exclusion.",
+            "- Version goal: Delegate routine evidence and checkpoint capture, add event-driven child progress, strengthen single-area task sizing, and add a cached read-only update advisory.",
             project,
         )
 

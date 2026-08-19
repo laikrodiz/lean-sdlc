@@ -12,6 +12,17 @@
             "timeout": 3
           }
         ]
+      },
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${PLUGIN_ROOT}/skills/lean-sdlc/scripts/version_advisory.py\"",
+            "commandWindows": "py -3 \"%PLUGIN_ROOT%\\skills\\lean-sdlc\\scripts\\version_advisory.py\"",
+            "timeout": 3
+          }
+        ]
       }
     ],
     "PreToolUse": [

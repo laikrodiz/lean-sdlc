@@ -57,6 +57,6 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 ## Current promise
 
 - Stage: Evolution
-- Version: 1.17.0
-- Version goal: Add a controlled Backlog lane for parked ideas, explicit promotion, duplicate checks, and plan-overlay exclusion.
+- Version: 1.18.0
+- Version goal: Delegate routine evidence and checkpoint capture, add event-driven child progress, strengthen single-area task sizing, and add a cached read-only update advisory.
 - Exit evidence: Tests, skill and plugin validation, local installation, accepted checkpoints, repository checks, tagged commit, and successful push.

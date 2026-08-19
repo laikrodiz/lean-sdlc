@@ -14,6 +14,8 @@ The user-selected lead owns causal reasoning and the repair decision. Without an
 8. Add the smallest failing test or equivalent evidence when practical.
 9. Hand off to Deliver only after cause, scope, acceptance, and proof are settled.
 
+Maintainer stops unknown, ambiguous, source-changing, or new retry behavior and routes it to Diagnose, Scout, and Architect.
+
 A confident explanation without reproduction or equivalent evidence remains a hypothesis.
 
 Ready means the root cause is reproduced or tightly bounded and the fix no longer contains diagnostic ambiguity.
