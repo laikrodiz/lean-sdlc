@@ -18,6 +18,12 @@ Before any other repository mutation, use `tasks.py start` to create immediate w
 
 During Plan, Quick Fix is inline, not a mode, lane, task type, or prompt. Use it only for an exact reversible outcome, no unresolved product, design, architecture, interface, schema, migration, dependency, security, generated-file, or external-state choice, and one immediate narrow proof. Use Standard when uncertain. Record Context `Quick Fix`; all write gates apply. Architect executes directly, reviews the diff, and runs narrow proof; closure defers broad review.
 
+## Assisted lifecycle and proof
+
+- A running child lifecycle state remains available despite wait expiry or silence. The Architect may request status and wait again.
+- Before delegation, the Architect posts a short visible design explanation. The Engineer visibly restates its understanding.
+- Route broad evidence reads to Scout. Verification is risk-based and not duplicated. The Architect gives one final visible alignment signoff.
+
 ## Plan view and lifecycle
 
 After task creation or start, split, merge, or material plan change, project unresolved IDs and titles into `update_plan` as exact `TASK-NNN — Title` rows. Before or with `tasks.py close`, mark closing row completed. Startup, resume, clear, or compaction: rebuild only unresolved rows from `tasks.py open`; do not load `Done` history. Brainstorming remains read-only and creates no task view. Ledger authoritative.

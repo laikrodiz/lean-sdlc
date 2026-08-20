@@ -15,7 +15,7 @@ from typing import Any, Callable
 
 
 REPOSITORY_TAGS_URL = "https://api.github.com/repos/laikrodiz/lean-sdlc/tags?per_page=100"
-CACHE_SECONDS = 7 * 24 * 60 * 60
+CACHE_SECONDS = 24 * 60 * 60
 NETWORK_TIMEOUT_SECONDS = 2
 MAX_RESPONSE_BYTES = 64 * 1024
 CACHE_FILENAME = "version_advisory.json"

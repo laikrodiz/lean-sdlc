@@ -16,8 +16,10 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 - An atomic, human-readable task ledger with one task per independently accepted repository state. Dependencies must be `Done` before a task starts.
 - During implementation, unresolved ledger task IDs and titles project into Codex's plan view. Brainstorming and rephrasing remain read-only and create no task view.
 - Architect ownership of intent, architecture, interfaces, task boundaries, acceptance, integration, evidence, and closeout.
-- Four standard roles: Engineer for approved implementation, Maintainer for shared documents and recorded operations, Verifier for independent checks, and Scout for bounded cited evidence.
+- Four standard roles: Engineer for approved implementation, Maintainer for shared documents and recorded operations, Verifier for independent checks, and Scout for bounded cited evidence. Broad evidence reads go to Scout.
 - Assisted mode as the default and Solo mode as the lead-only alternative. Both modes use the same task and proof rules.
+- A running child lifecycle state remains available despite wait expiry or silence. The Engineer visibly restates its understanding and completes routine targeted proof.
+- One preauthorized read-only Verifier may be nested for a qualifying single task. Combined checkpoints use one Architect-started Verifier. The Architect gives one final visible alignment signoff. Verification is risk-based and not duplicated.
 - Conservative parallel work for separate scopes and resources. Shared files, changing interfaces, migrations, generated output, and external targets remain serial. Child work stays in one shared worktree.
 - Substantial external-tool work keeps decisions with the Architect. The matching role handles bounded discovery, approved mutation, repeated operations, or independent checking. One agent owns each mutable external target.
 - Bounded read-only evidence work stays limited to its defined question, groups independent discovery, and preserves complete authoritative reads.
@@ -61,6 +63,6 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 ## Current promise
 
 - Stage: Evolution
-- Version: 1.19.0
-- Version goal: Reduce execution token cost through bounded evidence gathering and maintained deterministic automation.
+- Version: 1.20.0
+- Version goal: Reduce orchestration duplication with risk-based verification, Scout evidence routing, and a startup-only daily advisory with no automatic updates.
 - Exit evidence: Tests, skill and plugin validation, local installation, accepted checkpoints, repository checks, tagged commit, and successful push.

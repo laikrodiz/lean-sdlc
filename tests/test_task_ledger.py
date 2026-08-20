@@ -1946,8 +1946,8 @@ class PackageContractTests(unittest.TestCase):
             "a guided or recorded build, package, ci, deploy, flash, runtime, or smoke operation is ready",
             "an accepted checkpoint has shared-document impact",
             "documentation-only work is ready",
-            "changed code, configuration, schema, generated artifacts, or behavior reaches a proof checkpoint",
-            "proof has multiple commands or noisy output",
+            "a combined checkpoint, repository-required independent check, disputed evidence, multi-command or noisy proof, external or stateful risk, or release or final batch requires independent proof",
+            "multi-command or noisy proof",
             "universal independence gate",
             "engineer/engineer",
             "engineer/scout",
@@ -2289,7 +2289,9 @@ class PackageContractTests(unittest.TestCase):
         subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
         for term in [
             "Engineer owns targeted development checks",
-            "After each checkpoint, the Architect reviews the diff, architecture, scope, and contract alignment in concise natural prose.",
+            "For one task, Engineer continues through implementation and targeted proof",
+            "After the final Engineer return",
+            "short visible alignment signoff covering architecture, scope, and contract alignment",
             "Maintainer owns each recorded operation run and returns evidence once",
             "Verifier receives acceptance and the settled source boundary",
             "independently reruns acceptance proof and one planned regression command",
@@ -2352,6 +2354,17 @@ class PackageContractTests(unittest.TestCase):
             lowered.index("when verification begins"),
             lowered.index("recomputes the fingerprint before return"),
         )
+        verify_lowered = verify.casefold()
+        verify_order = [
+            verify_lowered.index(term)
+            for term in [
+                "select one optional nested verifier",
+                "when verification begins, verifier independently computes a candidate checkpoint fingerprint",
+                "verifier independently runs acceptance-defining proof",
+                "recompute the fingerprint before return",
+            ]
+        ]
+        self.assertEqual(verify_order, sorted(verify_order))
         self.assertIn("candidate checkpoint fingerprint and retains it locally", verify)
         self.assertIn("Do not persist fingerprints or make Architect calculate them", verify)
         self.assertIn("Maintainer stops unknown, ambiguous, source-changing, or new retry behavior", diagnose)
@@ -2360,6 +2373,49 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("Verifier independently computes a local candidate checkpoint fingerprint", evaluations)
         self.assertIn("Do not persist fingerprints or make Architect calculate them", evaluations)
         self.assertNotIn("Architect records an exact commit or working-tree fingerprint", evaluations)
+
+    def test_lifecycle_and_proof_boundaries_are_behavioral(self) -> None:
+        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8").lower()
+        deliver = (SKILL / "references/deliver.md").read_text(encoding="utf-8").lower()
+        verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
+        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8").lower()
+
+        for term in [
+            "running lifecycle state means available",
+            "parent wait timeout, missed update, or silence is not failure",
+            "architect may request status and wait again",
+            "architect allocates and preauthorizes the exact named verifier",
+            "authorized engineer may spawn or reuse that one read-only verifier",
+            "no other child may spawn",
+            "verifier cannot spawn",
+            "descendants count toward the limit",
+            "interrupt or replace only for an explicit blocker",
+            "engineer may fix only implementation defects that preserve settled behavior",
+            "same proof failure repeats",
+        ]:
+            self.assertIn(term, subagents)
+        for term in [
+            "selected authoritative contracts",
+            "focused patches",
+            "exact evidence",
+            "broad or cross-boundary source",
+            "do not require complete broad source reads",
+        ]:
+            self.assertIn(term, deliver + verify)
+        for term in [
+            "one optional nested verifier",
+            "one architect-started verifier",
+            "never duplicate evidence unless repository policy requires it",
+        ]:
+            self.assertIn(term, verify)
+        for term in [
+            "for one task, engineer continues through implementation and targeted proof",
+            "after the final engineer return",
+            "short visible alignment signoff covering architecture, scope, and contract alignment",
+            "full stop barrier",
+        ]:
+            self.assertIn(term, subagents + deliver)
+        self.assertNotIn("parent metadata", evaluations)
 
     def test_child_progress_is_event_driven_and_not_template_bound(self) -> None:
         subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
@@ -2456,11 +2512,11 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.19.0")
+        self.assertEqual(version, "1.20.0")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
         self.assertIn(
-            "- Version goal: Reduce execution token cost through bounded evidence gathering and maintained deterministic automation.",
+            "- Version goal: Reduce orchestration duplication with risk-based verification, Scout evidence routing, and a startup-only daily advisory with no automatic updates.",
             project,
         )
 

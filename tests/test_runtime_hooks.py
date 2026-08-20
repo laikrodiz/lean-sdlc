@@ -417,6 +417,7 @@ class RuntimeHookTests(unittest.TestCase):
     def test_version_advisory_cache_suppresses_repeat_until_expiry(self) -> None:
         manifest = self.root / "plugin.json"
         manifest.write_text(json.dumps({"version": "1.17.0"}), encoding="utf-8")
+        self.assertEqual(VERSION.CACHE_SECONDS, 24 * 60 * 60)
         responses = iter((b'[{"name":"v1.18.0"}]', b'[{"name":"v1.18.0"}]'))
         calls = 0
 
@@ -438,7 +439,7 @@ class RuntimeHookTests(unittest.TestCase):
             first = VERSION.check_for_update(now=1000, opener=opener, manifest=manifest)
             second = VERSION.check_for_update(now=1001, opener=opener, manifest=manifest)
             third = VERSION.check_for_update(
-                now=1000 + VERSION.CACHE_SECONDS,
+                now=1000 + 24 * 60 * 60,
                 opener=opener,
                 manifest=manifest,
             )

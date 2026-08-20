@@ -4,11 +4,11 @@ Use Deliver only when cause, scope, architecture, owned `In Progress` task, visi
 
 See [subagents.md](subagents.md) for child triggers and checkpoints.
 
-1. Read task, acceptance, proof, and source material completely. Group read-only discovery into bounded calls. Use follow-ups only for unresolved questions.
+1. Read task, acceptance, proof, selected authoritative contracts, focused patches, and exact evidence completely. Route broad or cross-boundary source, logs, inventories, and raw output to Scout. Do not require complete broad source reads.
 2. Run the structural check before the first non-control write.
 3. Build the smallest cohesive units through narrow contracts and a readable orchestrator.
 4. Classify boundary cases as `Handle`, `Reject`, `Defer`, or `Impossible by invariant`.
-5. After implementation, the Architect reviews scope, architecture, contract alignment before Verify.
+5. Engineer shows visible restatement. After the final Engineer return, Architect reviews scope, architecture, contract alignment in one short visible alignment signoff. Review earlier only for decision, blocker, collision, scope change, or proof mismatch.
 6. Quick Fix: review diff and run narrow proof before close. No child per fix; shared batches may use Verifier under its normal trigger.
-7. Apply the checkpoint barrier; send the final source checkpoint to Verify.
+7. Apply full stop barrier to combined, parallel, release, or final-batch checkpoints.
 8. Apply [operations.md](operations.md).

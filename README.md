@@ -67,6 +67,8 @@ The Architect agent is the lead. Four standard subagents support the lead when t
 
 Assisted Lean-SDLC mode is the default. It delegates suitable work through these roles and keeps the Architect responsible for decisions. Solo mode keeps execution with the Architect when the user selects it. Both modes use the same task, safety, acceptance, and proof rules. User can switch between the modes by requesting the change.
 
+The Architect owns decisions and gives a visible design explanation before work and a final signoff after review. Scout reduces broad evidence, while the Engineer implements approved work and proves routine behavior. The Verifier adds independent proof only when risk requires it.
+
 Parallel work is conservative. It is allowed only when tasks have separate scopes, settled contracts, independent proof, and no shared mutable resource. Shared files, changing interfaces, migrations, fixtures, generated output, and external targets stay serial. Integration, documentation synchronization, verification, operations, and closeout stay serial as well. If safety or time savings are unclear, the workflow chooses serial work.
 
 Substantial external-tool work follows the same boundary. The Architect keeps the decision. Scout handles bounded discovery. Engineer handles approved mutations. Maintainer handles repeated operations. Verifier handles independent checks. One agent owns each mutable external target.
@@ -77,7 +79,7 @@ When Codex resumes or compacts a task, Lean-SDLC returns to durable repository t
 
 ## Evidence and detailed contracts
 
-The Engineer checks local mechanics. The Maintainer records operation evidence. The Verifier reruns acceptance proof and one planned regression command. The Architect reviews the returned checkpoint, resolves deviations, and closes the owned task only after the evidence matches the contract.
+The Engineer completes routine targeted proof. The Maintainer records operation evidence. Verification follows risk and does not duplicate proof. The Architect gives one final visible alignment signoff, resolves deviations, and closes the owned task only after the evidence matches the contract.
 
 Read the [Shape contract](plugins/lean-sdlc/skills/lean-sdlc/references/shape.md), [Plan contract](plugins/lean-sdlc/skills/lean-sdlc/references/plan.md), [repository contract](plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md), [canonical child-agent policy](plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md), and [trigger evaluations](plugins/lean-sdlc/skills/lean-sdlc/references/trigger-evals.md) for detailed rules.
 
@@ -85,16 +87,18 @@ Read the [Shape contract](plugins/lean-sdlc/skills/lean-sdlc/references/shape.md
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-Install the immutable `v1.19.0` release:
+Install the immutable `v1.20.0` release:
 
 ```bash
-git clone --depth 1 --branch v1.19.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.20.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc
 ```
 
 Restart Codex after installation. Then begin a new task.
+
+The release advisory runs at startup, checks no more than once daily, and never updates the repository automatically.
 
 ## Use
 

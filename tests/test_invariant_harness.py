@@ -93,6 +93,24 @@ FROZEN_INVARIANTS = (
         ("the architect is the sole authority for product intent", "the architect always owns intent, public behavior, architecture, tasks, acceptance, integration, and closeout", "never sends unresolved user input to a child", "writes inside an active child boundary", "accepts unreviewed output", "replaces independent proof with confidence", "the architect supplies a question and source boundary"),
     ),
     FrozenInvariant(
+        "lifecycle availability and controlled proof routing",
+        SUBAGENTS,
+        (
+            "running lifecycle state means available",
+            "parent wait timeout, missed update, or silence is not failure",
+            "the architect may request status and wait again",
+            "the architect allocates and preauthorizes the exact named verifier",
+            "descendants count toward the limit",
+            "short visible natural restatement",
+            "short visible alignment signoff covering architecture, scope, and contract alignment",
+            "stops writing while its nested read-only verifier checks",
+            "permitted implementation corrections",
+            "then reruns proof",
+            "engineer may fix only implementation defects that preserve settled behavior",
+            "same proof failure repeats",
+        ),
+    ),
+    FrozenInvariant(
         "delegated evidence and checkpoint capture",
         SUBAGENTS,
         (
@@ -456,7 +474,7 @@ def _lane_names(text: str) -> tuple[str, ...]:
 class FrozenInvariantHarnessTests(unittest.TestCase):
     def test_every_invariant_has_one_canonical_source(self) -> None:
         names = [invariant.name for invariant in FROZEN_INVARIANTS]
-        self.assertEqual(len(FROZEN_INVARIANTS), 35)
+        self.assertEqual(len(FROZEN_INVARIANTS), 36)
         self.assertEqual(len(names), len(set(names)))
         for invariant in FROZEN_INVARIANTS:
             with self.subTest(invariant=invariant.name):
@@ -485,7 +503,7 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
             name: _read(f"plugins/lean-sdlc/skills/lean-sdlc/references/{name}.md")
             for name in ("shape", "plan", "deliver", "verify")
         }
-        self.assertLessEqual(sum(len(text.split()) for text in lanes.values()), 1600)
+        self.assertLessEqual(sum(len(text.split()) for text in lanes.values()), 1700)
         for term in [
             "shape owns the complete intent gate",
             "material assumption affects behavior, scope, or architecture",
