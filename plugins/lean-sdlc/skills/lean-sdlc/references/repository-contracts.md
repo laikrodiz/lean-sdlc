@@ -77,33 +77,33 @@ Use exactly:
 
 Use `Project`, `FEAT-*`, `DEC-*`, `Bootstrap`, or `Quick Fix` as `Context` for active work. A Backlog row defaults to `Project` context.
 
-Use `tasks.py backlog` for the compact Backlog view. Use `tasks.py open` for current `Planned` and `In Progress` work. Use `tasks.py show TASK-ID` for one task and its recursive dependencies. These read-only views keep the existing human-readable CSV shape and avoid loading full `Done` history. The human-readable `tasks.csv` remains authoritative.
+Use `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" backlog` for the compact Backlog view. Use `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" open` for current `Planned` and `In Progress` work. Use `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" show TASK-ID` for one task and its recursive dependencies. These read-only views keep the existing human-readable CSV shape and avoid loading full `Done` history. The human-readable `tasks.csv` remains authoritative.
 
 ### Backlog contract
 
 A Backlog row has Status `Backlog` and carries values only for `Task ID`, `Title`, `Status`, and `Context`. `Dependencies`, `Owner`, `Acceptance Criteria`, `Proof`, and `Evidence` stay empty. The default Context is `Project`; `Bootstrap` and `Quick Fix` are invalid Backlog contexts. No task may depend on a Backlog task.
 
-`tasks.py backlog-add` adds a sparse Backlog row. `tasks.py backlog` prints the compact Backlog view. `tasks.py promote` promotes a Backlog idea through Shape and Plan, not through a raw status flip. Title and context correction changes only those Backlog fields and keeps the row sparse.
+`python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" backlog-add` adds a sparse Backlog row. `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" backlog` prints the compact Backlog view. `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" promote` promotes a Backlog idea through Shape and Plan, not through a raw status flip. Title and context correction changes only those Backlog fields and keeps the row sparse.
 
-Only a direct user request may add or promote Backlog work. An Architect may propose Backlog placement only for a substantial reason and must wait for approval. A clear implementation request matching an existing Backlog title is promotion authority without an exact ID. Before creating new Standard work, the Architect reads `tasks.py backlog` and checks duplicates, broader items, or related ideas. Do not load Backlog on startup, resume, brainstorming, or Quick Fix work.
+Only a direct user request may add or promote Backlog work. An Architect may propose Backlog placement only for a substantial reason and must wait for approval. A clear implementation request matching an existing Backlog title is promotion authority without an exact ID. Before creating new Standard work, the Architect reads `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" backlog` and checks duplicates, broader items, or related ideas. Do not load Backlog on startup, resume, brainstorming, or Quick Fix work.
 
 Promotion adds proper title sizing, acceptance, proof, and dependencies. Promotion to In Progress adds an owner and requires explicit implementation authority. Planned promotion is not implementation authority. If a Backlog idea is broad, promote the original ID as the first coherent task and create sibling tasks for independent outcomes. A Feature document remains optional under its existing trigger.
 
-1. Use `tasks.py`; never edit the CSV directly.
+1. Use the packaged `tasks.py` helper; never edit the CSV directly.
 2. `plan` creates unowned `Planned` work. `start` creates `In Progress` work or claims a planned task.
 3. `update` requires the task owner for In Progress work.
 4. `close` belongs to the owner after verification. A direct user request may override with a recorded reason.
 5. Dependencies must exist, remain acyclic, and be `Done` before start or close.
 6. Task transactions are the formal exception to task-before-write.
 
-`tasks.py upgrade` accepts the previous `Parent` header and older planning header. It maps `REPO` to `Project` and `BOOTSTRAP` to `Bootstrap`, then atomically writes one root CSV under the existing lock.
+`python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" upgrade` accepts the previous `Parent` header and older planning header. It maps `REPO` to `Project` and `BOOTSTRAP` to `Bootstrap`, then atomically writes one root CSV under the existing lock.
 
 The command serializes writers with a short root lock for ledger updates, reads the latest ledger under that lock, validates dependencies, changes one transaction, and replaces the file atomically. The ledger lock is not a source-file lock. Owner IDs coordinate threads; they are not a security boundary.
 One root `tasks.csv` remains authoritative. It may hold two ready tasks for one Architect owner after the resource gate passes. The Architect alone mutates or closes both rows.
 
 ## Quick Fix ledger
 
-Quick Fix is an inline Plan classification. It is not a new task type. Closing a Quick Fix records pending broad batch review. `tasks.py quick-fixes` lists completed Quick Fixes that remain unreviewed.
+Quick Fix is an inline Plan classification. It is not a new task type. Closing a Quick Fix records pending broad batch review. `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" quick-fixes` lists completed Quick Fixes that remain unreviewed.
 
 A Standard checkpoint reviews every pending Quick Fix through the highest listed task in Verifier regression and documentation/interaction review. Close that checkpoint with `--review-through TASK-NNN`. The review prefix must contain only `Done` Quick Fix tasks through the target. Invalid review references fail without ledger mutation.
 

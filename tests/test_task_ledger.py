@@ -1691,7 +1691,7 @@ class PackageContractTests(unittest.TestCase):
             "request to use Quick Fix never bypasses eligibility",
             "one visible plan item",
             "one owned task",
-            "lean_check.py --before-write",
+            "python3 \"<skill-root>/scripts/lean_check.py\" \"<repo-root>\" --before-write",
             "Architect may execute Quick Fix in Assisted or Solo",
             "Do not spawn Engineer, Maintainer, or Verifier per Quick Fix",
             "Shared batch may reuse or start Verifier when normal proof trigger applies",
@@ -1705,7 +1705,7 @@ class PackageContractTests(unittest.TestCase):
 
         for phrase in [
             "Closing a Quick Fix records pending broad batch review",
-            "`tasks.py quick-fixes` lists completed Quick Fixes that remain unreviewed",
+            "`python3 \"<skill-root>/scripts/tasks.py\" --repo \"<repo-root>\" quick-fixes` lists completed Quick Fixes that remain unreviewed",
             "Standard checkpoint reviews every pending Quick Fix",
             "`--review-through TASK-NNN`",
             "review prefix must contain only `Done` Quick Fix tasks through the target",
@@ -1757,9 +1757,9 @@ class PackageContractTests(unittest.TestCase):
         ).read_text(encoding="utf-8").lower()
 
         for phrase in [
-            "`tasks.py` is the only ledger mutation path",
+            "the packaged `tasks.py` helper is the only ledger mutation path",
             "plan view",
-            "lean_check.py --before-write",
+            "python3 \"<skill-root>/scripts/lean_check.py\" \"<repo-root>\" --before-write",
             "one engineer checkpoint",
         ]:
             self.assertIn(phrase, dispatcher)
@@ -1769,7 +1769,7 @@ class PackageContractTests(unittest.TestCase):
             "dependencies must be `done` before start",
             "update_plan",
             "rebuild only unresolved rows",
-            "scripts/session_state.py",
+            "python3 \"<skill-root>/scripts/session_state.py\"",
         ]:
             self.assertIn(phrase, agents)
         self.assertEqual(agents, template)
@@ -1867,8 +1867,8 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("valid engineer checkpoint", evaluations)
         self.assertIn("oversized task", evaluations)
         for token in [
-            "scripts/session_state.py --owner owner --mode assisted|solo",
-            "scripts/session_state.py --owner owner --fast-children",
+            "python3 \"<skill-root>/scripts/session_state.py\" --owner owner --mode assisted|solo",
+            "python3 \"<skill-root>/scripts/session_state.py\" --owner owner --fast-children",
             "--no-fast-children",
         ]:
             self.assertIn(token, dispatcher + subagents)
@@ -2025,13 +2025,17 @@ class PackageContractTests(unittest.TestCase):
             "architect summarizing data instead of deciding",
             "reroute remaining work to luna max or bounded programmatic calls",
             "mention optimization only when routing changes",
-            "material phase changes",
             "1–3 natural sentences",
             "current action, why it matters, observed result or next action",
-            "before a long silent operation",
-            "after about two minutes of otherwise silent work",
-            "continued silent work may send another short update",
-            "do not impose a total cap",
+            "parent-facing reports occur at start",
+            "material decision",
+            "blocker",
+            "scope change",
+            "proof change",
+            "at completion",
+            "completed child sends one final return",
+            "ends its active turn",
+            "the completed thread remains reachable for later `followup_task` reuse",
             "no child update includes greetings, role repetition, raw logs, full fingerprints, or scripted phrases",
             "do not create rigid templates",
             "maintainer synchronizes affected shared narrative documents",
@@ -2223,9 +2227,10 @@ class PackageContractTests(unittest.TestCase):
             "rebuild only unresolved non-backlog rows",
             "do not load full",
             "startup, resume, clear, or compaction",
-            "tasks.py open",
+            "python3 \"<skill-root>/scripts/tasks.py\" --repo \"<repo-root>\" open",
             "brainstorming and rephrasing remain read-only and create no task view",
-            "qualified parallel pair",
+            "every unresolved task in its own exact row",
+            "parallel work changes status or plan prose, never task identity",
             "remains authoritative",
         ]:
             self.assertIn(phrase, dispatcher + plan)
@@ -2234,7 +2239,7 @@ class PackageContractTests(unittest.TestCase):
             "brain-dump discussion",
             "creates no task or plan view",
             "ledger-to-plan projection",
-            "into exact",
+            "into separate exact",
         ]:
             self.assertIn(phrase, evaluations)
 
@@ -2263,12 +2268,16 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("The Architect owns each child name at spawn time", subagents)
         self.assertIn("task_name=engineer_beta", subagents)
         self.assertIn("Each child update stays 1–3 natural sentences", subagents)
-        self.assertIn("A child reports at start", subagents)
+        self.assertIn("Parent-facing reports occur at start", subagents)
         self.assertIn(
             "Arrow sequence is fact order, not output wording",
             subagents,
         )
-        self.assertIn("Continued silent work may send another short update; do not impose a total cap", subagents)
+        self.assertIn("A completed child sends one final return and ends its active turn", subagents)
+        self.assertIn("The completed thread remains reachable for later `followup_task` reuse", subagents)
+        self.assertNotIn("after about two minutes", subagents)
+        self.assertNotIn("continued silent work", subagents.casefold())
+        self.assertNotIn("total cap", subagents)
         self.assertNotIn("at most two useful heartbeats", subagents)
         self.assertNotIn("Architecture alignment:", subagents)
         self.assertNotIn("Return labels remain explicit", subagents)
@@ -2424,22 +2433,26 @@ class PackageContractTests(unittest.TestCase):
         for phrase in [
             "1–3 natural sentences",
             "current action, why it matters, observed result or next action",
-            "at start",
-            "material phase changes",
-            "before a long silent operation",
-            "evidence that changes the next action",
-            "blocker or conflict",
-            "after about two minutes of otherwise silent work",
+            "parent-facing reports occur at start",
+            "material decision",
+            "blocker",
+            "scope change",
+            "proof change",
             "at completion",
-            "continued silent work may send another short update",
-            "do not impose a total cap",
+            "a completed child sends one final return",
+            "ends its active turn",
+            "the completed thread remains reachable for later `followup_task` reuse",
             "no child update includes greetings, role repetition, raw logs, full fingerprints, or scripted phrases",
             "do not create rigid templates",
         ]:
             self.assertIn(phrase.casefold(), subagents.casefold())
 
         self.assertIn("Child visible update", evaluations)
-        self.assertIn("do not impose a total cap", evaluations.casefold())
+        self.assertIn("silence alone is not failure", evaluations.casefold())
+        self.assertIn("ends the active turn", evaluations.casefold())
+        self.assertIn("followup_task", evaluations)
+        for stale in ("heartbeat", "two minutes", "continued silent work", "total cap"):
+            self.assertNotIn(stale, (subagents + evaluations).casefold())
         self.assertNotIn("at most two useful heartbeats", subagents.casefold())
         self.assertNotIn("sentence template", subagents.casefold())
         self.assertIn("role repetition", evaluations.casefold())
@@ -2512,11 +2525,11 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.20.0")
+        self.assertEqual(version, "1.21.0")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
         self.assertIn(
-            "- Version goal: Reduce orchestration duplication with risk-based verification, Scout evidence routing, and a startup-only daily advisory with no automatic updates.",
+            "- Version goal: Deterministic helper and repository resolution, completed child turn cleanup, quieter parent reporting, and one task per plan row.",
             project,
         )
 

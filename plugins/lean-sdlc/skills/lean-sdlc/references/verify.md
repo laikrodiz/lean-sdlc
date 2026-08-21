@@ -16,7 +16,7 @@ Arrow sequence is fact order, not output wording; replace slots with project fac
 6. Recompute the fingerprint before return. Block if it changed. Do not persist fingerprints or make Architect calculate them.
 7. Compare acceptance, semantic interaction, documentation parity, and change locality.
 8. Run the full suite once under Verifier only when the task or repository contract requires it. Trace behavior to owning docs and run the structural checker.
-9. The owning lead alone decides task disposition. Close the accepted task through `tasks.py close` with evidence. A direct-user override requires an explicit request and recorded reason.
+9. The owning lead alone decides task disposition. Close the accepted task through `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" close` with evidence. A direct-user override requires an explicit request and recorded reason.
 10. Treat task proof as the acceptance anchor. Retain required acceptance, regression, structure, and documentation layers.
 11. Stop after all required proof passes. Add an always-on rule only for an observed failure. Use the smallest behavioral evaluation that fails before the rule and passes after it.
 

@@ -43,7 +43,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant(
         "owned task before writes",
         "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md",
-        ("before any other repository mutation", "run `tasks.py start` or claim planned work", "require an owned `in progress` task", "run `lean_check.py --before-write"),
+        ("before any other repository mutation", "run `python3 \"<skill-root>/scripts/tasks.py\" --repo \"<repo-root>\" start` or claim planned work", "require an owned `in progress` task", "run `python3 \"<skill-root>/scripts/lean_check.py\" \"<repo-root>\" --before-write"),
     ),
     FrozenInvariant(
         "atomic tasks.csv transactions",
@@ -80,7 +80,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant(
         "owner-only close",
         "plugins/lean-sdlc/skills/lean-sdlc/references/verify.md",
-        ("owning lead alone decides task disposition", "close the accepted task through `tasks.py close`", "direct-user override requires an explicit request and recorded reason"),
+        ("owning lead alone decides task disposition", "close the accepted task through `python3 \"<skill-root>/scripts/tasks.py\" --repo \"<repo-root>\" close`", "direct-user override requires an explicit request and recorded reason"),
     ),
     FrozenInvariant(
         "assisted and solo only",
@@ -99,6 +99,8 @@ FROZEN_INVARIANTS = (
             "running lifecycle state means available",
             "parent wait timeout, missed update, or silence is not failure",
             "the architect may request status and wait again",
+            "a completed child sends one final return and ends its active turn",
+            "the completed thread remains reachable for later `followup_task` reuse",
             "the architect allocates and preauthorizes the exact named verifier",
             "descendants count toward the limit",
             "short visible natural restatement",
@@ -165,28 +167,21 @@ FROZEN_INVARIANTS = (
             "recycle the earliest label from an unreachable thread",
             "1–3 natural sentences",
             "current action, why it matters, observed result or next action",
-            "at start",
-            "material phase changes",
-            "before a long silent operation",
-            "evidence that changes the next action",
-            "blocker or conflict",
-            "after about two minutes of otherwise silent work",
+            "parent-facing reports occur at start",
+            "material decision",
+            "blocker",
+            "scope change",
+            "proof change",
             "at completion",
-            "continued silent work may send another short update",
-            "do not impose a total cap",
+            "completed child sends one final return",
+            "ends its active turn",
+            "the completed thread remains reachable for later `followup_task` reuse",
             "no child update includes greetings, role repetition, raw logs, full fingerprints, or scripted phrases",
             "do not create rigid templates",
         ),
         ordered_terms=(
-            "at start",
-            "material phase changes",
-            "before a long silent operation",
-            "evidence that changes the next action",
-            "blocker or conflict",
-            "after about two minutes of otherwise silent work",
-            "at completion",
-            "continued silent work may send another short update",
-            "do not impose a total cap",
+            "parent-facing reports occur at start",
+            "on a material decision, blocker, scope change, or proof change, and at completion",
         ),
     ),
     FrozenInvariant(
@@ -358,7 +353,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant(
         "legacy ledger migration",
         "plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md",
-        ("tasks.py upgrade", "accepts the previous `parent` header and older planning header", "maps `repo` to `project` and `bootstrap` to `bootstrap`", "atomically writes one root csv under the existing lock"),
+        ("python3 \"<skill-root>/scripts/tasks.py\" --repo \"<repo-root>\" upgrade", "accepts the previous `parent` header and older planning header", "maps `repo` to `project` and `bootstrap` to `bootstrap`", "atomically writes one root csv under the existing lock"),
     ),
     FrozenInvariant(
         "applicable asd-ste100 guidance",
@@ -399,7 +394,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant(
         "deterministic ledger plan projection",
         "plugins/lean-sdlc/skills/lean-sdlc/references/plan.md",
-        ("## plan view projection", "`tasks.py open` supplies unresolved `planned` and `in progress` rows", "excludes backlog", "update_plan", "task-nnn — title", "planned` to `pending", "in progress` to `in_progress", "closing row `completed`", "before or with `tasks.py close`", "active close transition", "only unresolved non-backlog rows", "do not load full `done` history", "startup, resume, clear, or compaction", "brainstorming and rephrasing remain read-only", "qualified parallel pair", "`tasks.csv` remains authoritative"),
+        ("## plan view projection", "`python3 \"<skill-root>/scripts/tasks.py\" --repo \"<repo-root>\" open` supplies unresolved `planned` and `in progress` rows", "excludes backlog", "update_plan", "task-nnn — title", "planned` to `pending", "in progress` to `in_progress", "closing row `completed`", "before or with `python3 \"<skill-root>/scripts/tasks.py\" --repo \"<repo-root>\" close`", "active close transition", "only unresolved non-backlog rows", "do not load full `done` history", "startup, resume, clear, or compaction", "brainstorming and rephrasing remain read-only", "every unresolved task in its own exact row", "parallel work changes status or plan prose, never task identity", "`tasks.csv` remains authoritative"),
     ),
     FrozenInvariant(
         "quick fix plan classification",
@@ -415,7 +410,7 @@ FROZEN_INVARIANTS = (
             "request to use Quick Fix never bypasses eligibility",
             "one visible plan item",
             "one owned task",
-            "lean_check.py --before-write",
+            "python3 \"<skill-root>/scripts/lean_check.py\" \"<repo-root>\" --before-write",
             "Architect may execute Quick Fix in Assisted or Solo",
             "Do not spawn Engineer, Maintainer, or Verifier per Quick Fix",
             "Shared batch may reuse or start Verifier when normal proof trigger applies",
@@ -431,7 +426,7 @@ FROZEN_INVARIANTS = (
         "plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md",
         (
             "Closing a Quick Fix records pending broad batch review",
-            "`tasks.py quick-fixes` lists completed Quick Fixes that remain unreviewed",
+            "`python3 \"<skill-root>/scripts/tasks.py\" --repo \"<repo-root>\" quick-fixes` lists completed Quick Fixes that remain unreviewed",
             "Standard checkpoint reviews every pending Quick Fix",
             "`--review-through TASK-NNN`",
             "review prefix must contain only `Done` Quick Fix tasks through the target",
@@ -503,7 +498,7 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
             name: _read(f"plugins/lean-sdlc/skills/lean-sdlc/references/{name}.md")
             for name in ("shape", "plan", "deliver", "verify")
         }
-        self.assertLessEqual(sum(len(text.split()) for text in lanes.values()), 1700)
+        self.assertLessEqual(sum(len(text.split()) for text in lanes.values()), 1800)
         for term in [
             "shape owns the complete intent gate",
             "material assumption affects behavior, scope, or architecture",
@@ -516,7 +511,7 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
         for term in [
             "acceptance-defining proof",
             "documentation parity",
-            "close the accepted task through `tasks.py close`",
+            "close the accepted task through `python3 \"<skill-root>/scripts/tasks.py\" --repo \"<repo-root>\" close`",
         ]:
             self.assertIn(term, lanes["verify"].casefold())
 
@@ -530,9 +525,9 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
             "[shape](references/shape.md)",
             "[plan](references/plan.md)",
             "tasks.py",
-            "lean_check.py --before-write",
+            "python3 \"<skill-root>/scripts/lean_check.py\" \"<repo-root>\" --before-write",
             "update_plan",
-            "scripts/session_state.py --owner owner --mode assisted|solo",
+            "python3 \"<skill-root>/scripts/session_state.py\" --owner owner --mode assisted|solo",
         ]:
             self.assertIn(_normalized(phrase), dispatcher)
         for phrase in [

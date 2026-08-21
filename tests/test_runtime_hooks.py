@@ -296,6 +296,63 @@ class RuntimeHookTests(unittest.TestCase):
         self.assertIn("Child tier: Standard", message)
         self.assertIn("reload subagents.md before Deliver", message)
 
+    def test_workspace_root_selects_one_descendant_and_reports_both_roots(self) -> None:
+        workspace = self.root / "workspace"
+        repository = workspace / "nested" / "repository"
+        repository.mkdir(parents=True)
+        repository.joinpath("AGENTS.md").write_text(
+            "Use $lean-sdlc for repository work.\n", encoding="utf-8"
+        )
+        repository.joinpath("tasks.csv").write_text("", encoding="utf-8")
+        event = {
+            "session_id": self.session_id,
+            "cwd": str(workspace),
+            "hook_event_name": "SessionStart",
+        }
+        result = run_script(SESSION_STATE, event, codex_home=self.codex_home)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        message = json.loads(result.stdout)["systemMessage"]
+        self.assertIn(f"Repository root: {repository.resolve()}", message)
+        self.assertIn(f"Skill root: {SCRIPTS.parent.resolve()}", message)
+
+    def test_workspace_root_does_not_guess_between_descendants(self) -> None:
+        workspace = self.root / "workspace"
+        for name in ("first", "second"):
+            repository = workspace / name
+            repository.mkdir(parents=True)
+            repository.joinpath("AGENTS.md").write_text(
+                "Use $lean-sdlc for repository work.\n", encoding="utf-8"
+            )
+            repository.joinpath("tasks.csv").write_text("", encoding="utf-8")
+        event = {
+            "session_id": self.session_id,
+            "cwd": str(workspace),
+            "hook_event_name": "SessionStart",
+        }
+        result = run_script(SESSION_STATE, event, codex_home=self.codex_home)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout, "")
+
+    def test_workspace_scan_ignores_deep_and_dependency_repositories(self) -> None:
+        workspace = self.root / "workspace"
+        for repository in (
+            workspace / "one" / "two" / "three" / "four",
+            workspace / "node_modules" / "dependency",
+        ):
+            repository.mkdir(parents=True)
+            repository.joinpath("AGENTS.md").write_text(
+                "Use $lean-sdlc for repository work.\n", encoding="utf-8"
+            )
+            repository.joinpath("tasks.csv").write_text("", encoding="utf-8")
+        event = {
+            "session_id": self.session_id,
+            "cwd": str(workspace),
+            "hook_event_name": "SessionStart",
+        }
+        result = run_script(SESSION_STATE, event, codex_home=self.codex_home)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout, "")
+
     def test_state_persistence(self) -> None:
         self.set_state("--mode", "solo", "--fast-children")
         event = {

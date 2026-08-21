@@ -15,6 +15,10 @@ from typing import Any
 
 DEFAULT_STATE = {"mode": "assisted", "fast_children": False}
 MODES = frozenset({"assisted", "solo"})
+SCAN_DEPTH = 3
+SCAN_EXCLUSIONS = frozenset(
+    {".git", ".hg", ".svn", ".venv", "__pycache__", "build", "dist", "node_modules", "target", "vendor", "venv"}
+)
 
 
 def owner_id(session_id: str) -> str:
@@ -22,20 +26,47 @@ def owner_id(session_id: str) -> str:
     return f"{int.from_bytes(digest[:8], 'big') % 100_000_000:08d}"
 
 
+def _is_lean_repository(candidate: Path) -> bool:
+    agents = candidate / "AGENTS.md"
+    if not agents.is_file() or not (candidate / "tasks.csv").is_file():
+        return False
+    try:
+        instructions = agents.read_text(encoding="utf-8")
+    except OSError:
+        return False
+    return "$lean-sdlc" in instructions or "Lean-SDLC" in instructions
+
+
+def _descendant_repositories(root: Path) -> tuple[Path, ...]:
+    candidates: set[Path] = set()
+    for directory, names, files in os.walk(root):
+        candidate = Path(directory).resolve()
+        depth = len(candidate.relative_to(root).parts)
+        names[:] = [
+            name
+            for name in names
+            if depth < SCAN_DEPTH and name not in SCAN_EXCLUSIONS and not name.startswith(".")
+        ]
+        if "AGENTS.md" in files and "tasks.csv" in files and _is_lean_repository(candidate):
+            candidates.add(candidate)
+            names.clear()
+    return tuple(sorted(candidates, key=str))
+
+
 def lean_repository(cwd: str) -> Path | None:
     current = Path(cwd).resolve()
     for candidate in (current, *current.parents):
-        agents = candidate / "AGENTS.md"
-        if agents.is_file() and (candidate / "tasks.csv").is_file():
-            try:
-                instructions = agents.read_text(encoding="utf-8")
-            except OSError:
-                return None
-            if "$lean-sdlc" in instructions or "Lean-SDLC" in instructions:
-                return candidate
+        if _is_lean_repository(candidate):
+            return candidate
         if (candidate / ".git").exists():
             break
-    return None
+
+    descendants = _descendant_repositories(current)
+    return descendants[0] if len(descendants) == 1 else None
+
+
+def skill_root() -> Path:
+    return Path(__file__).resolve().parent.parent
 
 
 def _codex_home() -> Path:
@@ -162,9 +193,11 @@ def _run_hook() -> int:
         print(f"Lean-SDLC state hook failed: {exc}", file=sys.stderr)
         return 1
 
-    if lean_repository(cwd) is None:
+    repository = lean_repository(cwd)
+    if repository is None:
         return 0
 
+    loaded_skill = skill_root()
     owner = owner_id(session_id)
     state = load_state(owner)
     tier = "Fast" if state["fast_children"] else "Standard"
@@ -173,6 +206,8 @@ def _run_hook() -> int:
             {
                 "systemMessage": (
                     f"Lean-SDLC Owner: {owner}. "
+                    f"Repository root: {repository}. "
+                    f"Skill root: {loaded_skill}. "
                     f"Mode: {state['mode']}. Child tier: {tier}. "
                     "After lifecycle restoration, reload subagents.md before Deliver."
                 )
