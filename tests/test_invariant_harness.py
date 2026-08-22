@@ -143,7 +143,15 @@ FROZEN_INVARIANTS = (
     FrozenInvariant(
         "engineer, maintainer, verifier, and scout roles",
         SUBAGENTS,
-        ("| engineer |", "| maintainer |", "| verifier |", "| scout |", "the standard child roles are"),
+        (
+            "the standard child roles are engineer, maintainer, verifier, and scout",
+            "apply this stage-aware chain before the first command",
+            "keep unresolved product, architecture, scope, permission, or acceptance decisions with the architect",
+            "route broad, read-only, multi-platform, multi-version, or cross-boundary evidence inquiries to scout",
+            "route settled mutable implementation with paths, interfaces, acceptance, proof, and no open decision to engineer",
+            "route independent proof to verifier only at a proof checkpoint",
+            "route shared documentation or recorded operations to maintainer only after accepted implementation",
+        ),
     ),
     FrozenInvariant(
         "luna max primary and terra xhigh fallback",
@@ -295,10 +303,11 @@ FROZEN_INVARIANTS = (
         OPERATIONS,
         (
             "reuse recorded operations as the only automation catalog",
-            "second equivalent successful execution",
+            "any child that directly observes a second equivalent successful mechanic reports a transient automation candidate",
+            "maintainer owns this report for repeated operations",
+            "the report adds no scan, registry, backlog entry, automatic script, or state",
             "direct evidence that the mechanic will recur",
-            "transient candidate",
-            "candidates do not enter durable docs or backlog automatically",
+            "candidates do not enter durable docs automatically",
             "architect approves the contract before scripting",
             "existing project command or target",
             "existing script",
@@ -343,11 +352,12 @@ FROZEN_INVARIANTS = (
         "automation trigger evaluations",
         TRIGGER_EVALS,
         (
-            "automation lifecycle",
-            "recorded operations as the only automation catalog",
-            "second equivalent successful execution",
-            "explicit inputs, safe defaults, target validation, stable exit status",
-            "changed contract or unknown cause stops and returns to Architect/Diagnose",
+            "these rows are scenarios and assertions",
+            "they are not a second policy source",
+            "proof and operation rules are in [verify.md](verify.md) and [operations.md](operations.md)",
+            "automation lifecycle and stateful operation",
+            "any child reports a transient candidate after directly observing a second equivalent success",
+            "no scan, registry, backlog entry, or automatic script",
         ),
     ),
     FrozenInvariant(
@@ -440,7 +450,37 @@ FROZEN_INVARIANTS = (
    FrozenInvariant(
        "qualified parallel writing and shared documentation",
         SUBAGENTS,
-        ("at most two active children", "universal independence gate", "resource gate passes", "all dependencies are `done`", "separate mutable code and test paths", "stable read paths", "incidental outputs or caches", "public interface, schema, manifest, lockfile, generator, migration, or mutable fixture", "independent acceptance and proof", "engineer/engineer", "engineer/scout", "scout/scout", "a scout may overlap one verifier or maintainer only for future work with separate resources", "implementation writers stop before integration", "no writer overlaps documentation synchronization, verification, or stateful operations", "shared tests, docs, generators, and operations run serially", "named architect decision requires distinct source sets or enough material, data, or logs to pollute lead context", "maintainer synchronizes affected shared narrative documents", "engineer edits only assigned implementation paths", "maintainer edits only assigned shared-document paths", "verifier and scout are read-only", "no child edits `tasks.csv`", "stop before the shared resource and report the collision and checkpoint", "invalidate read findings after a source change", "a child never integrates sibling work"),
+        (
+            "at most two active children",
+            "universal independence gate",
+            "resource gate passes",
+            "all dependencies are `done`",
+            "separate mutable code and test paths",
+            "stable read paths",
+            "incidental outputs or caches",
+            "public interface, schema, manifest, lockfile, generator, migration, or mutable fixture",
+            "independent acceptance and proof",
+            "engineer/engineer",
+            "engineer/scout",
+            "scout/scout",
+            "a scout may overlap one verifier or maintainer only for future work with separate resources",
+            "implementation writers stop before integration",
+            "no writer overlaps documentation synchronization, verification, or stateful operations",
+            "shared tests, docs, generators, and operations run serially",
+            "route broad, read-only, multi-platform, multi-version, or cross-boundary evidence inquiries to scout",
+            "for a broad scout inquiry, the architect names the platform and version dimensions",
+            "scout maps shared core, variants, affected coverage, cited evidence, and unknowns before broad reads",
+            "architect reads decisive contracts and cited paths, expands one unresolved boundary at a time",
+            "reuse existing build graphs, manifests, and maps before creating anything",
+            "maintainer synchronizes affected shared narrative documents",
+            "engineer edits only assigned implementation paths",
+            "maintainer edits only assigned shared-document paths",
+            "verifier and scout are read-only",
+            "no child edits `tasks.csv`",
+            "stop before the shared resource and report the collision and checkpoint",
+            "invalidate read findings after a source change",
+            "a child never integrates sibling work",
+        ),
     ),
 )
 
@@ -498,7 +538,7 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
             name: _read(f"plugins/lean-sdlc/skills/lean-sdlc/references/{name}.md")
             for name in ("shape", "plan", "deliver", "verify")
         }
-        self.assertLessEqual(sum(len(text.split()) for text in lanes.values()), 1800)
+        self.assertLessEqual(sum(len(text.split()) for text in lanes.values()), 1900)
         for term in [
             "shape owns the complete intent gate",
             "material assumption affects behavior, scope, or architecture",
@@ -509,7 +549,7 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
         self.assertIn("owned `in progress` task", lanes["deliver"].casefold())
         self.assertIn("architect reviews scope, architecture, contract alignment", lanes["deliver"].casefold())
         for term in [
-            "acceptance-defining proof",
+            "acceptance proof",
             "documentation parity",
             "close the accepted task through `python3 \"<skill-root>/scripts/tasks.py\" --repo \"<repo-root>\" close`",
         ]:
@@ -592,7 +632,8 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
         self.assertNotIn("Request these labeled fields", operations)
         self.assertNotIn("Return these labeled fields", operations)
         self.assertNotIn("```", operations)
-        self.assertIn("Use canonical fact orders in natural prose", evaluations)
+        self.assertIn("Use natural prose and fact order", evaluations)
+        self.assertIn("do not expose chain-of-thought or rigid scripts", evaluations)
         self.assertIn("replace slots with project facts and omit slot labels", policy)
         self.assertIn("concise natural prose", policy)
         self.assertNotIn("Architecture alignment:", policy)

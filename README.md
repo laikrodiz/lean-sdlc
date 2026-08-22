@@ -21,7 +21,7 @@ Lean-SDLC routes a request through the first lane that still needs work.
 | Deliver | Implement one approved change and synchronize affected truth. |
 | Verify | Check acceptance, reconcile repository truth, and close with evidence. |
 
-The lanes are gates. A clear request can move through them quickly. An unclear request stops at Shape until the missing outcome or boundary is understood.
+The six lanes form one canonical lifecycle: Shape, Decide, Plan, Diagnose when the cause is unknown, Deliver, and Verify with closeout. A clear request can move through them quickly. An unclear request stops at Shape until the missing outcome or boundary is understood.
 
 ## A clear path from intent to proof
 
@@ -41,7 +41,7 @@ flowchart LR
     A[Intent] --> B[Owned task]
     B --> C[Change]
     C --> D[Evidence]
-    D --> E[Closeout]
+    D --> E[Verify and closeout]
 ```
 
 The task ledger is atomic. Each task describes one independently accepted repository state, one owner, one acceptance set, and one proof set. Dependencies must be complete before a task starts. Task commands protect the ledger during updates, so contributors do not edit `tasks.csv` by hand.
@@ -65,15 +65,15 @@ The Architect agent is the lead. Four standard subagents support the lead when t
 | Verifier | Checks acceptance independently and reports evidence or risk. |
 | Scout | Collects bounded, cited evidence for a defined question. |
 
-Assisted Lean-SDLC mode is the default. It delegates suitable work through these roles and keeps the Architect responsible for decisions. Solo mode keeps execution with the Architect when the user selects it. Both modes use the same task, safety, acceptance, and proof rules. User can switch between the modes by requesting the change.
+Assisted Lean-SDLC mode is the default. Stage-aware routing sends bounded discovery to Scout, approved changes to Engineer or Maintainer, and independent checks to Verifier when risk requires them. The Architect remains responsible for decisions. Solo mode keeps execution with the Architect when the user selects it. Both modes use the same task, safety, acceptance, and proof rules. User can switch between the modes by requesting the change.
 
-The Architect owns decisions and gives a visible design explanation before work and a final signoff after review. Scout reduces broad evidence, while the Engineer implements approved work and proves routine behavior. The Verifier adds independent proof only when risk requires it.
+The Architect owns decisions and gives a visible pre-handoff design brief before child work and a final signoff after review. Scout reduces broad evidence, while the Engineer implements approved work and runs targeted proof. Acceptance proof checks observable completion. Regression proof checks affected-boundary risk. The Verifier adds independent proof only when risk requires it.
 
 Parallel work is conservative. It is allowed only when tasks have separate scopes, settled contracts, independent proof, and no shared mutable resource. Shared files, changing interfaces, migrations, fixtures, generated output, and external targets stay serial. Integration, documentation synchronization, verification, operations, and closeout stay serial as well. If safety or time savings are unclear, the workflow chooses serial work.
 
-Substantial external-tool work follows the same boundary. The Architect keeps the decision. Scout handles bounded discovery. Engineer handles approved mutations. Maintainer handles repeated operations. Verifier handles independent checks. One agent owns each mutable external target.
+Substantial external-tool work follows the same boundary. The Architect keeps the decision. Scout maps the evidence space before bounded reads. Engineer handles approved mutations. Maintainer handles repeated operations. Verifier handles independent checks. One agent owns each mutable external target.
 
-Stable repeated repository mechanics can become maintained, recorded deterministic automations. Later work reuses each automation's canonical command.
+Repeated repository mechanics can yield transient automation candidates for the current task. Candidates add no new durable state and disappear unless later work justifies a maintained deterministic command.
 
 When Codex resumes or compacts a task, Lean-SDLC returns to durable repository truth. It reads the project rules, reloads unresolved ledger work, rebuilds the visible plan, and restores the task mode and owner before delivery continues. This prevents lost context from becoming an unrecorded decision.
 
@@ -87,10 +87,10 @@ Read the [Shape contract](plugins/lean-sdlc/skills/lean-sdlc/references/shape.md
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-Install the immutable `v1.21.0` release:
+Install the immutable `v1.22.0` release:
 
 ```bash
-git clone --depth 1 --branch v1.21.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.22.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc

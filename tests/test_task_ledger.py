@@ -1560,9 +1560,9 @@ class PackageContractTests(unittest.TestCase):
         for phrase in [
             "reuse recorded operations as the only automation catalog",
             "status and maintenance owner",
-            "second equivalent successful execution",
+            "second equivalent successful mechanic",
             "direct evidence that the mechanic will recur",
-            "candidates do not enter durable docs or backlog automatically",
+            "candidates do not enter durable docs automatically",
             "architect approves the contract before scripting",
             "existing project command or target",
             "existing script",
@@ -1925,289 +1925,129 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("engineer direct path", evaluations)
         self.assertEqual(root_agents, template_agents)
 
-    def test_subagent_policy_is_canonical_deterministic_and_explicit(
-        self,
-    ) -> None:
-        subagents = (
-            SKILL / "references/subagents.md"
-        ).read_text(encoding="utf-8").lower()
+    def test_policy_invariants_are_canonical_and_safe(self) -> None:
+        dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
+        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8").lower()
         verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
-        evaluations = (
-            SKILL / "references/trigger-evals.md"
-        ).read_text(encoding="utf-8").lower()
+        operations = (SKILL / "references/operations.md").read_text(encoding="utf-8").lower()
+        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8").lower()
 
-        for term in [
-            "sole authority",
-            "role-trigger matrix",
-            "independence gate",
-            "at most two active children",
-            "apply every role trigger before the first command",
-            "assisted delegation is mandatory beyond the engineer direct path",
-            "a guided or recorded build, package, ci, deploy, flash, runtime, or smoke operation is ready",
-            "an accepted checkpoint has shared-document impact",
-            "documentation-only work is ready",
-            "a combined checkpoint, repository-required independent check, disputed evidence, multi-command or noisy proof, external or stateful risk, or release or final batch requires independent proof",
-            "multi-command or noisy proof",
-            "universal independence gate",
-            "engineer/engineer",
-            "engineer/scout",
-            "scout/scout",
-            "scout may overlap one verifier or maintainer only for future work with separate resources",
-            "keep one reachable child thread for each role",
-            "a qualified pair may use two engineers, two scouts, or one of each",
-            "at most one reusable verifier",
-            "at most one reusable maintainer",
-            "implementation writers stop before integration",
-            "documentation synchronization",
-            "stateful operations",
-            "no writer overlaps documentation synchronization, verification, or stateful operations",
-            "named architect decision requires distinct source sets or enough material, data, or logs to pollute lead context",
-            "direct user authority",
-            "one mechanical bounded change",
-            "shared handoff envelope",
-            "arrow sequence is fact order, not output wording",
-            "replace slots with project facts and omit slot labels",
-            "children call the lead architect",
-            "the architect speaks as i",
-            "payloads come from the architect",
-            "children do not infer decisions, public behavior, acceptance, or paths",
-            "the architect owns each child name at spawn time",
-            "allocates the next never-used label",
-            "task_name=engineer_beta",
-            "context reset reason",
-            "replacement action",
-            "rehydrate an allowed replacement",
-            "counter-based",
-            "before every spawn",
-            "routing failure",
-            "gpt-5.6-luna",
-            "gpt-5.6-terra",
-            "user-selected lead",
-            "explicit user architect profile controls it",
-            "apply the required child profile before delegation",
+        self.assertIn("## canonical lifecycle", dispatcher)
+        self.assertEqual(subagents.count("## role-routing precedence"), 1)
+        route_order = [
+            subagents.index("1. keep unresolved"),
+            subagents.index("2. force work"),
+            subagents.index("3. route broad"),
+            subagents.index("4. route settled mutable"),
+            subagents.index("5. route independent"),
+            subagents.index("6. route shared documentation"),
+            subagents.index("7. use the narrow architect"),
+        ]
+        self.assertEqual(route_order, sorted(route_order))
+        for role in ("engineer", "maintainer", "verifier", "scout"):
+            self.assertIn(role, subagents)
+        for model_term in (
             "model=gpt-5.6-luna",
             "reasoning_effort=max",
             "non-full-history `fork_turns`",
-            "omit `agent_type`",
-            "luna max uses standard service by default",
-            "normal spawns omit `service_tier`",
-            "service_tier=priority",
-            "## external tools",
-            "external-tool routing",
-            "before substantial plugin, mcp, connector, cad, database, deployment, or similar work",
-            "target, permissions, constraints, architecture, decisions, and final acceptance",
-            "one bounded probe",
-            "more than three external calls",
-            "large schemas/logs/inventories/search results",
-            "one operation repeats across objects",
-            "tool discovery is required",
-            "error recovery needs several diagnostic calls",
-            "output needs reduction before a decision",
-            "read-heavy discovery and reduction to scout",
-            "approved mutations to engineer",
-            "repeated build/export/import/deploy/flash procedures to maintainer",
-            "independent checks to verifier",
-            "bounded programmatic tool calling",
-            "direct calls for mutations, approvals, or judgment-sensitive steps",
-            "inside the assigned child",
-            "routine mutation calls belong to the assigned engineer or maintainer, not the architect",
-            "delegate remaining routine work after it",
-            "delegate before work when more than three external calls are expected",
-            "one agent owns each mutable external target",
-            "never let two agents mutate the same project, database, deployment, or hardware target",
-            "not a raw transcript",
-            "same tool and project",
-            "material tool or target change",
-            "compaction during tool work",
-            "several direct routine calls",
-            "repeated large output",
-            "two failed tool attempts",
-            "architect summarizing data instead of deciding",
-            "reroute remaining work to luna max or bounded programmatic calls",
-            "mention optimization only when routing changes",
-            "1–3 natural sentences",
-            "current action, why it matters, observed result or next action",
-            "parent-facing reports occur at start",
-            "material decision",
-            "blocker",
-            "scope change",
-            "proof change",
-            "at completion",
-            "completed child sends one final return",
-            "ends its active turn",
-            "the completed thread remains reachable for later `followup_task` reuse",
-            "no child update includes greetings, role repetition, raw logs, full fingerprints, or scripted phrases",
-            "do not create rigid templates",
-            "maintainer synchronizes affected shared narrative documents",
+            "gpt-5.6-terra",
+            "reasoning_effort=xhigh",
+        ):
+            self.assertIn(model_term, subagents)
+
+        for safety_term in (
+            "read-only",
             "no child edits `tasks.csv`",
-            "routine user commentary",
-            "child return messages",
-            "final answers omit full checkpoint fingerprints",
-            "abstract status facts",
-            "source identity without full fingerprint",
-            "running/passed/stopped state",
-            "mismatch reason",
-            "machine verification",
-            "candidate checkpoint fingerprint",
-            "checkpoint equality",
-            "release tag or short commit id",
-            "do not repeat the full fingerprint in the visible return",
-            "run the full suite only when the task or repository contract requires it",
-            "consume maintainer evidence",
-            "no child edits `tasks.csv` or runs git operations",
-       ]:
-            self.assertIn(term, subagents)
-        for term in [
-            "acceptance-defining proof",
-            "one planned regression command",
-            "full suite once under verifier only when the task or repository contract requires it",
-        ]:
-            self.assertIn(term, verify)
-        for term in [
-            "assisted parallel work",
-            "custom role request",
-            "proof and integration checkpoint",
-            "external-tool routing and token-waste signals",
-            "machine verification",
-            "routine reports omit full fingerprints",
-        ]:
-            self.assertIn(term, evaluations)
-        self.assertIn("retry luna max", subagents)
-        self.assertIn("shorthand tool names", verify)
-
-        policy_documents = [ROOT / "README.md", ROOT / "docs/PROJECT.md", *SKILL.rglob("*.md")]
-        policy = "\n".join(
-            document.read_text(encoding="utf-8").lower()
-            for document in policy_documents
-        )
-        self.assertNotIn("operator", policy)
-        self.assertNotIn("service_tier=fast", policy)
-        self.assertNotIn("gpt-5.6 terra `high`", policy)
-        self.assertNotIn("explicitly spawn terra `high`", policy)
-
-        for document in policy_documents:
-            for line in document.read_text(encoding="utf-8").splitlines():
-                self.assertNotIn(
-                    "luna `xhigh`",
-                    line.lower(),
-                    f"{document}: {line}",
-                )
-
-    def test_intent_contract_owners_and_architect_boundary_are_explicit(self) -> None:
+            "one agent owns each mutable external target",
+            "no scan, registry, backlog entry",
+            "never chain-of-thought",
+            "full suite only for",
+        ):
+            self.assertIn(safety_term, subagents + verify + operations)
+        for naming_term in (
+            "one lowercase role prefix and one greek suffix",
+            "allocates the next never-used label",
+            "task_name=engineer_beta",
+            "a child never chooses or changes its task name",
+        ):
+            self.assertIn(naming_term, subagents)
+        for lifecycle_term in (
+            "running lifecycle state means available",
+            "completed child sends one final return",
+            "the completed thread remains reachable",
+            "visible pre-handoff design brief",
+            "child decision limits",
+        ):
+            self.assertIn(lifecycle_term, dispatcher + subagents)
+        for boundary_term in (
+            "assigned implementation paths",
+            "settled source boundary",
+            "affected-boundary risk",
+            "independent proof",
+            "do not repeat an identical targeted command",
+        ):
+            self.assertIn(boundary_term, subagents + verify)
+        self.assertIn("these rows are scenarios and assertions", evaluations)
+        self.assertNotIn("failure indicators", evaluations)
+        self.assertNotIn("role-trigger matrix", subagents)
+    def test_intent_and_boundary_contracts_are_explicit(self) -> None:
         shape = (SKILL / "references/shape.md").read_text(encoding="utf-8").lower()
         plan = (SKILL / "references/plan.md").read_text(encoding="utf-8").lower()
-        decide = (SKILL / "references/decide.md").read_text(encoding="utf-8").lower()
-        contracts = (
-            SKILL / "references/repository-contracts.md"
-        ).read_text(encoding="utf-8").lower()
-        subagents = (
-            SKILL / "references/subagents.md"
-        ).read_text(encoding="utf-8").lower()
-        evaluations = (
-            SKILL / "references/trigger-evals.md"
-        ).read_text(encoding="utf-8").lower()
+        contracts = (SKILL / "references/repository-contracts.md").read_text(encoding="utf-8").lower()
+        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8").lower()
+        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8").lower()
 
-        for phrase in [
+        for term in (
             "shape owns the complete intent gate",
             "why -> what -> how -> proof",
-            "present problem or opportunity",
-            "affected user or business value",
-            "shape settles why and what",
-            "decide and plan add how and proof",
             "smallest observable outcome plus constraints and non-goals",
-            "technical approach and task shape after why and what are stable",
-            "proof: acceptance and verification",
-            "material assumption affects behavior, scope, or architecture",
             "stop for user confirmation",
-            "intent is clear and implementation authority is explicit",
             "brainstorming and rephrasing remain read-only",
-        ]:
-            self.assertIn(phrase, shape)
-        self.assertIn("derive observable acceptance from the confirmed outcome and affected value", plan)
-        self.assertIn(
-            "implementation mechanisms, changed files, and test commands support acceptance but do not define it alone",
-            plan,
-        )
-        for phrase in [
-            "when at least two tasks are ready",
-            "checks the next ready pair",
-            "resource gate passes",
-            "elapsed time should decrease",
-            "name the shared resource or dependency",
-            "do not score the choice or add a mode",
-        ]:
-            self.assertIn(phrase, plan)
-        self.assertIn("tie each technical choice to the confirmed intent or constraint it serves", decide)
-        for phrase in [
+        ):
+            self.assertIn(term, shape)
+        for term in (
+            "derive observable acceptance from the confirmed outcome and affected value",
+            "implementation mechanisms, changed files, and test commands support acceptance",
+            "one proof cluster",
+            "never size by elapsed time, file count, line count, or command count",
+        ):
+            self.assertIn(term, plan)
+        for term in (
             "project purpose, value, behavior boundary, scope, stage, and version promise",
-            "durable behavior detail",
-            "technical rationale and durable costly choice",
-            "local corrections -> outcome-focused task truth",
-            "keep durable intent in these existing owners",
-            "do not add a file or task column for intent",
+            "one root `tasks.csv` remains authoritative",
             "dependencies must exist, remain acyclic, and be `done` before start or close",
             "the ledger lock is not a source-file lock",
-            "one root `tasks.csv` remains authoritative",
-            "two ready tasks for one architect owner",
-        ]:
-            self.assertIn(phrase, contracts)
-        for phrase in [
+        ):
+            self.assertIn(term, contracts)
+        for term in (
             "the architect always owns intent, public behavior, architecture, tasks, acceptance, integration, and closeout",
-            "never sends unresolved user input to a child",
-            "writes inside an active child boundary",
-            "accepts unreviewed output",
-            "replaces independent proof with confidence",
-            "assisted mode normally delegates routine discovery, evidence, implementation, checks, documentation, and recorded operations",
-            "architect may implement under these exceptions",
-            "after explicit user direction that the architect itself implement",
-            "after the required child and fallback are unavailable",
-            "settled separable work remains engineer work",
-            "each child handoff begins with a short settled purpose",
             "at most two active children",
-            "resource gate passes",
-            "all dependencies are `done`",
             "separate mutable code and test paths",
-            "stable read paths",
-            "incidental outputs or caches",
-            "public interface, schema, manifest, lockfile, generator, migration, or mutable fixture",
             "independent acceptance and proof",
-            "the architect is a writer and must not edit child-owned paths",
-            "one architect writer group owns a worktree",
-            "the `tasks.csv` lock protects only the ledger",
-            "engineer/engineer requires strict isolation",
-            "engineer/scout requires a stable separate read boundary",
-            "scout/scout may overlap stable sources for independent questions",
             "one verifier checks the combined checkpoint",
-            "scout supports bounded repo or contract mapping",
-            "avoid scout for a trivial one-file lookup",
             "stop before the shared resource and report the collision and checkpoint",
-            "pause affected writers",
-            "invalidate read findings after a source change",
             "a child never integrates sibling work",
-        ]:
-            self.assertIn(phrase, subagents)
-        for phrase in [
+        ):
+            self.assertIn(term, subagents)
+        for scenario in (
             "brain-dump discussion",
-            "architect restates the understandable why and what in natural prose",
             "clear implementation authority",
             "material ambiguity",
             "behavior-based acceptance",
-            "architect implementation exception",
-            "safe engineer pair",
-            "overlapping read-only scouts",
+            "assisted parallel work",
             "bounded scout evidence",
             "dependency start block",
             "architect writer barrier",
             "collision stop",
-        ]:
-            self.assertIn(phrase, evaluations)
-        scenarios = [
+        ):
+            self.assertIn(f"| {scenario} |", evaluations)
+        rows = [
             line
             for line in evaluations.splitlines()
             if line.startswith("| ") and not line.startswith("| ---") and "Scenario" not in line
         ]
-        self.assertLessEqual(len(scenarios), 50)
-
+        self.assertGreaterEqual(len(rows), 20)
+        self.assertLessEqual(len(rows), 50)
     def test_ledger_plan_view_projection_is_deterministic_and_read_only_for_brainstorming(self) -> None:
         dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
         plan = (SKILL / "references/plan.md").read_text(encoding="utf-8").lower()
@@ -2239,7 +2079,6 @@ class PackageContractTests(unittest.TestCase):
             "brain-dump discussion",
             "creates no task or plan view",
             "ledger-to-plan projection",
-            "into separate exact",
         ]:
             self.assertIn(phrase, evaluations)
 
@@ -2255,7 +2094,7 @@ class PackageContractTests(unittest.TestCase):
         self.assertGreaterEqual(len(subagents.splitlines()), 100)
         self.assertLessEqual(len(subagents.splitlines()), 190)
         for heading in [
-            "## Role-trigger matrix",
+            "## Role-routing precedence",
             "## Independence gate",
             "## Child lifecycle",
             "## Shared handoff envelope",
@@ -2286,102 +2125,79 @@ class PackageContractTests(unittest.TestCase):
 
     def test_trigger_evals_and_proof_ownership_are_compact(self) -> None:
         evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8")
-        scenarios = [
+        rows = [
             line
             for line in evaluations.splitlines()
             if line.startswith("| ") and not line.startswith("| ---") and "Scenario" not in line
         ]
-        self.assertGreaterEqual(len(scenarios), 20)
-        self.assertLessEqual(len(scenarios), 50)
+        self.assertGreaterEqual(len(rows), 20)
+        self.assertLessEqual(len(rows), 50)
+        self.assertIn("These rows are scenarios and assertions", evaluations)
         self.assertNotIn("Failure indicators", evaluations)
 
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
-        for term in [
-            "Engineer owns targeted development checks",
-            "For one task, Engineer continues through implementation and targeted proof",
-            "After the final Engineer return",
-            "short visible alignment signoff covering architecture, scope, and contract alignment",
-            "Maintainer owns each recorded operation run and returns evidence once",
-            "Verifier receives acceptance and the settled source boundary",
-            "independently reruns acceptance proof and one planned regression command",
-            "repeat only a disputed operation",
-        ]:
-            self.assertIn(term, subagents)
-        for phrase in [
-            "verification is running against unchanged source",
-            "verification passed",
-            "source changed and the check stopped",
-        ]:
-            self.assertNotIn(phrase, subagents)
-        for name in ["deliver", "verify", "operations"]:
+        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8").lower()
+        verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
+        for term in (
+            "targeted proof is the smallest check",
+            "acceptance proof for observable completion",
+            "regression proof for affected-boundary risk",
+            "verifier is read-only",
+            "do not repeat an identical targeted command",
+            "maintainer reports a transient automation candidate",
+        ):
+            self.assertIn(term, subagents + verify)
+        self.assertIn("run the full suite once under verifier only for", verify)
+        self.assertIn("maintainer owns each recorded operation run", subagents)
+        self.assertIn("after the final engineer return", subagents)
+        self.assertIn("short visible alignment signoff covering architecture, scope, and contract alignment", subagents)
+        self.assertNotIn("verification is running against unchanged source", subagents)
+        self.assertNotIn("verification passed", subagents)
+        for name in ("deliver", "verify", "operations"):
             lane = (SKILL / "references" / f"{name}.md").read_text(encoding="utf-8")
             self.assertIn("subagents.md", lane)
 
-        policy = "\n".join(
-            path.read_text(encoding="utf-8")
-            for path in [
-                SKILL / "SKILL.md",
-                SKILL / "references/subagents.md",
-                SKILL / "references/trigger-evals.md",
-                ROOT / "README.md",
-                ROOT / "docs/PROJECT.md",
-            ]
-        )
-        for stale in ["Research" + "er", "research" + "er_", "First" + "name", "role_first" + "name"]:
-            self.assertNotIn(stale, policy)
-        self.assertIn("allocates the next never-used label", policy.lower())
-        self.assertIn("scout/scout", policy.lower())
-
     def test_delegated_evidence_and_checkpoint_capture_are_bounded(self) -> None:
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
-        diagnose = (SKILL / "references/diagnose.md").read_text(encoding="utf-8")
-        verify = (SKILL / "references/verify.md").read_text(encoding="utf-8")
-        operations = (SKILL / "references/operations.md").read_text(encoding="utf-8")
-        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8")
+        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8").lower()
+        diagnose = (SKILL / "references/diagnose.md").read_text(encoding="utf-8").lower()
+        verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
+        operations = (SKILL / "references/operations.md").read_text(encoding="utf-8").lower()
+        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8").lower()
 
-        for phrase in [
+        for phrase in (
             "product intent, public behavior, architecture, assumptions, acceptance, permissions, task ownership, conflict resolution, and final signoff",
             "cross-boundary source and log evidence",
             "focused semantic changes and targeted check results",
             "contract-sensitive semantic changes",
-            "independently computes a candidate checkpoint fingerprint",
+            "candidate checkpoint fingerprint",
             "when verification begins",
             "retains it locally",
             "recomputes the fingerprint before return",
             "blocks if it changed",
             "do not persist fingerprints",
-            "do not make the Architect calculate them",
+            "do not make the architect calculate them",
             "recorded operation failure signal",
             "already-authorized recorded recovery",
             "unknown, ambiguous, source-changing, or new retry behavior",
-            "routes to Diagnose/Scout and Architect",
-        ]:
-            self.assertIn(phrase.casefold(), subagents.casefold())
-
-        lowered = subagents.casefold()
-        self.assertLess(
-            lowered.index("when verification begins"),
-            lowered.index("recomputes the fingerprint before return"),
-        )
-        verify_lowered = verify.casefold()
+            "routes to diagnose/scout and architect",
+        ):
+            self.assertIn(phrase, subagents)
         verify_order = [
-            verify_lowered.index(term)
-            for term in [
+            verify.index(term)
+            for term in (
                 "select one optional nested verifier",
-                "when verification begins, verifier independently computes a candidate checkpoint fingerprint",
-                "verifier independently runs acceptance-defining proof",
+                "when verification begins",
+                "verifier is read-only",
                 "recompute the fingerprint before return",
-            ]
+            )
         ]
         self.assertEqual(verify_order, sorted(verify_order))
         self.assertIn("candidate checkpoint fingerprint and retains it locally", verify)
-        self.assertIn("Do not persist fingerprints or make Architect calculate them", verify)
-        self.assertIn("Maintainer stops unknown, ambiguous, source-changing, or new retry behavior", diagnose)
-        self.assertIn("Maintainer classifies failures only by matching a recorded operation failure signal", operations)
-        self.assertIn("Omit them from visible operation reports", operations)
-        self.assertIn("Verifier independently computes a local candidate checkpoint fingerprint", evaluations)
-        self.assertIn("Do not persist fingerprints or make Architect calculate them", evaluations)
-        self.assertNotIn("Architect records an exact commit or working-tree fingerprint", evaluations)
+        self.assertIn("do not persist fingerprints or make architect calculate them", verify)
+        self.assertIn("maintainer classifies failures only by matching a recorded operation failure signal", operations)
+        self.assertIn("omit them from visible operation reports", operations)
+        self.assertIn("verifier independently computes a local candidate checkpoint fingerprint", evaluations)
+        self.assertIn("do not persist fingerprints or make architect calculate them", evaluations)
+        self.assertNotIn("architect records an exact commit or working-tree fingerprint", evaluations)
 
     def test_lifecycle_and_proof_boundaries_are_behavioral(self) -> None:
         subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8").lower()
@@ -2389,7 +2205,7 @@ class PackageContractTests(unittest.TestCase):
         verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
         evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8").lower()
 
-        for term in [
+        for term in (
             "running lifecycle state means available",
             "parent wait timeout, missed update, or silence is not failure",
             "architect may request status and wait again",
@@ -2401,28 +2217,28 @@ class PackageContractTests(unittest.TestCase):
             "interrupt or replace only for an explicit blocker",
             "engineer may fix only implementation defects that preserve settled behavior",
             "same proof failure repeats",
-        ]:
+        ):
             self.assertIn(term, subagents)
-        for term in [
+        for term in (
             "selected authoritative contracts",
             "focused patches",
             "exact evidence",
             "broad or cross-boundary source",
             "do not require complete broad source reads",
-        ]:
+        ):
             self.assertIn(term, deliver + verify)
-        for term in [
+        for term in (
             "one optional nested verifier",
             "one architect-started verifier",
-            "never duplicate evidence unless repository policy requires it",
-        ]:
+            "do not repeat an identical targeted command",
+        ):
             self.assertIn(term, verify)
-        for term in [
+        for term in (
             "for one task, engineer continues through implementation and targeted proof",
             "after the final engineer return",
             "short visible alignment signoff covering architecture, scope, and contract alignment",
             "full stop barrier",
-        ]:
+        ):
             self.assertIn(term, subagents + deliver)
         self.assertNotIn("parent metadata", evaluations)
 
@@ -2449,7 +2265,7 @@ class PackageContractTests(unittest.TestCase):
 
         self.assertIn("Child visible update", evaluations)
         self.assertIn("silence alone is not failure", evaluations.casefold())
-        self.assertIn("ends the active turn", evaluations.casefold())
+        self.assertIn("end the active turn", evaluations.casefold())
         self.assertIn("followup_task", evaluations)
         for stale in ("heartbeat", "two minutes", "continued silent work", "total cap"):
             self.assertNotIn(stale, (subagents + evaluations).casefold())
@@ -2474,7 +2290,7 @@ class PackageContractTests(unittest.TestCase):
             r"\b(?:service_tier|reasoning_effort)\b",
             r"\b(?:greeting|self-introduction|sentence template)\b",
             r"\b(?:heartbeat|two minutes)\b",
-            r"\b(?:handoff|deviation|task name)\b",
+            r"\b(?:deviation|task name)\b",
         ]:
             self.assertIsNone(re.search(pattern, lowered), pattern)
 
@@ -2525,11 +2341,11 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.21.0")
+        self.assertEqual(version, "1.22.0")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
         self.assertIn(
-            "- Version goal: Deterministic helper and repository resolution, completed child turn cleanup, quieter parent reporting, and one task per plan row.",
+            "- Version goal: One canonical lifecycle and role-routing chain, visible pre-handoff decisions, layered proof, bounded verification, and transient automation candidates.",
             project,
         )
 

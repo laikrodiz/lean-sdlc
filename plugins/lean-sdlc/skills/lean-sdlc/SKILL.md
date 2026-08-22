@@ -38,6 +38,19 @@ Backlog is parked work. `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-r
 
 Read only the active lane reference: [shape.md](references/shape.md), [decide.md](references/decide.md), [diagnose.md](references/diagnose.md), [deliver.md](references/deliver.md), [verify.md](references/verify.md), or [operations.md](references/operations.md).
 
+## Canonical lifecycle
+
+Use the six lanes in this order for every implementation request:
+
+1. Shape confirms authority, Why, What, constraints, exclusions, and any material ambiguity.
+2. Decide settles technical choices that need durable agreement.
+3. Plan shows the visible plan, owned task, observable acceptance, and proof.
+4. Diagnose runs only when the cause or fault boundary is unknown, then returns to Deliver.
+5. Deliver claims the task, runs the before-write gate, posts the pre-handoff design brief, and routes work by stage-aware precedence.
+6. Verify checks observable acceptance and affected-boundary regression risk, reconciles scope, interfaces, invariants, and documentation, and closes the task.
+
+Read-only discussion stops before task creation. The Architect reports decisions and relevant grounds, never private chain-of-thought.
+
 ## Hard gates
 
 Treat ledger commands as control transactions. Confirm `why -> what -> how -> proof` before mutation. Before any other repository mutation, run `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" start` or claim planned work; the packaged `tasks.py` helper is the only ledger mutation path. Require an owned `In Progress` task, acceptance, proof, and a visible plan. Follow [Plan view projection](references/plan.md) for `update_plan`. Run `python3 "<skill-root>/scripts/lean_check.py" "<repo-root>" --before-write` before the first non-control write. Diagnose unknown causes before fixes. Verify acceptance and docs parity. Only the owner closes; direct-user override requires a recorded reason.

@@ -18,16 +18,23 @@
 
 - Quick Fix follows [plan.md](plan.md). Architect may execute it in either mode. Do not spawn Engineer, Maintainer, or Verifier per Quick Fix; shared batch may use Verifier when triggered.
 
-## Role-trigger matrix
+## Role-routing precedence
 
-| Role | Trigger | Contract |
-| --- | --- | --- |
-| Engineer | An owned ready implementation task has settled design, paths, proof, and no decision. | Focused semantic changes and targeted check results. |
-| Maintainer | A guided or recorded build, package, CI, deploy, flash, runtime, or smoke operation is ready; an approved automation needs recording or replay; an accepted checkpoint has shared-document impact; or documentation-only work is ready. | Record and replay the canonical command; classify recorded failure signals and run authorized recovery only. |
-| Verifier | A combined checkpoint, repository-required independent check, disputed evidence, multi-command or noisy proof, external or stateful risk, or release or final batch requires independent proof. | Independent checkpoint capture, acceptance proof, and one regression command. |
-| Scout | A named Architect decision requires distinct source sets or enough material, data, or logs to pollute lead context, including broad source, log, inventory, or cross-boundary evidence. | Reduces broad source, log, inventory, and cross-boundary evidence with citations. |
+Apply this stage-aware chain before the first command. The first matching condition wins:
+
+1. Keep unresolved product, architecture, scope, permission, or acceptance decisions with the Architect.
+2. Force work with a shared mutable resource to run serially, then apply this chain to its current stage.
+3. Route broad, read-only, multi-platform, multi-version, or cross-boundary evidence inquiries to Scout.
+4. Route settled mutable implementation with paths, interfaces, acceptance, proof, and no open decision to Engineer.
+5. Route independent proof to Verifier only at a proof checkpoint.
+6. Route shared documentation or recorded operations to Maintainer only after accepted implementation, or when documentation-only or operation work is the current stage.
+7. Use the narrow Architect direct path or Solo for all remaining bounded work.
 
 Use the Engineer direct path only for one mechanical bounded change with one narrow proof command.
+
+For a broad Scout inquiry, the Architect names the platform and version dimensions. Scout maps shared core, variants, affected coverage, cited evidence, and unknowns before broad reads. Architect reads decisive contracts and cited paths, expands one unresolved boundary at a time, and stops when decision evidence is sufficient. Reuse existing build graphs, manifests, and maps before creating anything.
+
+Before each child handoff, the Architect posts a visible pre-handoff design brief. It states the reason, selected decision, affected ownership, interfaces, and invariants, any material rejected option when useful, child decision limits, acceptance, proof, and stop. It reports the decision and relevant grounds, never chain-of-thought.
 
 ## Independence gate
 
@@ -60,7 +67,7 @@ Use the Engineer direct path only for one mechanical bounded change with one nar
 ## Child lifecycle
 
 - Keep at most one reusable Verifier and at most one reusable Maintainer. The Architect may reuse or start Engineer, Verifier, Maintainer, or read-only Scout; an authorized Engineer may start or reuse only the exact preauthorized Verifier. Send a follow-up to a reachable role thread before replacement.
-- Before delegation, the Architect gives a short visible design explanation and confirms authority, task or inquiry, paths or source boundary, acceptance, proof, and stop. A child cannot widen a trigger, choose role, or hand work to a sibling. Solo applies locally.
+- Before delegation, the Architect uses the visible pre-handoff design brief and confirms authority, task or inquiry, paths or source boundary, acceptance, proof, and stop. A child cannot widen a trigger, choose role, or hand work to a sibling. Solo applies locally.
 - Keep one reachable child thread for each role.
 - A qualified pair may use two Engineers, two Scouts, or one of each only when no sidecar is active; every Verifier or Maintainer descendant counts toward the same two-child limit.
 - The Architect controls child allocation and redirection. It allocates and preauthorizes the exact named Verifier. An authorized Engineer may spawn or reuse that one read-only Verifier for its single settled task. No other child may spawn, and the Verifier cannot spawn or hand work to a sibling.
@@ -92,14 +99,14 @@ Use the Engineer direct path only for one mechanical bounded change with one nar
 
 - Engineer cannot start until the visible plan exists; the task matches one durable plan item. It receives one task and settled decision envelope.
 - Engineer begins with a short visible natural restatement of the outcome, boundary, preserved behavior, proof, and stop condition. Engineer proceeds without an approval pause unless ambiguity exists.
-- Engineer owns targeted development checks and code-local truth. For one settled task, Engineer owns targeted proof and returns focused semantic changes and targeted check results. Engineer may fix only implementation defects that preserve settled behavior, architecture, interfaces, acceptance, paths, and permissions. Escalate any change to those items or when the same proof failure repeats.
+- Engineer owns targeted development checks and code-local truth. Targeted proof is the smallest check for the changed behavior, run after a coherent implementation checkpoint and after a permitted correction. For one settled task, Engineer owns targeted proof and returns focused semantic changes and targeted check results. Engineer may fix only implementation defects that preserve settled behavior, architecture, interfaces, acceptance, paths, and permissions. Escalate any change to those items or when the same proof failure repeats.
 - For approved automation, Engineer implements the script and one focused runnable check. The script does not grant authority.
 
 ### Scout
 
 - The Architect supplies a question and source boundary without a preferred answer. Scout is read-only and never edits repository files.
 - Scout supports bounded repo or contract mapping, research, reproduction or log reduction, broad source, log, inventory, or cross-boundary evidence reduction, change impact, edge-case or test candidates, and task-size or architecture contradiction review. Avoid Scout for a trivial one-file lookup.
-- Scout returns citations, conflicts, unknowns, decision impact, and sources. Architect decides. No task until findings require a write.
+- For a broad inquiry, the Architect names platform and version dimensions. Scout maps shared core, variants, affected coverage, cited evidence, and unknowns before broad reads. Architect reads decisive contracts and cited paths, expands one unresolved boundary at a time, and stops when decision evidence is sufficient. Scout returns source coverage, citations, conflicts, unknowns, decision impact, and sources. Reuse existing build graphs, manifests, and maps before creating anything. Architect decides. No task until findings require a write.
 
 ### Maintainer
 
@@ -108,16 +115,16 @@ Use the Engineer direct path only for one mechanical bounded change with one nar
 - Unknown, ambiguous, source-changing, or new retry behavior stops and routes to Diagnose/Scout and Architect.
 - Maintainer records the canonical command in `docs/OPERATIONS.md` or an existing `OPS-*` document, then later replays that record. Solo follows the same record.
 - Maintainer marks an automation as stale when its contract, dependency, environment, target, or output changes. Architect approves meaning changes.
-- Maintainer owns each recorded operation run and returns evidence once. After Engineers stop and Architect review, Maintainer synchronizes affected shared narrative documents before final checkpoint.
+- Maintainer owns each recorded operation run and returns evidence once. For repeated operations, Maintainer reports a transient automation candidate after any child directly observes a second equivalent success. It adds no scan, registry, Backlog entry, or automatic script. After Engineers stop and Architect review, Maintainer synchronizes affected shared narrative documents before final checkpoint.
 - For documentation-only work or accepted checkpoints with shared-document impact, Maintainer owns shared narrative truth and indexes.
 - Maintainer runs an impact-directed synchronization and detects missing triggers, stale documents, and oversized semantic units. Maintainer never invents product or architecture.
 - Architect approves meaning and document splits before Maintainer records them.
 
 ### Verifier
 
-- The Architect allocates and preauthorizes the exact named Verifier. An authorized Engineer may spawn or reuse that one read-only Verifier for its single settled task when risk-based independent proof is required. Verifier receives acceptance and the settled source boundary. When verification begins, it independently computes a candidate checkpoint fingerprint and retains it locally. An Engineer stops writing while its nested read-only Verifier checks. Engineer may resume only for permitted implementation corrections, then reruns proof. The Verifier independently reruns acceptance proof and one planned regression command, skips Engineer-only targeted checks, and may repeat only a disputed operation.
+- The Architect allocates and preauthorizes the exact named Verifier. An authorized Engineer may spawn or reuse that one read-only Verifier for its single settled task when risk-based independent proof is required. Verifier receives acceptance and the settled source boundary. Verifier is read-only and never edits files, the ledger, or state. When verification begins, it independently computes a candidate checkpoint fingerprint and retains it locally. An Engineer stops writing while its nested read-only Verifier checks. Engineer may resume only for permitted implementation corrections, then reruns proof. The Verifier independently runs acceptance proof for observable completion and one planned regression proof for affected-boundary risk, then skips Engineer-only targeted checks. It must not repeat an identical targeted command unless the repetition supplies independent proof, resolves disputed evidence, or repository policy requires it.
 - Verifier recomputes the fingerprint before return and blocks if it changed. It does not persist fingerprints. Do not make the Architect calculate them.
-- Run the full suite only when the task or repository contract requires it. Consume Maintainer evidence.
+- Run the full suite only for a release, broad shared contracts, migrations or build graphs, an explicit repository requirement, or when no trustworthy selector exists. Consume Maintainer evidence.
 
 ## Model and spawn
 

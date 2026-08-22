@@ -26,7 +26,7 @@ Reuse recorded operations as the only automation catalog. Do not add another fil
 
 A stable repeated mechanic may include repository checks, transforms, reports, build, package, deploy, flash, runtime, smoke work, or repeated external-tool procedures. Never automate product, architecture, permission, security, acceptance, or conflict decisions. A script never grants authority.
 
-Raise a transient candidate after a second equivalent successful execution or direct evidence that the mechanic will recur. Candidates do not enter durable docs or Backlog automatically. The Architect approves the contract before scripting.
+Any child that directly observes a second equivalent successful mechanic reports a transient automation candidate. Maintainer owns this report for repeated operations. The report adds no scan, registry, Backlog entry, automatic script, or state. Direct evidence that the mechanic will recur may also raise a candidate. Candidates do not enter durable docs automatically. The Architect approves the contract before scripting.
 
 Use this selection ladder, stopping at the first existing option:
 
