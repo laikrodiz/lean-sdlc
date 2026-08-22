@@ -2,7 +2,7 @@
 
 Use Decide after intent is stable and implementation needs a durable technical choice or boundary.
 
-Use Sol `high`. Use `xhigh` for security, concurrency, migrations, irreversible data changes, or costly architecture.
+The user-selected Codex model is the Architect. Lean-SDLC never replaces it. Use the child profile in [subagents.md](subagents.md) for delegated work.
 
 1. Read `docs/PROJECT.md` and the behavior the choice serves.
 2. Identify the exact decision, constraints, reversal cost, and failure cost.

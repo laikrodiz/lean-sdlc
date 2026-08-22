@@ -5,14 +5,13 @@
 - The Architect is the sole authority for product intent, public behavior, architecture, assumptions, acceptance, permissions, task ownership, conflict resolution, and final signoff. The Architect always owns intent, public behavior, architecture, tasks, acceptance, integration, and closeout. It retains those decisions through every child handoff and reviews contract-sensitive semantic changes before integration.
 - The Architect reads authoritative intent and contracts, decisive cited evidence, and focused final changes before integration.
 - The Architect never sends unresolved user input to a child, writes inside an active child boundary, accepts unreviewed output, or replaces independent proof with confidence.
-- The standard child roles are Engineer, Maintainer, Verifier, and Scout. Custom roles need direct user authority.
+- The standard child roles are Engineer, Maintainer, Verifier, and Scout. Custom roles need direct user authority. Standard spawn profile enforcement does not cover custom roles.
 - Assisted mode normally delegates routine discovery, evidence, implementation, checks, documentation, and recorded operations. Assisted mode is the default.
 - Solo mode is lead-only. Assisted and Solo are the only orchestration modes.
 - Missing or invalid state restores Assisted with Standard children. Lifecycle restoration restores owner, mode, and tier after startup, resume, clear, or compaction.
 - Fast children need user opt-in.
 - The Architect is the user-selected lead. An explicit user Architect profile controls it. Apply the required child profile before delegation; if unavailable, use Solo.
-- The Architect may implement under these exceptions: Solo mode; mechanical direct path; small architecture-bearing experiment or inseparable seam; after explicit user direction that the Architect itself implement; or after the required child and fallback are unavailable. Settled separable work remains Engineer work.
-- The Architect approves an automation contract before scripting and approves any meaning change.
+- The Architect direct path is one bounded mechanical exception with one narrow proof command. Settled separable work remains Engineer work; Solo keeps execution with the Architect under the same rules.
 
 ## Quick Fix
 
@@ -30,9 +29,7 @@ Apply this stage-aware chain before the first command. The first matching condit
 6. Route shared documentation or recorded operations to Maintainer only after accepted implementation, or when documentation-only or operation work is the current stage.
 7. Use the narrow Architect direct path or Solo for all remaining bounded work.
 
-Use the Engineer direct path only for one mechanical bounded change with one narrow proof command.
-
-For a broad Scout inquiry, the Architect names the platform and version dimensions. Scout maps shared core, variants, affected coverage, cited evidence, and unknowns before broad reads. Architect reads decisive contracts and cited paths, expands one unresolved boundary at a time, and stops when decision evidence is sufficient. Reuse existing build graphs, manifests, and maps before creating anything.
+Use the one bounded mechanical exception above or keep remaining bounded work with the Architect in Solo.
 
 Before each child handoff, the Architect posts a visible pre-handoff design brief. It states the reason, selected decision, affected ownership, interfaces, and invariants, any material rejected option when useful, child decision limits, acceptance, proof, and stop. It reports the decision and relevant grounds, never chain-of-thought.
 
@@ -43,7 +40,7 @@ Before each child handoff, the Architect posts a visible pre-handoff design brie
 - The Architect is a writer and must not edit child-owned paths. One Architect writer group owns a worktree. The `tasks.csv` lock protects only the ledger.
 - Engineer/Engineer requires strict isolation. Engineer/Scout requires a stable separate read boundary. Scout/Scout may overlap stable sources for independent questions. A Scout may overlap one Verifier or Maintainer only for future work with separate resources.
 - Maintainer and Verifier stay serial with writers. Project-native command/test parallelism stays inside one child when safe.
-- Apply every role trigger before the first command. Assisted delegation is mandatory beyond the Engineer direct path.
+- Apply every role trigger before the first command. Assisted delegation is mandatory beyond the Architect direct path.
 - One-task writers continue through implementation and targeted proof. For combined, parallel, release, or final-batch checkpoints, implementation writers stop before integration; no writer overlaps documentation synchronization, verification, or stateful operations. Shared tests, docs, generators, and operations run serially. One Verifier checks the combined checkpoint.
 
 ## External tools
@@ -75,7 +72,7 @@ Before each child handoff, the Architect posts a visible pre-handoff design brie
 - The Architect supplies the exact `task_name` and keeps it with the reusable thread. Use `task_name=engineer_beta` for beta Engineer. A child never chooses or changes its task name. A replacement takes the next label.
 - After all 24 labels, recycle the earliest label from an unreachable thread. No duplicates. Rehydrate an allowed replacement from role, task or inquiry, procedure, checkpoint, and latest unresolved result.
 - A running lifecycle state means available. A parent wait timeout, missed update, or silence is not failure. The Architect may request status and wait again. A completed child sends one final return and ends its active turn. The completed thread remains reachable for later `followup_task` reuse. Progress updates are informational.
-- Interrupt or replace only for an explicit blocker or an explicit conflict, user reset or request, system failed/canceled/unavailable state, stale assumptions, or required tool, permission, or runtime change. Announce role, identity, context reset reason, and replacement action.
+- Interrupt or replace only for an explicit blocker or an explicit conflict, user reset or request, system failed/canceled/unavailable state, stale assumptions, or required tool, permission, or runtime change. After two unanswered status requests and no reported active command or process, the Architect may interrupt a stale turn. Elapsed time alone is not failure. Announce role, identity, context reset reason, and replacement action.
 
 ## Shared handoff envelope
 
@@ -91,7 +88,7 @@ Before each child handoff, the Architect posts a visible pre-handoff design brie
 - Parent-facing reports occur at start, on a material decision, blocker, scope change, or proof change, and at completion.
 - No child update includes greetings, role repetition, raw logs, full fingerprints, or scripted phrases. Keep communication concise. Do not create rigid templates.
 - Routine user commentary, child return messages, and final answers omit full checkpoint fingerprints. Report abstract status facts: source identity without full fingerprint, running/passed/stopped state, mismatch reason, and next action. Do not repeat the full fingerprint in the visible return. Show details only for explicit audit or debugging.
-- The Verifier retains its candidate checkpoint fingerprint locally. Do not persist fingerprints or expose them in routine reports.
+- The Verifier retains local checkpoint values only. Do not persist values or expose full values in routine reports.
 
 ## Role-specific rules
 
@@ -100,7 +97,7 @@ Before each child handoff, the Architect posts a visible pre-handoff design brie
 - Engineer cannot start until the visible plan exists; the task matches one durable plan item. It receives one task and settled decision envelope.
 - Engineer begins with a short visible natural restatement of the outcome, boundary, preserved behavior, proof, and stop condition. Engineer proceeds without an approval pause unless ambiguity exists.
 - Engineer owns targeted development checks and code-local truth. Targeted proof is the smallest check for the changed behavior, run after a coherent implementation checkpoint and after a permitted correction. For one settled task, Engineer owns targeted proof and returns focused semantic changes and targeted check results. Engineer may fix only implementation defects that preserve settled behavior, architecture, interfaces, acceptance, paths, and permissions. Escalate any change to those items or when the same proof failure repeats.
-- For approved automation, Engineer implements the script and one focused runnable check. The script does not grant authority.
+- Approved scripts follow the operation contract in [operations.md](operations.md). A script does not grant authority.
 
 ### Scout
 
@@ -113,17 +110,16 @@ Before each child handoff, the Architect posts a visible pre-handoff design brie
 - Maintainer replays guided or recorded procedures exactly. It never repairs source, invents targets, changes procedures, or retries state-changing failure without authority.
 - Maintainer may classify a failure only when it matches a recorded operation failure signal. It may run only an already-authorized recorded recovery.
 - Unknown, ambiguous, source-changing, or new retry behavior stops and routes to Diagnose/Scout and Architect.
-- Maintainer records the canonical command in `docs/OPERATIONS.md` or an existing `OPS-*` document, then later replays that record. Solo follows the same record.
-- Maintainer marks an automation as stale when its contract, dependency, environment, target, or output changes. Architect approves meaning changes.
-- Maintainer owns each recorded operation run and returns evidence once. For repeated operations, Maintainer reports a transient automation candidate after any child directly observes a second equivalent success. It adds no scan, registry, Backlog entry, or automatic script. After Engineers stop and Architect review, Maintainer synchronizes affected shared narrative documents before final checkpoint.
+- Maintainer owns each recorded operation run and returns evidence once. Follow [operations.md](operations.md) for automation candidates and record/replay after accepted implementation. After Engineers stop and Architect review, Maintainer synchronizes affected shared narrative documents before final checkpoint.
 - For documentation-only work or accepted checkpoints with shared-document impact, Maintainer owns shared narrative truth and indexes.
 - Maintainer runs an impact-directed synchronization and detects missing triggers, stale documents, and oversized semantic units. Maintainer never invents product or architecture.
 - Architect approves meaning and document splits before Maintainer records them.
 
 ### Verifier
 
-- The Architect allocates and preauthorizes the exact named Verifier. An authorized Engineer may spawn or reuse that one read-only Verifier for its single settled task when risk-based independent proof is required. Verifier receives acceptance and the settled source boundary. Verifier is read-only and never edits files, the ledger, or state. When verification begins, it independently computes a candidate checkpoint fingerprint and retains it locally. An Engineer stops writing while its nested read-only Verifier checks. Engineer may resume only for permitted implementation corrections, then reruns proof. The Verifier independently runs acceptance proof for observable completion and one planned regression proof for affected-boundary risk, then skips Engineer-only targeted checks. It must not repeat an identical targeted command unless the repetition supplies independent proof, resolves disputed evidence, or repository policy requires it.
-- Verifier recomputes the fingerprint before return and blocks if it changed. It does not persist fingerprints. Do not make the Architect calculate them.
+- Each expensive proof command has one owner per checkpoint. Engineer owns the targeted command after a coherent implementation checkpoint and after a permitted correction. Without independent verification, Architect decides acceptance from existing evidence and runs only a missing acceptance command. With independent verification, Verifier owns acceptance and regression commands. No owner reruns an identical command unless independent proof, disputed evidence, or repository policy requires it.
+- The Architect allocates and preauthorizes the exact named Verifier. An authorized Engineer may spawn or reuse that one read-only Verifier for its single settled task when risk-based independent proof is required. Verifier receives acceptance and the settled source boundary. Verifier never changes tracked source, configuration, documentation, the ledger, or state. It may create named temporary or incidental test outputs outside tracked truth. Before and after proof, Verifier runs `python3 "<skill-root>/scripts/checkpoint.py" --repo "<repo-root>" PATH [PATH ...]` over the same explicit task-owned paths and compares the returned SHA-256 values locally. An Engineer stops writing while its nested read-only Verifier checks. Engineer may resume only for permitted implementation corrections, then reruns proof. The Verifier independently runs acceptance proof for observable completion and one planned regression proof for affected-boundary risk, then skips Engineer-only targeted checks. It must not repeat an identical targeted command unless the repetition supplies independent proof, resolves disputed evidence, or repository policy requires it.
+- Verifier blocks if the local values differ. It does not persist values or expose full values in routine reports. Do not make the Architect calculate them. Named temporary or incidental test outputs remain outside tracked truth.
 - Run the full suite only for a release, broad shared contracts, migrations or build graphs, an explicit repository requirement, or when no trustworthy selector exists. Consume Maintainer evidence.
 
 ## Model and spawn
@@ -142,8 +138,8 @@ Before each child handoff, the Architect posts a visible pre-handoff design brie
 2. Architect reviews the combined implementation and scopes.
 3. Run any shared source-changing formatter or generator serially; Architect reviews resulting changes.
 4. Maintainer synchronizes affected shared docs through an impact-directed pass.
-5. Pause all writers for machine verification. When verification begins, the Verifier independently computes a candidate checkpoint fingerprint and retains it locally. Do not persist it. Do not make the Architect calculate it. For combined, parallel, release, or final-batch checkpoints, the Architect starts one Verifier after writers stop.
-6. The Verifier checks both acceptance sets, assigned-path separation, semantic interaction, and documentation parity. It recomputes the fingerprint before return and blocks if it changed.
+5. Pause all writers for machine verification. The Verifier runs the packaged checkpoint helper before and after proof over the same explicit task-owned paths, then compares values locally. Do not persist values or expose full values in routine reports. For combined, parallel, release, or final-batch checkpoints, the Architect starts one Verifier after writers stop.
+6. The Verifier checks both acceptance sets, assigned-path separation, semantic interaction, and documentation parity. It blocks when the local checkpoint values differ.
 7. After commit, use the release tag or short commit ID for later source identity.
 8. Maintainer runs required build, package, deploy, flash, runtime, or smoke operations serially against that accepted source checkpoint. Invalidate the result after any relevant source change.
 

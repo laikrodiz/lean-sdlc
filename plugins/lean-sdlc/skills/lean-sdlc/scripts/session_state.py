@@ -53,16 +53,23 @@ def _descendant_repositories(root: Path) -> tuple[Path, ...]:
     return tuple(sorted(candidates, key=str))
 
 
-def lean_repository(cwd: str) -> Path | None:
+def _repository_resolution(cwd: str) -> tuple[Path | None, bool]:
     current = Path(cwd).resolve()
     for candidate in (current, *current.parents):
         if _is_lean_repository(candidate):
-            return candidate
+            return candidate, False
         if (candidate / ".git").exists():
             break
 
     descendants = _descendant_repositories(current)
-    return descendants[0] if len(descendants) == 1 else None
+    if len(descendants) == 1:
+        return descendants[0], False
+    return None, len(descendants) > 1
+
+
+def lean_repository(cwd: str) -> Path | None:
+    repository, _ = _repository_resolution(cwd)
+    return repository
 
 
 def skill_root() -> Path:
@@ -193,8 +200,19 @@ def _run_hook() -> int:
         print(f"Lean-SDLC state hook failed: {exc}", file=sys.stderr)
         return 1
 
-    repository = lean_repository(cwd)
+    repository, ambiguous = _repository_resolution(cwd)
     if repository is None:
+        if ambiguous:
+            print(
+                json.dumps(
+                    {
+                        "systemMessage": (
+                            "Lean-SDLC found multiple repositories below this directory. "
+                            "Focus one repository before continuing."
+                        )
+                    }
+                )
+            )
         return 0
 
     loaded_skill = skill_root()

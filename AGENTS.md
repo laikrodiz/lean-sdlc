@@ -25,6 +25,10 @@ During Plan, Quick Fix is inline, not a mode, lane, task type, or prompt. Use it
 - A running child lifecycle state remains available despite wait expiry or silence. The Architect may request status and wait again.
 - Before delegation, the Architect posts a short visible design explanation. The Engineer visibly restates its understanding.
 - Route broad evidence reads to Scout. Verification is risk-based and not duplicated. The Architect gives one final visible alignment signoff.
+- Before each child handoff, use the canonical pre-handoff design brief in `plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md`.
+- The brief states the reason, selected decision, affected ownership, interfaces, and invariants.
+- It states a useful rejected option, child decision limits, acceptance, proof, and stop condition.
+- Never expose chain-of-thought.
 
 ## Plan view and lifecycle
 

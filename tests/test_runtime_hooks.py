@@ -331,7 +331,32 @@ class RuntimeHookTests(unittest.TestCase):
         }
         result = run_script(SESSION_STATE, event, codex_home=self.codex_home)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(result.stdout, "")
+        message = json.loads(result.stdout)["systemMessage"]
+        self.assertIn("multiple repositories below this directory", message)
+        self.assertIn("Focus one repository before continuing", message)
+        self.assertNotIn("first", message)
+        self.assertNotIn("second", message)
+
+    def test_ancestor_repository_wins_over_ambiguous_descendants(self) -> None:
+        nested = self.repository / "nested"
+        nested.mkdir()
+        for name in ("first", "second"):
+            repository = nested / name
+            repository.mkdir()
+            repository.joinpath("AGENTS.md").write_text(
+                "Use $lean-sdlc for repository work.\n", encoding="utf-8"
+            )
+            repository.joinpath("tasks.csv").write_text("", encoding="utf-8")
+        event = {
+            "session_id": self.session_id,
+            "cwd": str(nested),
+            "hook_event_name": "SessionStart",
+        }
+        result = run_script(SESSION_STATE, event, codex_home=self.codex_home)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        message = json.loads(result.stdout)["systemMessage"]
+        self.assertIn(f"Repository root: {self.repository.resolve()}", message)
+        self.assertNotIn("multiple repositories", message)
 
     def test_workspace_scan_ignores_deep_and_dependency_repositories(self) -> None:
         workspace = self.root / "workspace"

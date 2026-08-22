@@ -40,7 +40,7 @@ Read only the active lane reference: [shape.md](references/shape.md), [decide.md
 
 ## Canonical lifecycle
 
-Use the six lanes in this order for every implementation request:
+Start at the earliest unresolved lane and skip settled lanes. Use the six lanes in this order:
 
 1. Shape confirms authority, Why, What, constraints, exclusions, and any material ambiguity.
 2. Decide settles technical choices that need durable agreement.

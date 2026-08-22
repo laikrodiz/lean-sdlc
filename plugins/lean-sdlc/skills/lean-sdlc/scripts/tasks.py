@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import csv
-import os
 import sys
 from pathlib import Path
 
@@ -33,12 +32,15 @@ from task_ledger import (
     quick_fix_review_marker,
     unresolved_quick_fixes_through,
     task_path,
+    task_context,
     thread_owner,
+    sync_parent_directory,
     write_ledger,
 )
 
 
 DEFINITION_FIELDS = ("title", "context", "dependencies", "acceptance", "proof")
+CONTEXT_HELP = "Valid context: Project, Bootstrap, Quick Fix, FEAT-*, or DEC-*."
 
 
 def add_definition_arguments(
@@ -47,7 +49,7 @@ def add_definition_arguments(
     required: bool,
 ) -> None:
     command.add_argument("--title", required=required)
-    command.add_argument("--context", required=required)
+    command.add_argument("--context", required=required, help=CONTEXT_HELP)
     command.add_argument("--dependencies", default="" if required else None)
     command.add_argument("--acceptance", required=required)
     command.add_argument("--proof", required=required)
@@ -80,7 +82,7 @@ def parser() -> argparse.ArgumentParser:
         help="Create a sparse Backlog task",
     )
     backlog_add.add_argument("--title", required=True)
-    backlog_add.add_argument("--context", default="Project")
+    backlog_add.add_argument("--context", default="Project", help=CONTEXT_HELP)
 
     update = subparsers.add_parser(
         "update",
@@ -128,7 +130,7 @@ def parser() -> argparse.ArgumentParser:
     promote.add_argument("task_id")
     promote.add_argument("--to", choices=("planned", "in-progress"), required=True)
     promote.add_argument("--title")
-    promote.add_argument("--context")
+    promote.add_argument("--context", help=CONTEXT_HELP)
     promote.add_argument("--dependencies")
     promote.add_argument("--owner")
     promote.add_argument("--acceptance", required=True)
@@ -164,7 +166,7 @@ def new_task(
             "Task ID": task_id,
             "Title": clean(args.title or "", "Title"),
             "Status": status,
-            "Context": clean(args.context or "", "Context"),
+            "Context": task_context(args.context or ""),
             "Dependencies": (args.dependencies or "").strip(),
             "Owner": owner,
             "Acceptance Criteria": clean(
@@ -184,7 +186,7 @@ def plan_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
 
 
 def backlog_context(value: str) -> str:
-    context = clean(value, "Context")
+    context = task_context(value)
     if context in BACKLOG_FORBIDDEN_CONTEXTS:
         raise TaskError(
             f"Backlog tasks cannot use {context} context"
@@ -304,8 +306,15 @@ def update_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
     supplied = {column: value for column, value in changes.items() if value is not None}
     if not supplied:
         raise TaskError("update requires at least one changed field")
+    validated: dict[str, str] = {}
     for column, value in supplied.items():
-        task[column] = value.strip() if column == "Dependencies" else clean(value, column)
+        if column == "Context":
+            validated[column] = task_context(value)
+        elif column == "Dependencies":
+            validated[column] = value.strip()
+        else:
+            validated[column] = clean(value, column)
+    task.update(validated)
     return f"updated {args.task_id}"
 
 
@@ -315,9 +324,9 @@ def promote_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
         raise TaskError(f"{args.task_id} must be Backlog before promotion")
 
     context = (
-        clean(args.context, "Context")
+        task_context(args.context)
         if args.context is not None
-        else task.get("Context", "")
+        else task_context(task.get("Context", ""))
     )
     if args.to == "planned":
         if args.owner is not None:
@@ -336,7 +345,7 @@ def promote_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
         "Title",
     )
     task["Status"] = "Planned" if args.to == "planned" else "In Progress"
-    task["Context"] = clean(context, "Context")
+    task["Context"] = context
     task["Dependencies"] = (
         args.dependencies.strip()
         if args.dependencies is not None
@@ -532,15 +541,10 @@ def _upgrade_locked(
     write_ledger(destination, rows)
     if legacy.is_file():
         legacy.unlink()
-        try:
-            directory = os.open(legacy.parent, os.O_RDONLY)
-        except OSError:
-            pass
-        else:
-            try:
-                os.fsync(directory)
-            finally:
-                os.close(directory)
+        sync_parent_directory(
+            legacy.parent,
+            success_message="legacy task ledger removal succeeded",
+        )
     return "upgraded task ledger to root tasks.csv"
 
 

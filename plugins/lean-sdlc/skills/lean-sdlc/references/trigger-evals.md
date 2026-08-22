@@ -30,7 +30,7 @@ Run these scenarios from a fresh task with only the installed plugin and target 
 | Oversized task | Split only at an independent behavior, contract boundary, proof cluster, or close decision. |
 | Cause lane | Use Diagnose for an unknown cause and Deliver for a known cause. |
 | Plausible edge cases | Classify each as `Handle`, `Reject`, `Defer`, or `Impossible by invariant`. |
-| Engineer direct path | Use only for one mechanical bounded change with one narrow proof command. |
+| Architect direct path | Use only for one bounded mechanical exception with one narrow proof command. |
 | Quick Fix classification | Use only for an exact, local, reversible outcome with one immediate narrow proof. |
 | Quick Fix batch review | Review pending Quick Fixes at a shared checkpoint. |
 | Assisted parallel work | Apply the universal independence gate; shared or uncertain scopes stay serial. |
@@ -49,7 +49,7 @@ Run these scenarios from a fresh task with only the installed plugin and target 
 | Handoff | Use natural prose and fact order; do not expose chain-of-thought or rigid scripts. |
 | Reachable role thread, child replacement, or pool exhaustion | Follow up before replacement and recycle only unreachable labels after the pool ends. |
 | External-tool routing and token-waste signals | Keep the Architect's decision boundary and route discovery, mutation, operations, and checks by role. |
-| Proof and integration checkpoint | Pause writers for machine verification; Verifier independently computes a local candidate checkpoint fingerprint. Do not persist fingerprints or make Architect calculate them. |
+| Proof and integration checkpoint | Pause writers; Verifier runs the packaged checkpoint helper before and after proof over the same task-owned paths, compares values locally, and omits full values from routine reports. |
 | Automation lifecycle and stateful operation | Any child reports a transient candidate after directly observing a second equivalent success; Maintainer owns repeated operations, with no scan, registry, Backlog entry, or automatic script. |
 | Task closeout | Verifier returns evidence; the owning Architect decides accept, correct, reopen, fail, or close. |
 | Shared interface, schema, manifest, lock file, generated output, or exclusive target | Keep work serial. |

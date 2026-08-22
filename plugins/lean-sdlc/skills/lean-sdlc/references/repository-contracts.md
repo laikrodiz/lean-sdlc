@@ -75,7 +75,7 @@ Use exactly:
 
 `Task ID,Title,Status,Context,Dependencies,Owner,Acceptance Criteria,Proof,Evidence`
 
-Use `Project`, `FEAT-*`, `DEC-*`, `Bootstrap`, or `Quick Fix` as `Context` for active work. A Backlog row defaults to `Project` context.
+Standard work uses Context `Project`; never use `Standard` as a Context. Valid contexts are `Project`, `Bootstrap`, `Quick Fix`, `FEAT-*`, and `DEC-*`. A Backlog row defaults to `Project` context.
 
 Use `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" backlog` for the compact Backlog view. Use `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" open` for current `Planned` and `In Progress` work. Use `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" show TASK-ID` for one task and its recursive dependencies. These read-only views keep the existing human-readable CSV shape and avoid loading full `Done` history. The human-readable `tasks.csv` remains authoritative.
 

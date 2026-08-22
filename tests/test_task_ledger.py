@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import importlib.util
 import json
 import os
 import re
@@ -8,7 +9,10 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stderr
+from io import StringIO
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -93,6 +97,87 @@ def write_document_family(
 
 
 class TaskLedgerTests(unittest.TestCase):
+    def test_context_mapping_accepts_valid_contexts_and_rejects_invalid_values_atomically(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            write_ledger(repository, "")
+
+            for context in ("Project", "Bootstrap", "Quick Fix", "FEAT-001", "DEC-001"):
+                created = task(
+                    repository,
+                    "plan",
+                    "--title",
+                    f"Task for {context}",
+                    "--context",
+                    context,
+                    "--acceptance",
+                    "The task is accepted",
+                    "--proof",
+                    "Run the focused check",
+                )
+                self.assertEqual(created.returncode, 0, created.stderr)
+
+            before = repository.joinpath("tasks.csv").read_text(encoding="utf-8")
+            for context in ("Standard", "Other"):
+                rejected = task(
+                    repository,
+                    "plan",
+                    "--title",
+                    "Invalid context",
+                    "--context",
+                    context,
+                    "--acceptance",
+                    "Must reject",
+                    "--proof",
+                    "Must not write",
+                )
+                self.assertNotEqual(rejected.returncode, 0)
+                self.assertIn("Context", rejected.stderr)
+                self.assertEqual(
+                    repository.joinpath("tasks.csv").read_text(encoding="utf-8"),
+                    before,
+                )
+
+            rejected_update = task(
+                repository,
+                "update",
+                "TASK-000",
+                "--context",
+                "Standard",
+            )
+            self.assertNotEqual(rejected_update.returncode, 0)
+            self.assertIn("Context", rejected_update.stderr)
+            self.assertEqual(
+                repository.joinpath("tasks.csv").read_text(encoding="utf-8"),
+                before,
+            )
+
+    def test_ledger_replacement_warns_after_parent_sync_failure(self) -> None:
+        if os.name == "nt":
+            self.skipTest("Windows does not require parent directory fsync")
+        specification = importlib.util.spec_from_file_location(
+            "task_ledger_for_test",
+            SCRIPTS / "task_ledger.py",
+        )
+        self.assertIsNotNone(specification)
+        self.assertIsNotNone(specification.loader)
+        module = importlib.util.module_from_spec(specification)
+        specification.loader.exec_module(module)
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "tasks.csv"
+            stderr = StringIO()
+            with patch.object(
+                module.os,
+                "fsync",
+                side_effect=[None, OSError("directory sync unavailable")],
+            ), redirect_stderr(stderr):
+                module.write_ledger(path, [])
+
+            self.assertTrue(path.is_file())
+            self.assertIn("tasks.csv replacement succeeded", stderr.getvalue())
+            self.assertIn("parent directory durability sync failed", stderr.getvalue())
+
     def test_concurrent_plan_and_start_transactions_get_unique_ids(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             repository = Path(directory)
@@ -1487,7 +1572,6 @@ class PackageContractTests(unittest.TestCase):
                 "diagnose.md",
                 "deliver.md",
                 "verify.md",
-                "model-routing.md",
                 "subagents.md",
                 "operations.md",
                 "repository-contracts.md",
@@ -1595,11 +1679,8 @@ class PackageContractTests(unittest.TestCase):
             self.assertIn(phrase, contracts)
 
         for phrase in [
-            "architect approves an automation contract before scripting",
-            "engineer implements the script and one focused runnable check",
-            "maintainer records the canonical command",
-            "solo follows the same record",
-            "architect approves meaning changes",
+            "follow [operations.md](operations.md) for automation candidates and record/replay after accepted implementation",
+            "maintainer owns each recorded operation run",
         ]:
             self.assertIn(phrase, subagents)
 
@@ -1639,7 +1720,6 @@ class PackageContractTests(unittest.TestCase):
         policy_files = [
             ROOT / "README.md",
             SKILL / "assets/AGENTS.md",
-            SKILL / "references/model-routing.md",
             SKILL / "references/subagents.md",
         ]
         policy = "\n".join(path.read_text(encoding="utf-8") for path in policy_files)
@@ -1922,7 +2002,7 @@ class PackageContractTests(unittest.TestCase):
         )
         self.assertIn("task or implementation request", evaluations)
         self.assertIn("valid engineer checkpoint", evaluations)
-        self.assertIn("engineer direct path", evaluations)
+        self.assertIn("architect direct path", evaluations)
         self.assertEqual(root_agents, template_agents)
 
     def test_policy_invariants_are_canonical_and_safe(self) -> None:
@@ -2137,15 +2217,16 @@ class PackageContractTests(unittest.TestCase):
 
         subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8").lower()
         verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
+        operations = (SKILL / "references/operations.md").read_text(encoding="utf-8").lower()
         for term in (
             "targeted proof is the smallest check",
             "acceptance proof for observable completion",
             "regression proof for affected-boundary risk",
             "verifier is read-only",
             "do not repeat an identical targeted command",
-            "maintainer reports a transient automation candidate",
+            "reports a transient automation candidate to the architect",
         ):
-            self.assertIn(term, subagents + verify)
+            self.assertIn(term, subagents + verify + operations)
         self.assertIn("run the full suite once under verifier only for", verify)
         self.assertIn("maintainer owns each recorded operation run", subagents)
         self.assertIn("after the final engineer return", subagents)
@@ -2168,12 +2249,11 @@ class PackageContractTests(unittest.TestCase):
             "cross-boundary source and log evidence",
             "focused semantic changes and targeted check results",
             "contract-sensitive semantic changes",
-            "candidate checkpoint fingerprint",
-            "when verification begins",
-            "retains it locally",
-            "recomputes the fingerprint before return",
-            "blocks if it changed",
-            "do not persist fingerprints",
+            "before and after proof",
+            "same explicit task-owned paths",
+            "compares the returned sha-256 values locally",
+            "verifier blocks if the local values differ",
+            "does not persist values or expose full values in routine reports",
             "do not make the architect calculate them",
             "recorded operation failure signal",
             "already-authorized recorded recovery",
@@ -2185,18 +2265,18 @@ class PackageContractTests(unittest.TestCase):
             verify.index(term)
             for term in (
                 "select one optional nested verifier",
-                "when verification begins",
+                "scripts/checkpoint.py",
                 "verifier is read-only",
-                "recompute the fingerprint before return",
+                "compare the sha-256 values locally and block if they differ",
             )
         ]
         self.assertEqual(verify_order, sorted(verify_order))
-        self.assertIn("candidate checkpoint fingerprint and retains it locally", verify)
-        self.assertIn("do not persist fingerprints or make architect calculate them", verify)
+        self.assertIn("scripts/checkpoint.py", verify)
+        self.assertIn("do not persist values, expose full values in routine reports, or make architect calculate them", verify)
         self.assertIn("maintainer classifies failures only by matching a recorded operation failure signal", operations)
         self.assertIn("omit them from visible operation reports", operations)
-        self.assertIn("verifier independently computes a local candidate checkpoint fingerprint", evaluations)
-        self.assertIn("do not persist fingerprints or make architect calculate them", evaluations)
+        self.assertIn("packaged checkpoint helper before and after proof", evaluations)
+        self.assertIn("compares values locally", evaluations)
         self.assertNotIn("architect records an exact commit or working-tree fingerprint", evaluations)
 
     def test_lifecycle_and_proof_boundaries_are_behavioral(self) -> None:
@@ -2341,11 +2421,11 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.22.0")
+        self.assertEqual(version, "1.23.0")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
         self.assertIn(
-            "- Version goal: One canonical lifecycle and role-routing chain, visible pre-handoff decisions, layered proof, bounded verification, and transient automation candidates.",
+            "- Version goal: Executable behavioral evaluation, optional live fresh sessions, one portable release gate, one task/direct-path/proof contract, visible discovery and durability warnings, and a Git-free task-scoped checkpoint helper.",
             project,
         )
 

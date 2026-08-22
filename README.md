@@ -6,7 +6,7 @@ The workflow helps you answer simple questions before work starts. What problem 
 
 For a trivial settled edit, Plan can classify it inline as Quick Fix. It uses one narrow immediate check and a later batch review instead of the full workflow each time.
 
-The user controls the Architect model. If the user makes no explicit choice, the Architect uses Sol High. Standard child roles use Luna Max. Terra XHigh is the availability fallback.
+The user-selected Codex model is the Architect. Lean-SDLC never replaces it. Standard child roles use Luna Max. Terra XHigh is the availability fallback.
 
 ## Six lanes
 
@@ -87,10 +87,10 @@ Read the [Shape contract](plugins/lean-sdlc/skills/lean-sdlc/references/shape.md
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-Install the immutable `v1.22.0` release:
+Install the immutable `v1.23.0` release:
 
 ```bash
-git clone --depth 1 --branch v1.22.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.23.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc
@@ -99,6 +99,8 @@ codex plugin add lean-sdlc@lean-sdlc
 Restart Codex after installation. Then begin a new task.
 
 The release advisory runs at startup, checks no more than once daily, and never updates the repository automatically.
+
+Each release uses one deterministic gate for local and CI checks. Live behavior evaluation is optional and uses a fresh session only when explicitly enabled.
 
 ## Use
 

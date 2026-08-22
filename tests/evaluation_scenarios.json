@@ -1,0 +1,82 @@
+{
+  "format": 1,
+  "required_categories": ["routing", "delegation", "proof", "lifecycle"],
+  "scenarios": [
+    {
+      "id": "routing-unresolved-decision",
+      "category": "routing",
+      "prompt": "Use $lean-sdlc. A product acceptance decision is unresolved, so implementation work cannot proceed until the decision is settled. Return only JSON fields: route, writes.",
+      "assertions": [
+        {"path": "route", "equals": "Architect"},
+        {"path": "writes", "equals": false}
+      ]
+    },
+    {
+      "id": "routing-shared-resource",
+      "category": "routing",
+      "prompt": "Use $lean-sdlc. Two implementation tasks require writes to the same mutable file at the same time. Return only JSON fields: execution, shared_resource.",
+      "assertions": [
+        {"path": "execution", "equals": "serial"},
+        {"path": "shared_resource", "equals": true}
+      ]
+    },
+    {
+      "id": "delegation-broad-evidence",
+      "category": "delegation",
+      "prompt": "Use $lean-sdlc. A read-only inquiry compares multiple platforms and versions and crosses a shared boundary. Return only JSON fields: role, coverage.",
+      "assertions": [
+        {"path": "role", "equals": "Scout"},
+        {"path": "coverage", "contains": "shared core"},
+        {"path": "coverage", "contains": "variants"}
+      ]
+    },
+    {
+      "id": "delegation-settled-implementation",
+      "category": "delegation",
+      "prompt": "Use $lean-sdlc. The implementation contract, interfaces, acceptance, proof, and paths are settled, with no decision left open. Return only JSON fields: role, decision.",
+      "assertions": [
+        {"path": "role", "equals": "Engineer"},
+        {"path": "decision", "equals": "settled"}
+      ]
+    },
+    {
+      "id": "delegation-accepted-documentation",
+      "category": "delegation",
+      "prompt": "Use $lean-sdlc. An accepted implementation now requires synchronization of shared documentation. Return only JSON fields: role, stage.",
+      "assertions": [
+        {"path": "role", "equals": "Maintainer"},
+        {"path": "stage", "equals": "accepted implementation"}
+      ]
+    },
+    {
+      "id": "delegation-proof-checkpoint",
+      "category": "delegation",
+      "prompt": "Use $lean-sdlc. A checkpoint is ready for independent proof after implementation has stopped changing. Return only JSON fields: role, checkpoint.",
+      "assertions": [
+        {"path": "role", "equals": "Verifier"},
+        {"path": "checkpoint", "equals": true}
+      ]
+    },
+    {
+      "id": "proof-layers",
+      "category": "proof",
+      "prompt": "Use $lean-sdlc. A coherent implementation checkpoint changed behavior and affects an existing boundary. Return only JSON fields: targeted, acceptance, regression.",
+      "assertions": [
+        {"path": "targeted", "equals": "changed behavior"},
+        {"path": "acceptance", "equals": "observable completion"},
+        {"path": "regression", "equals": "affected boundary"}
+      ]
+    },
+    {
+      "id": "lifecycle-six-lanes",
+      "category": "lifecycle",
+      "prompt": "Use $lean-sdlc. A work item needs intent shaping, a technical decision, a plan, implementation, and proof, with no failure cause currently known. Return only JSON fields: lanes, diagnose, closeout, visible_plan.",
+      "assertions": [
+        {"path": "lanes", "equals": ["Shape", "Decide", "Plan", "Diagnose", "Deliver", "Verify"]},
+        {"path": "diagnose", "equals": "conditional"},
+        {"path": "closeout", "equals": "Verify"},
+        {"path": "visible_plan", "equals": true}
+      ]
+    }
+  ]
+}

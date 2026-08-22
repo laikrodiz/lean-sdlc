@@ -12,6 +12,11 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 
 - Shape, Decide, Plan, Diagnose, Deliver, and Verify lanes.
 - One canonical lifecycle from intent through owned work, proof, and closeout.
+- Executable assertions over recorded behavioral observations, with optional live fresh sessions.
+- One portable release gate for local and CI checks.
+- One consistent task, direct-path, and proof contract.
+- Visible ambiguous repository discovery and durability warnings.
+- One Git-free, task-scoped checkpoint helper.
 - A complete `why -> what -> how -> proof` intent gate before changes.
 - Three required repository files: `AGENTS.md`, `docs/PROJECT.md`, and root `tasks.csv`.
 - An atomic, human-readable task ledger with one task per independently accepted repository state. Dependencies must be `Done` before a task starts.
@@ -49,7 +54,7 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 - Hosted task services or issue-tracker replacement.
 - Mandatory feature, decision, architecture, state-machine, interface, data, operations, security, glossary, or verification documents.
 - A repository-wide documentation archive policy.
-- CI enforcement, dashboards, telemetry, cache accounting, and project-specific operational recipes.
+- Dashboards, telemetry, cache accounting, and project-specific operational recipes.
 
 ## Success
 
@@ -60,12 +65,17 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 - The Architect retains decisions. Delegated external-tool work has one mutable-target owner and returns bounded evidence.
 - Read-only evidence work maps the evidence space before bounded, question-specific reads. It returns evidence without mutation authority and preserves authoritative reads.
 - Transient automation candidates add no new durable state. A maintained deterministic command needs a later reuse case and maintenance evidence.
+- Release checks use one portable gate in local and CI contexts.
+- Recorded observations use deterministic assertions; optional live sessions collect new observations.
+- Task, direct-path, and proof inputs follow one consistent contract.
+- Ambiguous repository discovery is visible, and durability warnings identify risks before they persist.
+- Task-scoped checkpoints can run without Git access.
 - Eligible Quick Fixes receive narrow proof immediately and broad review in a later Standard or final batch checkpoint.
 - Checkpoint reports stay readable, exact machine proof remains available, and serial closeout uses repository truth.
 
 ## Current promise
 
 - Stage: Evolution
-- Version: 1.22.0
-- Version goal: One canonical lifecycle and role-routing chain, visible pre-handoff decisions, layered proof, bounded verification, and transient automation candidates.
-- Exit evidence: Tests, skill and plugin validation, local installation, accepted checkpoints, repository checks, tagged commit, and successful push.
+- Version: 1.23.0
+- Version goal: Executable behavioral evaluation, optional live fresh sessions, one portable release gate, one task/direct-path/proof contract, visible discovery and durability warnings, and a Git-free task-scoped checkpoint helper.
+- Exit evidence: Tests, behavioral evaluation, skill and plugin validation, local installation, portable release-gate checks, accepted checkpoints, repository checks, tagged commit, and successful push.

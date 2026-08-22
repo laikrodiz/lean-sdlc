@@ -8,6 +8,7 @@ import json
 import os
 import re
 import shutil
+import sys
 import tempfile
 import time
 from contextlib import contextmanager
@@ -94,6 +95,17 @@ def clean(value: str, label: str) -> str:
     if "\n" in result or "\r" in result:
         raise TaskError(f"{label} must fit on one line")
     return result
+
+
+def task_context(value: str) -> str:
+    context = clean(value, "Context")
+    if context == "Standard":
+        raise TaskError("Standard work uses Project context; Standard is not a valid Context")
+    if context not in SPECIAL_CONTEXTS and CONTEXT_PATTERN.fullmatch(context) is None:
+        raise TaskError(
+            "Context must be Project, Bootstrap, Quick Fix, FEAT-*, or DEC-*"
+        )
+    return context
 
 
 def thread_owner(value: str, *, allow_bootstrap: bool = False) -> str:
@@ -230,6 +242,35 @@ def current_rows(
     return migrated
 
 
+def sync_parent_directory(directory_path: Path, *, success_message: str) -> None:
+    if os.name == "nt":
+        return
+    try:
+        directory = os.open(directory_path, os.O_RDONLY)
+    except OSError as exc:
+        print(
+            f"Warning: {success_message}; parent directory durability sync unavailable: {exc}",
+            file=sys.stderr,
+        )
+        return
+    try:
+        try:
+            os.fsync(directory)
+        except OSError as exc:
+            print(
+                f"Warning: {success_message}; parent directory durability sync failed: {exc}",
+                file=sys.stderr,
+            )
+    finally:
+        try:
+            os.close(directory)
+        except OSError as exc:
+            print(
+                f"Warning: {success_message}; parent directory sync handle close failed: {exc}",
+                file=sys.stderr,
+            )
+
+
 def write_ledger(path: Path, rows: list[dict[str, str]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     mode = path.stat().st_mode & 0o777 if path.exists() else 0o644
@@ -251,14 +292,10 @@ def write_ledger(path: Path, rows: list[dict[str, str]]) -> None:
         os.chmod(temporary, mode)
         os.replace(temporary, path)
         temporary = None
-        try:
-            directory = os.open(path.parent, os.O_RDONLY)
-        except OSError:
-            return
-        try:
-            os.fsync(directory)
-        finally:
-            os.close(directory)
+        sync_parent_directory(
+            path.parent,
+            success_message=f"{path.name} replacement succeeded",
+        )
     finally:
         if temporary is not None:
             temporary.unlink(missing_ok=True)
@@ -412,13 +449,15 @@ def integrity_errors(rows: list[dict[str, str]]) -> list[str]:
 
     graph: dict[str, list[str]] = {}
     for task_id, row in row_by_id.items():
+        context = row.get("Context", "")
+        try:
+            task_context(context)
+        except TaskError as exc:
+            errors.append(f"{task_id} has invalid context: {exc}")
         if row.get("Status") == BACKLOG_STATUS:
             if not row.get("Title"):
                 errors.append(f"{task_id} Backlog row has empty title")
-            context = row.get("Context", "")
-            if not context:
-                errors.append(f"{task_id} Backlog row has empty context")
-            elif context in BACKLOG_FORBIDDEN_CONTEXTS:
+            if context in BACKLOG_FORBIDDEN_CONTEXTS:
                 errors.append(
                     f"{task_id} Backlog row cannot use {context} context"
                 )
