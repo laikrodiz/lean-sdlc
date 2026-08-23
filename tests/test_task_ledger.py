@@ -2195,7 +2195,13 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("The Architect owns each child name at spawn time", subagents)
         self.assertIn("task_name=engineer_beta", subagents)
         self.assertIn("Each child update stays 1–3 natural sentences", subagents)
-        self.assertIn("Parent-facing reports occur at start", subagents)
+        self.assertIn("Routine progress stays in the child thread", subagents)
+        self.assertIn(
+            "Send an explicit parent message only when immediate Architect action is required",
+            subagents,
+        )
+        self.assertIn("At completion, send exactly one final return", subagents)
+        self.assertIn("The Architect does not echo unchanged child facts", subagents)
         self.assertIn(
             "Arrow sequence is fact order, not output wording",
             subagents,
@@ -2337,12 +2343,12 @@ class PackageContractTests(unittest.TestCase):
         for phrase in [
             "1–3 natural sentences",
             "current action, why it matters, observed result or next action",
-            "parent-facing reports occur at start",
-            "material decision",
+            "routine progress stays in the child thread",
+            "send an explicit parent message only when immediate architect action is required",
             "blocker",
             "scope change",
-            "proof change",
-            "at completion",
+            "one final return",
+            "architect does not echo unchanged child facts",
             "a completed child sends one final return",
             "ends its active turn",
             "the completed thread remains reachable for later `followup_task` reuse",
@@ -2429,11 +2435,11 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.24.0")
+        self.assertEqual(version, "1.24.1")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
         self.assertIn(
-            "- Version goal: Parallel-aware task shaping with explicit together, serial, or parallel choices and runtime safety revalidation.",
+            "- Version goal: Event-driven child communication with immediate action-required escalation, one final return, and no duplicate Architect commentary.",
             project,
         )
 

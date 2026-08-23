@@ -189,12 +189,11 @@ FROZEN_INVARIANTS = (
             "recycle the earliest label from an unreachable thread",
             "1–3 natural sentences",
             "current action, why it matters, observed result or next action",
-            "parent-facing reports occur at start",
-            "material decision",
-            "blocker",
-            "scope change",
-            "proof change",
-            "at completion",
+            "routine progress stays in the child thread",
+            "send an explicit parent message only when immediate architect action is required",
+            "blocker, collision, scope change, proof mismatch, or decision",
+            "at completion, send exactly one final return",
+            "the architect does not echo unchanged child facts",
             "completed child sends one final return",
             "ends its active turn",
             "the completed thread remains reachable for later `followup_task` reuse",
@@ -202,8 +201,10 @@ FROZEN_INVARIANTS = (
             "do not create rigid templates",
         ),
         ordered_terms=(
-            "parent-facing reports occur at start",
-            "on a material decision, blocker, scope change, or proof change, and at completion",
+            "routine progress stays in the child thread",
+            "send an explicit parent message only when immediate architect action is required",
+            "at completion, send exactly one final return",
+            "the architect does not echo unchanged child facts",
         ),
     ),
     FrozenInvariant(
@@ -637,6 +638,22 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
         self.assertNotIn("Architecture alignment:", policy)
         self.assertNotIn("Return labels remain explicit", policy)
         self.assertNotIn("labeled report", policy)
+
+    def test_child_communication_is_event_driven_without_policy_drift(self) -> None:
+        policy = _normalized(_read(SUBAGENTS))
+        evaluations = _normalized(_read(TRIGGER_EVALS))
+        for document in (policy, evaluations):
+            self.assertIn("routine progress stays in the child thread", document)
+            self.assertIn("explicit parent message", document)
+            self.assertIn("immediate architect action", document)
+            self.assertIn("blocker", document)
+            self.assertIn("collision", document)
+            self.assertIn("scope change", document)
+            self.assertIn("proof mismatch", document)
+            self.assertIn("decision", document)
+            self.assertIn("one final return", document)
+            self.assertIn("architect does not echo unchanged child facts", document)
+        self.assertNotIn("after about two minutes of otherwise silent work", evaluations)
 
 
 if __name__ == "__main__":

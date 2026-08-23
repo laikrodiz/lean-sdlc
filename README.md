@@ -126,10 +126,10 @@ Requirements:
 - Python 3
 - Codex with plugin support
 
-Install the immutable `v1.24.0` release:
+Install the immutable `v1.24.1` release:
 
 ```bash
-git clone --depth 1 --branch v1.24.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.24.1 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc

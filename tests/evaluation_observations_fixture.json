@@ -35,6 +35,14 @@
       "diagnose": "conditional",
       "closeout": "Verify",
       "visible_plan": true
+    },
+    "child-communication-routing": {
+      "routine_progress": "child thread",
+      "routine_parent_message": false,
+      "action_required_events": ["blocker", "collision", "scope change", "proof mismatch", "decision"],
+      "action_required_route": "Architect immediately",
+      "completion": "one final return",
+      "architect_echo": false
     }
   }
 }

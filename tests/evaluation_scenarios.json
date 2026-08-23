@@ -115,6 +115,19 @@
         {"path": "closeout", "equals": "Verify"},
         {"path": "visible_plan", "equals": true}
       ]
+    },
+    {
+      "id": "child-communication-routing",
+      "category": "lifecycle",
+      "prompt": "Use $lean-sdlc. A child performs routine work, encounters one of the listed action-required events, and completes its task. Return only JSON fields: routine_progress, routine_parent_message, action_required_events, action_required_route, completion, architect_echo.",
+      "assertions": [
+        {"path": "routine_progress", "equals": "child thread"},
+        {"path": "routine_parent_message", "equals": false},
+        {"path": "action_required_events", "equals": ["blocker", "collision", "scope change", "proof mismatch", "decision"]},
+        {"path": "action_required_route", "equals": "Architect immediately"},
+        {"path": "completion", "equals": "one final return"},
+        {"path": "architect_echo", "equals": false}
+      ]
     }
   ]
 }

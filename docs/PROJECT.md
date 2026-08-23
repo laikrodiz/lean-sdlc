@@ -28,6 +28,7 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 - One role-routing precedence chain, layered targeted, acceptance, and regression proof, and bounded full-suite use.
 - Assisted mode as the default and Solo mode as the lead-only alternative. Both modes use the same task and proof rules.
 - A running child lifecycle state remains available despite wait expiry or silence. The Engineer visibly restates its understanding and completes routine targeted proof.
+- Routine child progress, including the start restatement, stays in the child thread. Explicit parent messages are only for events that require immediate Architect action. Completion produces one final return. The Architect does not repeat unchanged child facts.
 - One preauthorized read-only Verifier may be nested for a qualifying single task. Combined checkpoints use one Architect-started Verifier. The Architect gives one final visible alignment signoff. Verification is risk-based and not duplicated.
 - Conservative parallel work for separate scopes and resources. Shared files, changing interfaces, migrations, generated output, and external targets remain serial. Child work stays in one shared worktree.
 - Substantial external-tool work keeps decisions with the Architect. The matching role handles bounded discovery, approved mutation, repeated operations, or independent checking. One agent owns each mutable external target.
@@ -65,6 +66,7 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 - Tasks remain atomic, owner-aware, dependency-valid, and cycle-free.
 - Broad work is split only when each result remains independently acceptable; parallel execution also needs a favorable runtime risk-benefit check.
 - The Architect retains decisions. Delegated external-tool work has one mutable-target owner and returns bounded evidence.
+- Routine progress stays in child threads. Action-required events reach the Architect immediately. Completion produces one final return without duplicate Architect commentary.
 - Read-only evidence work maps the evidence space before bounded, question-specific reads. It returns evidence without mutation authority and preserves authoritative reads.
 - Transient automation candidates add no new durable state. A maintained deterministic command needs a later reuse case and maintenance evidence.
 - Release checks use one portable gate in local and CI contexts.
@@ -78,6 +80,6 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 ## Current promise
 
 - Stage: Evolution
-- Version: 1.24.0
-- Version goal: Parallel-aware task shaping with explicit together, serial, or parallel choices and runtime safety revalidation.
+- Version: 1.24.1
+- Version goal: Event-driven child communication with immediate action-required escalation, one final return, and no duplicate Architect commentary.
 - Exit evidence: Tests, behavioral evaluation, skill and plugin validation, local installation, portable release-gate checks, accepted checkpoints, repository checks, tagged commit, and successful push.

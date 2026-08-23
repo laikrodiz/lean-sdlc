@@ -27,7 +27,7 @@ RELEASE = load_release_check()
 class ReleaseCheckTests(unittest.TestCase):
     def test_package_structure_and_versions_pass(self) -> None:
         RELEASE.check_package_structure(ROOT)
-        self.assertEqual(RELEASE.check_version_consistency(ROOT), "1.24.0")
+        self.assertEqual(RELEASE.check_version_consistency(ROOT), "1.24.1")
 
     def test_portable_default_runs_required_steps_with_external_cache(self) -> None:
         calls: list[tuple[str, list[str], dict[str, str]]] = []
@@ -44,7 +44,7 @@ class ReleaseCheckTests(unittest.TestCase):
         with patch.object(RELEASE, "_run_step", side_effect=fake_step):
             version = RELEASE.run_release_checks(ROOT)
 
-        self.assertEqual(version, "1.24.0")
+        self.assertEqual(version, "1.24.1")
         self.assertEqual(
             [label for label, _, _ in calls],
             [
