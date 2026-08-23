@@ -1,6 +1,6 @@
 # Lean-SDLC for Codex
 
-Lean-SDLC helps Codex deliver repository changes without losing the reason behind them.
+Lean-SDLC helps Codex build projects of any size through a controlled and understandable process. It turns user intent into clear tasks, uses safe parallel work when useful, verifies every result, and grows documentation with the project.
 
 It keeps four things connected:
 
