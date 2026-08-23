@@ -37,6 +37,7 @@ Before each child handoff, the Architect posts a visible pre-handoff design brie
 
 - At most two active children run after a resource gate passes. This is universal independence gate, and descendants count toward the limit. Each child has exclusive scope and settled contract; all dependencies are `Done`; elapsed time should decrease.
 - Two Engineers require separate mutable code and test paths, stable read paths, incidental outputs or caches, commands, services, ports, devices, and external targets; no shared public interface, schema, manifest, lockfile, generator, migration, or mutable fixture; independent acceptance and proof.
+- Immediately before a parallel Engineer spawn, the Architect revalidates the resource boundary: separate mutable resources, no unfinished dependency, and meaningful elapsed-time savings after coordination and verification. If conditions changed, fall back to serial execution.
 - The Architect is a writer and must not edit child-owned paths. One Architect writer group owns a worktree. The `tasks.csv` lock protects only the ledger.
 - Engineer/Engineer requires strict isolation. Engineer/Scout requires a stable separate read boundary. Scout/Scout may overlap stable sources for independent questions. A Scout may overlap one Verifier or Maintainer only for future work with separate resources.
 - Maintainer and Verifier stay serial with writers. Project-native command/test parallelism stays inside one child when safe.

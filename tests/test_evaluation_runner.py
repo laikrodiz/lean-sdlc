@@ -25,7 +25,7 @@ class EvaluationRunnerTests(unittest.TestCase):
     def test_repository_scenarios_pass_against_separate_observations(self) -> None:
         self.assertTrue(all("observed" not in scenario for scenario in self.scenarios["scenarios"]))
         checked, failures = evaluate(self.scenarios, self.observations)
-        self.assertEqual((checked, failures), (20, ()))
+        self.assertEqual((checked, failures), (30, ()))
 
     def test_missing_observation_fails(self) -> None:
         observations = copy.deepcopy(self.observations)
@@ -33,7 +33,7 @@ class EvaluationRunnerTests(unittest.TestCase):
 
         checked, failures = evaluate(self.scenarios, observations)
 
-        self.assertEqual(checked, 17)
+        self.assertEqual(checked, 27)
         self.assertIn("missing observation: proof-layers", failures)
 
     def test_wrong_observation_fails_its_assertion(self) -> None:
@@ -42,7 +42,7 @@ class EvaluationRunnerTests(unittest.TestCase):
 
         checked, failures = evaluate(self.scenarios, observations)
 
-        self.assertEqual(checked, 20)
+        self.assertEqual(checked, 30)
         self.assertIn(
             "routing-unresolved-decision:route equals 'Architect'; observed 'Engineer'",
             failures,
@@ -54,7 +54,7 @@ class EvaluationRunnerTests(unittest.TestCase):
 
         checked, failures = evaluate(self.scenarios, observations)
 
-        self.assertEqual(checked, 20)
+        self.assertEqual(checked, 30)
         self.assertIn("extra observation: unlisted-scenario", failures)
 
     def test_invalid_shape_and_missing_category_fail_before_evaluation(self) -> None:

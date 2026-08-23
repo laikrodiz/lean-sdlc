@@ -24,6 +24,7 @@ Run these scenarios from a fresh task with only the installed plugin and target 
 | Pre-handoff design brief | Show reason, selected decision, affected ownership/interfaces/invariants, useful rejected option, child limits, acceptance, proof, and stop. Never expose chain-of-thought. |
 | Valid Engineer checkpoint | Require a settled task, visible restatement, targeted proof, and one accept-or-reject review. |
 | Task preflight | Before task creation, test one behavior, contract boundary, proof cluster, and close decision. |
+| Task shaping and execution choice | First size tasks for independent acceptance; then use a risk-benefit check for valid splits and choose keep together, split serially, or split for parallel execution. |
 | Targeted proof | Engineer runs the smallest changed-behavior check after a coherent implementation checkpoint and a permitted correction. |
 | Acceptance proof | Verify the task's observable completion condition. |
 | Regression proof | Check affected-boundary risk, including sibling callers or shared interfaces. |
@@ -33,7 +34,7 @@ Run these scenarios from a fresh task with only the installed plugin and target 
 | Architect direct path | Use only for one bounded mechanical exception with one narrow proof command. |
 | Quick Fix classification | Use only for an exact, local, reversible outcome with one immediate narrow proof. |
 | Quick Fix batch review | Review pending Quick Fixes at a shared checkpoint. |
-| Assisted parallel work | Apply the universal independence gate; shared or uncertain scopes stay serial. |
+| Assisted parallel work | Apply the universal independence gate; immediately before parallel spawn, recheck the resource boundary: separate mutable resources, no unfinished dependency, and meaningful elapsed-time savings after coordination and verification; fall back to serial when conditions change. |
 | Overlapping read-only Scouts | Allow overlap only for independent questions over stable sources. |
 | Bounded Scout evidence | Route broad inquiries to Scout with citations, coverage, conflicts, and unknowns. |
 | Scout platform and version dimensions | Require broad inquiries to name platform and version dimensions, map shared core and variants before broad reads, and return coverage plus unknowns. |

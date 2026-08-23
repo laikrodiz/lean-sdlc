@@ -3,6 +3,24 @@
   "observations": {
     "routing-unresolved-decision": {"route": "Architect", "writes": false},
     "routing-shared-resource": {"execution": "serial", "shared_resource": true},
+    "planning-keep-together": {
+      "first_check": "independent acceptance",
+      "outcome": "keep together",
+      "reason": "no valid independent split or coordination risk exceeds value"
+    },
+    "planning-split-serially": {
+      "outcome": "split serially",
+      "reason": "independent acceptance exists, but shared resources or low savings require serial execution"
+    },
+    "planning-split-parallel": {
+      "outcome": "split for parallel execution",
+      "safety": ["separate mutable resources", "no unfinished dependency"],
+      "savings": "meaningful elapsed-time savings after coordination and verification"
+    },
+    "runtime-parallel-revalidation": {
+      "before_spawn": "revalidate safety immediately",
+      "fallback": "serial execution"
+    },
     "delegation-broad-evidence": {"role": "Scout", "coverage": ["shared core", "variants", "affected boundary"]},
     "delegation-settled-implementation": {"role": "Engineer", "decision": "settled"},
     "delegation-accepted-documentation": {"role": "Maintainer", "stage": "accepted implementation"},

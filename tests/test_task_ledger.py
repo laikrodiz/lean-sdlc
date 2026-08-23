@@ -1915,6 +1915,7 @@ class PackageContractTests(unittest.TestCase):
 
     def test_task_sizing_preflight_and_split_rules_are_operational(self) -> None:
         plan = (SKILL / "references/plan.md").read_text(encoding="utf-8")
+        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
         evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8")
 
         self.assertIn("## Task preflight", plan)
@@ -1930,8 +1931,15 @@ class PackageContractTests(unittest.TestCase):
             "A new behavior needs a new task",
             "Never size by elapsed time, file count, line count, or command count",
             "Treat `and` in a title as a review signal, not an automatic split",
+            "First size tasks for independent acceptance",
+            "Keep together",
+            "Split serially",
+            "Split for parallel execution",
+            "No mode, score, tasks.csv column, persistent group, or automation",
         ]:
             self.assertIn(phrase, plan)
+        self.assertIn("Immediately before a parallel Engineer spawn", subagents)
+        self.assertIn("fall back to serial execution", subagents)
         self.assertNotIn("Split on elapsed time", plan)
         self.assertNotIn("Split on file count", plan)
 
@@ -2357,9 +2365,9 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         lowered = readme.lower()
 
-        for term in ["shape", "decide", "plan", "diagnose", "deliver", "verify"]:
+        for term in ["intent", "approach", "tasks", "implement", "verify"]:
             self.assertIn(term, lowered)
-        self.assertIn("canonical child-agent policy", lowered)
+        self.assertIn("child-agent policy", lowered)
         self.assertEqual(
             lowered.count("plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md"),
             1,
@@ -2421,11 +2429,11 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.23.0")
+        self.assertEqual(version, "1.24.0")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
         self.assertIn(
-            "- Version goal: Executable behavioral evaluation, optional live fresh sessions, one portable release gate, one task/direct-path/proof contract, visible discovery and durability warnings, and a Git-free task-scoped checkpoint helper.",
+            "- Version goal: Parallel-aware task shaping with explicit together, serial, or parallel choices and runtime safety revalidation.",
             project,
         )
 

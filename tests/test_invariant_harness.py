@@ -26,9 +26,25 @@ TRIGGER_EVALS = "plugins/lean-sdlc/skills/lean-sdlc/references/trigger-evals.md"
 
 FROZEN_INVARIANTS = (
     FrozenInvariant(
-        "six lanes",
+        "public workflow",
         "README.md",
-        ("## Six lanes", "| Lane | Purpose |", "| Shape |", "| Decide |", "| Plan |", "| Diagnose |", "| Deliver |", "| Verify |"),
+        (
+            "## How it works",
+            "Understand the intent",
+            "Choose the approach",
+            "Create owned tasks",
+            "Implement",
+            "Verify the result",
+            "Update repository truth",
+        ),
+        (
+            "Understand the intent",
+            "Choose the approach",
+            "Create owned tasks",
+            "Implement",
+            "Verify the result",
+            "Update repository truth",
+        ),
     ),
     FrozenInvariant(
         "explicit implementation authority",
@@ -494,16 +510,6 @@ def _read(path: str) -> str:
     return file.read_text(encoding="utf-8")
 
 
-def _lane_names(text: str) -> tuple[str, ...]:
-    expected = {"shape", "decide", "plan", "diagnose", "deliver", "verify"}
-    names = []
-    for line in text.casefold().splitlines():
-        match = re.match(r"\|\s*([^|]+?)\s*\|", line)
-        if match and match.group(1).strip() in expected:
-            names.append(match.group(1).strip())
-    return tuple(names)
-
-
 class FrozenInvariantHarnessTests(unittest.TestCase):
     def test_every_invariant_has_one_canonical_source(self) -> None:
         names = [invariant.name for invariant in FROZEN_INVARIANTS]
@@ -525,18 +531,12 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
                     positions = [source.index(_normalized(term)) for term in invariant.ordered_terms]
                     self.assertEqual(positions, sorted(positions))
 
-    def test_lane_order_is_frozen(self) -> None:
-        self.assertEqual(
-            _lane_names(_read("README.md")),
-            ("shape", "decide", "plan", "diagnose", "deliver", "verify"),
-        )
-
     def test_lane_contracts_keep_ownership_within_the_compact_word_cap(self) -> None:
         lanes = {
             name: _read(f"plugins/lean-sdlc/skills/lean-sdlc/references/{name}.md")
             for name in ("shape", "plan", "deliver", "verify")
         }
-        self.assertLessEqual(sum(len(text.split()) for text in lanes.values()), 1900)
+        self.assertLessEqual(sum(len(text.split()) for text in lanes.values()), 2100)
         for term in [
             "shape owns the complete intent gate",
             "material assumption affects behavior, scope, or architecture",

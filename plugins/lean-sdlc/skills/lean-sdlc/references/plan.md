@@ -50,8 +50,20 @@ Split a task when a part can succeed, fail, defer, revert, release, or be accept
 
 Keep a correction in the same task when it only satisfies unchanged acceptance. A new behavior needs a new task. Never size by elapsed time, file count, line count, or command count.
 
-## Ready work
+## Task split and execution choice
 
-When at least two tasks are ready, Architect checks the next ready pair. Parallelize when resource gate passes and elapsed time should decrease. Otherwise, name the shared resource or dependency; work serially. Do not score the choice or add a mode.
+First size tasks for independent acceptance. Then ask whether broad work can become valid independent tasks.
+
+A valid split needs independent value, acceptance, proof, close or revert behavior, and a settled boundary. Each result must remain useful if another result is delayed. Otherwise, keep the work together. Do not split only to occupy a child or because files differ.
+
+Risk-benefit check:
+
+- Keep together without independent value or when coordination risk exceeds value.
+- Split serially when resources, dependencies, or savings block parallel work.
+- Split for parallel execution only when tasks have separate mutable resources, no unfinished dependency, and meaningful elapsed-time savings after coordination and verification.
+
+Choice stays in plan prose. Dependencies remain the durable ordering mechanism. No mode, score, tasks.csv column, persistent group, or automation.
+
+When at least two tasks are ready, Architect checks the next ready pair with the same risk-benefit rule. Parallelize only when the runtime resource gate also passes.
 
 Keep local implementation steps and correction handoffs transient.

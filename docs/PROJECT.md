@@ -20,6 +20,7 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 - A complete `why -> what -> how -> proof` intent gate before changes.
 - Three required repository files: `AGENTS.md`, `docs/PROJECT.md`, and root `tasks.csv`.
 - An atomic, human-readable task ledger with one task per independently accepted repository state. Dependencies must be `Done` before a task starts.
+- Task planning first preserves independent acceptance boundaries, then classifies broad work as together, serial, or parallel. Runtime revalidates safety before parallel Engineer spawn.
 - During implementation, unresolved ledger task IDs and titles project into Codex's plan view. Brainstorming and rephrasing remain read-only and create no task view.
 - Architect ownership of intent, architecture, interfaces, task boundaries, acceptance, integration, evidence, and closeout.
 - A visible pre-handoff design brief with bounded child decisions and no exposed chain-of-thought.
@@ -62,6 +63,7 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 - A new repository can start with the three required files and a root ledger.
 - The plan view mirrors each unresolved ledger task ID and title during implementation. Brainstorming creates no task view.
 - Tasks remain atomic, owner-aware, dependency-valid, and cycle-free.
+- Broad work is split only when each result remains independently acceptable; parallel execution also needs a favorable runtime risk-benefit check.
 - The Architect retains decisions. Delegated external-tool work has one mutable-target owner and returns bounded evidence.
 - Read-only evidence work maps the evidence space before bounded, question-specific reads. It returns evidence without mutation authority and preserves authoritative reads.
 - Transient automation candidates add no new durable state. A maintained deterministic command needs a later reuse case and maintenance evidence.
@@ -76,6 +78,6 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 ## Current promise
 
 - Stage: Evolution
-- Version: 1.23.0
-- Version goal: Executable behavioral evaluation, optional live fresh sessions, one portable release gate, one task/direct-path/proof contract, visible discovery and durability warnings, and a Git-free task-scoped checkpoint helper.
+- Version: 1.24.0
+- Version goal: Parallel-aware task shaping with explicit together, serial, or parallel choices and runtime safety revalidation.
 - Exit evidence: Tests, behavioral evaluation, skill and plugin validation, local installation, portable release-gate checks, accepted checkpoints, repository checks, tagged commit, and successful push.

@@ -21,6 +21,44 @@
       ]
     },
     {
+      "id": "planning-keep-together",
+      "category": "routing",
+      "prompt": "Use $lean-sdlc. First size a broad task for independent acceptance. It has no valid independent split, or coordination risk exceeds its value. Return only JSON fields: first_check, outcome, reason.",
+      "assertions": [
+        {"path": "first_check", "equals": "independent acceptance"},
+        {"path": "outcome", "equals": "keep together"},
+        {"path": "reason", "equals": "no valid independent split or coordination risk exceeds value"}
+      ]
+    },
+    {
+      "id": "planning-split-serially",
+      "category": "routing",
+      "prompt": "Use $lean-sdlc. A broad task has valid independent tasks, but shared resources or low elapsed-time savings block parallel execution. Return only JSON fields: outcome, reason.",
+      "assertions": [
+        {"path": "outcome", "equals": "split serially"},
+        {"path": "reason", "equals": "independent acceptance exists, but shared resources or low savings require serial execution"}
+      ]
+    },
+    {
+      "id": "planning-split-parallel",
+      "category": "delegation",
+      "prompt": "Use $lean-sdlc. A broad task has valid independent tasks and passes the parallel risk-benefit check. Return only JSON fields: outcome, safety, savings.",
+      "assertions": [
+        {"path": "outcome", "equals": "split for parallel execution"},
+        {"path": "safety", "equals": ["separate mutable resources", "no unfinished dependency"]},
+        {"path": "savings", "equals": "meaningful elapsed-time savings after coordination and verification"}
+      ]
+    },
+    {
+      "id": "runtime-parallel-revalidation",
+      "category": "delegation",
+      "prompt": "Use $lean-sdlc. A parallel Engineer spawn is ready after planning, but runtime state may have changed. Return only JSON fields: before_spawn, fallback.",
+      "assertions": [
+        {"path": "before_spawn", "equals": "revalidate safety immediately"},
+        {"path": "fallback", "equals": "serial execution"}
+      ]
+    },
+    {
       "id": "delegation-broad-evidence",
       "category": "delegation",
       "prompt": "Use $lean-sdlc. A read-only inquiry compares multiple platforms and versions and crosses a shared boundary. Return only JSON fields: role, coverage.",
