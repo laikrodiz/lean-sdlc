@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import subprocess
+import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -60,6 +61,87 @@ class ReleaseCheckTests(unittest.TestCase):
         cache = Path(calls[0][2]["PYTHONPYCACHEPREFIX"])
         self.assertFalse(cache.is_relative_to(ROOT))
         self.assertEqual(calls[0][2]["PYTHONDONTWRITEBYTECODE"], "1")
+
+    def test_structural_check_gets_missing_ledger_only_temporarily(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            ledger = root / "tasks.csv"
+            calls: list[str] = []
+
+            def fake_step(
+                label: str,
+                command: list[str],
+                step_root: Path,
+                environment: dict[str, str],
+            ) -> subprocess.CompletedProcess[str]:
+                calls.append(label)
+                if label == "full unit suite" or label == "deterministic evaluation fixture check":
+                    self.assertFalse(ledger.exists())
+                if label == "structural Lean-SDLC check":
+                    self.assertEqual(ledger.read_text(encoding="utf-8"), RELEASE.EMPTY_LEDGER)
+                return subprocess.CompletedProcess(command, 0, "", "")
+
+            with patch.object(RELEASE, "check_package_structure"), patch.object(
+                RELEASE, "check_version_consistency", return_value="test"
+            ), patch.object(RELEASE, "_test_modules", return_value=["tests.test_release_check"]), patch.object(
+                RELEASE, "_run_step", side_effect=fake_step
+            ):
+                self.assertEqual(RELEASE.run_release_checks(root), "test")
+
+            self.assertEqual(calls[1], "structural Lean-SDLC check")
+            self.assertFalse(ledger.exists())
+
+    def test_existing_ledger_is_preserved_during_structural_check(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            ledger = root / "tasks.csv"
+            original = b"private ledger\n"
+            ledger.write_bytes(original)
+
+            def fake_step(
+                label: str,
+                command: list[str],
+                step_root: Path,
+                environment: dict[str, str],
+            ) -> subprocess.CompletedProcess[str]:
+                if label == "structural Lean-SDLC check":
+                    self.assertEqual(ledger.read_bytes(), original)
+                return subprocess.CompletedProcess(command, 0, "", "")
+
+            with patch.object(RELEASE, "check_package_structure"), patch.object(
+                RELEASE, "check_version_consistency", return_value="test"
+            ), patch.object(RELEASE, "_test_modules", return_value=["tests.test_release_check"]), patch.object(
+                RELEASE, "_run_step", side_effect=fake_step
+            ):
+                RELEASE.run_release_checks(root)
+
+            self.assertEqual(ledger.read_bytes(), original)
+
+    def test_missing_ledger_is_removed_when_structural_check_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            ledger = root / "tasks.csv"
+
+            def fail_structural_check(
+                label: str,
+                command: list[str],
+                step_root: Path,
+                environment: dict[str, str],
+            ) -> subprocess.CompletedProcess[str]:
+                if label == "structural Lean-SDLC check":
+                    self.assertTrue(ledger.is_file())
+                    raise RELEASE.ReleaseCheckError("structural failure")
+                return subprocess.CompletedProcess(command, 0, "", "")
+
+            with patch.object(RELEASE, "check_package_structure"), patch.object(
+                RELEASE, "check_version_consistency", return_value="test"
+            ), patch.object(RELEASE, "_test_modules", return_value=["tests.test_release_check"]), patch.object(
+                RELEASE, "_run_step", side_effect=fail_structural_check
+            ):
+                with self.assertRaisesRegex(RELEASE.ReleaseCheckError, "structural failure"):
+                    RELEASE.run_release_checks(root)
+
+            self.assertFalse(ledger.exists())
 
     def test_install_smoke_uses_temporary_codex_home_and_checks_listing(self) -> None:
         calls: list[tuple[str, list[str], dict[str, str]]] = []

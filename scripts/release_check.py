@@ -9,8 +9,9 @@ import re
 import subprocess
 import sys
 import tempfile
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Sequence
+from typing import Iterator, Sequence
 
 
 VERSION_PATTERN = re.compile(r"(?<!\d)(\d+\.\d+\.\d+)(?!\d)")
@@ -26,6 +27,7 @@ REQUIRED_PACKAGE_PATHS = (
     "hooks/hooks.json",
     "skills/lean-sdlc/SKILL.md",
 )
+EMPTY_LEDGER = "Task ID,Title,Status,Context,Dependencies,Owner,Acceptance Criteria,Proof,Evidence\n"
 
 
 class ReleaseCheckError(RuntimeError):
@@ -136,6 +138,24 @@ def _test_modules(root: Path) -> list[str]:
     return [".".join(path.relative_to(root).with_suffix("").parts) for path in tests]
 
 
+@contextmanager
+def _temporary_empty_ledger(root: Path) -> Iterator[None]:
+    path = root / "tasks.csv"
+    created = False
+    try:
+        try:
+            with path.open("x", encoding="utf-8", newline="") as handle:
+                created = True
+                handle.write(EMPTY_LEDGER)
+        except FileExistsError:
+            yield
+            return
+        yield
+    finally:
+        if created:
+            path.unlink(missing_ok=True)
+
+
 def run_install_smoke(
     root: Path,
     environment: dict[str, str],
@@ -185,12 +205,13 @@ def run_release_checks(root: Path, *, install_smoke: bool = False) -> str:
             root,
             environment,
         )
-        _run_step(
-            "structural Lean-SDLC check",
-            [python, str(root / STRUCTURAL_CHECK), str(root)],
-            root,
-            environment,
-        )
+        with _temporary_empty_ledger(root):
+            _run_step(
+                "structural Lean-SDLC check",
+                [python, str(root / STRUCTURAL_CHECK), str(root)],
+                root,
+                environment,
+            )
         _run_step(
             "deterministic evaluation fixture check",
             [python, str(root / EVALUATION_RUNNER)],
