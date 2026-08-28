@@ -52,6 +52,26 @@ FROZEN_INVARIANTS = (
         ("require explicit implementation authority before task creation or changes", "discussion and proposals remain read-only", "if ambiguous, remain read-only"),
     ),
     FrozenInvariant(
+        "exact startup context",
+        "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md",
+        (
+            "exact startup fields from the lifecycle system message",
+            "system message supplies `Repository root`, `Skill root`, `Tasks helper`, `Check helper`, `State helper`, `Owner`, `Mode`, and `Child tier`",
+            "`repository_root`, `skill_root`, `tasks_helper`, `check_helper`, `state_helper`, `owner`, `mode`, and `tier`",
+            "the `Skill root` is the parent of the loaded `SKILL.md`",
+            "`python3 \"<directory containing the loaded SKILL.md>/scripts/session_state.py\" --context`",
+            "existing `CODEX_SESSION_ID`",
+            "never set, replace, or invent `CODEX_SESSION_ID`",
+            "fallback fails when `CODEX_SESSION_ID` is absent",
+            "only this fallback returns structured JSON with snake_case fields",
+            "use returned fields, paths, and owner exactly",
+            "never reconstruct paths",
+            "shorten cache paths",
+            "search for helpers",
+            "placeholder owners",
+        ),
+    ),
+    FrozenInvariant(
         "natural intent gate",
         "plugins/lean-sdlc/skills/lean-sdlc/references/shape.md",
         ("shape owns the complete intent gate", "why -> what -> how -> proof", "shape settles why and what", "decide and plan add how and proof", "present problem or opportunity and affected user or business value", "smallest observable outcome plus constraints and non-goals", "technical approach and task shape after why and what are stable", "proof: acceptance and verification", "material assumption affects behavior, scope, or architecture", "stop for user confirmation", "intent is clear and implementation authority is explicit", "brainstorming and rephrasing remain read-only"),
@@ -514,7 +534,7 @@ def _read(path: str) -> str:
 class FrozenInvariantHarnessTests(unittest.TestCase):
     def test_every_invariant_has_one_canonical_source(self) -> None:
         names = [invariant.name for invariant in FROZEN_INVARIANTS]
-        self.assertEqual(len(FROZEN_INVARIANTS), 36)
+        self.assertEqual(len(FROZEN_INVARIANTS), 37)
         self.assertEqual(len(names), len(set(names)))
         for invariant in FROZEN_INVARIANTS:
             with self.subTest(invariant=invariant.name):

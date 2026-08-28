@@ -38,15 +38,26 @@ def run_script(
     *,
     codex_home: Path,
     arguments: tuple[str, ...] = (),
+    cwd: Path | None = None,
+    session_id: str | None = None,
 ) -> subprocess.CompletedProcess[str]:
+    environment = {
+        **os.environ,
+        "CODEX_HOME": str(codex_home),
+        "PYTHONDONTWRITEBYTECODE": "1",
+    }
+    if session_id is None:
+        environment.pop("CODEX_SESSION_ID", None)
+    else:
+        environment["CODEX_SESSION_ID"] = session_id
     return subprocess.run(
         [sys.executable, str(script), *arguments],
-        cwd=ROOT,
+        cwd=ROOT if cwd is None else cwd,
         input=None if event is None else json.dumps(event),
         text=True,
         capture_output=True,
         check=False,
-        env={**os.environ, "CODEX_HOME": str(codex_home), "PYTHONDONTWRITEBYTECODE": "1"},
+        env=environment,
     )
 
 
@@ -295,6 +306,104 @@ class RuntimeHookTests(unittest.TestCase):
         self.assertIn("Mode: assisted", message)
         self.assertIn("Child tier: Standard", message)
         self.assertIn("reload subagents.md before Deliver", message)
+        skill = SCRIPTS.parent.resolve()
+        self.assertIn(f"Tasks helper: {skill / 'scripts/tasks.py'}.", message)
+        self.assertIn(f"Check helper: {skill / 'scripts/lean_check.py'}.", message)
+        self.assertIn(f"State helper: {skill / 'scripts/session_state.py'}.", message)
+
+    def test_context_returns_exact_roots_helpers_owner_mode_and_tier(self) -> None:
+        self.set_state("--mode", "solo", "--fast-children")
+        result = run_script(
+            SESSION_STATE,
+            codex_home=self.codex_home,
+            arguments=("--context",),
+            cwd=self.repository,
+            session_id=self.session_id,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        skill = SCRIPTS.parent.resolve()
+        repository = self.repository.resolve()
+        self.assertEqual(
+            json.loads(result.stdout),
+            {
+                "repository_root": str(repository),
+                "skill_root": str(skill),
+                "tasks_helper": str(skill / "scripts/tasks.py"),
+                "check_helper": str(skill / "scripts/lean_check.py"),
+                "state_helper": str(skill / "scripts/session_state.py"),
+                "owner": self.owner(),
+                "mode": "solo",
+                "tier": "Fast",
+            },
+        )
+
+    def test_context_requires_session_environment(self) -> None:
+        result = run_script(
+            SESSION_STATE,
+            codex_home=self.codex_home,
+            arguments=("--context",),
+            cwd=self.repository,
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("CODEX_SESSION_ID is unavailable", result.stderr)
+        self.assertEqual(result.stdout, "")
+
+    def test_context_rejects_unavailable_repository(self) -> None:
+        empty = self.root / "empty"
+        empty.mkdir()
+        result = run_script(
+            SESSION_STATE,
+            codex_home=self.codex_home,
+            arguments=("--context",),
+            cwd=empty,
+            session_id=self.session_id,
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("repository is unavailable", result.stderr)
+        self.assertEqual(result.stdout, "")
+
+    def test_context_rejects_ambiguous_repositories(self) -> None:
+        workspace = self.root / "workspace"
+        for name in ("first", "second"):
+            repository = workspace / name
+            repository.mkdir(parents=True)
+            repository.joinpath("AGENTS.md").write_text(
+                "Use $lean-sdlc for repository work.\n", encoding="utf-8"
+            )
+            repository.joinpath("tasks.csv").write_text("", encoding="utf-8")
+
+        result = run_script(
+            SESSION_STATE,
+            codex_home=self.codex_home,
+            arguments=("--context",),
+            cwd=workspace,
+            session_id=self.session_id,
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("multiple Lean-SDLC repositories", result.stderr)
+        self.assertEqual(result.stdout, "")
+
+    def test_context_uses_loaded_skill_parent_and_hook_keeps_system_message(self) -> None:
+        context = run_script(
+            SESSION_STATE,
+            codex_home=self.codex_home,
+            arguments=("--context",),
+            cwd=self.repository,
+            session_id=self.session_id,
+        )
+        self.assertEqual(context.returncode, 0, context.stderr)
+        values = json.loads(context.stdout)
+        self.assertEqual(values["skill_root"], str(SCRIPTS.parent.resolve()))
+        event = {
+            "session_id": self.session_id,
+            "cwd": str(self.repository),
+            "hook_event_name": "SessionStart",
+        }
+        hook = run_script(SESSION_STATE, event, codex_home=self.codex_home)
+        self.assertEqual(hook.returncode, 0, hook.stderr)
+        message = json.loads(hook.stdout)["systemMessage"]
+        self.assertIn(f"Lean-SDLC Owner: {self.owner()}.", message)
+        self.assertIn(f"Skill root: {SCRIPTS.parent.resolve()}.", message)
 
     def test_workspace_root_selects_one_descendant_and_reports_both_roots(self) -> None:
         workspace = self.root / "workspace"

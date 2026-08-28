@@ -7,7 +7,16 @@ description: Run Lean-SDLC when the user explicitly invokes Lean-SDLC or `$lean-
 
 Keep intent, work, implementation, and proof coherent with the smallest useful process.
 
-At lifecycle startup, use the reported `Repository root` and `Skill root` exactly. The Architect invokes packaged helpers with these roots:
+At lifecycle startup, use exact startup fields from the lifecycle system message.
+The system message supplies `Repository root`, `Skill root`, `Tasks helper`, `Check helper`, `State helper`, `Owner`, `Mode`, and `Child tier`.
+The `Skill root` is the parent of the loaded `SKILL.md`.
+If any field is absent, run `python3 "<directory containing the loaded SKILL.md>/scripts/session_state.py" --context`.
+Use the existing `CODEX_SESSION_ID`.
+Never set, replace, or invent `CODEX_SESSION_ID`.
+The fallback fails when `CODEX_SESSION_ID` is absent.
+Only this fallback returns structured JSON with snake_case fields: `repository_root`, `skill_root`, `tasks_helper`, `check_helper`, `state_helper`, `owner`, `mode`, and `tier`.
+Use returned fields, paths, and owner exactly.
+Never reconstruct paths, shorten cache paths, search for helpers, or use placeholder owners.
 
 - `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" <command>` for ledger commands.
 - `python3 "<skill-root>/scripts/lean_check.py" "<repo-root>" <options>` for repository checks.

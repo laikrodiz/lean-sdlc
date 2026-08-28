@@ -2435,11 +2435,11 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.24.1")
+        self.assertEqual(version, "1.24.2")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
         self.assertIn(
-            "- Version goal: Event-driven child communication with immediate action-required escalation, one final return, and no duplicate Architect commentary.",
+            "- Version goal: Deterministic startup context with exact helper paths and owner recovery.",
             project,
         )
 

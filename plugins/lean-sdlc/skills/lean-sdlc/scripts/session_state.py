@@ -73,7 +73,36 @@ def lean_repository(cwd: str) -> Path | None:
 
 
 def skill_root() -> Path:
-    return Path(__file__).resolve().parent.parent
+    loaded_skill = Path(__file__).resolve().parent.parent / "SKILL.md"
+    if not loaded_skill.is_file():
+        raise ValueError(f"loaded SKILL.md is unavailable: {loaded_skill}")
+    return loaded_skill.parent
+
+
+def _startup_context(
+    session_id: str,
+    cwd: str,
+) -> tuple[dict[str, str] | None, bool]:
+    repository, ambiguous = _repository_resolution(cwd)
+    if repository is None:
+        return None, ambiguous
+
+    loaded_skill = skill_root()
+    owner = owner_id(session_id)
+    state = load_state(owner)
+    tier = "Fast" if state["fast_children"] else "Standard"
+    repository_root = str(repository)
+    skill_path = str(loaded_skill)
+    return {
+        "repository_root": repository_root,
+        "skill_root": skill_path,
+        "tasks_helper": str(loaded_skill / "scripts/tasks.py"),
+        "check_helper": str(loaded_skill / "scripts/lean_check.py"),
+        "state_helper": str(loaded_skill / "scripts/session_state.py"),
+        "owner": owner,
+        "mode": str(state["mode"]),
+        "tier": tier,
+    }, False
 
 
 def _codex_home() -> Path:
@@ -148,6 +177,11 @@ def _parse_bool(value: str) -> bool:
 
 def _arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--context",
+        action="store_true",
+        help="print exact startup repository, helper, owner, mode, and tier context",
+    )
     parser.add_argument("--owner", help="eight-digit session owner")
     parser.add_argument("--mode", choices=sorted(MODES))
     parser.add_argument(
@@ -168,7 +202,40 @@ def _arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def _run_context() -> int:
+    session_id = os.environ.get("CODEX_SESSION_ID", "")
+    if not session_id:
+        raise ValueError("CODEX_SESSION_ID is unavailable")
+    try:
+        cwd = os.getcwd()
+    except OSError as exc:
+        raise ValueError(f"current working directory is unavailable: {exc}") from exc
+
+    context, ambiguous = _startup_context(session_id, cwd)
+    if context is None:
+        if ambiguous:
+            raise ValueError(
+                "multiple Lean-SDLC repositories found below the current directory; "
+                "focus one repository before continuing"
+            )
+        raise ValueError(
+            "Lean-SDLC repository is unavailable from the current directory"
+        )
+    print(json.dumps(context))
+    return 0
+
+
 def _run_cli(arguments: argparse.Namespace) -> int:
+    if arguments.context:
+        if (
+            arguments.owner is not None
+            or arguments.mode is not None
+            or arguments.fast_children is not None
+        ):
+            raise ValueError(
+                "--context cannot be combined with --owner, --mode, or child-tier options"
+            )
+        return _run_context()
     if arguments.owner is None:
         return 0
     try:
@@ -200,8 +267,8 @@ def _run_hook() -> int:
         print(f"Lean-SDLC state hook failed: {exc}", file=sys.stderr)
         return 1
 
-    repository, ambiguous = _repository_resolution(cwd)
-    if repository is None:
+    context, ambiguous = _startup_context(session_id, cwd)
+    if context is None:
         if ambiguous:
             print(
                 json.dumps(
@@ -215,18 +282,17 @@ def _run_hook() -> int:
             )
         return 0
 
-    loaded_skill = skill_root()
-    owner = owner_id(session_id)
-    state = load_state(owner)
-    tier = "Fast" if state["fast_children"] else "Standard"
     print(
         json.dumps(
             {
                 "systemMessage": (
-                    f"Lean-SDLC Owner: {owner}. "
-                    f"Repository root: {repository}. "
-                    f"Skill root: {loaded_skill}. "
-                    f"Mode: {state['mode']}. Child tier: {tier}. "
+                    f"Lean-SDLC Owner: {context['owner']}. "
+                    f"Repository root: {context['repository_root']}. "
+                    f"Skill root: {context['skill_root']}. "
+                    f"Tasks helper: {context['tasks_helper']}. "
+                    f"Check helper: {context['check_helper']}. "
+                    f"State helper: {context['state_helper']}. "
+                    f"Mode: {context['mode']}. Child tier: {context['tier']}. "
                     "After lifecycle restoration, reload subagents.md before Deliver."
                 )
             }
@@ -237,8 +303,12 @@ def _run_hook() -> int:
 
 def main() -> int:
     arguments = _arguments()
-    if arguments.owner is not None:
-        return _run_cli(arguments)
+    if arguments.context or arguments.owner is not None:
+        try:
+            return _run_cli(arguments)
+        except (OSError, ValueError) as exc:
+            print(f"Lean-SDLC startup context failed: {exc}", file=sys.stderr)
+            return 2
     return _run_hook()
 
 
