@@ -80,6 +80,6 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 ## Current promise
 
 - Stage: Evolution
-- Version: 1.24.2
-- Version goal: Deterministic startup context with exact helper paths and owner recovery.
+- Version: 1.24.3
+- Version goal: Task-authorized, atomic repair of missing, invalid, or stale managed startup blocks that preserves project rules and file permissions; normal initialization remains create-only.
 - Exit evidence: Tests, behavioral evaluation, skill and plugin validation, local installation, portable release-gate checks, accepted checkpoints, repository checks, tagged commit, and successful push.

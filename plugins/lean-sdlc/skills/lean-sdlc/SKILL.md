@@ -17,6 +17,7 @@ The fallback fails when `CODEX_SESSION_ID` is absent.
 Only this fallback returns structured JSON with snake_case fields: `repository_root`, `skill_root`, `tasks_helper`, `check_helper`, `state_helper`, `owner`, `mode`, and `tier`.
 Use returned fields, paths, and owner exactly.
 Never reconstruct paths, shorten cache paths, search for helpers, or use placeholder owners.
+If the checker reports a missing, invalid, or stale managed startup block, run `python3 "<skill-root>/scripts/init_repo.py" "<repo-root>" --repair-startup --task TASK-ID --owner OWNER` after task start and before the general before-write gate. Treat this repair as a control transaction; it changes only that block, and normal initialization remains create-only.
 
 - `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" <command>` for ledger commands.
 - `python3 "<skill-root>/scripts/lean_check.py" "<repo-root>" <options>` for repository checks.

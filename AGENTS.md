@@ -2,6 +2,7 @@
 
 Invoke `$lean-sdlc` before planning, diagnosing, changing, verifying, or closing repository work.
 
+<!-- lean-sdlc:startup v1 -->
 Use exact startup fields from the lifecycle system message.
 The system message supplies `Repository root`, `Skill root`, `Tasks helper`, `Check helper`, `State helper`, `Owner`, `Mode`, and `Child tier`.
 The `Skill root` is the parent of the loaded `SKILL.md`.
@@ -13,6 +14,8 @@ Only this fallback returns structured JSON with snake_case fields: `repository_r
 Use returned fields, paths, and owner exactly.
 Never reconstruct paths, shorten cache paths, search for helpers, or use placeholder owners.
 Children receive task facts and do not locate or run these helpers.
+If the checker reports a missing, invalid, or stale managed startup block, run `python3 "<skill-root>/scripts/init_repo.py" "<repo-root>" --repair-startup --task TASK-ID --owner OWNER` before the general before-write check.
+<!-- /lean-sdlc:startup -->
 
 ## Repository gate
 

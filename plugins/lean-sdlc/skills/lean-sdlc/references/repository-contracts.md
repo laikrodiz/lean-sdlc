@@ -8,6 +8,8 @@ An initialized project requires only `AGENTS.md`, `docs/PROJECT.md`, and root `t
 
 `docs/PROJECT.md` remains the only mandatory shared project document. `AGENTS.md` and root `tasks.csv` remain required repository files. README remains project-owned.
 
+A missing, invalid, or stale managed startup block is repaired with `python3 "<skill-root>/scripts/init_repo.py" "<repo-root>" --repair-startup --task TASK-ID --owner OWNER` after task start and before the general before-write gate. This control transaction changes only that block; normal initialization remains create-only.
+
 Optional documents appear only when a concrete need-based trigger exists. Use semantic sizing: one document holds one cohesive meaning, not an arbitrary line or time limit.
 
 - `docs/features/FEAT-*.md` for one durable behavior too detailed for `PROJECT.md`.

@@ -28,6 +28,8 @@ HEADER = (
     "Task ID,Title,Status,Context,Dependencies,Owner,"
     "Acceptance Criteria,Proof,Evidence\n"
 )
+STARTUP_START = "<!-- lean-sdlc:startup v1 -->"
+STARTUP_END = "<!-- /lean-sdlc:startup -->"
 
 
 def run(*arguments: str, input_text: str | None = None) -> subprocess.CompletedProcess[str]:
@@ -66,6 +68,15 @@ def initialize_repository(repository: Path) -> None:
     initialized = run(str(INIT), str(repository))
     if initialized.returncode != 0:
         raise AssertionError(initialized.stdout + initialized.stderr)
+
+
+def packaged_startup_block() -> str:
+    lines = (SKILL / "assets/AGENTS.md").read_text(encoding="utf-8").splitlines(
+        keepends=True
+    )
+    start = next(index for index, line in enumerate(lines) if line.rstrip("\r\n") == STARTUP_START)
+    end = next(index for index, line in enumerate(lines) if line.rstrip("\r\n") == STARTUP_END)
+    return "".join(lines[start : end + 1])
 
 
 def write_document_family(
@@ -1471,6 +1482,10 @@ class TaskLedgerTests(unittest.TestCase):
             self.assertEqual(first.returncode, 0, first.stderr)
 
             self.assertTrue(repository.joinpath("AGENTS.md").is_file())
+            self.assertEqual(
+                repository.joinpath("AGENTS.md").read_text(encoding="utf-8"),
+                (SKILL / "assets/AGENTS.md").read_text(encoding="utf-8"),
+            )
             self.assertTrue(repository.joinpath("docs/PROJECT.md").is_file())
             self.assertTrue(repository.joinpath("tasks.csv").is_file())
             ignores = repository.joinpath(".gitignore").read_text(encoding="utf-8")
@@ -1542,6 +1557,158 @@ class TaskLedgerTests(unittest.TestCase):
                 ignores.splitlines(),
                 ["dist/", "/tasks.csv", "/.tasks.lock"],
             )
+
+    def test_checker_reports_missing_and_stale_managed_startup_blocks(self) -> None:
+        cases = {
+            "missing managed startup block": "project-specific rules\n",
+            "stale managed startup block": packaged_startup_block().replace(
+                "Use exact startup fields from the lifecycle system message.",
+                "Use outdated startup fields from the lifecycle system message.",
+                1,
+            ),
+        }
+        for expected, content in cases.items():
+            with self.subTest(expected=expected), tempfile.TemporaryDirectory() as directory:
+                repository = Path(directory)
+                initialize_repository(repository)
+                repository.joinpath("AGENTS.md").write_text(content, encoding="utf-8")
+
+                checked = run(str(CHECK), str(repository))
+
+                self.assertNotEqual(checked.returncode, 0)
+                self.assertIn(expected, checked.stdout)
+
+    def test_startup_repair_requires_owned_in_progress_authorization(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            initialize_repository(repository)
+            stale = packaged_startup_block().replace(
+                "Use exact startup fields from the lifecycle system message.",
+                "Use outdated startup fields from the lifecycle system message.",
+                1,
+            )
+            repository.joinpath("AGENTS.md").write_text(stale, encoding="utf-8")
+            write_ledger(
+                repository,
+                "TASK-001,Repair startup,In Progress,Project,,12345678,"
+                "Repair the startup block,Run the checker,\n",
+            )
+            before = repository.joinpath("AGENTS.md").read_text(encoding="utf-8")
+
+            missing = run(str(INIT), str(repository), "--repair-startup")
+            self.assertNotEqual(missing.returncode, 0)
+            self.assertIn("requires --task TASK-ID and --owner OWNER", missing.stderr)
+            self.assertEqual(
+                repository.joinpath("AGENTS.md").read_text(encoding="utf-8"),
+                before,
+            )
+
+            wrong_owner = run(
+                str(INIT),
+                str(repository),
+                "--repair-startup",
+                "--task",
+                "TASK-001",
+                "--owner",
+                "87654321",
+            )
+            self.assertNotEqual(wrong_owner.returncode, 0)
+            self.assertIn("TASK-001 is not owned by 87654321", wrong_owner.stderr)
+            self.assertEqual(
+                repository.joinpath("AGENTS.md").read_text(encoding="utf-8"),
+                before,
+            )
+
+    def test_startup_repair_preserves_project_text_and_is_idempotent(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            initialize_repository(repository)
+            block = packaged_startup_block()
+            prefix = "# Project-specific rules\n\n"
+            suffix = "\n## Local rules\nKeep this text unchanged.\n"
+            stale = block.replace(
+                "Use exact startup fields from the lifecycle system message.",
+                "Use outdated startup fields from the lifecycle system message.",
+                1,
+            )
+            repository.joinpath("AGENTS.md").write_text(
+                prefix + stale + suffix,
+                encoding="utf-8",
+            )
+            write_ledger(
+                repository,
+                "TASK-001,Repair startup,In Progress,Project,,12345678,"
+                "Repair the startup block,Run the checker,\n",
+            )
+
+            repaired = run(
+                str(INIT),
+                str(repository),
+                "--repair-startup",
+                "--task",
+                "TASK-001",
+                "--owner",
+                "12345678",
+            )
+
+            self.assertEqual(repaired.returncode, 0, repaired.stderr)
+            self.assertIn("repaired AGENTS.md", repaired.stdout)
+            expected = prefix + block + suffix
+            self.assertEqual(
+                repository.joinpath("AGENTS.md").read_text(encoding="utf-8"),
+                expected,
+            )
+            checked = run(str(CHECK), str(repository))
+            self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)
+
+            before_repeat = repository.joinpath("AGENTS.md").read_text(encoding="utf-8")
+            repeated = run(
+                str(INIT),
+                str(repository),
+                "--repair-startup",
+                "--task",
+                "TASK-001",
+                "--owner",
+                "12345678",
+            )
+
+            self.assertEqual(repeated.returncode, 0, repeated.stderr)
+            self.assertIn("0 control change(s)", repeated.stdout)
+            self.assertEqual(
+                repository.joinpath("AGENTS.md").read_text(encoding="utf-8"),
+                before_repeat,
+            )
+
+    def test_startup_repair_appends_missing_block_without_changing_project_text(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            initialize_repository(repository)
+            project_text = "# Project-owned rules\n\nKeep this text unchanged.\n"
+            agents = repository.joinpath("AGENTS.md")
+            agents.write_text(project_text, encoding="utf-8")
+            os.chmod(agents, 0o640)
+            write_ledger(
+                repository,
+                "TASK-001,Repair startup,In Progress,Project,,12345678,"
+                "Repair the startup block,Run the checker,\n",
+            )
+
+            repaired = run(
+                str(INIT),
+                str(repository),
+                "--repair-startup",
+                "--task",
+                "TASK-001",
+                "--owner",
+                "12345678",
+            )
+
+            self.assertEqual(repaired.returncode, 0, repaired.stderr)
+            self.assertEqual(
+                agents.read_text(encoding="utf-8"),
+                project_text + packaged_startup_block(),
+            )
+            self.assertEqual(agents.stat().st_mode & 0o777, 0o640)
 
 
 class PackageContractTests(unittest.TestCase):
@@ -2435,11 +2602,11 @@ class PackageContractTests(unittest.TestCase):
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
         project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
 
-        self.assertEqual(version, "1.24.2")
+        self.assertEqual(version, "1.24.3")
         self.assertIn(f"`v{version}`", readme)
         self.assertIn(f"- Version: {version}", project)
         self.assertIn(
-            "- Version goal: Deterministic startup context with exact helper paths and owner recovery.",
+            "- Version goal: Task-authorized, atomic repair of missing, invalid, or stale managed startup blocks that preserves project rules and file permissions; normal initialization remains create-only.",
             project,
         )
 

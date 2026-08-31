@@ -21,6 +21,11 @@ from task_ledger import (
     read_ledger,
     task_path,
 )
+from startup_contract import (
+    StartupContractError,
+    read_template_block,
+    startup_block_error,
+)
 
 
 REQUIRED_FILES = ("AGENTS.md", "docs/PROJECT.md", "tasks.csv", ".gitignore")
@@ -274,6 +279,19 @@ def source_archive_errors(root: Path) -> list[str]:
     return errors
 
 
+def startup_contract_errors(root: Path, *, report_missing: bool) -> list[str]:
+    path = root / "AGENTS.md"
+    if not path.is_file():
+        return ["AGENTS.md: missing managed startup block"] if report_missing else []
+    try:
+        text = path.read_text(encoding="utf-8")
+        expected = read_template_block()
+    except (OSError, StartupContractError) as exc:
+        return [f"AGENTS.md: cannot validate managed startup block: {exc}"]
+    error = startup_block_error(text, expected)
+    return [f"AGENTS.md: {error}"] if error else []
+
+
 def main() -> int:
     args = parse_args()
     root = Path(args.repository).resolve()
@@ -300,6 +318,10 @@ def main() -> int:
         else:
             for entry in sorted(REQUIRED_IGNORES - ignores):
                 errors.append(f".gitignore: missing required entry {entry}")
+
+    errors.extend(
+        startup_contract_errors(root, report_missing=not args.before_write)
+    )
 
     if not args.before_write:
         errors.extend(document_collection_errors(root))

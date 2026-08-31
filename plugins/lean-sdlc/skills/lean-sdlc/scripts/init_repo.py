@@ -4,7 +4,9 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
+import tempfile
 from pathlib import Path
 
 sys.dont_write_bytecode = True
@@ -12,11 +14,15 @@ sys.dont_write_bytecode = True
 from task_ledger import (
     TASK_COLUMNS,
     TaskError,
+    find_task,
     ledger_lock,
     read_ledger,
+    require_integrity,
     task_path,
+    thread_owner,
     write_ledger,
 )
+from startup_contract import StartupContractError, read_template_block, repair_text
 
 
 PROJECT = """# Project
@@ -70,6 +76,15 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Repository root (default: current directory)",
     )
+    parser.add_argument(
+        "--repair-startup",
+        "--repair",
+        dest="repair_startup",
+        action="store_true",
+        help="Repair only the managed AGENTS.md startup block",
+    )
+    parser.add_argument("--task", help="Owned In Progress task authorizing repair")
+    parser.add_argument("--owner", help="Owner of the authorizing task")
     return parser.parse_args()
 
 
@@ -102,6 +117,27 @@ def update_gitignore(root: Path, missing: list[str]) -> str:
     except OSError as exc:
         raise SystemExit(f"Cannot update .gitignore: {exc}") from exc
     return "updated" if existed else "created"
+
+
+def atomic_replace_text(path: Path, content: str) -> None:
+    mode = path.stat().st_mode & 0o777 if path.exists() else 0o644
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{path.name}.",
+        dir=path.parent,
+        text=True,
+    )
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8", newline="") as handle:
+            handle.write(content)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.chmod(temporary, mode)
+        os.replace(temporary, path)
+        temporary = None
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
 
 
 def initialize(root: Path) -> int:
@@ -166,14 +202,67 @@ def initialize(root: Path) -> int:
     return 0
 
 
+def authorize_repair(root: Path, args: argparse.Namespace) -> None:
+    if not args.task or not args.owner:
+        raise TaskError(
+            "--repair-startup requires --task TASK-ID and --owner OWNER"
+        )
+
+    path = task_path(root)
+    columns, rows = read_ledger(path)
+    if columns != list(TASK_COLUMNS):
+        raise TaskError("Existing tasks.csv has an unsupported header.")
+    require_integrity(rows)
+    selected = find_task(rows, args.task)
+    if selected.get("Status") != "In Progress":
+        raise TaskError(f"{args.task} must be In Progress before repair")
+    try:
+        owner = thread_owner(
+            args.owner,
+            allow_bootstrap=selected.get("Context") == "Bootstrap",
+        )
+    except TaskError as exc:
+        raise TaskError(f"invalid repair owner: {exc}") from exc
+    if selected.get("Owner") != owner:
+        raise TaskError(f"{args.task} is not owned by {owner}")
+
+
+def repair_startup(root: Path, args: argparse.Namespace) -> int:
+    authorize_repair(root, args)
+    target = root / "AGENTS.md"
+    try:
+        current = target.read_text(encoding="utf-8") if target.is_file() else ""
+        replacement = read_template_block()
+        repaired = repair_text(current, replacement)
+    except (OSError, StartupContractError) as exc:
+        raise TaskError(str(exc)) from exc
+
+    if repaired == current:
+        print("kept    AGENTS.md")
+        print("Lean-SDLC startup repair complete: 0 control change(s).")
+        return 0
+
+    try:
+        atomic_replace_text(target, repaired)
+    except OSError as exc:
+        raise TaskError(f"Cannot repair AGENTS.md: {exc}") from exc
+    print("repaired AGENTS.md")
+    print("Lean-SDLC startup repair complete: 1 control change(s).")
+    return 0
+
+
 def main() -> int:
     args = parse_args()
     root = Path(args.repository).resolve()
     if not root.is_dir():
         raise SystemExit(f"Repository directory does not exist: {root}")
+    if not args.repair_startup and (args.task or args.owner):
+        raise SystemExit("--task and --owner require --repair-startup")
 
     try:
         with ledger_lock(root):
+            if args.repair_startup:
+                return repair_startup(root, args)
             return initialize(root)
     except TaskError as exc:
         raise SystemExit(str(exc)) from exc
