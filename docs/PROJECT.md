@@ -25,16 +25,18 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 - Architect ownership of intent, architecture, interfaces, task boundaries, acceptance, integration, evidence, and closeout.
 - A visible pre-handoff design brief with bounded child decisions and no exposed chain-of-thought.
 - Four standard roles with stage-aware routing: Engineer for approved implementation, Maintainer for shared documents and recorded operations, Verifier for independent checks, and Scout for map-before-read bounded cited evidence.
-- One role-routing precedence chain, layered targeted, acceptance, and regression proof, and bounded full-suite use.
+- One role-routing precedence chain, layered targeted, acceptance, and regression proof, and bounded full-suite use. One command may satisfy several proof purposes. Reuse proof and artifacts only when relevant source, dependencies, configuration, environment, toolchain, and target inputs match.
 - Assisted mode as the default and Solo mode as the lead-only alternative. Both modes use the same task and proof rules.
+- Assisted mode may keep one bounded, settled local change with the Architect when handoff overhead exceeds the work. This includes judgment-intensive implementation when delegation would duplicate design effort or require extensive explanation or correction. Substantial separable execution and exploration stay with Luna Max. This does not change the selected Architect model or effort.
+- Engineers own complete atomic outcomes, including permitted corrections, tests, and mechanical consistency.
 - A running child lifecycle state remains available despite wait expiry or silence. The Engineer visibly restates its understanding and completes routine targeted proof.
 - Routine child progress, including the start restatement, stays in the child thread. Explicit parent messages are only for events that require immediate Architect action. Completion produces one final return. The Architect does not repeat unchanged child facts.
 - One preauthorized read-only Verifier may be nested for a qualifying single task. Combined checkpoints use one Architect-started Verifier. The Architect gives one final visible alignment signoff. Verification is risk-based and not duplicated.
-- Conservative parallel work for separate scopes and resources. Shared files, changing interfaces, migrations, generated output, and external targets remain serial. Child work stays in one shared worktree.
+- Resource-safe parallel work uses separate scopes and resources. At most two concurrent Engineers may run, with one optional third read-only child when native capacity gives meaningful elapsed-time savings. All descendants count. Child work stays in one shared worktree without new worktrees.
 - Substantial external-tool work keeps decisions with the Architect. The matching role handles bounded discovery, approved mutation, repeated operations, or independent checking. One agent owns each mutable external target.
 - Bounded read-only evidence work stays limited to its defined question, groups independent discovery, and preserves complete authoritative reads.
 - Repeated repository mechanics can yield transient automation candidates without adding new durable state. Retain a maintained deterministic command only when later reuse justifies it.
-- Readable checkpoint reports with exact machine proof retained for verification. Integration, documentation synchronization, verification, operations, and closeout run serially.
+- Readable checkpoint reports retain exact machine proof. Stable independent boundaries may verify and draft separate documentation concurrently. Shared documentation and common regression checks batch across atomic tasks while each task keeps its own acceptance set. Final release stops relevant writers before release checks.
 - Inline Quick Fix classification during Plan for trivial settled edits, with immediate narrow proof and deferred shared review.
 - `docs/PROJECT.md` is the only mandatory shared project document.
 - Optional document families use concrete triggers and semantic sizing.
@@ -63,9 +65,9 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 - Users can invoke Lean-SDLC explicitly or through repository rules.
 - A new repository can start with the three required files and a root ledger.
 - The plan view mirrors each unresolved ledger task ID and title during implementation. Brainstorming creates no task view.
-- Tasks remain atomic, owner-aware, dependency-valid, and cycle-free.
+- Tasks remain atomic, owner-aware, permission-preserving, dependency-valid, and cycle-free.
 - Broad work is split only when each result remains independently acceptable; parallel execution also needs a favorable runtime risk-benefit check.
-- The Architect retains decisions. Delegated external-tool work has one mutable-target owner and returns bounded evidence.
+- The Architect retains decisions. Delegated work preserves ownership and permission boundaries. Delegated external-tool work has one mutable-target owner and returns bounded evidence.
 - Routine progress stays in child threads. Action-required events reach the Architect immediately. Completion produces one final return without duplicate Architect commentary.
 - Read-only evidence work maps the evidence space before bounded, question-specific reads. It returns evidence without mutation authority and preserves authoritative reads.
 - Transient automation candidates add no new durable state. A maintained deterministic command needs a later reuse case and maintenance evidence.
@@ -80,6 +82,6 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 ## Current promise
 
 - Stage: Evolution
-- Version: 1.24.3
-- Version goal: Task-authorized, atomic repair of missing, invalid, or stale managed startup blocks that preserves project rules and file permissions; normal initialization remains create-only.
+- Version: 1.25.0
+- Version goal: Streamline approved work and release proof. Use bounded Architect execution, complete Engineer corrections, safe concurrency, proof reuse, batched checks, manifest-derived versions, aggregated failures, and dependent-step suppression. Preserve permission, ownership, atomic acceptance, ledger, and bytecode boundaries.
 - Exit evidence: Tests, behavioral evaluation, skill and plugin validation, local installation, portable release-gate checks, accepted checkpoints, repository checks, tagged commit, and successful push.

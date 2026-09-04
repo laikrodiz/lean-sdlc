@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import subprocess
 import tempfile
 import unittest
@@ -26,9 +27,13 @@ RELEASE = load_release_check()
 
 
 class ReleaseCheckTests(unittest.TestCase):
+    def manifest_version(self) -> str:
+        manifest = json.loads((ROOT / RELEASE.MANIFEST).read_text(encoding="utf-8"))
+        return manifest["version"]
+
     def test_package_structure_and_versions_pass(self) -> None:
         RELEASE.check_package_structure(ROOT)
-        self.assertEqual(RELEASE.check_version_consistency(ROOT), "1.24.3")
+        self.assertEqual(RELEASE.check_version_consistency(ROOT), self.manifest_version())
 
     def test_portable_default_runs_required_steps_with_external_cache(self) -> None:
         calls: list[tuple[str, list[str], dict[str, str]]] = []
@@ -45,7 +50,7 @@ class ReleaseCheckTests(unittest.TestCase):
         with patch.object(RELEASE, "_run_step", side_effect=fake_step):
             version = RELEASE.run_release_checks(ROOT)
 
-        self.assertEqual(version, "1.24.3")
+        self.assertEqual(version, self.manifest_version())
         self.assertEqual(
             [label for label, _, _ in calls],
             [
@@ -178,6 +183,150 @@ class ReleaseCheckTests(unittest.TestCase):
         home = Path(next(iter(homes)))
         self.assertNotEqual(home, Path("~/.codex").expanduser())
         self.assertFalse(home.is_relative_to(ROOT))
+
+    def test_independent_failures_are_aggregated_and_install_smoke_is_skipped(self) -> None:
+        calls: list[str] = []
+
+        def fail_step(
+            label: str,
+            command: list[str],
+            root: Path,
+            environment: dict[str, str],
+        ) -> subprocess.CompletedProcess[str]:
+            calls.append(label)
+            raise RELEASE.ReleaseCheckError(f"{label} failed")
+
+        with patch.object(RELEASE, "check_package_structure"), patch.object(
+            RELEASE, "check_version_consistency", return_value="test"
+        ), patch.object(RELEASE, "_test_modules", return_value=["tests.test_release_check"]), patch.object(
+            RELEASE, "_run_step", side_effect=fail_step
+        ), patch.object(RELEASE, "run_install_smoke") as install_smoke:
+            with self.assertRaisesRegex(RELEASE.ReleaseCheckError, "3 independent") as raised:
+                RELEASE.run_release_checks(ROOT, install_smoke=True)
+
+        self.assertEqual(
+            calls,
+            [
+                "full unit suite",
+                "structural Lean-SDLC check",
+                "deterministic evaluation fixture check",
+            ],
+        )
+        for label in calls:
+            self.assertIn(label, str(raised.exception))
+        install_smoke.assert_not_called()
+
+    def test_version_check_ignores_incidental_semver_text(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = root / RELEASE.MANIFEST
+            manifest.parent.mkdir(parents=True)
+            manifest.write_text('{"version": "9.8.7"}', encoding="utf-8")
+            (root / RELEASE.README).write_text(
+                "See 1.2.3 in the historical notes.\n## Install\n"
+                "Get the immutable `v9.8.7` package:\n\n"
+                "git clone https://example.test/repo.git --branch v9.8.7 --depth 1\n",
+                encoding="utf-8",
+            )
+            project = root / RELEASE.PROJECT
+            project.parent.mkdir(parents=True)
+            project.write_text(
+                "The migration from 2.3.4 is complete.\n- Version: 9.8.7\n",
+                encoding="utf-8",
+            )
+
+            self.assertEqual(RELEASE.check_version_consistency(root), "9.8.7")
+
+    def test_version_check_rejects_mismatched_install_tag(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = root / RELEASE.MANIFEST
+            manifest.parent.mkdir(parents=True)
+            manifest.write_text('{"version": "9.8.7"}', encoding="utf-8")
+            (root / RELEASE.README).write_text(
+                "## Install\nInstall the immutable `v9.8.6` release:\n\n"
+                "git clone --depth 1 --branch v9.8.7 https://example.test/repo.git\n",
+                encoding="utf-8",
+            )
+            project = root / RELEASE.PROJECT
+            project.parent.mkdir(parents=True)
+            project.write_text("- Version: 9.8.7\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(RELEASE.ReleaseCheckError, "README.md"):
+                RELEASE.check_version_consistency(root)
+
+    def test_version_check_rejects_mismatched_project_version(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = root / RELEASE.MANIFEST
+            manifest.parent.mkdir(parents=True)
+            manifest.write_text('{"version": "9.8.7"}', encoding="utf-8")
+            (root / RELEASE.README).write_text(
+                "## Install\nGet the immutable `v9.8.7` package:\n\n"
+                "git clone https://example.test/repo.git --branch v9.8.7 --depth 1\n",
+                encoding="utf-8",
+            )
+            project = root / RELEASE.PROJECT
+            project.parent.mkdir(parents=True)
+            project.write_text("- Version: 9.8.6\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(RELEASE.ReleaseCheckError, "PROJECT.md"):
+                RELEASE.check_version_consistency(root)
+
+    def test_version_check_rejects_extra_unpinned_clone(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = root / RELEASE.MANIFEST
+            manifest.parent.mkdir(parents=True)
+            manifest.write_text('{"version": "9.8.7"}', encoding="utf-8")
+            (root / RELEASE.README).write_text(
+                "## Install\nGet the immutable `v9.8.7` package:\n\n"
+                "git clone https://example.test/repo.git --branch v9.8.7 --depth 1\n"
+                "git clone https://example.test/other.git\n",
+                encoding="utf-8",
+            )
+            project = root / RELEASE.PROJECT
+            project.parent.mkdir(parents=True)
+            project.write_text("- Version: 9.8.7\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(RELEASE.ReleaseCheckError, "README.md"):
+                RELEASE.check_version_consistency(root)
+
+    def test_version_check_rejects_duplicate_conflicting_clone_branches(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = root / RELEASE.MANIFEST
+            manifest.parent.mkdir(parents=True)
+            manifest.write_text('{"version": "9.8.7"}', encoding="utf-8")
+            (root / RELEASE.README).write_text(
+                "## Install\nGet the immutable `v9.8.7` package:\n\n"
+                "git clone https://example.test/repo.git --branch v9.8.7 --branch v9.8.6\n",
+                encoding="utf-8",
+            )
+            project = root / RELEASE.PROJECT
+            project.parent.mkdir(parents=True)
+            project.write_text("- Version: 9.8.7\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(RELEASE.ReleaseCheckError, "README.md"):
+                RELEASE.check_version_consistency(root)
+
+    def test_install_smoke_stops_after_first_dependent_failure(self) -> None:
+        calls: list[str] = []
+
+        def fail_registration(
+            label: str,
+            command: list[str],
+            root: Path,
+            environment: dict[str, str],
+        ) -> subprocess.CompletedProcess[str]:
+            calls.append(label)
+            raise RELEASE.ReleaseCheckError("registration failed")
+
+        with patch.object(RELEASE, "_run_step", side_effect=fail_registration):
+            with self.assertRaisesRegex(RELEASE.ReleaseCheckError, "registration failed"):
+                RELEASE.run_install_smoke(ROOT, {})
+
+        self.assertEqual(calls, ["isolated marketplace registration"])
 
     def test_workflow_calls_only_the_portable_default(self) -> None:
         workflow = WORKFLOW.read_text(encoding="utf-8")

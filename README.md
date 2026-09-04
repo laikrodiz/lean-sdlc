@@ -51,7 +51,7 @@ In Assisted mode, the Architect delegates suitable work to four child roles:
 
 | Role | Work |
 | --- | --- |
-| Engineer | Implements one approved task and runs its focused checks. |
+| Engineer | Implements one approved task, completes permitted corrections, and runs its focused checks. |
 | Scout | Searches code, documentation, logs, or external sources for a defined question. |
 | Maintainer | Updates shared documentation and runs recorded project operations. |
 | Verifier | Independently checks acceptance and important regression risks. |
@@ -64,13 +64,15 @@ The Architect reviews the returned work and remains responsible for the result.
 
 Assisted mode is the default. It uses child agents when delegation should save time or Architect context.
 
+In Assisted mode, the Architect may keep one bounded, settled local change when handoff overhead exceeds the work. This includes judgment-intensive implementation when delegation would duplicate design effort or require extensive explanation or correction. Substantial separable execution and exploration stay with Luna Max. This does not change the selected Architect model or effort.
+
 Solo mode keeps all work with the Architect. You can request Solo mode at any time.
 
 Both modes use the same planning, task ownership, and verification rules.
 
 During planning, Lean-SDLC checks whether broad work can become independent tasks. It runs them together only when separation is safe and saves meaningful time.
 
-Parallel work is allowed only when the scopes are clearly separate. Shared files, changing interfaces, and external targets stay serial.
+Independent work can run together when it saves time and files, build outputs, and external targets do not conflict. Shared resources stay serial.
 
 ## Tasks and repository memory
 
@@ -106,6 +108,10 @@ Lean-SDLC separates three types of evidence:
 
 The workflow avoids repeating identical checks without a reason.
 
+One command may satisfy several proof purposes. Reuse proof or artifacts only when source, dependencies, configuration, environment, toolchain, and target inputs match.
+
+Shared documentation and common regression checks can run as one batch across atomic tasks. Each task keeps its own acceptance set and cannot close before its acceptance passes. Final release checks stop relevant writers first.
+
 Large test suites run only when the change or repository risk justifies them.
 
 A task closes only after the evidence matches its acceptance criteria.
@@ -126,10 +132,10 @@ Requirements:
 - Python 3
 - Codex with plugin support
 
-Install the immutable `v1.24.3` release:
+Install the immutable `v1.25.0` release:
 
 ```bash
-git clone --depth 1 --branch v1.24.3 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.25.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc

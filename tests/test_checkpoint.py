@@ -100,9 +100,10 @@ class CheckpointTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         command = '`python3 "<skill-root>/scripts/checkpoint.py" --repo "<repo-root>" PATH [PATH ...]`'
         self.assertIn(command, verify)
-        self.assertIn(command, subagents)
-        self.assertIn("same explicit task-owned paths", verify)
-        self.assertIn("named temporary or incidental test outputs outside tracked truth", verify)
+        self.assertIn("[Verify](verify.md)", subagents)
+        self.assertIn("explicit source and configuration inputs before and after proof", verify)
+        self.assertIn("Verifier does not edit tracked source", verify)
+        self.assertIn("remain outside tracked truth", verify)
         self.assertIn("compares values locally", evaluations)
         self.assertIn("omits full values from routine reports", evaluations)
 

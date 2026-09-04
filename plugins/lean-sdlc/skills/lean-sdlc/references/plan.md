@@ -4,13 +4,15 @@ Require information, not fixed labels. Use natural prose for outcome, constraint
 
 Use the confirmed Shape contract `why -> what -> how -> proof`. Plan adds task shape and Proof after Why and What are stable. Derive observable acceptance from the confirmed outcome and affected value. Implementation mechanisms, changed files, and test commands support acceptance but do not define it alone.
 
+Record the proof owner, purpose, and invalidation inputs in the existing task or handoff. Use [verify.md](verify.md) for proof coverage, reuse, and invalidation. Do not create a proof registry.
+
 ## Quick Fix classification
 
 Quick Fix is inline Plan classification, not a mode, lane, task type, or prompt. Record Context `Quick Fix`.
 
 Eligibility requires an exact requested outcome, local reversible scope, no unresolved product, design, architecture, public interface, schema, migration, dependency, security, generated-file, or external-state choice, and one immediate narrow proof. If uncertain, use Standard work. A user may choose Standard. A request to use Quick Fix never bypasses eligibility.
 
-Every Quick Fix write needs implementation authority, one visible plan item, one owned task, and `python3 "<skill-root>/scripts/lean_check.py" "<repo-root>" --before-write` before the first non-control write. Show classification briefly in plan prose. Keep `update_plan` names exact: `TASK-NNN — Title`.
+Every Quick Fix write needs implementation authority, one visible plan item, one owned task, and `python3 "<skill-root>/scripts/lean_check.py" "<repo-root>" --before-write --task TASK-ID --owner OWNER` before the first non-control write. Show classification briefly in plan prose. Keep `update_plan` names exact: `TASK-NNN — Title`.
 
 Architect may execute Quick Fix in Assisted or Solo. Do not spawn Engineer, Maintainer, or Verifier per Quick Fix. Shared batch may reuse or start Verifier when normal proof trigger applies. Review diff and run narrow proof before close.
 

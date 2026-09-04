@@ -1,5 +1,6 @@
 {
   "format": 1,
+  "fixture_status": "recorded/static; not live model reliability evidence",
   "required_categories": ["routing", "delegation", "proof", "lifecycle"],
   "scenarios": [
     {
@@ -71,10 +72,31 @@
     {
       "id": "delegation-settled-implementation",
       "category": "delegation",
-      "prompt": "Use $lean-sdlc. The implementation contract, interfaces, acceptance, proof, and paths are settled, with no decision left open. Return only JSON fields: role, decision.",
+      "prompt": "Use $lean-sdlc. The implementation contract, interfaces, acceptance, proof, and paths are settled, with no decision left open. The implementation is substantial enough that delegation has meaningful elapsed-time value. Return only JSON fields: role, decision.",
       "assertions": [
         {"path": "role", "equals": "Engineer"},
         {"path": "decision", "equals": "settled"}
+      ]
+    },
+    {
+      "id": "delegation-direct-local-exception",
+      "category": "delegation",
+      "prompt": "Use $lean-sdlc. In Assisted mode, one understood settled local change is smaller than handoff overhead, with no unresolved decision. Substantial execution and exploration remain delegated to Luna. Return only JSON fields: role, safeguards, substantial_work.",
+      "assertions": [
+        {"path": "role", "equals": "Architect"},
+        {"path": "safeguards", "equals": ["visible plan", "owned task", "before-write gate", "narrow proof"]},
+        {"path": "substantial_work", "equals": "delegate to Luna"}
+      ]
+    },
+    {
+      "id": "delegation-capacity-bounded-readonly",
+      "category": "delegation",
+      "prompt": "Use $lean-sdlc. Two settled tasks have independent acceptance and disjoint mutable resources. Native capacity permits meaningful elapsed-time savings for one read-only child. Return only JSON fields: engineers, optional_child, descendants, resource_rule.",
+      "assertions": [
+        {"path": "engineers", "equals": 2},
+        {"path": "optional_child", "equals": "one read-only child"},
+        {"path": "descendants", "equals": "all descendants count"},
+        {"path": "resource_rule", "equals": "disjoint writes, outputs, caches, services, ports, devices, and targets"}
       ]
     },
     {
@@ -103,6 +125,17 @@
         {"path": "targeted", "equals": "changed behavior"},
         {"path": "acceptance", "equals": "observable completion"},
         {"path": "regression", "equals": "affected boundary"}
+      ]
+    },
+    {
+      "id": "proof-reuse-dependency-change",
+      "category": "proof",
+      "prompt": "Use $lean-sdlc. Recorded proof matches source, configuration, environment, toolchain, dependency, and target inputs, then a dependency changes. Return only JSON fields: reuse, invalidated_by, next_step, full_gate.",
+      "assertions": [
+        {"path": "reuse", "equals": false},
+        {"path": "invalidated_by", "equals": "dependency change"},
+        {"path": "next_step", "equals": "rerun affected checks"},
+        {"path": "full_gate", "equals": "do not repeat focused checks inside a full gate"}
       ]
     },
     {

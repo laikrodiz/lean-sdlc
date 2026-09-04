@@ -1,5 +1,6 @@
 {
   "format": 1,
+  "fixture_status": "recorded/static; not live model reliability evidence",
   "observations": {
     "routing-unresolved-decision": {"route": "Architect", "writes": false},
     "routing-shared-resource": {"execution": "serial", "shared_resource": true},
@@ -23,12 +24,29 @@
     },
     "delegation-broad-evidence": {"role": "Scout", "coverage": ["shared core", "variants", "affected boundary"]},
     "delegation-settled-implementation": {"role": "Engineer", "decision": "settled"},
+    "delegation-direct-local-exception": {
+      "role": "Architect",
+      "safeguards": ["visible plan", "owned task", "before-write gate", "narrow proof"],
+      "substantial_work": "delegate to Luna"
+    },
+    "delegation-capacity-bounded-readonly": {
+      "engineers": 2,
+      "optional_child": "one read-only child",
+      "descendants": "all descendants count",
+      "resource_rule": "disjoint writes, outputs, caches, services, ports, devices, and targets"
+    },
     "delegation-accepted-documentation": {"role": "Maintainer", "stage": "accepted implementation"},
     "delegation-proof-checkpoint": {"role": "Verifier", "checkpoint": true},
     "proof-layers": {
       "targeted": "changed behavior",
       "acceptance": "observable completion",
       "regression": "affected boundary"
+    },
+    "proof-reuse-dependency-change": {
+      "reuse": false,
+      "invalidated_by": "dependency change",
+      "next_step": "rerun affected checks",
+      "full_gate": "do not repeat focused checks inside a full gate"
     },
     "lifecycle-six-lanes": {
       "lanes": ["Shape", "Decide", "Plan", "Diagnose", "Deliver", "Verify"],

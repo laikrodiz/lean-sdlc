@@ -1,6 +1,6 @@
 # Operations
 
-Apply the Maintainer trigger, authority, profile, spawn, and handoff rules from [subagents.md](subagents.md). This file owns only how project-specific procedures are learned and repeated.
+The Architect allocates the Maintainer through [subagents.md](subagents.md). Children follow [child.md](child.md). This file owns how project-specific procedures are learned and repeated.
 
 ## Learn, then repeat
 
@@ -13,7 +13,7 @@ For the first build, package, deploy, flash, runtime, or smoke operation:
 1. The lead, user, or bounded worker guides the exact attempt.
 2. The Maintainer observes commands, inputs, target, success signal, artifacts, and recovery facts.
 3. After success, the Maintainer returns a short procedure draft.
-4. The lead records it in optional `docs/OPERATIONS.md` under the active task.
+4. After Architect approval, the Maintainer records it in optional `docs/OPERATIONS.md` under the active task. In Solo, the Architect records it.
 5. Later Maintainer runs replay the recorded procedure exactly.
 
 Update the recorded procedure after another guided success when reality changes. Stop when a procedure is missing, ambiguous, or stale.
@@ -96,5 +96,9 @@ Infer the operation sequence from task proof:
 - routine: Deliver -> Verify;
 - artifact: Deliver -> Verify -> build or package;
 - operational: Deliver -> Verify -> build -> deploy or flash -> smoke.
+
+These are dependency steps, not instructions to rebuild an existing accepted artifact. If verification produced the required artifact, reuse it when source, dependencies, configuration, environment, toolchain, and target match. Build or package only missing or invalidated artifacts. Never repeat deployment or flashing merely because a later check needs the result.
+
+Batch shared packaging or documentation work only when each task keeps its acceptance evidence. Serialize operations on the same mutable target. A failed prerequisite blocks dependent operations, not unrelated safe checks.
 
 In Solo mode, the lead follows the same recorded procedures and visible result order.

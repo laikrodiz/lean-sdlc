@@ -14,7 +14,16 @@ from pathlib import Path
 from typing import Iterator, Sequence
 
 
-VERSION_PATTERN = re.compile(r"(?<!\d)(\d+\.\d+\.\d+)(?!\d)")
+VERSION_PATTERN = re.compile(r"\d+\.\d+\.\d+")
+README_INSTALL_SECTION = re.compile(
+    r"(?ms)^##\s+Install\b[^\n]*\n(?P<body>.*?)(?=^##\s|\Z)"
+)
+README_CLONE_COMMAND = re.compile(
+    r"(?m)^\s*(?:\$\s*)?git\s+clone\b(?P<args>[^\n]*)$"
+)
+README_CLONE_BRANCH = re.compile(r"(?:^|\s)--branch(?:=|\s+)(?P<tag>\S+)")
+README_VERSION_TAG = re.compile(r"(?<![\w.])v\d+\.\d+\.\d+(?![\w.])")
+PROJECT_VERSION = re.compile(r"(?m)^\s*-\s*Version:\s*(?P<version>\S+)\s*$")
 PLUGIN = Path("plugins/lean-sdlc")
 MANIFEST = PLUGIN / ".codex-plugin/plugin.json"
 PROJECT = Path("docs/PROJECT.md")
@@ -78,10 +87,6 @@ def check_package_structure(root: Path) -> None:
         raise ReleaseCheckError("hooks manifest must contain a hooks object")
 
 
-def _versions(text: str) -> list[str]:
-    return VERSION_PATTERN.findall(text)
-
-
 def check_version_consistency(root: Path) -> str:
     try:
         manifest = json.loads(_read(root / MANIFEST))
@@ -91,15 +96,37 @@ def check_version_consistency(root: Path) -> str:
     if not isinstance(version, str) or VERSION_PATTERN.fullmatch(version) is None:
         raise ReleaseCheckError(f"invalid plugin version: {version!r}")
 
-    readme_versions = _versions(_read(root / README))
-    project_versions = _versions(_read(root / PROJECT))
-    if readme_versions != [version, version]:
+    expected_tag = f"v{version}"
+    readme = _read(root / README)
+    install_match = README_INSTALL_SECTION.search(readme)
+    if install_match is None:
+        raise ReleaseCheckError("README.md must contain an Install section")
+    install_body = install_match.group("body")
+    clone_commands = list(README_CLONE_COMMAND.finditer(install_body))
+    clone_tags = [
+        tag
+        for clone in clone_commands
+        for tag in README_CLONE_BRANCH.findall(clone.group("args"))
+    ]
+    release_tags = README_VERSION_TAG.findall(README_CLONE_COMMAND.sub("", install_body))
+    if (
+        not release_tags
+        or any(tag != expected_tag for tag in release_tags)
+        or len(clone_commands) != 1
+        or clone_tags != [expected_tag]
+    ):
         raise ReleaseCheckError(
-            f"README.md must contain the release version twice, found {readme_versions}"
+            "README.md Install section must contain the release tag and one clone branch "
+            f"{expected_tag!r}, found release tags {release_tags!r} and clone tags {clone_tags!r}"
         )
+    project = _read(root / PROJECT)
+    project_versions = [
+        match.group("version") for match in PROJECT_VERSION.finditer(project)
+    ]
     if project_versions != [version]:
         raise ReleaseCheckError(
-            f"docs/PROJECT.md must contain the release version once, found {project_versions}"
+            f"docs/PROJECT.md must contain one matching Version field {version!r}, "
+            f"found {project_versions!r}"
         )
     return version
 
@@ -199,25 +226,32 @@ def run_release_checks(root: Path, *, install_smoke: bool = False) -> str:
             "PYTHONDONTWRITEBYTECODE": "1",
         }
         python = sys.executable
-        _run_step(
-            "full unit suite",
-            [python, "-m", "unittest", *_test_modules(root)],
-            root,
-            environment,
-        )
+        failures: list[str] = []
+
+        def run_independent(label: str, command: Sequence[str]) -> None:
+            try:
+                _run_step(label, command, root, environment)
+            except ReleaseCheckError as error:
+                message = str(error)
+                if not message.startswith(label):
+                    message = f"{label}: {message}"
+                failures.append(message)
+
+        run_independent("full unit suite", [python, "-m", "unittest", *_test_modules(root)])
         with _temporary_empty_ledger(root):
-            _run_step(
+            run_independent(
                 "structural Lean-SDLC check",
                 [python, str(root / STRUCTURAL_CHECK), str(root)],
-                root,
-                environment,
             )
-        _run_step(
+        run_independent(
             "deterministic evaluation fixture check",
             [python, str(root / EVALUATION_RUNNER)],
-            root,
-            environment,
         )
+        if failures:
+            details = "\n".join(f"- {failure}" for failure in failures)
+            raise ReleaseCheckError(
+                f"{len(failures)} independent release checks failed:\n{details}"
+            )
         if install_smoke:
             run_install_smoke(root, environment)
     return version
