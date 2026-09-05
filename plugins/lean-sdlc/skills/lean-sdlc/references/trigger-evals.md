@@ -2,6 +2,8 @@
 
 These rows are scenarios and assertions. They are not a second policy source. The canonical lifecycle is in [SKILL.md](../SKILL.md), role routing is in [subagents.md](subagents.md), and proof and operation rules are in [verify.md](verify.md) and [operations.md](operations.md).
 
+The saved fixture records expected JSON answers. `tests/evaluation_runner.py` grades those answers against assertions without executing an agent. Optional `tests/live_evaluation.py` runs fresh Codex sessions, collects final JSON answers, and validates their structure. Supply live output to the runner separately for grading. Neither path verifies tool actions, file edits, or real workflow execution reliability.
+
 Run these scenarios from a fresh task with only the installed plugin and target repository visible.
 
 | Scenario | Assertion |

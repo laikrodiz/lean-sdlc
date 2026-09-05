@@ -22,7 +22,7 @@ Apply these decisions in order. Serialization restricts concurrency, not role ow
 
 ## External tools and execution economy
 
-Apply the same roles to plugins, MCP, connectors, CAD, databases, and hardware. The Architect owns target, permission, constraints, and decisions. Delegate before substantial work: more than three expected calls, tool discovery, large output, repeated object operations, or multi-step diagnosis. One bounded probe may settle the assignment. Never let two agents mutate the same external target.
+Apply the same roles and routing precedence to plugins, MCP, connectors, CAD, databases, and hardware. The Architect owns target, permission, constraints, and decisions. Delegate substantial external-tool work when expected time or context savings outweigh handoff and verification costs. Assess complexity, output volume, repeated operations, and diagnostic scope. Call count and tool discovery are cues, not mandatory delegation triggers. One bounded probe may settle the assignment. Never let two agents mutate the same external target.
 
 Group independent read-only calls and reduce logs inside the assigned child. Use direct calls for mutations, approvals, and judgment-sensitive steps. Reuse the same child for the same tool and project; replace only when its context or capabilities no longer fit. Return conclusions, evidence locations, errors, and unknowns, not transcripts.
 

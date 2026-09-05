@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import copy
+import io
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 
 from .evaluation_runner import (
@@ -9,6 +11,7 @@ from .evaluation_runner import (
     evaluate,
     load_observations,
     load_scenarios,
+    main,
     validate_scenarios,
 )
 
@@ -18,6 +21,14 @@ OBSERVATIONS = Path(__file__).with_name("evaluation_observations_fixture.json")
 
 
 class EvaluationRunnerTests(unittest.TestCase):
+    def test_cli_labels_saved_answers_without_claiming_execution(self) -> None:
+        for arguments in ([], [str(SCENARIOS), str(OBSERVATIONS)]):
+            with self.subTest(arguments=arguments), redirect_stdout(io.StringIO()) as output:
+                self.assertEqual(main(arguments), 0)
+            self.assertIn(str(OBSERVATIONS), output.getvalue())
+            self.assertIn("no agent execution or action verification", output.getvalue())
+            self.assertIn(f"PASS {self.assertion_count} saved-answer assertions", output.getvalue())
+
     def setUp(self) -> None:
         self.scenarios = load_scenarios(SCENARIOS)
         self.observations = load_observations(OBSERVATIONS)

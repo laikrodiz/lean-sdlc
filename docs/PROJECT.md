@@ -12,7 +12,9 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 
 - Shape, Decide, Plan, Diagnose, Deliver, and Verify lanes.
 - One canonical lifecycle from intent through owned work, proof, and closeout.
-- Executable assertions over recorded behavioral observations, with optional live fresh sessions.
+- Helper tests check evaluation code behavior. Document tests check required contract wording.
+- `tests/evaluation_runner.py` grades saved JSON answers against scenario assertions. By default, it reads `tests/evaluation_observations_fixture.json`; it does not execute an agent or verify actions.
+- `tests/live_evaluation.py` optionally runs fresh Codex sessions, collects final structured JSON answers, and validates their structure. Its output needs separate grading by `tests/evaluation_runner.py`. It does not grade decision correctness or verify tool actions, file edits, or real workflow reliability.
 - One portable release gate for local and CI checks.
 - One consistent task, direct-path, and proof contract.
 - Visible ambiguous repository discovery and durability warnings.
@@ -72,7 +74,10 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 - Read-only evidence work maps the evidence space before bounded, question-specific reads. It returns evidence without mutation authority and preserves authoritative reads.
 - Transient automation candidates add no new durable state. A maintained deterministic command needs a later reuse case and maintenance evidence.
 - Release checks use one portable gate in local and CI contexts.
-- Recorded observations use deterministic assertions; optional live sessions collect new observations.
+- Evaluation evidence separates helper code-behavior tests from document contract-wording tests.
+- Saved-fixture checks grade repository-owned JSON answers with deterministic assertions.
+- Optional live collection starts fresh sessions, collects final structured JSON answers, and validates their structure. A separate runner grades those answers.
+- Evaluation evidence does not measure real workflow execution reliability.
 - Task, direct-path, and proof inputs follow one consistent contract.
 - Ambiguous repository discovery is visible, and durability warnings identify risks before they persist.
 - Task-scoped checkpoints can run without Git access.
@@ -82,6 +87,6 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 ## Current promise
 
 - Stage: Evolution
-- Version: 1.25.0
-- Version goal: Streamline approved work and release proof. Use bounded Architect execution, complete Engineer corrections, safe concurrency, proof reuse, batched checks, manifest-derived versions, aggregated failures, and dependent-step suppression. Preserve permission, ownership, atomic acceptance, ledger, and bytecode boundaries.
-- Exit evidence: Tests, behavioral evaluation, skill and plugin validation, local installation, portable release-gate checks, accepted checkpoints, repository checks, tagged commit, and successful push.
+- Version: 1.25.1
+- Version goal: Streamline approved work and release proof. Route delegation when its expected benefit exceeds handoff and verification cost; treat external-tool call count and discovery as cues only. Label helper and document tests, saved-fixture grading, and live final-answer collection separately. Preserve permission, ownership, atomic acceptance, ledger, and bytecode boundaries.
+- Exit evidence: Helper code-behavior tests, document contract-wording tests, saved-fixture assertion checks, optional live final-answer collection and structure checks, separate grading of supplied live output, skill and plugin validation, local installation, portable release-gate checks, accepted checkpoints, repository checks, tagged commit, and successful push. Evaluation checks do not measure real workflow execution reliability.

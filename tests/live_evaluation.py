@@ -1,4 +1,4 @@
-"""Collect optional live observations outside deterministic evaluation."""
+"""Collect live final JSON answers in fresh sessions; do not verify agent actions."""
 
 from __future__ import annotations
 
@@ -126,7 +126,7 @@ def main(argv: list[str] | None = None) -> int:
     except LiveEvaluationError as error:
         print(f"ERROR {error}")
         return 1
-    print(f"WROTE {args.output}")
+    print(f"WROTE {args.output} (live final JSON answers only; actions not verified)")
     return 0
 
 

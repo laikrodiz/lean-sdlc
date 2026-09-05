@@ -9,7 +9,7 @@ It keeps four things connected:
 - How the work will be done.
 - What evidence proves the result.
 
-This reduces accidental scope growth, forgotten decisions, oversized tasks, repeated work, and unsupported completion claims.
+These controls are intended to reduce accidental scope growth, forgotten decisions, oversized tasks, repeated work, and unsupported completion claims.
 
 ## How it works
 
@@ -106,6 +106,14 @@ Lean-SDLC separates three types of evidence:
 - Acceptance checks prove the requested result.
 - Regression checks cover important nearby risks.
 
+Evaluation evidence has a separate boundary:
+
+- Helper tests check evaluation code behavior. Document tests check required contract wording.
+- `tests/evaluation_runner.py` grades saved JSON answers against scenario assertions. With default arguments, it reads `tests/evaluation_observations_fixture.json`. It does not execute an agent or verify agent actions.
+- Optional `tests/live_evaluation.py` runs fresh Codex sessions, collects final structured JSON answers, and validates their structure. Pass its output to `tests/evaluation_runner.py` for separate grading. It does not grade decision correctness or verify tool actions, file edits, or real workflow reliability.
+
+Neither evaluation path measures real workflow execution reliability.
+
 The workflow avoids repeating identical checks without a reason.
 
 One command may satisfy several proof purposes. Reuse proof or artifacts only when source, dependencies, configuration, environment, toolchain, and target inputs match.
@@ -132,10 +140,10 @@ Requirements:
 - Python 3
 - Codex with plugin support
 
-Install the immutable `v1.25.0` release:
+Install the immutable `v1.25.1` release:
 
 ```bash
-git clone --depth 1 --branch v1.25.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.25.1 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc

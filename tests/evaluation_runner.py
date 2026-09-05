@@ -1,4 +1,4 @@
-"""Evaluate recorded observations against repository-owned scenarios."""
+"""Check saved JSON answers; do not execute agents or verify their actions."""
 
 from __future__ import annotations
 
@@ -173,13 +173,14 @@ def main(argv: list[str] | None = None) -> int:
         default=Path(__file__).with_name("evaluation_observations_fixture.json"),
     )
     args = parser.parse_args(argv)
+    print(f"SOURCE {args.observations} (saved JSON answers; no agent execution or action verification)")
     try:
         checked, failures = evaluate(load_scenarios(args.scenarios), load_observations(args.observations))
     except EvaluationError as error:
         print(f"ERROR {error}")
         return 2
     if not failures:
-        print(f"PASS {checked} assertions")
+        print(f"PASS {checked} saved-answer assertions")
         return 0
     for failure in failures:
         print(f"FAIL {failure}")

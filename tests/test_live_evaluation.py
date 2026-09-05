@@ -1,14 +1,16 @@
 from __future__ import annotations
 
+import io
 import json
 import os
 import subprocess
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
-from .live_evaluation import DEFAULT_SCHEMA, LiveEvaluationError, build_command, run_live
+from .live_evaluation import DEFAULT_SCHEMA, LiveEvaluationError, build_command, main, run_live
 from .evaluation_runner import load_observations, load_scenarios
 
 
@@ -17,6 +19,13 @@ SCENARIOS = ROOT / "evaluation_scenarios.json"
 
 
 class LiveEvaluationTests(unittest.TestCase):
+    def test_cli_labels_live_answers_without_claiming_action_verification(self) -> None:
+        with patch("tests.live_evaluation.run_live") as run, redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(main(["repo", "scenarios.json", "answers.json"]), 0)
+        run.assert_called_once()
+        self.assertIn("WROTE answers.json", output.getvalue())
+        self.assertIn("live final JSON answers only; actions not verified", output.getvalue())
+
     def test_prompts_use_lean_sdlc_and_request_only_structured_fields(self) -> None:
         scenarios = load_scenarios(SCENARIOS)
         for scenario in scenarios["scenarios"]:
