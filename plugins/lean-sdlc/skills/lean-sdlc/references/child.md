@@ -6,7 +6,7 @@ Use this entry for an Architect-assigned child. Do not run the Architect startup
 
 Use supplied task facts, owner, repository root, skill root, assigned paths, acceptance, proof, and permissions. If required facts are missing, ask the Architect. Do not search for roots, `tasks.csv`, or helpers. Do not run task-ledger, session-state, or before-write helpers. An explicitly assigned release command may invoke the structural checker internally.
 
-The Architect owns intent, architecture, public behavior, interfaces, material assumptions, task ownership, permissions, acceptance, conflict resolution, and final signoff. Do not change those decisions or infer new authority. Work only within the assigned boundary. You are not alone in the workspace; preserve other agents' and user edits. No ledger edits, Git mutations, or sibling integration. Focused read-only Git inspection is allowed.
+The Architect owns intent, architecture, public behavior, interfaces, material assumptions, task ownership, permissions, acceptance, conflict resolution, and final signoff. Do not change those decisions or infer new authority. Work only within the assigned boundary. You are not alone in the workspace; preserve other agents' and user edits. No ledger edits or Git mutations. Do not integrate active, unaccepted, or unassigned sibling work. An explicitly assigned integration outcome may combine accepted pieces within its owned boundary. Focused read-only Git inspection is allowed.
 
 Read selected instructions, authoritative contracts, acceptance, focused patches, and decisive evidence completely. Use cited paths and existing maps before broad searches. Refresh relevant changed inputs; do not reload full history without need. Report uncertainty instead of inventing missing facts.
 
@@ -14,9 +14,9 @@ Read selected instructions, authoritative contracts, acceptance, focused patches
 
 ### Engineer
 
-Start with a short natural restatement of the outcome, boundary, preserved behavior, and proof. Proceed without another approval pause when the contract is clear.
+Start with a short natural restatement of the outcome, boundary, preserved behavior, and proof. Check the complete contract for material contradiction before coding. Proceed without another approval pause when the contract is clear. Escalate any contradiction.
 
-Complete one atomic outcome, including related tests and mechanical consistency inside assigned paths. Make local corrections without new approval when architecture, interfaces, behavior, acceptance, permissions, and ownership remain unchanged. Ask before expanding any boundary. Escalate repeated equivalent failures without new evidence.
+Complete one atomic outcome, including related tests and mechanical consistency inside assigned paths. Check the supplied Routine or Critical classification and its reason before coding. Risk does not change assigned ownership. Make local corrections without new approval when architecture, interfaces, behavior, acceptance, permissions, and ownership remain unchanged. Ask before expanding any boundary. Escalate repeated equivalent failures without new evidence.
 
 Use [verify.md](verify.md) for proof selection and reuse. Run targeted checks at a coherent checkpoint, not after every edit. If a planned broader command covers the same check, avoid an extra run unless feedback is needed before further work.
 
@@ -34,7 +34,7 @@ For builds, packaging, deployment, flashing, or recorded mechanics, follow [oper
 
 ### Verifier
 
-Remain read-only and follow [verify.md](verify.md). Temporary test outputs must stay outside tracked truth and respect assigned resources. Review acceptance and relevant regression risks independently. Use prior evidence when trustworthy and current; independence does not require duplicate commands. Return findings to the assigned Architect or preauthorized Engineer. No child spawning, task closure, or source corrections.
+Remain read-only and follow [verify.md](verify.md). Inspect the contract, actual code, relevant failure cases, and test adequacy directly. Do not only endorse Engineer conclusions. Temporary test outputs must stay outside tracked truth and respect assigned resources. Review acceptance and relevant regression risks independently. Critical acceptance includes Architect-written implementation. Use prior evidence when trustworthy and current; independence does not require duplicate commands. Return findings to the assigned Architect or preauthorized Engineer. No child spawning, task closure, or source corrections.
 
 ## Report and stop
 

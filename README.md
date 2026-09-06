@@ -36,7 +36,7 @@ If the request is already clear, these steps can be very short.
 
 ## The Architect and child agents
 
-Your selected Codex model remains the Architect. Lean-SDLC does not replace it with another model.
+The Architect is a workflow role independent of the selected model.
 
 The Architect owns:
 
@@ -47,7 +47,7 @@ The Architect owns:
 - Acceptance criteria.
 - Integration and final approval.
 
-In Assisted mode, the Architect delegates suitable work to four child roles:
+In Assisted mode, each work item is Routine or Critical with a short reason. The Architect delegates suitable work to four child roles:
 
 | Role | Work |
 | --- | --- |
@@ -58,27 +58,35 @@ In Assisted mode, the Architect delegates suitable work to four child roles:
 
 The Architect gives each child a clear boundary. The child does not redesign the product or widen the task.
 
-The Architect reviews the returned work and remains responsible for the result.
+Clear contracts state the outcome, interfaces, invariants, failure behavior, mandatory decisions, suggestions, freedom, proof, and stop conditions.
+
+The Architect reviews actual changes and evidence. It chooses Accept, Revise, or Redesign and returns actionable findings together.
+
+Revise keeps the same team when the contract remains settled. Redesign corrects the contract before work resumes.
+
+For small settled tasks, routine progress stays in child threads. Larger or uncertain tasks use specific decision or risk checkpoints. Material blockers and conflicts escalate.
 
 ## Assisted and Solo modes
 
-Assisted mode is the default. It uses child agents when delegation should save time or Architect context.
+Assisted mode is the default. It uses child agents when the expected benefit exceeds handoff and verification costs.
 
-In Assisted mode, the Architect may keep one bounded, settled local change when handoff overhead exceeds the work. This includes judgment-intensive implementation when delegation would duplicate design effort or require extensive explanation or correction. Substantial separable execution and exploration stay with Luna Max. This does not change the selected Architect model or effort.
+In Assisted mode, the Architect normally handles eligible Routine Quick Fixes. Luna Max handles routine non-Quick-Fix work and may handle Critical work under a precise design. A rare bounded Critical implementation may stay with the Architect when design and implementation coupling creates substantial misunderstanding or repeated redesign risk. Independent review remains mandatory.
 
-Solo mode keeps all work with the Architect. You can request Solo mode at any time.
+Solo mode keeps all work with the Architect. Critical work cannot self-certify without independent evidence. Surface a conflict when that evidence is missing, then use an approved reviewer or change mode.
 
-Both modes use the same planning, task ownership, and verification rules.
+Both modes use the same planning, task ownership, and verification rules. Neither mode silently lowers the selected model or effort.
 
-During planning, Lean-SDLC checks whether broad work can become independent tasks. It runs them together only when separation is safe and saves meaningful time.
+During planning, Lean-SDLC checks whether each result is independently acceptable. It uses native runtime capacity and independent mutable ownership to decide useful concurrency.
 
-Independent work can run together when it saves time and files, build outputs, and external targets do not conflict. Shared resources stay serial.
+Independent work can run together when mutable ownership is separate, native capacity permits it, and the expected benefit exceeds handoff and verification costs. Shared resources stay serial. There is no fixed workflow-agent or Engineer-count limit.
+
+External-tool call count and discovery are cues only. Preserve permissions and one mutable-target owner.
 
 ## Tasks and repository memory
 
 Lean-SDLC keeps work in a human-readable `tasks.csv` file at the repository root.
 
-Each implementation task represents one independently accepted result. Large requests become several tasks when their parts need separate implementation or verification.
+Each implementation task represents one complete outcome with cohesive tests and documentation. Split only at independent acceptance boundaries, not arbitrary files, functions, or lines. Accept foundation work before dependent work and assign a combined integration check.
 
 The current task list also appears in the Codex plan view.
 
@@ -94,9 +102,11 @@ This repository state helps Codex continue correctly after a restart or context 
 
 ## Small changes
 
-Small and settled changes can use a Quick Fix with an owner and focused check.
+Small and settled Routine changes can use a Quick Fix with an owner and focused check.
 
-It avoids unnecessary child agents and broad verification. Related Quick Fixes can receive one shared review later.
+Critical acceptance requires independent verification, including Architect-written work.
+
+A Quick Fix avoids unnecessary child agents and broad verification. Related Quick Fixes can receive one shared review later.
 
 ## Verification
 
@@ -140,10 +150,10 @@ Requirements:
 - Python 3
 - Codex with plugin support
 
-Install the immutable `v1.25.1` release:
+Install the immutable `v1.26.0` release:
 
 ```bash
-git clone --depth 1 --branch v1.25.1 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.26.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc
@@ -188,3 +198,4 @@ The README explains the product. The following documents define the exact behavi
 - [Repository contract](plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md)
 - [Child-agent policy](plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md)
 - [Verification](plugins/lean-sdlc/skills/lean-sdlc/references/verify.md)
+- [Operations](docs/OPERATIONS.md)

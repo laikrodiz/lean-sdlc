@@ -1934,6 +1934,7 @@ class PackageContractTests(unittest.TestCase):
             "Record Context `Quick Fix`",
             "exact requested outcome",
             "local reversible scope",
+            "Routine risk for this independently accepted task or plan piece",
             "no unresolved product, design, architecture, public interface, schema, migration, dependency, security, generated-file, or external-state choice",
             "one immediate narrow proof",
             "request to use Quick Fix never bypasses eligibility",
@@ -1975,6 +1976,11 @@ class PackageContractTests(unittest.TestCase):
             self.assertIn(phrase.casefold(), tasks_script.casefold())
         self.assertIn("Quick Fix classification", evaluations)
         self.assertIn("Quick Fix batch review", evaluations)
+        self.assertIn(
+            "A small settled security, migration, or shared-contract edit can remain Critical",
+            plan,
+        )
+        self.assertIn("cannot use the Quick Fix path", plan)
         self.assertIn("Do not spawn Engineer, Maintainer, or Verifier per Quick Fix", plan)
 
         readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
@@ -2045,7 +2051,11 @@ class PackageContractTests(unittest.TestCase):
             "one close decision",
             "may touch several files, tests, documentation, or migration steps",
             "only when all work is inseparable for that behavior",
-            "require settled architecture, one coherent outcome, one independent bounded proof, and one accept-or-reject review.",
+            "require a small complete outcome, settled architecture, one independent bounded proof, and one accept-or-reject review.",
+            "define bounded rejection and correction scope.",
+            "accept foundations before dependent work.",
+            "assign integration ownership.",
+            "run combined behavior proof before feature completion.",
             "keep one task resumable from repository truth and its ledger row after compaction.",
             "split a task when a part can succeed, fail, defer, revert, release, or be accepted independently",
             "belongs to another behavior or contract area",
@@ -2086,6 +2096,11 @@ class PackageContractTests(unittest.TestCase):
         for phrase in [
             "one independently accepted behavior change under one owning contract boundary",
             "one proof cluster, and one close decision",
+            "a small complete outcome",
+            "bounded rejection and correction scope",
+            "Accept foundations before dependent work",
+            "Assign integration ownership",
+            "Run combined behavior proof before feature completion",
             "can succeed, fail, defer, revert, release, or be accepted independently",
             "belongs to another behavior or contract area",
             "needs another Architect decision",
@@ -2185,9 +2200,9 @@ class PackageContractTests(unittest.TestCase):
             subagents.index("1. keep unresolved"),
             subagents.index("2. in solo"),
             subagents.index("3. apply the existing"),
-            subagents.index("4. keep one understood"),
+            subagents.index("4. keep an eligible"),
             subagents.index("5. use scout"),
-            subagents.index("6. use engineer"),
+            subagents.index("6. route settled"),
             subagents.index("7. use verifier"),
         ]
         self.assertEqual(route_order, sorted(route_order))
@@ -2235,6 +2250,10 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("these rows are scenarios and assertions", evaluations)
         self.assertNotIn("failure indicators", evaluations)
         self.assertNotIn("role-trigger matrix", subagents)
+        self.assertNotIn("handoff overhead exceeds the work", subagents)
+        self.assertIn("eligible routine quick fix", subagents)
+        self.assertIn("route settled routine non-quick-fix implementation to engineer", subagents)
+        self.assertIn("do not absorb surrounding routine work", subagents)
     def test_intent_and_boundary_contracts_are_explicit(self) -> None:
         shape = (SKILL / "references/shape.md").read_text(encoding="utf-8").lower()
         plan = (SKILL / "references/plan.md").read_text(encoding="utf-8").lower()
@@ -2256,6 +2275,12 @@ class PackageContractTests(unittest.TestCase):
             "implementation mechanisms, changed files, and test commands support acceptance",
             "one proof cluster",
             "never size by elapsed time, file count, line count, or command count",
+            "classify each independently accepted task or plan piece once as `routine` or `critical`",
+            "record a short reason in the existing task or handoff text",
+            "do not classify each transient coding step",
+            "risk differs from ownership",
+            "reclassify when new material evidence changes the risk",
+            "critical work requires independent verification, including architect-written work",
         ):
             self.assertIn(term, plan)
         for term in (
@@ -2267,20 +2292,28 @@ class PackageContractTests(unittest.TestCase):
             self.assertIn(term, contracts)
         for term in (
             "the architect owns intent, public behavior, architecture, material assumptions, interfaces, permissions, task ownership, acceptance, conflict resolution, integration, and final signoff",
-            "use at most two active work children",
-            "never exceed two concurrent engineers",
-            "a third child may be read-only",
-            "count all descendants",
+            "allocate useful children within native runtime capacity",
+            "do not impose a fixed workflow-agent or engineer count",
+            "count every active descendant, including nested verifiers",
+            "unique mutable ownership",
+            "this capacity rule does not create a coordinator role or permit uncontrolled spawning",
             "writable paths, generated outputs, mutable fixtures, caches, services, ports, devices, and external targets do not overlap",
             "shared read-only contracts are stable",
             "combined checkpoints use one architect-started verifier",
-            "never let a child integrate sibling work",
+            "do not integrate active, unaccepted, or unassigned sibling work",
+            "explicitly assigned integration outcome may combine accepted pieces within its owned boundary",
+            "never take arbitrary ownership",
         ):
             self.assertIn(term, subagents)
         self.assertIn("stop before the shared resource", child)
+        self.assertIn("check the complete contract for material contradiction before coding", child)
+        self.assertIn("proceed without another approval pause when the contract is clear", child)
+        self.assertIn("escalate any contradiction", child)
         for scenario in (
             "brain-dump discussion",
             "clear implementation authority",
+            "risk classification",
+            "critical independent proof",
             "material ambiguity",
             "behavior-based acceptance",
             "assisted parallel work",
@@ -2288,6 +2321,10 @@ class PackageContractTests(unittest.TestCase):
             "dependency start block",
             "architect writer barrier",
             "collision stop",
+            "architect acceptance loop",
+            "task sizing and integration",
+            "assignment progress checkpoints",
+            "concrete verifier review",
         ):
             self.assertIn(f"| {scenario} |", evaluations)
         rows = [
@@ -2368,7 +2405,9 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("Choose a lowercase role prefix and Greek suffix", subagents)
         self.assertIn("Allocate the next unused label", subagents)
         self.assertIn("Keep the exact name with the reusable child", subagents)
-        self.assertIn("No ledger edits, Git mutations, or sibling integration", child)
+        self.assertIn("No ledger edits or Git mutations", child)
+        self.assertIn("Do not integrate active, unaccepted, or unassigned sibling work", child)
+        self.assertIn("An explicitly assigned integration outcome may combine accepted pieces within its owned boundary", child)
         self.assertIn("Focused read-only Git inspection is allowed", child)
         self.assertIn("No child spawning", child)
         self.assertIn(
@@ -2441,11 +2480,20 @@ class PackageContractTests(unittest.TestCase):
             "task id, title, owner, both exact roots, writable paths, stable reads",
             "acceptance, planned proof, and stop conditions",
             "reused children receive the change in instructions plus relevant refreshed evidence",
+            "short public brief with the decision, reason, owned boundary, acceptance, and material risks",
+            "put the precise task contract in the child assignment once",
+            "relevant code, responsibilities, interfaces, data flow, mandatory sequencing, failure behavior, invariants, exclusions",
+            "decisions versus suggestions",
+            "engineer freedom",
+            "one concrete example or the reason for any choice where misunderstanding would matter",
+            "do not use time or percentage thresholds for reporting",
         ):
             self.assertIn(phrase, subagents)
         for phrase in (
             "short natural progress updates",
             "outcome, focused changes or citations, proof, and remaining risks",
+            "inspect the contract, actual code, relevant failure cases, and test adequacy directly",
+            "do not only endorse engineer conclusions",
         ):
             self.assertIn(phrase, child)
         verify_order = [
@@ -2481,7 +2529,9 @@ class PackageContractTests(unittest.TestCase):
             "reuse a reachable child for the same role and relevant context",
             "only the architect allocates children",
             "preauthorize an engineer to spawn or reuse one exact named read-only verifier",
-            "never let a child integrate sibling work",
+            "do not integrate active, unaccepted, or unassigned sibling work",
+            "explicitly assigned integration outcome may combine accepted pieces within its owned boundary",
+            "never take arbitrary ownership",
         ):
             self.assertIn(term, subagents)
         for term in (
@@ -2505,6 +2555,22 @@ class PackageContractTests(unittest.TestCase):
             "use an independent verifier",
             "run only missing or invalidated checks",
             "repeat affected checks after relevant changes",
+            "the architect reads actual changes and relevant surrounding code and callers",
+            "a summary alone is not sufficient",
+            "assess architecture, behavior, failure cases, test adequacy, unnecessary complexity, documentation, and integration",
+            "accept when the contract and proof pass",
+            "revise when concrete defects remain",
+            "redesign when the contract is flawed or a new requirement changes the outcome",
+            "batch independently identifiable findings",
+            "location, violated requirement or quality concern, and correction evidence",
+            "distinguish a new requirement from a defect",
+            "does not patch delegated routine work",
+            "does not demand a workaround for its own flawed design",
+            "in solo, do not accept critical work without independent evidence",
+            "request authorization for a reviewer or a mode change",
+            "do not spawn a reviewer automatically",
+            "do not self-certify",
+            "do not silently change mode",
         ):
             self.assertIn(term, verify)
         for term in (
@@ -2538,6 +2604,8 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("end the active turn", evaluations.casefold())
         self.assertIn("followup_task", evaluations)
         self.assertIn("routine progress stays in the child thread", subagents.casefold())
+        self.assertIn("for a small settled assignment, do not send routine architect updates", subagents.casefold())
+        self.assertIn("for larger or uncertain work, split the assignment or define a specific decision or risk checkpoint before delegation", subagents.casefold())
         self.assertIn("architect does not echo unchanged child facts", evaluations.casefold())
         self.assertIn("role repetition", child.casefold())
 

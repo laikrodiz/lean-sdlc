@@ -12,7 +12,9 @@ Task proof is the acceptance anchor. Record command owner, proof purpose, and in
 
 These are purposes, not three mandatory commands. One command may satisfy multiple proof purposes. Independent review checks the conclusion and supporting evidence; it does not automatically repeat execution.
 
-For one settled low-risk task, Engineer evidence and final Architect review suffice. Use an independent Verifier for architecture-sensitive or cross-boundary behavior, disputed evidence, combined parallel work, releases, or required repository checks. The same trigger applies when the Architect implements directly.
+For one settled Routine task, Engineer evidence and final Architect review suffice. Critical acceptance requires independent verification, including when the Architect writes the implementation. Use an independent Verifier for Critical, architecture-sensitive, or cross-boundary behavior, disputed evidence, combined parallel work, releases, or required repository checks.
+
+In Solo, do not accept Critical work without independent evidence. Request authorization for a reviewer or a mode change. Do not spawn a reviewer automatically. Do not self-certify. Do not silently change mode.
 
 Reuse proof only while relevant source, dependencies, configuration, environment, toolchain, and target inputs remain valid. Record these inputs at the useful boundary, not the entire repository by default. Repeat affected checks after relevant changes, disputed evidence, or a specific need for independent reproduction. A changed dependency invalidates proof even if task-owned files have not changed.
 
@@ -24,8 +26,21 @@ If a planned full gate contains the focused checks, run that gate without a dupl
 2. Identify complete verification inputs and mutable test resources. Stop writers touching them, including dependencies. Unrelated stable-boundary work may continue. Final release checks cover every release input.
 3. Verifier runs `python3 "<skill-root>/scripts/checkpoint.py" --repo "<repo-root>" PATH [PATH ...]` over explicit source and configuration inputs before and after proof. Compare returned SHA-256 values locally. Block on mismatch. Hash equality detects file changes; it does not prove unchanged environment, toolchain, or external state. Check those separately when relevant.
 4. Independently assess acceptance, semantic interaction, assigned-path separation, documentation parity, and affected-boundary risks. Run only missing or invalidated checks. Batch common regression across atomic tasks without merging their acceptance decisions.
+For independent review, the Verifier inspects the contract, actual code, relevant failure cases, and test adequacy directly. It does not only endorse Engineer conclusions.
 5. Collect independent safe failures together. Skip checks whose prerequisite failed. Return actionable findings in one report. A preauthorized Engineer may correct local defects and return only changed evidence; material decisions go to Architect.
 6. Stop after all required proof passes. Keep exact failed logs available by path; omit successful raw logs and full fingerprints from routine reports. Do not persist checkpoint hashes or make the Architect calculate them.
+
+## Architect acceptance loop
+
+The Architect reads actual changes and relevant surrounding code and callers. A summary alone is not sufficient.
+
+Assess architecture, behavior, failure cases, test adequacy, unnecessary complexity, documentation, and integration. Reuse valid proof when its inputs still match.
+
+- Accept when the contract and proof pass.
+- Revise when concrete defects remain. Return each defect to the same assigned team with correction evidence.
+- Redesign when the contract is flawed or a new requirement changes the outcome. Correct the contract before dependent work continues.
+
+Batch independently identifiable findings. Give each finding a location, violated requirement or quality concern, and correction evidence. Distinguish a new requirement from a defect. The Architect does not patch delegated Routine work. The Architect does not demand a workaround for its own flawed design.
 
 Verifier does not edit tracked source, configuration, documents, ledger, or session state. Incidental test outputs must respect assigned resources and remain outside tracked truth. A standard release command may include structural checks; do not run the same structural check again separately.
 

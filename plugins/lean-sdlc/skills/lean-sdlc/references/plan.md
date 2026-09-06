@@ -10,13 +10,23 @@ Record the proof owner, purpose, and invalidation inputs in the existing task or
 
 Quick Fix is inline Plan classification, not a mode, lane, task type, or prompt. Record Context `Quick Fix`.
 
-Eligibility requires an exact requested outcome, local reversible scope, no unresolved product, design, architecture, public interface, schema, migration, dependency, security, generated-file, or external-state choice, and one immediate narrow proof. If uncertain, use Standard work. A user may choose Standard. A request to use Quick Fix never bypasses eligibility.
+Eligibility requires an exact requested outcome, local reversible scope, and Routine risk for this independently accepted task or plan piece. It allows no unresolved product, design, architecture, public interface, schema, migration, dependency, security, generated-file, or external-state choice. It requires one immediate narrow proof. If uncertain, use Standard work. A user may choose Standard. A request to use Quick Fix never bypasses eligibility.
 
 Every Quick Fix write needs implementation authority, one visible plan item, one owned task, and `python3 "<skill-root>/scripts/lean_check.py" "<repo-root>" --before-write --task TASK-ID --owner OWNER` before the first non-control write. Show classification briefly in plan prose. Keep `update_plan` names exact: `TASK-NNN — Title`.
 
 Architect may execute Quick Fix in Assisted or Solo. Do not spawn Engineer, Maintainer, or Verifier per Quick Fix. Shared batch may reuse or start Verifier when normal proof trigger applies. Review diff and run narrow proof before close.
 
 Mixed: Standard final checkpoint reviews pending Quick Fixes and closes with `--review-through TASK-NNN`. Quick-only multi-fix batch: last Quick Fix may close with that flag after review. Standalone remains pending until next Standard checkpoint.
+
+## Risk classification
+
+Classify each independently accepted task or plan piece once as `Routine` or `Critical`. Record a short reason in the existing task or handoff text. Do not classify each transient coding step.
+
+`Routine` means understood, bounded, recoverable, and checkable behavior. `Critical` means consequential data, security, irreversible, shared-contract, concurrency, or subtle architectural risk. A small settled security, migration, or shared-contract edit can remain Critical and cannot use the Quick Fix path.
+
+Risk differs from ownership. Risk classification sets proof and sequencing needs; it does not route every Critical change to the Architect. Investigate unclear consequences before coding and reclassify when new material evidence changes the risk.
+
+In Assisted mode, route settled Routine non-Quick-Fix implementation to Engineer. Route settled Critical implementation by the same risk-benefit choice. Critical work requires independent verification, including Architect-written work. See [verify.md](verify.md) for the Solo missing-proof gate.
 
 ## Backlog
 
@@ -46,7 +56,7 @@ Keep every unresolved task in its own exact row. Parallel work changes status or
 
 One ledger task represents one Engineer checkpoint. One ledger task equals one independently accepted behavior change under one owning contract boundary, one proof cluster, and one close decision. It may touch several files, tests, documentation, or migration steps only when all work is inseparable for that behavior.
 
-Require settled architecture, one coherent outcome, one independent bounded proof, and one accept-or-reject review. Keep implementation tests inside the task. Keep Maintainer and Verifier work attached unless independently deliverable. Keep one task resumable from repository truth and its ledger row after compaction.
+Require a small complete outcome, settled architecture, one independent bounded proof, and one accept-or-reject review. Define bounded rejection and correction scope. Accept foundations before dependent work. Assign integration ownership. Run combined behavior proof before feature completion. Keep implementation tests inside the task. Keep Maintainer and Verifier work attached unless independently deliverable. Keep one task resumable from repository truth and its ledger row after compaction.
 
 Split a task when a part can succeed, fail, defer, revert, release, or be accepted independently; belongs to another behavior or contract area; or needs another Architect decision. Merge pieces without independent value or proof.
 

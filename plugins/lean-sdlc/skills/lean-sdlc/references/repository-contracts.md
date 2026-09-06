@@ -101,7 +101,7 @@ Promotion adds proper title sizing, acceptance, proof, and dependencies. Promoti
 `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" upgrade` accepts the previous `Parent` header and older planning header. It maps `REPO` to `Project` and `BOOTSTRAP` to `Bootstrap`, then atomically writes one root CSV under the existing lock.
 
 The command serializes writers with a short root lock for ledger updates, reads the latest ledger under that lock, validates dependencies, changes one transaction, and replaces the file atomically. The ledger lock is not a source-file lock. Owner IDs coordinate threads; they are not a security boundary.
-One root `tasks.csv` remains authoritative. It may hold two ready tasks for one Architect owner after the resource gate passes. The Architect alone mutates or closes both rows.
+One root `tasks.csv` remains authoritative. It may hold multiple ready tasks for one Architect owner when the plan and resource gates pass. The Architect alone mutates or closes those rows. Ledger capacity does not impose a fixed workflow-agent or Engineer count.
 
 ## Quick Fix ledger
 

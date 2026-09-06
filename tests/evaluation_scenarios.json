@@ -79,24 +79,55 @@
       ]
     },
     {
-      "id": "delegation-direct-local-exception",
+      "id": "delegation-architect-direct-path",
       "category": "delegation",
-      "prompt": "Use $lean-sdlc. In Assisted mode, one understood settled local change is smaller than handoff overhead, with no unresolved decision. Substantial execution and exploration remain delegated to Luna. Return only JSON fields: role, safeguards, substantial_work.",
+      "prompt": "Use $lean-sdlc. In Assisted mode, an exact local reversible Routine Quick Fix has no unresolved decision and one immediate narrow proof. Return only JSON fields: role, context, safeguards.",
       "assertions": [
         {"path": "role", "equals": "Architect"},
-        {"path": "safeguards", "equals": ["visible plan", "owned task", "before-write gate", "narrow proof"]},
-        {"path": "substantial_work", "equals": "delegate to Luna"}
+        {"path": "context", "equals": "Quick Fix"},
+        {"path": "safeguards", "equals": ["visible plan", "owned task", "before-write gate", "narrow proof"]}
       ]
     },
     {
-      "id": "delegation-capacity-bounded-readonly",
+      "id": "delegation-critical-design-coupling",
       "category": "delegation",
-      "prompt": "Use $lean-sdlc. Two settled tasks have independent acceptance and disjoint mutable resources. Native capacity permits meaningful elapsed-time savings for one read-only child. Return only JSON fields: engineers, optional_child, descendants, resource_rule.",
+      "prompt": "Use $lean-sdlc. In Assisted mode, a rare bounded Critical implementation has substantial handoff risk because design and coding are tightly coupled. Return only JSON fields: role, reason, proof.",
       "assertions": [
-        {"path": "engineers", "equals": 2},
-        {"path": "optional_child", "equals": "one read-only child"},
-        {"path": "descendants", "equals": "all descendants count"},
-        {"path": "resource_rule", "equals": "disjoint writes, outputs, caches, services, ports, devices, and targets"}
+        {"path": "role", "equals": "Architect"},
+        {"path": "reason", "equals": "rare bounded Critical design/coding coupling"},
+        {"path": "proof", "equals": "independent verification"}
+      ]
+    },
+    {
+      "id": "delegation-capacity-native",
+      "category": "delegation",
+      "prompt": "Use $lean-sdlc. Settled tasks have independent acceptance and disjoint mutable resources. Native runtime capacity permits meaningful elapsed-time savings. Return only JSON fields: capacity, engineer_count, descendants, ownership, coordinator.",
+      "assertions": [
+        {"path": "capacity", "equals": "native runtime capacity"},
+        {"path": "engineer_count", "equals": "no fixed workflow-agent or Engineer count"},
+        {"path": "descendants", "equals": "count every active descendant, including nested Verifiers"},
+        {"path": "ownership", "equals": "unique mutable ownership"},
+        {"path": "coordinator", "equals": "no coordinator role or uncontrolled spawning"}
+      ]
+    },
+    {
+      "id": "planning-risk-classification",
+      "category": "routing",
+      "prompt": "Use $lean-sdlc. During Plan, classify each independently accepted task or plan piece once and record a short reason. A piece has understood, bounded, recoverable, checkable behavior. Return only JSON fields: classification, reason, effect.",
+      "assertions": [
+        {"path": "classification", "equals": "Routine"},
+        {"path": "reason", "equals": "understood, bounded, recoverable, and checkable behavior"},
+        {"path": "effect", "equals": "risk changes proof and sequencing, not ownership"}
+      ]
+    },
+    {
+      "id": "proof-critical-architect-written",
+      "category": "proof",
+      "prompt": "Use $lean-sdlc. The Architect writes a Critical implementation. Return only JSON fields: proof, solo_conflict, mode_switch.",
+      "assertions": [
+        {"path": "proof", "equals": "independent verification"},
+        {"path": "solo_conflict", "equals": "surface missing independent Critical proof for a decision"},
+        {"path": "mode_switch", "equals": "never silently switch modes"}
       ]
     },
     {
