@@ -52,6 +52,8 @@ Read exactly the selected workflow:
 Do not load other mode policies. Do not additionally load `mode-common.md` or `support.md` for ordinary Assisted work.
 After startup, resume, clear, compaction, or a skill upgrade, restore current intent and the selected contract.
 Reuse unchanged instructions that remain in context.
+After an authorized repository or plugin instruction upgrade, use [same-session reload](references/repository-contracts.md#reload-after-an-authorized-upgrade).
+Do not require a new task merely because instructions changed. Report a specific unresolved conflict before requesting a restart.
 
 ## Change mode in this session
 

@@ -107,6 +107,64 @@ class WorkflowContractTests(unittest.TestCase):
         self.assertEqual(self.begin().returncode, 0)
         self.assertEqual(upgrade_contract_text(actual), actual)
 
+    def test_upgrade_and_noop_continue_with_same_owner_mode_and_task(self) -> None:
+        task = self.run_cli(
+            "tasks.py", "--repo", str(self.repo), "start", "--owner", self.owner,
+            "--title", "Upgrade and continue", "--context", "Project",
+            "--acceptance", "Continue in this session.", "--proof", "Check restored state and write gate.",
+        )
+        self.assertEqual(task.returncode, 0, task.stderr)
+        self.assertIn("started TASK-001", task.stdout)
+        ledger = self.repo.joinpath("tasks.csv").read_bytes()
+        appendix = "\n## Project rules\nPreserve local settings.\n"
+        for mode in ("assisted", "delegating", "solo"):
+            with self.subTest(mode=mode):
+                selected = self.run_cli("session_state.py", "--owner", self.owner, "--mode", mode)
+                self.assertEqual(selected.returncode, 0, selected.stderr)
+                begun = self.run_cli("session_state.py", "--owner", self.owner, "--begin", "--fast-children")
+                self.assertEqual(begun.returncode, 0, begun.stderr)
+                before = json.loads(self.run_cli("session_state.py", "--context").stdout)
+                self.repo.joinpath("AGENTS.md").write_text(OLD.read_text() + appendix, encoding="utf-8")
+                for attempt in range(2):
+                    upgraded = self.run_cli(
+                        "init_repo.py", str(self.repo), "--upgrade-contract",
+                        "--task", "TASK-001", "--owner", self.owner,
+                    )
+                    self.assertEqual(upgraded.returncode, 0, upgraded.stderr)
+                    self.assertIn(f"{1 - attempt} control change(s)", upgraded.stdout)
+                    current = self.repo.joinpath("AGENTS.md").read_text(encoding="utf-8")
+                    self.assertEqual(current, SKILL.joinpath("assets/AGENTS.md").read_text() + appendix)
+                    self.assertEqual(self.repo.joinpath("tasks.csv").read_bytes(), ledger)
+                    after = json.loads(self.run_cli("session_state.py", "--context").stdout)
+                    self.assertEqual(after, before)
+                    activated = self.run_cli("session_state.py", "--owner", self.owner, "--begin")
+                    self.assertEqual(activated.returncode, 0, activated.stderr)
+                    checked = self.run_cli(
+                        "lean_check.py", str(self.repo), "--before-write",
+                        "--task", "TASK-001", "--owner", self.owner,
+                    )
+                    self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)
+
+    def test_upgrade_instructions_reload_instead_of_requiring_new_session(self) -> None:
+        contract = SKILL.joinpath("references/repository-contracts.md").read_text()
+        self.assertIn("## Reload after an authorized upgrade", contract)
+        self.assertIn("Continue in the same session", contract)
+        self.assertIn("higher-priority", contract)
+        self.assertIn("specific conflict", contract)
+        for path in (SKILL / "SKILL.md", SKILL / "references/repository-contracts.md",
+                     ROOT / "README.md", ROOT / "docs/PROJECT.md", ROOT / "docs/OPERATIONS.md"):
+            with self.subTest(path=path):
+                text = path.read_text()
+                for obsolete in (
+                    "After upgrading, start a fresh session",
+                    "After an authorized upgrade, start a fresh session",
+                    "After an authorized contract upgrade, start a fresh session",
+                    "contract upgrade is followed by a fresh session",
+                    "Restart Codex after installation. Then start a new thread.",
+                    "before the session restarts",
+                ):
+                    self.assertNotIn(obsolete, text)
+
     def test_upgrade_requires_owned_task_and_preserves_unknown_contract(self) -> None:
         original = OLD.read_text().replace("## Repository gate", "## My custom gate")
         self.repo.joinpath("AGENTS.md").write_text(original, encoding="utf-8")

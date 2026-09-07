@@ -79,7 +79,7 @@
    Confirm that `lean-sdlc` is enabled at `<version>`. Do not record unrelated plugin entries.
 
 12. Maintainer compares the installed and verified released source package file sets. Require equal file sets and byte equality for every corresponding file.
-13. Architect runs the installed helper context check. Confirm the expected owner, mode, tier, and paths.
+13. Architect reads the installed skill and runs its helper context check. Confirm the expected owner, mode, tier, and paths.
 14. If the selected repository needs ledger migration, Architect runs the installed helper only for that repository:
 
     ```text
@@ -92,11 +92,13 @@
     python3 <installed-skill-root>/scripts/init_repo.py <repository-root> --upgrade-contract --task TASK-ID --owner OWNER
     ```
 
-    Apply this step only to the selected repository. Do not upgrade other repositories automatically. If its core instructions are edited or unknown, stop for authorized manual reconciliation. Preserve custom rules. After an authorized contract upgrade, start a fresh session before mode activation or workflow work.
+    Apply this step only to the selected repository. Do not upgrade other repositories automatically. If its core instructions are edited or unknown, stop for authorized manual reconciliation. Preserve custom rules.
+
+16. Architect follows [same-session reload](../plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md#reload-after-an-authorized-upgrade), including when no repository migration was needed. Read current rules and task facts, check conflicts, and run the current before-write check. Activate only if needed. Continue in the current task when checks pass; request a restart only for a specific conflict that requires it.
 
 ### Success signal
 
-The portable gate, validators, checkpoint comparison, and diff check pass. The annotated tag and remote peeled tag identify the release commit. The working tree is clean before installation. The configured local source installs successfully, and the installed package matches the verified released source byte-for-byte. The helper context is correct. Any repository upgrade changes only its selected ledger or selected contract prefix, and a contract upgrade is followed by a fresh session.
+The portable gate, validators, checkpoint comparison, and diff check pass. The annotated tag and remote peeled tag identify the release commit. The working tree is clean before installation. The configured local source installs successfully, and the installed package matches the verified released source byte-for-byte. The helper context is correct. Any repository upgrade changes only its selected ledger or selected contract prefix. Same-session reload and continuation checks pass, or the exact blocking conflict is reported.
 
 ### Failure and recovery
 

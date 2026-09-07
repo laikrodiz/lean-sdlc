@@ -4,7 +4,7 @@ Read this reference for initialization, legacy migration, or document ownership.
 
 ## Minimal core
 
-An initialized project requires only `AGENTS.md`, `docs/PROJECT.md`, and root `tasks.csv`. The initializer preserves existing files, adds `/tasks.csv` and `/.tasks.lock` to `.gitignore`, and closes `TASK-000` as owner `bootstrap` before the session restarts.
+An initialized project requires only `AGENTS.md`, `docs/PROJECT.md`, and root `tasks.csv`. The initializer preserves existing files, adds `/tasks.csv` and `/.tasks.lock` to `.gitignore`, and creates `TASK-000` when needed.
 
 `docs/PROJECT.md` remains the only mandatory shared project document. `AGENTS.md` and root `tasks.csv` remain required repository files. README remains project-owned.
 
@@ -12,7 +12,7 @@ A missing, invalid, or stale managed startup block is repaired with `python3 "<s
 
 Old two-mode repository rules can conflict with the selected three-mode workflow. Mode activation and the before-write check require the current packaged AGENTS.md template as the unchanged prefix. Put custom project rules after that prefix and check them for semantic conflicts with the selected mode. Edited or unknown core instructions stop activation; automatic checks do not interpret arbitrary appended rules. The obsolete `subagents.md` policy path is removed; Delegating owns its policy in `delegating.md`.
 When the user explicitly authorizes the contract upgrade, restore context, start an owned upgrade task, and run `python3 "<skill-root>/scripts/init_repo.py" "<repo-root>" --upgrade-contract --task TASK-ID --owner OWNER` as a control transaction before mode activation. The upgrade recognizes the exact released v1.26.0 template, replaces only that prefix, and preserves appended project rules. It does not choose or change the session mode.
-An edited or unknown template requires explicit manual reconciliation. Never overwrite custom rules or interpret an application change as migration authority. After upgrading, start a fresh session so stale injected instructions are not reused. Startup repair alone does not remove legacy routing.
+An edited or unknown template requires explicit manual reconciliation. Never overwrite custom rules or interpret an application change as migration authority. After upgrading, use [same-session reload](#reload-after-an-authorized-upgrade). Startup repair alone does not remove legacy routing.
 If only `planning/tasks.csv` exists, run the explicitly authorized `tasks.py --repo <repo-root> upgrade` first. Then start or claim the contract-upgrade task in root `tasks.csv`. Do not initialize a second ledger.
 
 Optional documents appear only when a concrete need-based trigger exists. Use semantic sizing: one document holds one cohesive meaning, not an arbitrary line or time limit.
@@ -46,6 +46,29 @@ Normal replacement deletes old code and relies on Git. Do not create an archive 
 Create repository-root `archive/` only after an explicit user request. Store each snapshot at `archive/<capability>/<snapshot>/ARCHIVE.md`. Require `archive/INDEX.md` when `archive/` exists. A source archive is inert and excluded from active imports, builds, packaging, and normal tests. Keep only source, focused tests, fixtures, small configuration, and notes needed to understand or restore the snapshot. Do not archive build output, installed dependencies, caches, credentials, or unrelated files.
 
 Do not create a documentation archive policy beyond optional supporting copies inside a source snapshot.
+
+## Reload after an authorized upgrade
+
+Repository upgrades and plugin instruction updates do not require a new session by default.
+Before upgrading, finish or safely cancel affected child assignments and commands. Use [command cancellation](support.md#command-cancellation) when needed.
+If command termination is unconfirmed, stop affected work.
+
+1. Read the updated `AGENTS.md`, `docs/PROJECT.md`, installed `SKILL.md`, and exactly the selected workflow.
+   Use the installed skill path returned by installation or the current skill catalog, not an obsolete startup path.
+   Run that skill's documented `--context` fallback to restore current helper paths, owner, mode, and tier.
+2. Treat authorized updated Lean-SDLC repository rules as replacing their obsolete versions for subsequent work.
+   Preserve custom project rules and all higher-priority instructions. Reading a file does not erase higher-priority instructions.
+   Check for semantic conflicts; passing the prefix check does not validate arbitrary custom rules.
+3. Restore the existing task and acceptance through the current task helper. Preserve session identity, owner, mode, tier, and valid proof.
+   Do not create replacement tasks, force unfinished work to Done, or silently change modes.
+   If the user requests another mode, follow the skill's same-session mode-change procedure.
+4. Run the current before-write check for the owned task. If activation is needed, begin the selected mode after instruction reload.
+   Do not write while reload, conflict checks, or required activation remain incomplete.
+5. Continue in the same session when these checks pass. Report completion without a generic instruction to start another task.
+
+If updated runtime tools or hooks are unavailable, or instructions remain incompatible, identify the specific conflict and stop dependent actions.
+Request a new session only when that is the necessary remedy for the identified conflict; it is not a substitute for reconciliation.
+An upgrade does not broaden authority, lower proof requirements, or reactivate canceled work.
 
 ## Document ownership
 

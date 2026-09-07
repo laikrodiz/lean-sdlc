@@ -2,7 +2,7 @@
 
 Lean-SDLC helps Codex build projects of any size through a controlled and understandable process. It turns user intent into clear tasks, uses safe parallel work when useful, verifies every result, and grows documentation with the project.
 
-Lean-SDLC `v1.27.1` uses Assisted lead-coding by default. Delegating preserves the former Assisted Engineer route. Solo is lead-only.
+Lean-SDLC `v1.27.2` uses Assisted lead-coding by default. Delegating preserves the former Assisted Engineer route. Solo is lead-only.
 
 The final V5 matched benchmark was not run. No benchmark-based performance gain is claimed.
 Older benchmark results are historical context only.
@@ -95,7 +95,12 @@ Saved mode state is versioned. New state starts in `assisted`. Only the exact un
 
 The selected mode is the requested or restored choice. The active mode is the currently activated workflow. A default `Mode: assisted` does not mean Assisted is active.
 
-The contract upgrader recognizes the exact released `v1.26.0` template. It replaces only the managed prefix and preserves appended custom project rules. Edited or unknown core instructions require explicit manual reconciliation. Do not overwrite custom rules or interpret application changes as migration authority. After an authorized upgrade, start a fresh session so stale injected instructions are not reused.
+The contract upgrader recognizes the exact released `v1.26.0` template. It replaces only the managed prefix and preserves appended custom project rules. Edited or unknown core instructions require explicit manual reconciliation. Do not overwrite custom rules or interpret application changes as migration authority.
+
+Version `v1.27.2` reloads upgraded repository instructions in the same task.
+The Lead reads current rules and checks conflicts, task ownership, and activation before continuing.
+Existing tasks, custom rules, and valid evidence stay intact. A new task is required only when a specific conflict makes it necessary.
+See [Same-session reload](plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md#reload-after-an-authorized-upgrade).
 
 Restored context reads state but does not begin a fresh mode. For initial authorized implementation, select and explicitly begin the mode before loading its workflow instructions. A same-mode begin reuses instructions already loaded. Discussion remains read-only and does not activate a mode. The spawn guard rejects an unbegun mode.
 
@@ -196,16 +201,17 @@ Requirements:
 - Python 3
 - Codex with plugin support
 
-Install the immutable `v1.27.1` release:
+Install the immutable `v1.27.2` release:
 
 ```bash
-git clone --depth 1 --branch v1.27.1 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.27.2 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc
 ```
 
-Restart Codex after installation. Then start a new thread.
+After an update, load the installed skill and current repository rules through the same-session reload procedure above.
+If required tools or hooks are unavailable, report that specific runtime problem before requesting a restart.
 
 Lean-SDLC checks for a newer release once daily. It never updates itself automatically.
 
