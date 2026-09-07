@@ -103,12 +103,12 @@ def _validate_tool_input(
         if task_prefix == "engineer":
             return (
                 "Assisted mode is lead-coding; Engineer children are unavailable. "
-                "Start a fresh session in Delegating mode before spawning an Engineer."
+                "An explicit user request can switch this session to Delegating before spawning an Engineer."
             )
         if task_prefix not in ROLE_PREFIXES:
             return (
                 "Assisted mode allows only Maintainer, Scout, or Verifier support "
-                "children; use a supported role or start a fresh Delegating session."
+                "children; use a supported role or obtain an explicit user request to switch to Delegating."
             )
     if mode not in {"assisted", "delegating"}:
         return "Only Assisted and Delegating modes can spawn Agent children."
@@ -171,12 +171,12 @@ def main() -> int:
     mode = state["active_mode"]
     if mode is None:
         _deny(
-            "Select and begin a Lean-SDLC mode before spawning an Agent. "
-            "Use session_state.py --owner OWNER --mode MODE --begin."
+            "Load the selected Lean-SDLC workflow instructions, then begin before spawning an Agent. "
+            "Use session_state.py --owner OWNER --begin."
         )
         return 0
     if mode == "solo":
-        _deny("Solo mode is lead-only; start a fresh Assisted or Delegating session before spawning an Agent.")
+        _deny("Solo mode is lead-only; an explicit user request can switch this session to Assisted or Delegating.")
         return 0
     error = _validate_tool_input(tool_input, state["fast_children"], mode)
     if error is not None:

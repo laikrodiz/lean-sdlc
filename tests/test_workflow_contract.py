@@ -126,10 +126,32 @@ class WorkflowContractTests(unittest.TestCase):
         with self.assertRaises(StartupContractError):
             upgrade_contract_text(original)
 
-    def test_current_contract_keeps_state_lock_and_has_no_old_policy_file(self) -> None:
+    def test_mode_transition_keeps_contract_gate_and_task_ownership(self) -> None:
         self.assertEqual(self.begin().returncode, 0)
         self.assertEqual(self.begin().returncode, 0)
         self.assertEqual(self.begin("delegating").returncode, 2)
+        task = self.run_cli(
+            "tasks.py", "--repo", str(self.repo), "start", "--owner", self.owner,
+            "--title", "Keep ownership across mode changes", "--context", "Project",
+            "--acceptance", "Mode changes preserve this task.", "--proof", "Ledger bytes stay unchanged.",
+        )
+        self.assertEqual(task.returncode, 0, task.stderr)
+        ledger = self.repo.joinpath("tasks.csv").read_bytes()
+        selected = self.run_cli("session_state.py", "--owner", self.owner, "--mode", "delegating")
+        self.assertEqual(selected.returncode, 0, selected.stderr)
+        self.assertIsNone(json.loads(selected.stdout)["active_mode"])
+        state_path = self.root / "state/state/lean-sdlc" / f"{self.owner}.json"
+        pending = state_path.read_bytes()
+        self.repo.joinpath("AGENTS.md").write_text(OLD.read_text(), encoding="utf-8")
+        blocked = self.run_cli("session_state.py", "--owner", self.owner, "--begin")
+        self.assertEqual(blocked.returncode, 2)
+        self.assertIn("legacy workflow routing", blocked.stderr)
+        self.assertEqual(state_path.read_bytes(), pending)
+        self.repo.joinpath("AGENTS.md").write_text(SKILL.joinpath("assets/AGENTS.md").read_text(), encoding="utf-8")
+        resumed = self.run_cli("session_state.py", "--owner", self.owner, "--begin")
+        self.assertEqual(resumed.returncode, 0, resumed.stderr)
+        self.assertEqual(json.loads(resumed.stdout)["active_mode"], "delegating")
+        self.assertEqual(self.repo.joinpath("tasks.csv").read_bytes(), ledger)
         self.assertFalse(SKILL.joinpath("references/subagents.md").exists())
 
     def test_edited_legacy_core_cannot_activate_without_literal_trigger_phrases(self) -> None:

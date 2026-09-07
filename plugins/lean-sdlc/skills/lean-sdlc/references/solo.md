@@ -13,6 +13,6 @@ Load [mode-common.md](mode-common.md) and this file. Do not load [delegating.md]
 
 Use [shape.md](shape.md), [decide.md](decide.md), [plan.md](plan.md), [diagnose.md](diagnose.md), [deliver.md](deliver.md), [verify.md](verify.md), and [operations.md](operations.md) only when their lanes apply.
 
-Critical work cannot self-certify. If independent evidence is required, request explicit authorization for a reviewer or a fresh mode selection. Do not spawn a reviewer automatically. Do not silently change mode or lower the selected model or effort.
+Critical work cannot self-certify. If independent evidence is required, request explicit authorization for a reviewer or a mode change in this session. Do not spawn a reviewer automatically. Do not silently change mode or lower the selected model or effort.
 
 Use the shared lifecycle, cancellation, evidence, and truthful-delivery rules in [mode-common.md](mode-common.md).

@@ -203,7 +203,64 @@ class RuntimeHookTests(unittest.TestCase):
         denied = self.guard({"task_name": "researcher_beta"})
         self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
 
-    def test_mode_selection_locks_at_begin_and_rejects_active_change(self) -> None:
+    def test_all_active_mode_changes_preserve_session_and_require_begin(self) -> None:
+        modes = ("assisted", "delegating", "solo")
+        ledger_before = self.repository.joinpath("tasks.csv").read_bytes()
+        for source in modes:
+            for target in modes:
+                if source == target:
+                    continue
+                with self.subTest(source=source, target=target):
+                    self.set_state("--mode", source)
+                    self.set_state("--begin", "--fast-children")
+                    selected = self.set_state("--mode", target)
+                    self.assertEqual(selected["owner"], self.owner())
+                    self.assertEqual(selected["mode"], target)
+                    self.assertIsNone(selected["active_mode"])
+                    self.assertTrue(selected["fast_children"])
+                    self.assertTrue(selected["instruction_reload_required"])
+                    denied = self.guard({"task_name": "maintainer_beta"})
+                    self.assertIn("begin", denied["hookSpecificOutput"]["permissionDecisionReason"])
+                    context = run_script(
+                        SESSION_STATE,
+                        codex_home=self.codex_home,
+                        arguments=("--context",),
+                        cwd=self.repository,
+                        session_id=self.session_id,
+                    )
+                    self.assertEqual(context.returncode, 0, context.stderr)
+                    restored = json.loads(context.stdout)
+                    self.assertEqual(restored["owner"], self.owner())
+                    self.assertEqual(restored["mode"], target)
+                    self.assertIsNone(restored["active_mode"])
+                    begun = self.set_state("--begin")
+                    self.assertEqual(begun["active_mode"], target)
+                    for role in ("engineer", "maintainer", "scout", "verifier"):
+                        result = self.guard({
+                            "task_name": f"{role}_beta",
+                            "model": "gpt-5.6-luna",
+                            "reasoning_effort": "max",
+                            "fork_turns": "none",
+                        })
+                        allowed = target == "delegating" or (target == "assisted" and role != "engineer")
+                        if allowed:
+                            self.assertIsNone(result)
+                        else:
+                            self.assertEqual(result["hookSpecificOutput"]["permissionDecision"], "deny")
+                            self.assertNotIn("fresh", result["hookSpecificOutput"]["permissionDecisionReason"])
+                    event = {"session_id": self.session_id, "cwd": str(self.repository)}
+                    hook = run_script(SESSION_STATE, event, codex_home=self.codex_home)
+                    self.assertEqual(hook.returncode, 0, hook.stderr)
+                    message = json.loads(hook.stdout)["hookSpecificOutput"]["additionalContext"]
+                    self.assertIn(f"Active mode: {target}", message)
+                    self.assertNotIn("requires a fresh session", message)
+        self.assertEqual(self.repository.joinpath("tasks.csv").read_bytes(), ledger_before)
+        self.assertEqual(
+            sorted(path.name for path in (self.codex_home / "state/lean-sdlc").iterdir()),
+            [f"{self.owner()}.json"],
+        )
+
+    def test_active_mode_change_cannot_skip_instruction_reload(self) -> None:
         selected = self.set_state("--mode", "delegating", "--begin")
         self.assertEqual(selected["active_mode"], "delegating")
         self.assertTrue(selected["instruction_reload_required"])
@@ -213,10 +270,11 @@ class RuntimeHookTests(unittest.TestCase):
         result = run_script(
             SESSION_STATE,
             codex_home=self.codex_home,
-            arguments=("--owner", self.owner(), "--mode", "assisted"),
+            arguments=("--owner", self.owner(), "--mode", "assisted", "--begin"),
+            cwd=self.repository,
         )
         self.assertEqual(result.returncode, 2)
-        self.assertIn("fresh session", result.stderr)
+        self.assertIn("without --begin", result.stderr)
         self.assertEqual(
             (self.codex_home / "state/lean-sdlc" / f"{self.owner()}.json").read_text(
                 encoding="utf-8"
@@ -239,6 +297,9 @@ class RuntimeHookTests(unittest.TestCase):
         self.assertFalse(selected["instruction_reload_required"])
         repeated = self.set_state("--begin")
         self.assertFalse(repeated["instruction_reload_required"])
+        unchanged = self.set_state("--mode", "assisted")
+        self.assertEqual(unchanged["active_mode"], "assisted")
+        self.assertFalse(unchanged["instruction_reload_required"])
         tier = self.set_state("--fast-children")
         self.assertFalse(tier["instruction_reload_required"])
 
@@ -549,7 +610,9 @@ class RuntimeHookTests(unittest.TestCase):
         self.assertIn("Child tier: Standard", message)
         self.assertIn("Active mode: none", message)
         self.assertIn("Restore the latest request and selected mode contract before work", message)
-        self.assertIn("Changing a nonempty Active mode requires a fresh session and instruction reload", message)
+        self.assertIn("For an explicit user mode change", message)
+        self.assertIn("select without --begin", message)
+        self.assertIn("load the selected workflow instructions, then --begin in this session", message)
         skill = SCRIPTS.parent.resolve()
         self.assertIn(f"Tasks helper: {skill / 'scripts/tasks.py'}.", message)
         self.assertIn(f"Check helper: {skill / 'scripts/lean_check.py'}.", message)

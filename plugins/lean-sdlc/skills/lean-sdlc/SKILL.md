@@ -34,11 +34,11 @@ Supply children with task facts, assigned paths, acceptance, proof, and both roo
 ## Select the workflow
 
 Use the explicit mode or restored selection. Preserve the Lead's selected model and effort; fresh sessions default to Assisted.
-`Active mode: none` or JSON `active_mode: null` means no mode is locked. Honor an explicit mode request before `--begin`.
-The default `Mode: assisted` does not mean Assisted is already active. Only a nonempty `active_mode` prevents a mode change.
-For authorized implementation, select and lock the mode before loading workflow instructions:
+`Active mode: none` or JSON `active_mode: null` means no mode is active. Honor an explicit mode request before `--begin`.
+The default `Mode: assisted` does not mean Assisted is already active.
+For initial authorized implementation, select and activate the mode before loading workflow instructions:
 `python3 "<skill-root>/scripts/session_state.py" --owner OWNER --mode assisted|delegating|solo --begin`.
-An active session cannot change mode. Invalid state or conflicting legacy instructions stop affected work.
+For an active mode change, use the transition below. Invalid state or conflicting legacy instructions stop affected work.
 Compare repository mode names, ownership rules, and instruction paths with the selected contract before task creation or handoff.
 Do not follow a legacy reference into an unselected mode. Report the conflict and obtain reconciliation authority; do not switch modes or rewrite custom rules silently.
 The state helper rejects legacy or unknown contract cores at mode activation. An explicitly authorized contract upgrade is a control transaction; use [repository-contracts.md](references/repository-contracts.md).
@@ -52,6 +52,27 @@ Read exactly the selected workflow:
 Do not load other mode policies. Do not additionally load `mode-common.md` or `support.md` for ordinary Assisted work.
 After startup, resume, clear, compaction, or a skill upgrade, restore current intent and the selected contract.
 Reuse unchanged instructions that remain in context.
+
+## Change mode in this session
+
+An explicit user request can change Assisted, Delegating, or Solo without a fresh session.
+A mode change does not authorize implementation, broader scope, a contract upgrade, or weaker proof.
+Keep the same session ID, owner, task IDs, acceptance, model, effort, and child tier.
+
+1. Stop new workflow actions. Finish or safely cancel active child assignments and commands before changing mode.
+   Use [command cancellation](references/support.md#command-cancellation) when cancellation is needed. If termination is unconfirmed, stop the transition.
+2. Preserve unfinished work in existing task facts. Do not force tasks to Done or transfer ledger ownership.
+3. Select the requested mode without `--begin`:
+   `python3 "<skill-root>/scripts/session_state.py" --owner OWNER --mode assisted|delegating|solo`.
+   This clears `active_mode`. Child starts remain blocked until activation.
+4. Read exactly the newly selected workflow above. It replaces the earlier mode policy for subsequent work.
+   Check repository rules for conflicts. Reload existing task facts and retain valid proof.
+5. Activate with `python3 "<skill-root>/scripts/session_state.py" --owner OWNER --begin` before resuming authorized work.
+   A failed selection or activation stops dependent actions. Resume from saved state, not an earlier startup mode.
+
+The helper cannot verify child termination or instruction loading. The Lead must complete those steps before activation.
+Solo starts no children. In other modes, reassign permitted support explicitly before reuse; canceled assignments remain canceled.
+A repeated same-mode request preserves activation and needs no transition or duplicate instruction read.
 
 ## Stop active work
 

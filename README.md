@@ -2,7 +2,7 @@
 
 Lean-SDLC helps Codex build projects of any size through a controlled and understandable process. It turns user intent into clear tasks, uses safe parallel work when useful, verifies every result, and grows documentation with the project.
 
-Lean-SDLC `v1.27.0` uses Assisted lead-coding by default. Delegating preserves the former Assisted Engineer route. Solo is lead-only.
+Lean-SDLC `v1.27.1` uses Assisted lead-coding by default. Delegating preserves the former Assisted Engineer route. Solo is lead-only.
 
 The final V5 matched benchmark was not run. No benchmark-based performance gain is claimed.
 Older benchmark results are historical context only.
@@ -93,11 +93,20 @@ All modes use the same planning, task ownership, and verification rules. No mode
 
 Saved mode state is versioned. New state starts in `assisted`. Only the exact unversioned legacy state `{mode, fast_children}` migrates: legacy `assisted` becomes `delegating` with active mode locked, and legacy `solo` stays `solo`. Invalid or unknown state is reported and never reset to defaults.
 
-The selected mode is the requested or restored choice. The active mode is the mode locked for this session. A default `Mode: assisted` does not mean Assisted is active.
+The selected mode is the requested or restored choice. The active mode is the currently activated workflow. A default `Mode: assisted` does not mean Assisted is active.
 
 The contract upgrader recognizes the exact released `v1.26.0` template. It replaces only the managed prefix and preserves appended custom project rules. Edited or unknown core instructions require explicit manual reconciliation. Do not overwrite custom rules or interpret application changes as migration authority. After an authorized upgrade, start a fresh session so stale injected instructions are not reused.
 
-Restored context reads state but does not begin a fresh mode. For authorized implementation, select and explicitly begin the mode before loading shared and selected workflow instructions. A same-mode begin reuses instructions already loaded. Discussion remains read-only and does not activate a mode. The spawn guard rejects an unbegun mode. An active mode change requires a fresh session and instruction reload.
+Restored context reads state but does not begin a fresh mode. For initial authorized implementation, select and explicitly begin the mode before loading its workflow instructions. A same-mode begin reuses instructions already loaded. Discussion remains read-only and does not activate a mode. The spawn guard rejects an unbegun mode.
+
+Version `v1.27.1` adds same-session mode changes.
+Users can explicitly switch between Assisted, Delegating, and Solo without starting another task.
+The Lead first finishes or safely cancels active child assignments and commands.
+It then selects the new mode, loads that workflow, and activates it before continuing.
+Selection blocks child starts until activation. The session, task ownership, acceptance, model, effort, and child tier stay unchanged.
+The helper cannot verify child termination or instruction loading. The Lead owns those checks.
+A mode change does not authorize broader work, weaker proof, or a repository contract upgrade.
+See [Change mode in this session](plugins/lean-sdlc/skills/lean-sdlc/SKILL.md#change-mode-in-this-session) for the procedure.
 
 Hooks validate covered spawn arguments only. They do not establish identity or prevent canceled child writes.
 
@@ -187,10 +196,10 @@ Requirements:
 - Python 3
 - Codex with plugin support
 
-Install the immutable `v1.27.0` release:
+Install the immutable `v1.27.1` release:
 
 ```bash
-git clone --depth 1 --branch v1.27.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.27.1 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc

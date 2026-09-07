@@ -161,7 +161,7 @@ def _state_values(
     if active_mode is not None and active_mode != mode:
         raise StateError(
             "saved mode differs from the active session mode; "
-            "start a fresh session before changing mode"
+            "repair invalid state explicitly before changing mode"
         )
     return {
         "version": STATE_VERSION,
@@ -313,7 +313,7 @@ def _arguments() -> argparse.Namespace:
     parser.add_argument(
         "--begin",
         action="store_true",
-        help="lock the selected mode before the first workflow action",
+        help="activate the selected mode before workflow work",
     )
     parser.add_argument(
         "--fast-children",
@@ -395,17 +395,19 @@ def _run_cli(arguments: argparse.Namespace) -> int:
         if arguments.mode is not None:
             active_mode = state["active_mode"]
             if active_mode is not None and arguments.mode != active_mode:
-                raise StateError(
-                    "mode changes require a fresh session and instruction reload; "
-                    f"active mode is {active_mode}"
-                )
+                if arguments.begin:
+                    raise StateError(
+                        "select the new mode without --begin; "
+                        "load its instructions, then use --begin"
+                    )
+                state["active_mode"] = None
             state["mode"] = arguments.mode
         if arguments.begin:
             active_mode = state["active_mode"]
             if active_mode is not None and active_mode != state["mode"]:
                 raise StateError(
                     "saved mode differs from the active session mode; "
-                    "start a fresh session before changing mode"
+                    "repair invalid state explicitly before changing mode"
                 )
             state["active_mode"] = state["mode"]
         if arguments.fast_children is not None:
@@ -488,7 +490,9 @@ def _run_hook() -> int:
                         "Restore the latest request and selected mode contract before work. "
                         "Check repository rules for conflicting mode, ownership, or instruction paths before task creation or handoff. "
                         "Do not load an unselected mode to satisfy a legacy reference; stop affected work and request reconciliation. "
-                        "Changing a nonempty Active mode requires a fresh session and instruction reload."
+                        "For an explicit user mode change, stop conflicting work, select without --begin, "
+                        "load the selected workflow instructions, then --begin in this session. "
+                        "Use the latest saved selection after a mode change, not an earlier startup mode."
                     ),
                 },
             }
