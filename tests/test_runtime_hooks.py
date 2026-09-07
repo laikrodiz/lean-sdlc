@@ -68,7 +68,8 @@ class RuntimeHookTests(unittest.TestCase):
         self.repository = self.root / "repository"
         self.repository.mkdir()
         self.repository.joinpath("AGENTS.md").write_text(
-            "Use $lean-sdlc for repository work.\n", encoding="utf-8"
+            (SCRIPTS.parent / "assets/AGENTS.md").read_text(encoding="utf-8"),
+            encoding="utf-8",
         )
         self.repository.joinpath("tasks.csv").write_text("", encoding="utf-8")
         self.codex_home = self.root / "codex"
@@ -104,6 +105,7 @@ class RuntimeHookTests(unittest.TestCase):
             SESSION_STATE,
             codex_home=self.codex_home,
             arguments=("--owner", self.owner(), *arguments),
+            cwd=self.repository,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
         return json.loads(result.stdout)
@@ -121,6 +123,7 @@ class RuntimeHookTests(unittest.TestCase):
                 )
 
     def test_engineer_beta_is_accepted(self) -> None:
+        self.set_state("--mode", "delegating", "--begin")
         self.assertIsNone(
             self.guard(
                 {
@@ -133,6 +136,7 @@ class RuntimeHookTests(unittest.TestCase):
         )
 
     def test_all_standard_roles_use_native_luna_fields(self) -> None:
+        self.set_state("--mode", "delegating", "--begin")
         for role in ("engineer", "maintainer", "verifier", "scout"):
             with self.subTest(role=role):
                 self.assertIsNone(
@@ -147,6 +151,7 @@ class RuntimeHookTests(unittest.TestCase):
                 )
 
     def test_standard_priority_is_rejected(self) -> None:
+        self.set_state("--mode", "delegating", "--begin")
         denied = self.guard(
             {
                 "task_name": "engineer_beta",
@@ -159,6 +164,7 @@ class RuntimeHookTests(unittest.TestCase):
         self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
 
     def test_fast_priority_is_accepted(self) -> None:
+        self.set_state("--mode", "delegating", "--begin")
         self.set_state("--fast-children")
         self.assertIsNone(
             self.guard(
@@ -173,14 +179,241 @@ class RuntimeHookTests(unittest.TestCase):
         )
 
     def test_solo_mode_denies_agent_spawns(self) -> None:
-        self.set_state("--mode", "solo")
+        self.set_state("--mode", "solo", "--begin")
         denied = self.guard({"task_name": "engineer_beta"})
         self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
 
+    def test_assisted_mode_is_lead_coding_and_allows_support_roles(self) -> None:
+        self.set_state("--begin")
+        denied = self.guard({"task_name": "engineer_beta"})
+        self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
+        self.assertIsNone(
+            self.guard(
+                {
+                    "task_name": "maintainer_beta",
+                    "model": "gpt-5.6-luna",
+                    "reasoning_effort": "max",
+                    "fork_turns": "none",
+                }
+            )
+        )
+
+    def test_assisted_mode_rejects_unknown_roles(self) -> None:
+        self.set_state("--begin")
+        denied = self.guard({"task_name": "researcher_beta"})
+        self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
+
+    def test_mode_selection_locks_at_begin_and_rejects_active_change(self) -> None:
+        selected = self.set_state("--mode", "delegating", "--begin")
+        self.assertEqual(selected["active_mode"], "delegating")
+        self.assertTrue(selected["instruction_reload_required"])
+        before = (self.codex_home / "state/lean-sdlc" / f"{self.owner()}.json").read_text(
+            encoding="utf-8"
+        )
+        result = run_script(
+            SESSION_STATE,
+            codex_home=self.codex_home,
+            arguments=("--owner", self.owner(), "--mode", "assisted"),
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("fresh session", result.stderr)
+        self.assertEqual(
+            (self.codex_home / "state/lean-sdlc" / f"{self.owner()}.json").read_text(
+                encoding="utf-8"
+            ),
+            before,
+        )
+        self.assertIsNone(
+            self.guard(
+                {
+                    "task_name": "engineer_beta",
+                    "model": "gpt-5.6-luna",
+                    "reasoning_effort": "max",
+                    "fork_turns": "none",
+                }
+            )
+        )
+
+    def test_same_mode_begin_and_tier_change_do_not_require_reload(self) -> None:
+        selected = self.set_state("--mode", "assisted", "--begin")
+        self.assertFalse(selected["instruction_reload_required"])
+        repeated = self.set_state("--begin")
+        self.assertFalse(repeated["instruction_reload_required"])
+        tier = self.set_state("--fast-children")
+        self.assertFalse(tier["instruction_reload_required"])
+
+    def test_fresh_mode_change_requires_reload_before_begin(self) -> None:
+        selected = self.set_state("--mode", "delegating")
+        self.assertEqual(selected["mode"], "delegating")
+        self.assertIsNone(selected["active_mode"])
+        self.assertTrue(selected["instruction_reload_required"])
+
+    def test_guard_requires_explicit_mode_begin(self) -> None:
+        self.set_state("--mode", "delegating")
+        denied = self.guard({"task_name": "engineer_beta"})
+        self.assertEqual(
+            denied["hookSpecificOutput"]["permissionDecision"], "deny"
+        )
+        self.assertIn(
+            "begin", denied["hookSpecificOutput"]["permissionDecisionReason"]
+        )
+        self.set_state("--begin")
+        self.assertIsNone(
+            self.guard(
+                {
+                    "task_name": "engineer_beta",
+                    "model": "gpt-5.6-luna",
+                    "reasoning_effort": "max",
+                    "fork_turns": "none",
+                }
+            )
+        )
+
+    def test_legacy_assisted_state_migrates_to_delegating(self) -> None:
+        state_path = self.codex_home / "state/lean-sdlc" / f"{self.owner()}.json"
+        state_path.parent.mkdir(parents=True)
+        state_path.write_text(
+            '{"mode":"assisted","fast_children":false}\n', encoding="utf-8"
+        )
+        self.assertIsNone(
+            self.guard(
+                {
+                    "task_name": "engineer_beta",
+                    "model": "gpt-5.6-luna",
+                    "reasoning_effort": "max",
+                    "fork_turns": "none",
+                }
+            )
+        )
+        self.assertEqual(
+            json.loads(state_path.read_text(encoding="utf-8")),
+            {
+                "active_mode": "delegating",
+                "fast_children": False,
+                "mode": "delegating",
+                "version": 2,
+            },
+        )
+
+    def test_legacy_solo_state_migrates_and_stays_lead_only(self) -> None:
+        state_path = self.codex_home / "state/lean-sdlc" / f"{self.owner()}.json"
+        state_path.parent.mkdir(parents=True)
+        state_path.write_text(
+            '{"mode":"solo","fast_children":false}\n', encoding="utf-8"
+        )
+        denied = self.guard({"task_name": "maintainer_beta"})
+        self.assertEqual(
+            denied["hookSpecificOutput"]["permissionDecision"], "deny"
+        )
+        self.assertEqual(
+            json.loads(state_path.read_text(encoding="utf-8")),
+            {
+                "active_mode": "solo",
+                "fast_children": False,
+                "mode": "solo",
+                "version": 2,
+            },
+        )
+
+    def test_duplicate_saved_state_fields_fail_visible_and_deny_spawn(self) -> None:
+        state_path = self.codex_home / "state/lean-sdlc" / f"{self.owner()}.json"
+        state_path.parent.mkdir(parents=True)
+        state_path.write_text(
+            '{"version":2,"mode":"assisted","mode":"solo",'
+            '"fast_children":false,"active_mode":null}',
+            encoding="utf-8",
+        )
+        denied = self.guard({"task_name": "maintainer_beta"})
+        self.assertEqual(
+            denied["hookSpecificOutput"]["permissionDecision"], "deny"
+        )
+        self.assertIn("duplicate field", denied["hookSpecificOutput"]["permissionDecisionReason"])
+        event = {
+            "session_id": self.session_id,
+            "cwd": str(self.repository),
+            "hook_event_name": "SessionStart",
+        }
+        result = run_script(SESSION_STATE, event, codex_home=self.codex_home)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("duplicate field", json.loads(result.stdout)["systemMessage"])
+
+    def test_unknown_saved_state_fields_fail_visible_and_deny_spawn(self) -> None:
+        state_path = self.codex_home / "state/lean-sdlc" / f"{self.owner()}.json"
+        state_path.parent.mkdir(parents=True)
+        state_path.write_text(
+            '{"version":2,"mode":"assisted","fast_children":false,'
+            '"active_mode":null,"owner":"wrong"}',
+            encoding="utf-8",
+        )
+        denied = self.guard({"task_name": "maintainer_beta"})
+        self.assertEqual(
+            denied["hookSpecificOutput"]["permissionDecision"], "deny"
+        )
+        self.assertIn("unknown fields", denied["hookSpecificOutput"]["permissionDecisionReason"])
+
+    def test_missing_active_mode_fails_visible_and_denies_spawn(self) -> None:
+        state_path = self.codex_home / "state/lean-sdlc" / f"{self.owner()}.json"
+        state_path.parent.mkdir(parents=True)
+        state_path.write_text(
+            '{"version":2,"mode":"assisted","fast_children":false}',
+            encoding="utf-8",
+        )
+        denied = self.guard({"task_name": "maintainer_beta"})
+        self.assertEqual(
+            denied["hookSpecificOutput"]["permissionDecision"], "deny"
+        )
+        self.assertIn(
+            "missing required fields",
+            denied["hookSpecificOutput"]["permissionDecisionReason"],
+        )
+
+    def test_mismatched_active_mode_fails_visible_and_denies_spawn(self) -> None:
+        state_path = self.codex_home / "state/lean-sdlc" / f"{self.owner()}.json"
+        state_path.parent.mkdir(parents=True)
+        state_path.write_text(
+            '{"version":2,"mode":"assisted","fast_children":false,'
+            '"active_mode":"delegating"}',
+            encoding="utf-8",
+        )
+        denied = self.guard({"task_name": "maintainer_beta"})
+        self.assertEqual(
+            denied["hookSpecificOutput"]["permissionDecision"], "deny"
+        )
+        self.assertIn(
+            "active session mode", denied["hookSpecificOutput"]["permissionDecisionReason"]
+        )
+
+    def test_invalid_utf8_state_fails_visible_and_denies_spawn(self) -> None:
+        state_path = self.codex_home / "state/lean-sdlc" / f"{self.owner()}.json"
+        state_path.parent.mkdir(parents=True)
+        state_path.write_bytes(b"{\xff")
+        denied = self.guard({"task_name": "maintainer_beta"})
+        self.assertEqual(
+            denied["hookSpecificOutput"]["permissionDecision"], "deny"
+        )
+        self.assertIn("UTF-8", denied["hookSpecificOutput"]["permissionDecisionReason"])
+
+    def test_invalid_saved_state_fails_visible_and_denies_spawn(self) -> None:
+        state_path = self.codex_home / "state/lean-sdlc" / f"{self.owner()}.json"
+        state_path.parent.mkdir(parents=True)
+        state_path.write_text('{"version":2,"mode":"broken"}', encoding="utf-8")
+        denied = self.guard({"task_name": "maintainer_beta"})
+        self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
+        event = {
+            "session_id": self.session_id,
+            "cwd": str(self.repository),
+            "hook_event_name": "SessionStart",
+        }
+        result = run_script(SESSION_STATE, event, codex_home=self.codex_home)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("state error", json.loads(result.stdout)["systemMessage"])
+
     def test_direct_user_custom_role_is_accepted(self) -> None:
+        self.set_state("--mode", "delegating", "--begin")
         self.assertIsNone(self.guard({"task_name": "researcher_beta"}))
 
     def test_direct_user_custom_role_can_use_custom_routing(self) -> None:
+        self.set_state("--mode", "delegating", "--begin")
         self.assertIsNone(
             self.guard(
                 {
@@ -191,6 +424,7 @@ class RuntimeHookTests(unittest.TestCase):
         )
 
     def test_missing_native_model_is_rejected(self) -> None:
+        self.set_state("--mode", "delegating", "--begin")
         denied = self.guard(
             {
                 "task_name": "engineer_beta",
@@ -200,6 +434,7 @@ class RuntimeHookTests(unittest.TestCase):
         self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
 
     def test_wrong_native_model_is_rejected(self) -> None:
+        self.set_state("--mode", "delegating", "--begin")
         denied = self.guard(
             {
                 "task_name": "engineer_beta",
@@ -211,6 +446,7 @@ class RuntimeHookTests(unittest.TestCase):
         self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
 
     def test_wrong_native_reasoning_is_rejected(self) -> None:
+        self.set_state("--mode", "delegating", "--begin")
         denied = self.guard(
             {
                 "task_name": "engineer_beta",
@@ -222,6 +458,7 @@ class RuntimeHookTests(unittest.TestCase):
         self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
 
     def test_agent_type_is_rejected_for_standard_role(self) -> None:
+        self.set_state("--mode", "delegating", "--begin")
         denied = self.guard(
             {
                 "task_name": "engineer_beta",
@@ -234,6 +471,7 @@ class RuntimeHookTests(unittest.TestCase):
         self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
 
     def test_full_history_native_spawn_is_rejected(self) -> None:
+        self.set_state("--mode", "delegating", "--begin")
         denied = self.guard(
             {
                 "task_name": "engineer_beta",
@@ -245,6 +483,7 @@ class RuntimeHookTests(unittest.TestCase):
         self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
 
     def test_omitted_service_tier_is_allowed_for_standard_retry(self) -> None:
+        self.set_state("--mode", "delegating", "--begin")
         self.assertIsNone(
             self.guard(
                 {
@@ -257,6 +496,7 @@ class RuntimeHookTests(unittest.TestCase):
         )
 
     def test_fast_standard_retry_can_omit_service_tier(self) -> None:
+        self.set_state("--mode", "delegating", "--begin")
         self.set_state("--fast-children")
         self.assertIsNone(
             self.guard(
@@ -270,6 +510,7 @@ class RuntimeHookTests(unittest.TestCase):
         )
 
     def test_terra_fallback_is_accepted_without_profile_fields(self) -> None:
+        self.set_state("--mode", "delegating", "--begin")
         self.assertIsNone(
             self.guard(
                 {
@@ -282,6 +523,7 @@ class RuntimeHookTests(unittest.TestCase):
         )
 
     def test_terra_fallback_rejects_service_tier(self) -> None:
+        self.set_state("--mode", "delegating", "--begin")
         denied = self.guard(
             {
                 "task_name": "engineer_beta",
@@ -301,18 +543,20 @@ class RuntimeHookTests(unittest.TestCase):
         }
         result = run_script(SESSION_STATE, event, codex_home=self.codex_home)
         self.assertEqual(result.returncode, 0, result.stderr)
-        message = json.loads(result.stdout)["systemMessage"]
+        message = json.loads(result.stdout)["hookSpecificOutput"]["additionalContext"]
         self.assertIn(self.owner(), message)
         self.assertIn("Mode: assisted", message)
         self.assertIn("Child tier: Standard", message)
-        self.assertIn("reload subagents.md before Deliver", message)
+        self.assertIn("Active mode: none", message)
+        self.assertIn("Restore the latest request and selected mode contract before work", message)
+        self.assertIn("Changing a nonempty Active mode requires a fresh session and instruction reload", message)
         skill = SCRIPTS.parent.resolve()
         self.assertIn(f"Tasks helper: {skill / 'scripts/tasks.py'}.", message)
         self.assertIn(f"Check helper: {skill / 'scripts/lean_check.py'}.", message)
         self.assertIn(f"State helper: {skill / 'scripts/session_state.py'}.", message)
 
     def test_context_returns_exact_roots_helpers_owner_mode_and_tier(self) -> None:
-        self.set_state("--mode", "solo", "--fast-children")
+        self.set_state("--mode", "solo", "--begin", "--fast-children")
         result = run_script(
             SESSION_STATE,
             codex_home=self.codex_home,
@@ -333,6 +577,7 @@ class RuntimeHookTests(unittest.TestCase):
                 "state_helper": str(skill / "scripts/session_state.py"),
                 "owner": self.owner(),
                 "mode": "solo",
+                "active_mode": "solo",
                 "tier": "Fast",
             },
         )
@@ -383,7 +628,7 @@ class RuntimeHookTests(unittest.TestCase):
         self.assertIn("multiple Lean-SDLC repositories", result.stderr)
         self.assertEqual(result.stdout, "")
 
-    def test_context_uses_loaded_skill_parent_and_hook_keeps_system_message(self) -> None:
+    def test_context_uses_loaded_skill_parent_and_hook_keeps_additional_context(self) -> None:
         context = run_script(
             SESSION_STATE,
             codex_home=self.codex_home,
@@ -394,6 +639,9 @@ class RuntimeHookTests(unittest.TestCase):
         self.assertEqual(context.returncode, 0, context.stderr)
         values = json.loads(context.stdout)
         self.assertEqual(values["skill_root"], str(SCRIPTS.parent.resolve()))
+        self.assertFalse(
+            (self.codex_home / "state/lean-sdlc" / f"{self.owner()}.json").exists()
+        )
         event = {
             "session_id": self.session_id,
             "cwd": str(self.repository),
@@ -401,7 +649,7 @@ class RuntimeHookTests(unittest.TestCase):
         }
         hook = run_script(SESSION_STATE, event, codex_home=self.codex_home)
         self.assertEqual(hook.returncode, 0, hook.stderr)
-        message = json.loads(hook.stdout)["systemMessage"]
+        message = json.loads(hook.stdout)["hookSpecificOutput"]["additionalContext"]
         self.assertIn(f"Lean-SDLC Owner: {self.owner()}.", message)
         self.assertIn(f"Skill root: {SCRIPTS.parent.resolve()}.", message)
 
@@ -420,7 +668,7 @@ class RuntimeHookTests(unittest.TestCase):
         }
         result = run_script(SESSION_STATE, event, codex_home=self.codex_home)
         self.assertEqual(result.returncode, 0, result.stderr)
-        message = json.loads(result.stdout)["systemMessage"]
+        message = json.loads(result.stdout)["hookSpecificOutput"]["additionalContext"]
         self.assertIn(f"Repository root: {repository.resolve()}", message)
         self.assertIn(f"Skill root: {SCRIPTS.parent.resolve()}", message)
 
@@ -463,7 +711,7 @@ class RuntimeHookTests(unittest.TestCase):
         }
         result = run_script(SESSION_STATE, event, codex_home=self.codex_home)
         self.assertEqual(result.returncode, 0, result.stderr)
-        message = json.loads(result.stdout)["systemMessage"]
+        message = json.loads(result.stdout)["hookSpecificOutput"]["additionalContext"]
         self.assertIn(f"Repository root: {self.repository.resolve()}", message)
         self.assertNotIn("multiple repositories", message)
 
@@ -488,7 +736,7 @@ class RuntimeHookTests(unittest.TestCase):
         self.assertEqual(result.stdout, "")
 
     def test_state_persistence(self) -> None:
-        self.set_state("--mode", "solo", "--fast-children")
+        self.set_state("--mode", "solo", "--begin", "--fast-children")
         event = {
             "session_id": self.session_id,
             "cwd": str(self.repository),
@@ -496,11 +744,11 @@ class RuntimeHookTests(unittest.TestCase):
         }
         result = run_script(SESSION_STATE, event, codex_home=self.codex_home)
         self.assertEqual(result.returncode, 0, result.stderr)
-        message = json.loads(result.stdout)["systemMessage"]
+        message = json.loads(result.stdout)["hookSpecificOutput"]["additionalContext"]
         self.assertIn("Mode: solo", message)
         self.assertIn("Child tier: Fast", message)
 
-    def test_invalid_state_falls_back_to_defaults(self) -> None:
+    def test_invalid_state_is_not_replaced_by_defaults(self) -> None:
         state_path = self.codex_home / "state/lean-sdlc" / f"{self.owner()}.json"
         state_path.parent.mkdir(parents=True)
         state_path.write_text('{"mode":"broken","fast_children":"yes"}', encoding="utf-8")
@@ -512,8 +760,8 @@ class RuntimeHookTests(unittest.TestCase):
         result = run_script(SESSION_STATE, event, codex_home=self.codex_home)
         self.assertEqual(result.returncode, 0, result.stderr)
         message = json.loads(result.stdout)["systemMessage"]
-        self.assertIn("Mode: assisted", message)
-        self.assertIn("Child tier: Standard", message)
+        self.assertIn("state error", message)
+        self.assertNotIn("Mode: assisted", message)
 
     def test_version_advisory_requires_genuine_startup(self) -> None:
         def opener() -> None:

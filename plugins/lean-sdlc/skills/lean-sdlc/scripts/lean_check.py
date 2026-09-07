@@ -23,6 +23,7 @@ from task_ledger import (
 )
 from startup_contract import (
     StartupContractError,
+    legacy_contract_error,
     read_template_block,
     startup_block_error,
 )
@@ -288,8 +289,9 @@ def startup_contract_errors(root: Path, *, report_missing: bool) -> list[str]:
         expected = read_template_block()
     except (OSError, StartupContractError) as exc:
         return [f"AGENTS.md: cannot validate managed startup block: {exc}"]
-    error = startup_block_error(text, expected)
-    return [f"AGENTS.md: {error}"] if error else []
+    return [f"AGENTS.md: {error}" for error in (
+        startup_block_error(text, expected), legacy_contract_error(text)
+    ) if error]
 
 
 def main() -> int:

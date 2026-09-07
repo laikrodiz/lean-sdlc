@@ -92,16 +92,20 @@ class CheckpointTests(unittest.TestCase):
         verify = (ROOT / "plugins/lean-sdlc/skills/lean-sdlc/references/verify.md").read_text(
             encoding="utf-8"
         )
-        subagents = (
-            ROOT / "plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md"
+        delegating = (
+            ROOT / "plugins/lean-sdlc/skills/lean-sdlc/references/delegating.md"
         ).read_text(encoding="utf-8")
         evaluations = (
             ROOT / "plugins/lean-sdlc/skills/lean-sdlc/references/trigger-evals.md"
         ).read_text(encoding="utf-8")
         command = '`python3 "<skill-root>/scripts/checkpoint.py" --repo "<repo-root>" PATH [PATH ...]`'
         self.assertIn(command, verify)
-        self.assertIn("[Verify](verify.md)", subagents)
-        self.assertIn("explicit source and configuration inputs before and after proof", verify)
+        self.assertIn("[Verify](verify.md)", delegating)
+        self.assertIn("explicit source and configuration inputs", verify)
+        self.assertIn(
+            "Take one checkpoint before the first review read or check and one after all review and checks for that revision",
+            verify,
+        )
         self.assertIn("Verifier does not edit tracked source", verify)
         self.assertIn("remain outside tracked truth", verify)
         self.assertIn("compares values locally", evaluations)

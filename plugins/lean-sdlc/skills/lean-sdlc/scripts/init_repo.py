@@ -22,7 +22,7 @@ from task_ledger import (
     thread_owner,
     write_ledger,
 )
-from startup_contract import StartupContractError, read_template_block, repair_text
+from startup_contract import StartupContractError, read_template_block, repair_text, upgrade_contract_text
 
 
 PROJECT = """# Project
@@ -76,12 +76,17 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Repository root (default: current directory)",
     )
-    parser.add_argument(
+    repair = parser.add_mutually_exclusive_group()
+    repair.add_argument(
         "--repair-startup",
         "--repair",
         dest="repair_startup",
         action="store_true",
         help="Repair only the managed AGENTS.md startup block",
+    )
+    repair.add_argument(
+        "--upgrade-contract", action="store_true",
+        help="Replace the recognized legacy AGENTS.md template, preserving appended project rules",
     )
     parser.add_argument("--task", help="Owned In Progress task authorizing repair")
     parser.add_argument("--owner", help="Owner of the authorizing task")
@@ -204,8 +209,9 @@ def initialize(root: Path) -> int:
 
 def authorize_repair(root: Path, args: argparse.Namespace) -> None:
     if not args.task or not args.owner:
+        operation = "--upgrade-contract" if getattr(args, "upgrade_contract", False) else "--repair-startup"
         raise TaskError(
-            "--repair-startup requires --task TASK-ID and --owner OWNER"
+            f"{operation} requires --task TASK-ID and --owner OWNER"
         )
 
     path = task_path(root)
@@ -232,8 +238,10 @@ def repair_startup(root: Path, args: argparse.Namespace) -> int:
     target = root / "AGENTS.md"
     try:
         current = target.read_text(encoding="utf-8") if target.is_file() else ""
-        replacement = read_template_block()
-        repaired = repair_text(current, replacement)
+        if getattr(args, "upgrade_contract", False):
+            repaired = upgrade_contract_text(current)
+        else:
+            repaired = repair_text(current, read_template_block())
     except (OSError, StartupContractError) as exc:
         raise TaskError(str(exc)) from exc
 
@@ -256,12 +264,12 @@ def main() -> int:
     root = Path(args.repository).resolve()
     if not root.is_dir():
         raise SystemExit(f"Repository directory does not exist: {root}")
-    if not args.repair_startup and (args.task or args.owner):
-        raise SystemExit("--task and --owner require --repair-startup")
+    if not (args.repair_startup or args.upgrade_contract) and (args.task or args.owner):
+        raise SystemExit("--task and --owner require --repair-startup or --upgrade-contract")
 
     try:
         with ledger_lock(root):
-            if args.repair_startup:
+            if args.repair_startup or args.upgrade_contract:
                 return repair_startup(root, args)
             return initialize(root)
     except TaskError as exc:

@@ -10,7 +10,7 @@ from typing import Any
 
 sys.dont_write_bytecode = True
 
-from session_state import lean_repository, load_state, owner_id
+from session_state import StateError, lean_repository, load_state, owner_id
 
 
 GREEK_LABELS = (
@@ -40,6 +40,7 @@ GREEK_LABELS = (
     "omega",
 )
 ROLE_PREFIXES = frozenset({"engineer", "maintainer", "verifier", "scout"})
+ASSISTED_SUPPORT_ROLES = frozenset({"maintainer", "verifier", "scout"})
 LUNA_MODEL = "gpt-5.6-luna"
 LUNA_REASONING = "max"
 TERRA_MODEL = "gpt-5.6-terra"
@@ -84,7 +85,11 @@ def _fork_turns_is_non_full_history(value: Any) -> bool:
     return False
 
 
-def _validate_tool_input(tool_input: Any, fast_children: bool) -> str | None:
+def _validate_tool_input(
+    tool_input: Any,
+    fast_children: bool,
+    mode: str = "delegating",
+) -> str | None:
     if not isinstance(tool_input, dict):
         return "Provide Agent tool_input with a role-prefixed Greek task_name."
 
@@ -94,6 +99,19 @@ def _validate_tool_input(tool_input: Any, fast_children: bool) -> str | None:
         return error
 
     task_prefix = LABEL_PATTERN.fullmatch(task_name).group("prefix").casefold()
+    if mode == "assisted" and task_prefix not in ASSISTED_SUPPORT_ROLES:
+        if task_prefix == "engineer":
+            return (
+                "Assisted mode is lead-coding; Engineer children are unavailable. "
+                "Start a fresh session in Delegating mode before spawning an Engineer."
+            )
+        if task_prefix not in ROLE_PREFIXES:
+            return (
+                "Assisted mode allows only Maintainer, Scout, or Verifier support "
+                "children; use a supported role or start a fresh Delegating session."
+            )
+    if mode not in {"assisted", "delegating"}:
+        return "Only Assisted and Delegating modes can spawn Agent children."
     if task_prefix not in ROLE_PREFIXES:
         return None
 
@@ -145,11 +163,22 @@ def main() -> int:
         return 0
 
     owner = owner_id(session_id)
-    state = load_state(owner)
-    if state["mode"] == "solo":
-        _deny("Solo mode is lead-only; restore Assisted mode before spawning an Agent.")
+    try:
+        state = load_state(owner)
+    except (OSError, StateError) as exc:
+        _deny(f"Lean-SDLC saved state is invalid: {exc}")
         return 0
-    error = _validate_tool_input(tool_input, state["fast_children"])
+    mode = state["active_mode"]
+    if mode is None:
+        _deny(
+            "Select and begin a Lean-SDLC mode before spawning an Agent. "
+            "Use session_state.py --owner OWNER --mode MODE --begin."
+        )
+        return 0
+    if mode == "solo":
+        _deny("Solo mode is lead-only; start a fresh Assisted or Delegating session before spawning an Agent.")
+        return 0
+    error = _validate_tool_input(tool_input, state["fast_children"], mode)
     if error is not None:
         _deny(error)
     return 0

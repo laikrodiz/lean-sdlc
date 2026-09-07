@@ -1,6 +1,6 @@
 # Operations
 
-The Architect allocates the Maintainer through [subagents.md](subagents.md). Children follow [child.md](child.md). This file owns how project-specific procedures are learned and repeated.
+The selected mode allocates any Maintainer support. Children follow [child.md](child.md). This file owns how project-specific procedures are learned and repeated.
 
 ## Learn, then repeat
 
@@ -35,7 +35,7 @@ Use this selection ladder, stopping at the first existing option:
 3. native or installed tool;
 4. smallest new script.
 
-Engineer implements an approved script and one focused runnable check. Maintainer records and later replays the canonical command in `docs/OPERATIONS.md` or an existing `OPS-*` document. Later work reads recorded operations first and uses the valid canonical command. Solo follows the same record.
+The implementation owner implements an approved script and one focused runnable check. Maintainer records and later replays the canonical command in `docs/OPERATIONS.md` or an existing `OPS-*` document. Later work reads recorded operations first and uses the valid canonical command. Solo follows the same record.
 
 Maintainer marks an automation as stale when its contract, dependency, environment, target, or output changes. Architect approves meaning changes.
 
@@ -55,7 +55,7 @@ Use dry-run only when mutation risk is meaningful.
 
 ## Failure routing
 
-A transient signal may retry only under recorded recovery. A recorded failure follows authorized recovery. A script defect goes to Engineer. A changed contract or unknown cause stops and returns to Architect/Diagnose.
+A transient signal may retry only under recorded recovery. A recorded failure follows authorized recovery. A script defect returns to the implementation owner. A changed contract or unknown cause stops and returns to Architect/Diagnose.
 
 ## Procedure record
 

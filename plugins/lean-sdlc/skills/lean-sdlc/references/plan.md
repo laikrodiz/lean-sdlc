@@ -26,7 +26,7 @@ Classify each independently accepted task or plan piece once as `Routine` or `Cr
 
 Risk differs from ownership. Risk classification sets proof and sequencing needs; it does not route every Critical change to the Architect. Investigate unclear consequences before coding and reclassify when new material evidence changes the risk.
 
-In Assisted mode, route settled Routine non-Quick-Fix implementation to Engineer. Route settled Critical implementation by the same risk-benefit choice. Critical work requires independent verification, including Architect-written work. See [verify.md](verify.md) for the Solo missing-proof gate.
+The selected mode controls execution. In Assisted, the Architect implements all production code, including Routine and Critical work; optional support follows [assisted.md](assisted.md). In Delegating, the legacy policy in [delegating.md](delegating.md) may route settled implementation to Engineer. In Solo, the Architect implements all work. Risk changes proof and sequencing, not coding ownership. Critical work requires independent verification. See [verify.md](verify.md) for the Solo missing-proof gate.
 
 ## Backlog
 
@@ -54,7 +54,7 @@ Keep every unresolved task in its own exact row. Parallel work changes status or
 
 ## Task sizing
 
-One ledger task represents one Engineer checkpoint. One ledger task equals one independently accepted behavior change under one owning contract boundary, one proof cluster, and one close decision. It may touch several files, tests, documentation, or migration steps only when all work is inseparable for that behavior.
+One ledger task represents one implementation checkpoint. One ledger task equals one independently accepted behavior change under one owning contract boundary, one proof cluster, and one close decision. It may touch several files, tests, documentation, or migration steps only when all work is inseparable for that behavior.
 
 Require a small complete outcome, settled architecture, one independent bounded proof, and one accept-or-reject review. Define bounded rejection and correction scope. Accept foundations before dependent work. Assign integration ownership. Run combined behavior proof before feature completion. Keep implementation tests inside the task. Keep Maintainer and Verifier work attached unless independently deliverable. Keep one task resumable from repository truth and its ledger row after compaction.
 

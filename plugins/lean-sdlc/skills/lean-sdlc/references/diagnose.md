@@ -2,7 +2,7 @@
 
 Use Diagnose whenever failing behavior exists and the cause, fault boundary, or correct owner is uncertain.
 
-The user-selected Codex model is the Architect and owns causal reasoning and the repair decision. Lean-SDLC never replaces it. Delegate only bounded reproduction or evidence collection through [subagents.md](subagents.md).
+The user-selected Codex model is the Architect and owns causal reasoning and the repair decision. Lean-SDLC never replaces it. Delegate only bounded reproduction or evidence collection through the selected mode's support policy.
 
 1. Start from the observed symptom, failing test, runtime signal, or user report.
 2. Reproduce it, or state the precise reason reproduction is unavailable.

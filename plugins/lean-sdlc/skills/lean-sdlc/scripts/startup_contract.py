@@ -3,15 +3,44 @@
 
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 
 
 START_MARKER = "<!-- lean-sdlc:startup v1 -->"
 END_MARKER = "<!-- /lean-sdlc:startup -->"
+LEGACY_TEMPLATE_LENGTH = 6286
+LEGACY_TEMPLATE_SHA256 = "38740988f9f1bfebcfa97f7b225828050c5c905a28cd68d75e223968f92e30a3"
 
 
 class StartupContractError(Exception):
     """A managed startup block cannot be read or updated safely."""
+
+
+def legacy_contract_error(text: str) -> str | None:
+    """Accept the current contract prefix; require reconciliation of unknown cores."""
+    if not text.startswith(template_path().read_text(encoding="utf-8")):
+        return "legacy workflow routing or an unknown AGENTS.md contract requires explicit reconciliation"
+    if any(rule in text for rule in (
+        "Before each child handoff, use the design brief in `<skill-root>/references/subagents.md`.",
+        "Read `references/subagents.md` before delegation.",
+        "Assisted mode and Standard children are defaults.",
+    )):
+        return "legacy workflow routing requires an explicit AGENTS.md contract upgrade"
+    return None
+
+
+def upgrade_contract_text(text: str) -> str:
+    """Replace only a recognized released template; preserve appended project rules."""
+    replacement = template_path().read_text(encoding="utf-8")
+    if text.startswith(replacement):
+        return text
+    prefix = text[:LEGACY_TEMPLATE_LENGTH]
+    if hashlib.sha256(prefix.encode("utf-8")).hexdigest() != LEGACY_TEMPLATE_SHA256:
+        raise StartupContractError(
+            "unrecognized AGENTS.md contract; reconcile custom instructions explicitly"
+        )
+    return replacement + text[LEGACY_TEMPLATE_LENGTH:]
 
 
 def _marker_lines(text: str, marker: str) -> list[int]:

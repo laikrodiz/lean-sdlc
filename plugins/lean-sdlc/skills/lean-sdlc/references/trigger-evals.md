@@ -1,6 +1,6 @@
 # Trigger and Routing Evaluations
 
-These rows are scenarios and assertions. They are not a second policy source. The canonical lifecycle is in [SKILL.md](../SKILL.md), role routing is in [subagents.md](subagents.md), and proof and operation rules are in [verify.md](verify.md) and [operations.md](operations.md).
+These rows are scenarios and assertions. They are not a second policy source. The canonical lifecycle is in [SKILL.md](../SKILL.md), mode routing is in [assisted.md](assisted.md), [delegating.md](delegating.md), and [solo.md](solo.md), and proof and operation rules are in [verify.md](verify.md) and [operations.md](operations.md).
 
 The saved fixture records expected JSON answers. `tests/evaluation_runner.py` grades those answers against assertions without executing an agent. Optional `tests/live_evaluation.py` runs fresh Codex sessions, collects final JSON answers, and validates their structure. Supply live output to the runner separately for grading. Neither path verifies tool actions, file edits, or real workflow execution reliability.
 
@@ -19,23 +19,23 @@ Run these scenarios from a fresh task with only the installed plugin and target 
 | Material ambiguity | Stop for user confirmation when behavior, scope, or architecture may change. |
 | Behavior-based acceptance | Derive acceptance from observable outcome and affected value. |
 | Canonical lifecycle | Follow the six lanes in [SKILL.md](../SKILL.md); Diagnose is conditional and Verify includes closeout. |
-| Session state and lifecycle restoration | Restore owner, mode, tier, and unresolved work; silence alone is not failure. |
+| Session state and lifecycle restoration | Restore owner, mode, tier, and unresolved work; fresh state is Assisted, legacy Assisted maps to Delegating, invalid state fails visibly, and silence alone is not failure. |
 | Task or implementation request | Show constraints, exclusions, visible plan, owned task, and before-write proof. |
 | Backlog addition | Add or promote Backlog only after a direct user request. |
 | Optional project documentation | Keep `docs/PROJECT.md` mandatory; create other documents only from concrete triggers. |
 | Source replacement or archive request | Use Git by default; create root `archive/` only after explicit user authority. |
-| Role-routing precedence | Apply the stage-aware chain in [subagents.md](subagents.md); unresolved decisions stay with Architect and shared resources stay serial. |
+| Role-routing precedence | Apply the selected mode policy; unresolved decisions stay with Architect and shared resources stay serial. Assisted is lead-coding, Delegating preserves Engineer routing, and Solo is lead-only. |
 | Pre-handoff design brief | Show reason, selected decision, affected ownership/interfaces/invariants, useful rejected option, child limits, acceptance, proof, and stop. Never expose chain-of-thought. |
 | Valid Engineer checkpoint | Require a settled task, visible restatement, complete atomic outcome including tests and mechanical consistency, targeted proof, and one accept-or-reject review. Keep local corrections within settled architecture, interfaces, and acceptance. Escalate a changed contract or repeated equivalent failure without new evidence. |
 | Task preflight | Before task creation, test one behavior, contract boundary, proof cluster, and close decision. |
 | Task shaping and execution choice | First size tasks for independent acceptance; then use a risk-benefit check for valid splits and choose keep together, split serially, or split for parallel execution. |
-| Targeted proof | Engineer runs the smallest changed-behavior check after a coherent implementation checkpoint and a permitted correction. |
+| Targeted proof | The implementation owner runs the smallest changed-behavior check after a coherent implementation checkpoint and a permitted correction. |
 | Acceptance proof | Verify the task's observable completion condition. |
 | Regression proof | Check affected-boundary risk, including sibling callers or shared interfaces. |
 | Oversized task | Split only at an independent behavior, contract boundary, proof cluster, or close decision. |
 | Cause lane | Use Diagnose for an unknown cause and Deliver for a known cause. |
 | Plausible edge cases | Classify each as `Handle`, `Reject`, `Defer`, or `Impossible by invariant`. |
-| Architect direct path | In Assisted mode, keep eligible Routine Quick Fixes with the Architect, or retain rare bounded Critical work when design and coding coupling makes handoff risk substantial misunderstanding. State the reason and keep independent proof. Do not absorb surrounding Routine work. |
+| Assisted lead coding | In Assisted mode, the Architect implements all production code, including Routine and Critical work. Optional support is limited to Maintainer, Scout, or Verifier. Engineer and unknown roles are unavailable. Critical work keeps independent proof. |
 | Quick Fix classification | Use only for an exact, local, reversible Routine outcome with one immediate narrow proof. A small security, migration, or shared-contract edit can remain Critical and cannot use the Quick Fix path. |
 | Quick Fix batch review | Review pending Quick Fixes at a shared checkpoint. |
 | Assisted parallel work | Allocate useful children within native runtime capacity without a fixed workflow-agent or Engineer count. Count all descendants, including nested Verifiers. Require unique mutable ownership, disjoint writes, outputs, caches, services, and targets; stable shared reads are allowed. Recheck immediately before each assignment and fall back to serial when conditions change. |
@@ -61,7 +61,7 @@ Run these scenarios from a fresh task with only the installed plugin and target 
 | Task sizing and integration | Require a small complete outcome, bounded rejection or correction scope, accepted foundations before dependent work, assigned integration ownership, and combined behavior proof before feature completion. |
 | Assignment progress checkpoints | Small settled assignments need no routine Architect updates. Larger or uncertain work needs a specific decision or risk checkpoint before delegation. Do not use time or percentage thresholds. |
 | Concrete Verifier review | Verifier inspects the contract, actual code, failure cases, and test adequacy directly. It does not only endorse Engineer conclusions. |
-| Canonical child policy | Keep delegation rules in [subagents.md](subagents.md). Children load common boundaries and their role section, not the full Architect orchestration. Carry decision deltas, refresh inputs after relevant changes, preserve permissions, and add no new skill or framework. |
+| Canonical child policy | Load exactly the selected mode contract. Assisted and Solo do not load [delegating.md](delegating.md). Children load common boundaries and their role section, not the full Architect orchestration. Carry decision deltas, refresh inputs after relevant changes, preserve permissions, and add no new skill or framework. |
 | Automation lifecycle and stateful operation | Any child reports a transient candidate after directly observing a second equivalent success; Maintainer owns repeated operations, with no scan, registry, Backlog entry, or automatic script. |
 | Task closeout | Verifier returns evidence; the owning Architect decides accept, correct, reopen, fail, or close. |
 | Shared interface, schema, manifest, lock file, generated output, or exclusive target | Keep work serial. |

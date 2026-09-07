@@ -2,7 +2,7 @@
 
 ## Release and install
 
-- Status: Established from the verified `v1.25.1` execution. Each release run uses current task evidence.
+- Status: Maintained release and install procedure. Each release run uses current task evidence.
 - Maintenance owner: Maintainer.
 - Purpose: Release one approved numeric version, install that tagged plugin, and upgrade only the approved repository when required.
 - Exact targets: this repository's `main`, its configured `origin`, tag `v<version>`, marketplace entry `lean-sdlc`, installed plugin `lean-sdlc`, and the selected repository for any ledger upgrade.
@@ -86,16 +86,24 @@
     python3 <installed-skill-root>/scripts/tasks.py --repo <repository-root> upgrade --task TASK-ID --owner OWNER
     ```
 
+15. After installation, if the selected repository needs an `AGENTS.md` contract upgrade, Architect runs the installed helper with the owned task and exact owner:
+
+    ```text
+    python3 <installed-skill-root>/scripts/init_repo.py <repository-root> --upgrade-contract --task TASK-ID --owner OWNER
+    ```
+
+    Apply this step only to the selected repository. Do not upgrade other repositories automatically. If its core instructions are edited or unknown, stop for authorized manual reconciliation. Preserve custom rules. After an authorized contract upgrade, start a fresh session before mode activation or workflow work.
+
 ### Success signal
 
-The portable gate, validators, checkpoint comparison, and diff check pass. The annotated tag and remote peeled tag identify the release commit. The working tree is clean before installation. The configured local source installs successfully, and the installed package matches the verified released source byte-for-byte. The helper context is correct. Any repository upgrade changes only its selected ledger.
+The portable gate, validators, checkpoint comparison, and diff check pass. The annotated tag and remote peeled tag identify the release commit. The working tree is clean before installation. The configured local source installs successfully, and the installed package matches the verified released source byte-for-byte. The helper context is correct. Any repository upgrade changes only its selected ledger or selected contract prefix, and a contract upgrade is followed by a fresh session.
 
 ### Failure and recovery
 
-Stop on an unknown failure, a source change between checkpoints, a remote mismatch, an existing tag, package changes or untracked additions, a marketplace mismatch, or an installed-file mismatch. Keep failed logs as temporary artifacts and report their paths. Discard successful raw logs.
+Stop on an unknown failure, a source change between checkpoints, a remote mismatch, an existing tag, package changes or untracked additions, a marketplace mismatch, an installed-file mismatch, or an edited or unknown selected-repository contract core. Keep failed logs as temporary artifacts and report their paths. Discard successful raw logs.
 
 If the shell `codex` rejects feature-map parsing, switch to the compatible app-bundled CLI. Do not change `config.toml`, marketplace state, or global configuration. Do not retry a state-changing failure without an approved recovery rule. No forced push, tag replacement, or automatic rollback is authorized.
 
 ### Last verified context
 
-The `v1.25.1` baseline was verified on `main` at short commit `f09e1ab`. The current host's compatible app-bundled CLI is `0.153.4` and supports `plugin list`. Each new release uses current task evidence; do not claim `v1.26.0` verification before its proof completes. Update this record only when the procedure or its verified context changes; do not make a post-release documentation change only for a timestamp.
+The `v1.25.1` procedure baseline was verified on `main` at short commit `f09e1ab`. The current host's compatible app-bundled CLI is `0.153.4` and supports `plugin list`. Each new release uses current task evidence. Update this record only when the procedure or its verified context changes; do not make a post-release documentation change only for a timestamp.

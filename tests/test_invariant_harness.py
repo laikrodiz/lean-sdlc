@@ -19,8 +19,15 @@ class FrozenInvariant:
     ordered_terms: tuple[str, ...] = ()
 
 
-SUBAGENTS = "plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md"
+SUBAGENTS = "plugins/lean-sdlc/skills/lean-sdlc/references/delegating.md"
 CHILD = "plugins/lean-sdlc/skills/lean-sdlc/references/child.md"
+DELEGATING_CHILD = "plugins/lean-sdlc/skills/lean-sdlc/references/delegating-child.md"
+DELEGATING = "plugins/lean-sdlc/skills/lean-sdlc/references/delegating.md"
+ASSISTED = "plugins/lean-sdlc/skills/lean-sdlc/references/assisted.md"
+SOLO = "plugins/lean-sdlc/skills/lean-sdlc/references/solo.md"
+MODE_COMMON = "plugins/lean-sdlc/skills/lean-sdlc/references/mode-common.md"
+SUPPORT = "plugins/lean-sdlc/skills/lean-sdlc/references/support.md"
+SKILL = "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md"
 OPERATIONS = "plugins/lean-sdlc/skills/lean-sdlc/references/operations.md"
 VERIFY = "plugins/lean-sdlc/skills/lean-sdlc/references/verify.md"
 TRIGGER_EVALS = "plugins/lean-sdlc/skills/lean-sdlc/references/trigger-evals.md"
@@ -50,16 +57,19 @@ FROZEN_INVARIANTS = (
     ),
     FrozenInvariant(
         "explicit implementation authority",
-        "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md",
-        ("require explicit implementation authority before task creation or changes", "discussion and proposals remain read-only", "if ambiguous, remain read-only"),
+        MODE_COMMON,
+        (
+            "discussion remains read-only",
+            "require explicit implementation authority before task creation or repository changes",
+        ),
     ),
     FrozenInvariant(
         "exact startup context",
         "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md",
         (
             "exact startup fields from the lifecycle system message",
-            "system message supplies `Repository root`, `Skill root`, `Tasks helper`, `Check helper`, `State helper`, `Owner`, `Mode`, and `Child tier`",
-            "`repository_root`, `skill_root`, `tasks_helper`, `check_helper`, `state_helper`, `owner`, `mode`, and `tier`",
+            "system message supplies `Repository root`, `Skill root`, `Tasks helper`, `Check helper`, `State helper`, `Owner`, `Mode`, `Active mode`, and `Child tier`",
+            "`repository_root`, `skill_root`, `tasks_helper`, `check_helper`, `state_helper`, `owner`, `mode`, `active_mode`, and `tier`",
             "the `Skill root` is the parent of the loaded `SKILL.md`",
             "`python3 \"<directory containing the loaded SKILL.md>/scripts/session_state.py\" --context`",
             "existing `CODEX_SESSION_ID`",
@@ -80,8 +90,13 @@ FROZEN_INVARIANTS = (
     ),
     FrozenInvariant(
         "owned task before writes",
-        "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md",
-        ("before any other repository mutation", "run `python3 \"<skill-root>/scripts/tasks.py\" --repo \"<repo-root>\" start` or claim planned work", "require an owned `in progress` task", "run `python3 \"<skill-root>/scripts/lean_check.py\" \"<repo-root>\" --before-write --task TASK-ID --owner OWNER"),
+        MODE_COMMON,
+        (
+            "before mutation, establish `why -> what -> how -> proof`",
+            "use the packaged tasks helper for every ledger mutation",
+            "start or claim an owned `in progress` task with acceptance and proof",
+            "before the first non-control write, run `python3 \"<skill-root>/scripts/lean_check.py\" \"<repo-root>\" --before-write --task TASK-ID --owner OWNER`",
+        ),
     ),
     FrozenInvariant(
         "atomic tasks.csv transactions",
@@ -113,7 +128,11 @@ FROZEN_INVARIANTS = (
     FrozenInvariant(
         "stable owner after compaction",
         "AGENTS.md",
-        ("plugin hook supplies a stable 8-digit task owner",),
+        (
+            "the system message supplies `Repository root`, `Skill root`, `Tasks helper`, `Check helper`, `State helper`, `Owner`, `Mode`, `Active mode`, and `Child tier`",
+            "use the existing `CODEX_SESSION_ID`",
+            "never set, replace, or invent `CODEX_SESSION_ID`",
+        ),
     ),
     FrozenInvariant(
         "owner-only close",
@@ -121,25 +140,31 @@ FROZEN_INVARIANTS = (
         ("only the owning architect closes through `python3 \"<skill-root>/scripts/tasks.py\" --repo \"<repo-root>\" close` with evidence", "direct-user override requires an explicit request and recorded reason"),
     ),
     FrozenInvariant(
-        "assisted and solo only",
-        SUBAGENTS,
-        ("assisted is the default", "solo is lead-only", "these are the only modes"),
+        "three workflow modes and isolation",
+        SKILL,
+        (
+            "read exactly the selected workflow",
+            "[assisted.md](references/assisted.md)",
+            "[delegating.md](references/delegating.md)",
+            "[solo.md](references/solo.md)",
+            "an active session cannot change mode",
+            "Do not load other mode policies",
+        ),
     ),
     FrozenInvariant(
-        "assisted direct Architect paths",
-        SUBAGENTS,
+        "assisted lead coding",
+        ASSISTED,
         (
-            "eligible Routine Quick Fix",
-            "rare, bounded Critical implementation",
-            "design and coding coupling",
-            "state the reason briefly",
-            "keep independent proof",
-            "do not absorb surrounding Routine work",
+            "The Lead owns intent, decisions, permissions, production code, core tests, task ownership, acceptance, and closure",
+            "Do not use Engineer or custom roles",
+            "The Lead may use Maintainer for bounded documents or mechanics, Scout for substantial unknowns, and Verifier for independent proof",
+            "Children cannot change production code, acceptance, permissions, tasks, or session state, or allocate children",
+            "Critical, combined parallel, release, or disputed work requires an independent Verifier",
         ),
     ),
     FrozenInvariant(
         "atomic engineer ownership",
-        CHILD,
+        DELEGATING_CHILD,
         (
             "complete one atomic outcome, including related tests and mechanical consistency inside assigned paths",
             "local corrections without new approval",
@@ -151,27 +176,20 @@ FROZEN_INVARIANTS = (
     ),
     FrozenInvariant(
         "native child capacity and resource isolation",
-        SUBAGENTS,
+        SUPPORT,
         (
-            "allocate useful children within native runtime capacity",
-            "do not impose a fixed workflow-agent or Engineer count",
-            "count every active descendant, including nested Verifiers",
-            "give each child unique mutable ownership",
-            "this capacity rule does not create a coordinator role or permit uncontrolled spawning",
-            "writable paths, generated outputs, mutable fixtures, caches, services, ports, devices, and external targets do not overlap",
-            "shared read-only contracts are stable",
-            "Two Engineers may share stable read-only interfaces",
+            "Count all active descendants against native capacity",
+            "Keep each mutable path, generated output, fixture, and external target under one writer",
+            "Parallel work needs stable shared inputs",
             "do not create branches or worktrees for parallelism",
-            "maintainer may draft separate documents from approved facts during implementation",
-            "a verifier can check a completed independent boundary while unrelated work continues",
-            "final release checks freeze all inputs that enter the release",
+            "Otherwise, run serially",
         ),
     ),
     FrozenInvariant(
         "proof ownership and reuse",
         VERIFY,
         (
-            "task proof is the acceptance anchor",
+            "record command owner, proof purpose, and invalidation inputs in the existing task or handoff",
             "do not create a proof registry",
             "one command may satisfy multiple proof purposes",
             "reuse proof only while relevant source, dependencies, configuration, environment, toolchain, and target inputs remain valid",
@@ -186,9 +204,9 @@ FROZEN_INVARIANTS = (
         (
             "short public brief with the decision, reason, owned boundary, acceptance, and material risks",
             "put the precise task contract in the child assignment once",
-            "relevant code, responsibilities, interfaces, data flow, mandatory sequencing, failure behavior, invariants, exclusions",
+            "responsibilities, interfaces, data flow, sequencing, failure behavior, invariants, exclusions, decisions versus suggestions, freedom, acceptance, proof, and stop conditions",
             "decisions versus suggestions",
-            "Engineer freedom",
+            "freedom",
             "one concrete example or the reason for any choice where misunderstanding would matter",
             "small settled assignment",
             "do not send routine Architect updates",
@@ -203,7 +221,7 @@ FROZEN_INVARIANTS = (
         (
             "stop writers touching them, including dependencies",
             "verifier runs",
-            "before and after proof",
+            "take one checkpoint before the first review read or check and one after all review and checks for that revision",
             "compare returned sha-256 values locally",
             "block on mismatch",
             "collect independent safe failures together",
@@ -271,14 +289,12 @@ FROZEN_INVARIANTS = (
         "lifecycle availability and controlled proof routing",
         CHILD,
         (
-            "send one final return with outcome, focused changes or citations, proof, and remaining risks",
+            "finish with one final response containing outcome, focused changes or citations, proof, and remaining risks",
             "the thread can be reused later",
-            "only an exact architect-preauthorized verifier",
-            "pause its verified inputs during checks",
             "no child spawning",
             "if scope, authority, assumptions, or proof becomes unclear, stop affected work and report it",
             "inspect the contract, actual code, relevant failure cases, and test adequacy directly",
-            "do not only endorse Engineer conclusions",
+            "do not only endorse implementation-owner conclusions",
         ),
     ),
     FrozenInvariant(
@@ -290,18 +306,16 @@ FROZEN_INVARIANTS = (
             "no greetings, role repetition, rigid phrases, raw log dumps, or full fingerprints",
             "stop before the shared resource",
             "refresh evidence after relevant inputs change",
-            "send one final return",
+            "finish with one final response containing outcome, focused changes or citations, proof, and remaining risks",
         ),
     ),
     FrozenInvariant(
         "engineer, maintainer, verifier, and scout roles",
         CHILD,
         (
-            "### Engineer",
             "### Scout",
             "### Maintainer",
             "### Verifier",
-            "complete one atomic outcome",
             "remain read-only",
             "follow [verify.md](verify.md)",
             "no child spawning",
@@ -309,22 +323,39 @@ FROZEN_INVARIANTS = (
     ),
     FrozenInvariant(
         "luna max primary and terra xhigh fallback",
-        SUBAGENTS,
-        ("model=gpt-5.6-luna", "reasoning_effort=max", "fork_turns=none` or a positive bounded history value", "omit `agent_type`", "standard luna omits `service_tier`", "user-enabled fast children", "service_tier=priority", "retry luna max", "gpt-5.6-terra", "reasoning_effort=xhigh", "no `service_tier` or `agent_type`"),
+        SUPPORT,
+        (
+            "Standard:",
+            "model=gpt-5.6-luna",
+            "reasoning_effort=max",
+            "positive bounded history",
+            "Omit `agent_type` and `service_tier`",
+            "Fast requires user opt-in",
+            "service_tier=priority",
+            "retry Luna Max once without `service_tier`",
+            "fallback to `model=gpt-5.6-terra`",
+            "reasoning_effort=xhigh",
+            "Do not combine model overrides with full-history forks",
+        ),
     ),
     FrozenInvariant(
         "one reusable child per role",
-        SUBAGENTS,
-        ("reuse a reachable child for the same role and relevant context before replacement", "keep reusable Maintainer and Verifier children", "allocate another Engineer or Scout only for a qualified assignment", "completed children remain reusable through `followup_task`"),
+        SUPPORT,
+        (
+            "Reuse a reachable child when its role and context still fit",
+            "Start a new child only for a useful, bounded assignment",
+            "Keep the existing name when reusing an agent",
+            "Recycle a role-label combination only after its previous agent is unreachable",
+        ),
     ),
     FrozenInvariant(
         "stable child label and event-driven progress",
-        SUBAGENTS,
+        SUPPORT,
         (
-            "choose a lowercase role prefix and greek suffix",
-            "allocate the next unused label",
-            "keep the exact name with the reusable child",
-            "recycle an unused role-label combination from an unreachable child",
+            "Use a lowercase role prefix and Greek suffix",
+            "Choose an unused suffix",
+            "Keep the existing name when reusing an agent",
+            "Recycle a role-label combination only after its previous agent is unreachable",
         ),
     ),
     FrozenInvariant(
@@ -335,14 +366,14 @@ FROZEN_INVARIANTS = (
             "progress updates in the child thread",
             "send an explicit parent message only for immediate action",
             "a blocker, collision, scope change, proof mismatch, or decision",
-            "one final return",
+            "finish with one final response",
             "end the active turn",
             "the thread can be reused later",
         ),
         ordered_terms=(
             "progress updates in the child thread",
             "send an explicit parent message only for immediate action",
-            "one final return",
+            "finish with one final response",
         ),
     ),
     FrozenInvariant(
@@ -351,31 +382,30 @@ FROZEN_INVARIANTS = (
         (
             "stop writers touching them, including dependencies",
             "verifier runs `python3 \"<skill-root>/scripts/checkpoint.py\" --repo \"<repo-root>\" PATH [PATH ...]`",
-            "before and after proof",
+            "take one checkpoint before the first review read or check and one after all review and checks for that revision",
             "compare returned SHA-256 values locally",
             "block on mismatch",
             "collect independent safe failures together",
             "skip checks whose prerequisite failed",
-            "stop after all required proof passes",
+            "stop after all required review and proof pass",
         ),
         ordered_terms=(
             "stop writers touching them, including dependencies",
             "verifier runs",
-            "before and after proof",
+            "take one checkpoint before the first review read or check and one after all review and checks for that revision",
             "compare returned sha-256 values locally",
             "collect independent safe failures together",
-            "stop after all required proof passes",
+            "stop after all required review and proof pass",
         ),
     ),
     FrozenInvariant(
         "external-tool routing",
         SUBAGENTS,
         (
-            "apply the same roles and routing precedence to plugins, mcp, connectors, cad, databases, and hardware",
+            "apply the same routing precedence to plugins, mcp, connectors, cad, databases, and hardware",
             "expected time or context savings outweigh handoff and verification costs",
             "the architect owns target, permission, constraints, and decisions",
             "one bounded probe",
-            "call count and tool discovery are cues, not mandatory delegation triggers",
             "group independent read-only calls",
             "return conclusions, evidence locations, errors, and unknowns",
             "direct calls for mutations, approvals, and judgment-sensitive steps",
@@ -399,18 +429,20 @@ FROZEN_INVARIANTS = (
         SUBAGENTS,
         (
             "one bounded probe may settle the assignment",
-            "bounded adaptive waits without rapid polling",
-            "do not warm caches artificially",
+            "a timeout, silence, or missed update does not mean failure",
+            "do not use time or percentage thresholds for reporting",
             "never silently change the selected architect model or effort",
         ),
     ),
     FrozenInvariant(
         "delegation profile and capacity checks",
-        SUBAGENTS,
+        SUPPORT,
         (
-            "before spawning, confirm mode, capacity, profile, name, reachable children, scope, authority, and return route",
-            "run one bounded profile smoke check after a relevant native model/tool change",
-            "bounded adaptive waits without rapid polling",
+            "The selected mode determines allowed roles and who can allocate them",
+            "count all active descendants against native capacity",
+            "Use a lowercase role prefix and Greek suffix",
+            "Supply the task id, owner, both roots",
+            "include permissions, known facts, and the before-write result",
         ),
     ),
     FrozenInvariant(
@@ -426,19 +458,19 @@ FROZEN_INVARIANTS = (
         "proof anchor and justified forward checks",
         VERIFY,
         (
-            "task proof is the acceptance anchor",
+            "record command owner, proof purpose, and invalidation inputs in the existing task or handoff",
             "targeted proof checks changed behavior",
             "acceptance proof checks observable completion",
             "regression proof checks affected-boundary risk",
             "these are purposes, not three mandatory commands",
-            "stop after all required proof passes",
+            "stop after all required review and proof pass",
         ),
         ordered_terms=(
-            "task proof is the acceptance anchor",
+            "record command owner, proof purpose, and invalidation inputs in the existing task or handoff",
             "targeted proof checks changed behavior",
             "acceptance proof checks observable completion",
             "regression proof checks affected-boundary risk",
-            "stop after all required proof passes",
+            "stop after all required review and proof pass",
         ),
     ),
     FrozenInvariant(
@@ -485,7 +517,7 @@ FROZEN_INVARIANTS = (
             "dry-run only when mutation risk is meaningful",
             "transient signal may retry only under recorded recovery",
             "recorded failure follows authorized recovery",
-            "script defect goes to engineer",
+            "a script defect returns to the implementation owner",
             "changed contract or unknown cause stops and returns to architect/diagnose",
         ),
     ),
@@ -494,7 +526,7 @@ FROZEN_INVARIANTS = (
         OPERATIONS,
         (
             "architect approves the contract before scripting",
-            "engineer implements an approved script and one focused runnable check",
+            "implementation owner implements an approved script and one focused runnable check",
             "maintainer records and later replays the canonical command",
             "solo follows the same record",
             "maintainer marks an automation as stale",
@@ -520,13 +552,26 @@ FROZEN_INVARIANTS = (
     ),
     FrozenInvariant(
         "applicable asd-ste100 guidance",
-        "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md",
-        ("asd-ste100 issue 9", "active voice", "20 words or fewer", "25 words or fewer", "one term for one meaning", "conditions before actions", "american english spelling", "preserve code, commands, paths, identifiers, protocol fields, quotations", "do not claim certified or full controlled-dictionary compliance"),
+        MODE_COMMON,
+        (
+            "Use short, active American English",
+            "Apply ASD-STE100 Issue 9 sentence limits",
+            "procedural sentences at most 20 words",
+            "descriptive sentences at most 25 words",
+            "one term per meaning",
+            "Preserve exact code, identifiers, paths, and protocol fields",
+            "Do not claim certified compliance without a checker",
+        ),
     ),
     FrozenInvariant(
         "modularity, edge cases, and mermaid diagrams",
-        "plugins/lean-sdlc/skills/lean-sdlc/SKILL.md",
-        ("smallest cohesive units", "avoid project-size tiers, speculative interfaces, and pass-through modules", "plausible edge cases", "classify plausible edge cases as `handle`, `reject`, `defer`, or `impossible by invariant`", "small mermaid diagrams", "never use ascii pseudographics"),
+        "plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md",
+        (
+            "Use a diagram only when flow, state, ownership, sequence, or dependencies become materially easier to understand",
+            "Prefer small Mermaid diagrams",
+            "Use tables for mappings and prose for simple relationships",
+            "Never use ASCII pseudographics",
+        ),
     ),
    FrozenInvariant(
        "single-area task sizing and compaction resume",
@@ -536,7 +581,7 @@ FROZEN_INVARIANTS = (
            "one behavior, one contract boundary, one proof cluster, and one accept-or-reject decision",
            "split on any independent answer",
            "and` in a title as a review signal, not an automatic split",
-           "one ledger task represents one engineer checkpoint",
+           "one ledger task represents one implementation checkpoint",
            "one independently accepted behavior change",
            "one owning contract boundary",
            "one proof cluster",
@@ -636,11 +681,9 @@ FROZEN_INVARIANTS = (
         "qualified parallel writing and shared documentation",
         SUBAGENTS,
         (
-            "allocate useful children within native runtime capacity",
-            "do not impose a fixed workflow-agent or Engineer count",
-            "count every active descendant, including nested Verifiers",
+            "Allocate useful children within native runtime capacity",
+            "count every active descendant",
             "give each child unique mutable ownership",
-            "this capacity rule does not create a coordinator role or permit uncontrolled spawning",
             "each task has independent acceptance and all ledger dependencies are `done`",
             "writable paths, generated outputs, mutable fixtures, caches, services, ports, devices, and external targets do not overlap",
             "shared read-only contracts are stable",
@@ -648,7 +691,7 @@ FROZEN_INVARIANTS = (
             "do not create branches or worktrees for parallelism",
             "a verifier can check a completed independent boundary while unrelated work continues",
             "if separation or benefit is unclear, run serially",
-            "maintainer may draft separate documents from approved facts during implementation",
+            "Do not integrate active, unaccepted, or unassigned sibling work",
             "do not integrate active, unaccepted, or unassigned sibling work",
             "explicitly assigned integration outcome may combine accepted pieces within its owned boundary",
             "never take arbitrary ownership",
@@ -699,7 +742,7 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
             "material assumption affects behavior, scope, or architecture",
         ]:
             self.assertIn(term, lanes["shape"].casefold())
-        for term in ["tasks.py", "update_plan", "one engineer checkpoint"]:
+        for term in ["tasks.py", "update_plan", "one implementation checkpoint"]:
             self.assertIn(term, lanes["plan"].casefold())
         for term in [
             "record the proof owner, purpose, and invalidation inputs",
@@ -707,7 +750,7 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
         ]:
             self.assertIn(term, lanes["plan"].casefold())
         for term in [
-            "task proof is the acceptance anchor",
+            "record command owner, proof purpose, and invalidation inputs",
             "proof purpose",
             "invalidation inputs",
             "one command may satisfy multiple proof purposes",
@@ -715,7 +758,7 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
         ]:
             self.assertIn(term, lanes["verify"].casefold())
         self.assertIn("owned `in progress` task", lanes["deliver"].casefold())
-        self.assertIn("architect reviews scope, architecture, contract alignment", lanes["deliver"].casefold())
+        self.assertIn("the architect reviews scope, architecture, and contract alignment", lanes["deliver"].casefold())
         for term in [
             "acceptance proof",
             "documentation parity",
@@ -730,40 +773,52 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
 
     def test_policy_loading_is_conditional_on_delegation(self) -> None:
         dispatcher = _normalized(_read("plugins/lean-sdlc/skills/lean-sdlc/SKILL.md"))
+        shared = _normalized(_read(MODE_COMMON))
         agents = _normalized(_read("AGENTS.md"))
-        self.assertIn("in assisted, load [subagents.md]", dispatcher)
-        self.assertIn("solo does not need child orchestration", dispatcher)
-        self.assertIn("references/repository-contracts.md) only for initialization, legacy migration, or document ownership", dispatcher)
+        self.assertIn(
+            "[repository-contracts.md](references/repository-contracts.md): initialization, legacy migration, or document ownership",
+            dispatcher,
+        )
         for phrase in [
-            "[shape](references/shape.md)",
-            "[plan](references/plan.md)",
+            "**assisted:** [assisted.md](references/assisted.md)",
+            "**delegating:** read [mode-common.md](references/mode-common.md), then [delegating.md](references/delegating.md)",
+            "**solo:** read [mode-common.md](references/mode-common.md), then [solo.md](references/solo.md)",
+            "for authorized implementation, select and lock the mode before loading workflow instructions",
+            "an active session cannot change mode",
+            "after startup, resume, clear, compaction, or a skill upgrade, restore current intent",
+            "do not load other mode policies",
+            "[shape.md](references/shape.md)",
+            "[plan.md](references/plan.md)",
             "tasks.py",
             "python3 \"<skill-root>/scripts/lean_check.py\" \"<repo-root>\" --before-write --task TASK-ID --owner OWNER",
             "update_plan",
-            "python3 \"<skill-root>/scripts/session_state.py\" --owner owner --mode assisted|solo",
+            "python3 \"<skill-root>/scripts/session_state.py\" --owner owner --mode assisted|delegating|solo --begin",
         ]:
-            self.assertIn(_normalized(phrase), dispatcher)
+            self.assertIn(_normalized(phrase), dispatcher + shared)
         for phrase in [
-            "tasks.py",
-            "references/repository-contracts.md",
-            "subagents.md",
-            "dependencies must be `done` before start",
+            "<!-- lean-sdlc:startup v1 -->",
+            "tasks helper",
+            "check helper",
+            "state helper",
+            "active mode",
+            "## execution contract",
+            "tasks.csv",
+            "docs/project.md",
         ]:
             self.assertIn(_normalized(phrase), agents)
         self.assertNotIn("github.com/laikrodiz", agents)
-        self.assertIn("references/repository-contracts.md", agents)
-        self.assertIn("references/subagents.md", agents)
+        self.assertNotIn("references/subagents.md", agents)
 
     def test_child_label_pool_is_ordered_unique_and_recycles_unreachable_labels(self) -> None:
-        policy = _read(SUBAGENTS)
-        match = re.search(r"allocate the next unused label:\s*`([^`]+)`", policy, re.I | re.S)
+        policy = _read(SUPPORT)
+        match = re.search(r"choose an unused suffix from:.*?`([^`]+)`", policy, re.I | re.S)
         self.assertIsNotNone(match)
         labels = tuple(label.strip() for label in match.group(1).split(","))
         expected = ("alpha", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta", "iota", "kappa", "lambda", "mu", "nu", "xi", "omicron", "pi", "rho", "sigma", "tau", "upsilon", "phi", "chi", "psi", "omega")
         self.assertEqual(labels, expected)
         self.assertEqual(len(labels), len(set(labels)))
-        self.assertIn("keep the exact name with the reusable child", policy.lower())
-        self.assertIn("recycle an unused role-label combination from an unreachable child", policy.lower())
+        self.assertIn("keep the existing name when reusing an agent", policy.lower())
+        self.assertIn("recycle a role-label combination only after its previous agent is unreachable", policy.lower())
 
     def test_handoffs_require_facts_without_fixed_labels(self) -> None:
         policy = _read(SUBAGENTS)
@@ -782,14 +837,14 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
             shape,
         )
         for term in (
-            "give the child one atomic task or bounded inquiry",
+            "give the engineer one atomic task or bounded inquiry",
             "writable paths",
             "stable reads",
             "acceptance",
-            "planned proof",
+            "proof",
             "stop conditions",
-            "concise natural prose",
-            "relevant refreshed evidence",
+            "one concrete example or the reason for any choice where misunderstanding would matter",
+            "point to [child.md](child.md)",
         ):
             self.assertIn(term.casefold(), policy.casefold())
         self.assertIn(
@@ -821,14 +876,24 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
         self.assertNotIn("labeled report", policy)
 
     def test_child_communication_is_event_driven_without_policy_drift(self) -> None:
-        policy = _normalized(_read(SUBAGENTS))
+        policy = _normalized(_read(CHILD))
         child = _normalized(_read(CHILD))
         evaluations = _normalized(_read(TRIGGER_EVALS))
-        self.assertIn("routine progress stays in the child thread", policy)
-        self.assertIn("completion is one final return", policy)
+        self.assertIn("ordinary progress stays local", policy)
+        self.assertIn("finish with one final response", policy)
         self.assertIn("ordinary progress stays local", child)
         self.assertIn("routine progress stays in the child thread", evaluations)
-        for document in (child, evaluations):
+        for document in (child,):
+            self.assertIn("explicit parent message", document)
+            self.assertIn("immediate", document)
+            self.assertIn("blocker", document)
+            self.assertIn("collision", document)
+            self.assertIn("scope change", document)
+            self.assertIn("proof mismatch", document)
+            self.assertIn("decision", document)
+            self.assertIn("finish with one final response", document)
+        self.assertIn("one final return", evaluations)
+        for document in (evaluations,):
             self.assertIn("explicit parent message", document)
             self.assertIn("immediate", document)
             self.assertIn("blocker", document)

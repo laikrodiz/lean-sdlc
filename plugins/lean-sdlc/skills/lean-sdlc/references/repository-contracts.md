@@ -10,6 +10,11 @@ An initialized project requires only `AGENTS.md`, `docs/PROJECT.md`, and root `t
 
 A missing, invalid, or stale managed startup block is repaired with `python3 "<skill-root>/scripts/init_repo.py" "<repo-root>" --repair-startup --task TASK-ID --owner OWNER` after task start and before the general before-write gate. This control transaction changes only that block; normal initialization remains create-only.
 
+Old two-mode repository rules can conflict with the selected three-mode workflow. Mode activation and the before-write check require the current packaged AGENTS.md template as the unchanged prefix. Put custom project rules after that prefix and check them for semantic conflicts with the selected mode. Edited or unknown core instructions stop activation; automatic checks do not interpret arbitrary appended rules. The obsolete `subagents.md` policy path is removed; Delegating owns its policy in `delegating.md`.
+When the user explicitly authorizes the contract upgrade, restore context, start an owned upgrade task, and run `python3 "<skill-root>/scripts/init_repo.py" "<repo-root>" --upgrade-contract --task TASK-ID --owner OWNER` as a control transaction before mode activation. The upgrade recognizes the exact released v1.26.0 template, replaces only that prefix, and preserves appended project rules. It does not choose or change the session mode.
+An edited or unknown template requires explicit manual reconciliation. Never overwrite custom rules or interpret an application change as migration authority. After upgrading, start a fresh session so stale injected instructions are not reused. Startup repair alone does not remove legacy routing.
+If only `planning/tasks.csv` exists, run the explicitly authorized `tasks.py --repo <repo-root> upgrade` first. Then start or claim the contract-upgrade task in root `tasks.csv`. Do not initialize a second ledger.
+
 Optional documents appear only when a concrete need-based trigger exists. Use semantic sizing: one document holds one cohesive meaning, not an arbitrary line or time limit.
 
 - `docs/features/FEAT-*.md` for one durable behavior too detailed for `PROJECT.md`.
@@ -54,8 +59,8 @@ Do not create a documentation archive policy beyond optional supporting copies i
 - Simple recorded procedure, automation catalog, and operation map -> conditional `docs/OPERATIONS.md`; independent procedure -> an optional Operation document.
 - Shared trust boundaries, terminology, or manual proof -> conditional Security, Glossary, or Verification documents.
 - Local corrections -> outcome-focused task truth, code, tests, or comments.
-- Engineer owns code-local truth such as tests, comments, docstrings, annotations, and local examples.
-- Maintainer owns shared narrative truth in project, feature, decision, architecture, state-machine, interface, data, operations, security, glossary, verification, and README documents.
+- The implementation owner owns code-local truth such as tests, comments, docstrings, annotations, and local examples.
+- Maintainer owns assigned shared narrative truth in project, feature, decision, architecture, state-machine, interface, data, operations, security, glossary, verification, and README documents. In Assisted, the Architect may update a small shared document or task-record chore directly when that costs less than a handoff, unless a Maintainer already owns the path.
 - Maintainer owns each collection `INDEX.md` and synchronizes shared narrative truth through an impact-directed pass.
 - Maintainer owns `archive/INDEX.md` and each snapshot `ARCHIVE.md` after the Architect approves an explicit archive request and boundary.
 - Maintainer detects a missing trigger, stale document, stale automation, or oversized semantic unit. Maintainer never invents product or architecture.

@@ -1449,7 +1449,7 @@ class TaskLedgerTests(unittest.TestCase):
             second = run(str(OWNER_HOOK), input_text=event)
             self.assertEqual(first.returncode, 0, first.stderr)
             self.assertEqual(first.stdout, second.stdout)
-            message = json.loads(first.stdout)["systemMessage"]
+            message = json.loads(first.stdout)["hookSpecificOutput"]["additionalContext"]
             owner = message.split(": ", 1)[1].split(".", 1)[0]
             self.assertRegex(owner, r"^\d{8}$")
 
@@ -1623,16 +1623,15 @@ class TaskLedgerTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             repository = Path(directory)
             initialize_repository(repository)
-            block = packaged_startup_block()
-            prefix = "# Project-specific rules\n\n"
+            template = (SKILL / "assets/AGENTS.md").read_text(encoding="utf-8")
             suffix = "\n## Local rules\nKeep this text unchanged.\n"
-            stale = block.replace(
+            stale = template.replace(
                 "Use exact startup fields from the lifecycle system message.",
                 "Use outdated startup fields from the lifecycle system message.",
                 1,
             )
             repository.joinpath("AGENTS.md").write_text(
-                prefix + stale + suffix,
+                stale + suffix,
                 encoding="utf-8",
             )
             write_ledger(
@@ -1653,7 +1652,7 @@ class TaskLedgerTests(unittest.TestCase):
 
             self.assertEqual(repaired.returncode, 0, repaired.stderr)
             self.assertIn("repaired AGENTS.md", repaired.stdout)
-            expected = prefix + block + suffix
+            expected = template + suffix
             self.assertEqual(
                 repository.joinpath("AGENTS.md").read_text(encoding="utf-8"),
                 expected,
@@ -1739,9 +1738,14 @@ class PackageContractTests(unittest.TestCase):
                 "diagnose.md",
                 "deliver.md",
                 "verify.md",
-                "subagents.md",
+                "assisted.md",
+                "delegating.md",
+                "delegating-child.md",
+                "mode-common.md",
                 "operations.md",
                 "repository-contracts.md",
+                "solo.md",
+                "support.md",
                 "trigger-evals.md",
             }.issubset(names)
         )
@@ -1804,7 +1808,7 @@ class PackageContractTests(unittest.TestCase):
     def test_automation_lifecycle_uses_recorded_operations_and_bounds_authority(self) -> None:
         operations = (SKILL / "references/operations.md").read_text(encoding="utf-8").lower()
         contracts = (SKILL / "references/repository-contracts.md").read_text(encoding="utf-8").lower()
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8").lower()
+        subagents = (SKILL / "references/delegating.md").read_text(encoding="utf-8").lower()
         child = (SKILL / "references/child.md").read_text(encoding="utf-8").lower()
         evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8").lower()
         asset = (SKILL / "assets/operation.md").read_text(encoding="utf-8").lower()
@@ -1820,7 +1824,7 @@ class PackageContractTests(unittest.TestCase):
             "existing script",
             "native or installed tool",
             "smallest new script",
-            "engineer implements an approved script and one focused runnable check",
+            "implementation owner implements an approved script and one focused runnable check",
             "maintainer records and later replays the canonical command",
             "later work reads recorded operations first",
             "solo follows the same record",
@@ -1834,7 +1838,7 @@ class PackageContractTests(unittest.TestCase):
             "bound default output",
             "transient signal may retry only under recorded recovery",
             "recorded failure follows authorized recovery",
-            "script defect goes to engineer",
+            "script defect returns to the implementation owner",
             "changed contract or unknown cause stops and returns to architect/diagnose",
         ]:
             self.assertIn(phrase, operations)
@@ -1888,7 +1892,7 @@ class PackageContractTests(unittest.TestCase):
         policy_files = [
             ROOT / "README.md",
             SKILL / "assets/AGENTS.md",
-            SKILL / "references/subagents.md",
+            SKILL / "references/support.md",
         ]
         policy = "\n".join(path.read_text(encoding="utf-8") for path in policy_files)
         self.assertNotIn("GPT-5.4", policy)
@@ -1906,7 +1910,7 @@ class PackageContractTests(unittest.TestCase):
             SKILL / "references/trigger-evals.md"
         ).read_text(encoding="utf-8").lower()
 
-        self.assertIn("smallest cohesive units", dispatcher)
+        self.assertIn("smallest cohesive units", dispatcher + deliver)
         self.assertIn("project-size", decide)
         self.assertIn("readable orchestrator", deliver)
         self.assertIn("handle", deliver)
@@ -1923,7 +1927,6 @@ class PackageContractTests(unittest.TestCase):
         contracts = (
             SKILL / "references/repository-contracts.md"
         ).read_text(encoding="utf-8")
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
         evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8")
         ledger = (SCRIPTS / "task_ledger.py").read_text(encoding="utf-8")
         tasks_script = (SCRIPTS / "tasks.py").read_text(encoding="utf-8")
@@ -1990,6 +1993,7 @@ class PackageContractTests(unittest.TestCase):
 
     def test_work_boundaries_keep_tasks_atomic_and_steps_transient(self) -> None:
         dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
+        shared = (SKILL / "references/mode-common.md").read_text(encoding="utf-8").lower()
         agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8").lower()
         template = (
             SKILL / "assets/AGENTS.md"
@@ -2005,19 +2009,28 @@ class PackageContractTests(unittest.TestCase):
         ).read_text(encoding="utf-8").lower()
 
         for phrase in [
-            "the packaged `tasks.py` helper is the only ledger mutation path",
+            "use the packaged tasks helper for every ledger mutation",
             "plan view",
             "python3 \"<skill-root>/scripts/lean_check.py\" \"<repo-root>\" --before-write --task task-id --owner owner",
-            "one engineer checkpoint",
+            "one implementation checkpoint",
         ]:
-            self.assertIn(phrase, dispatcher)
+            self.assertIn(phrase, dispatcher + shared + plan)
         for phrase in [
             "tasks.py",
             "in progress",
-            "dependencies must be `done` before start",
+            "dependencies must exist, remain acyclic, and be `done` before start or close",
             "update_plan",
-            "rebuild only unresolved rows",
+            "rebuild only unresolved non-backlog rows",
             "python3 \"<skill-root>/scripts/session_state.py\"",
+        ]:
+            self.assertIn(phrase, dispatcher + shared + plan + contracts)
+        for phrase in [
+            "tasks helper",
+            "check helper",
+            "state helper",
+            "active mode",
+            "child tier",
+            "execution contract",
         ]:
             self.assertIn(phrase, agents)
         self.assertEqual(agents, template)
@@ -2044,7 +2057,7 @@ class PackageContractTests(unittest.TestCase):
             "one behavior, one contract boundary, one proof cluster, and one accept-or-reject decision",
             "split on any independent answer",
             "and` in a title as a review signal, not an automatic split",
-            "one ledger task represents one engineer checkpoint.",
+            "one ledger task represents one implementation checkpoint.",
             "one independently accepted behavior change",
             "one owning contract boundary",
             "one proof cluster",
@@ -2087,7 +2100,7 @@ class PackageContractTests(unittest.TestCase):
 
     def test_task_sizing_preflight_and_split_rules_are_operational(self) -> None:
         plan = (SKILL / "references/plan.md").read_text(encoding="utf-8")
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
+        subagents = (SKILL / "references/delegating.md").read_text(encoding="utf-8")
         evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8")
 
         self.assertIn("## Task preflight", plan)
@@ -2123,8 +2136,10 @@ class PackageContractTests(unittest.TestCase):
     def test_task_sizing_and_session_state_routes_use_canonical_sources(self) -> None:
         dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
         subagents = (
-            SKILL / "references/subagents.md"
+            SKILL / "references/delegating.md"
         ).read_text(encoding="utf-8").lower()
+        shared = (SKILL / "references/mode-common.md").read_text(encoding="utf-8").lower()
+        agents = ROOT.joinpath("AGENTS.md").read_text(encoding="utf-8").lower()
         evaluations = (
             SKILL / "references/trigger-evals.md"
         ).read_text(encoding="utf-8").lower()
@@ -2132,19 +2147,19 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("valid engineer checkpoint", evaluations)
         self.assertIn("oversized task", evaluations)
         for token in [
-            "python3 \"<skill-root>/scripts/session_state.py\" --owner owner --mode assisted|solo",
-            "python3 \"<skill-root>/scripts/session_state.py\" --owner owner --fast-children",
-            "--no-fast-children",
+            "python3 \"<skill-root>/scripts/session_state.py\" --owner owner --mode assisted|delegating|solo --begin",
+            "python3 \"<skill-root>/scripts/session_state.py\" --owner owner <options>",
         ]:
-            self.assertIn(token, dispatcher + subagents)
+            self.assertIn(token, dispatcher + subagents + shared + agents)
 
     def test_implementation_authority_and_visible_plan_gate_are_explicit(self) -> None:
         dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
+        shared = (SKILL / "references/mode-common.md").read_text(encoding="utf-8").lower()
         plan = (SKILL / "references/plan.md").read_text(encoding="utf-8").lower()
         shape = (SKILL / "references/shape.md").read_text(encoding="utf-8").lower()
         deliver = (SKILL / "references/deliver.md").read_text(encoding="utf-8").lower()
         subagents = (
-            SKILL / "references/subagents.md"
+            SKILL / "references/delegating.md"
         ).read_text(encoding="utf-8").lower()
         child = (SKILL / "references/child.md").read_text(encoding="utf-8").lower()
         evaluations = (
@@ -2169,7 +2184,7 @@ class PackageContractTests(unittest.TestCase):
             self.assertIn(phrase, plan)
 
         self.assertIn("explicit implementation authority", dispatcher + shape + deliver)
-        self.assertIn("discussion and proposals remain read-only", dispatcher)
+        self.assertIn("discussion remains read-only", dispatcher + shared)
         self.assertIn("brainstorming and rephrasing remain read-only", shape)
         self.assertIn("each durable plan item maps to one task", plan)
         self.assertIn("keep local implementation steps and correction handoffs transient", plan)
@@ -2183,27 +2198,27 @@ class PackageContractTests(unittest.TestCase):
         )
         self.assertIn("task or implementation request", evaluations)
         self.assertIn("valid engineer checkpoint", evaluations)
-        self.assertIn("architect direct path", evaluations)
+        self.assertIn("assisted is lead-coding", evaluations)
         self.assertEqual(root_agents, template_agents)
 
     def test_policy_invariants_are_canonical_and_safe(self) -> None:
         dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8").lower()
+        subagents = (SKILL / "references/delegating.md").read_text(encoding="utf-8").lower()
+        support = (SKILL / "references/support.md").read_text(encoding="utf-8").lower()
         child = (SKILL / "references/child.md").read_text(encoding="utf-8").lower()
         verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
         operations = (SKILL / "references/operations.md").read_text(encoding="utf-8").lower()
         evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8").lower()
 
-        self.assertIn("## canonical lifecycle", dispatcher)
-        self.assertEqual(subagents.count("## route the current work"), 1)
+        self.assertIn("## select the workflow", dispatcher)
+        self.assertEqual(subagents.count("## authority and routing"), 1)
         route_order = [
             subagents.index("1. keep unresolved"),
-            subagents.index("2. in solo"),
-            subagents.index("3. apply the existing"),
-            subagents.index("4. keep an eligible"),
-            subagents.index("5. use scout"),
-            subagents.index("6. route settled"),
-            subagents.index("7. use verifier"),
+            subagents.index("2. apply the existing"),
+            subagents.index("3. retain rare"),
+            subagents.index("4. use scout"),
+            subagents.index("5. route settled"),
+            subagents.index("6. use verifier"),
         ]
         self.assertEqual(route_order, sorted(route_order))
         for role in ("engineer", "maintainer", "verifier", "scout"):
@@ -2215,7 +2230,7 @@ class PackageContractTests(unittest.TestCase):
             "gpt-5.6-terra",
             "reasoning_effort=xhigh",
         ):
-            self.assertIn(model_term, subagents)
+            self.assertIn(model_term, support)
 
         for safety_term in (
             "read-only",
@@ -2225,20 +2240,20 @@ class PackageContractTests(unittest.TestCase):
             "private chain-of-thought",
             "run the full suite once for",
         ):
-            self.assertIn(safety_term, subagents + child + verify + operations)
+            self.assertIn(safety_term, subagents + support + child + verify + operations)
         for naming_term in (
-            "choose a lowercase role prefix and greek suffix",
-            "allocate the next unused label",
-            "never duplicate a reachable identity",
+            "use a lowercase role prefix and greek suffix",
+            "choose an unused suffix",
+            "keep the existing name when reusing an agent",
         ):
-            self.assertIn(naming_term, subagents)
+            self.assertIn(naming_term, support)
         for lifecycle_term in (
             "timeout, silence, or missed update does not mean failure",
-            "completed children remain reusable",
-            "give the child one atomic task or bounded inquiry",
+            "reuse a reachable child",
+            "give the engineer one atomic task or bounded inquiry",
             "stop conditions",
         ):
-            self.assertIn(lifecycle_term, dispatcher + subagents)
+            self.assertIn(lifecycle_term, dispatcher + subagents + support)
         for boundary_term in (
             "assigned paths",
             "settled task",
@@ -2257,9 +2272,11 @@ class PackageContractTests(unittest.TestCase):
     def test_intent_and_boundary_contracts_are_explicit(self) -> None:
         shape = (SKILL / "references/shape.md").read_text(encoding="utf-8").lower()
         plan = (SKILL / "references/plan.md").read_text(encoding="utf-8").lower()
+        shared = (SKILL / "references/mode-common.md").read_text(encoding="utf-8").lower()
         contracts = (SKILL / "references/repository-contracts.md").read_text(encoding="utf-8").lower()
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8").lower()
+        subagents = (SKILL / "references/delegating.md").read_text(encoding="utf-8").lower()
         child = (SKILL / "references/child.md").read_text(encoding="utf-8").lower()
+        delegating_child = (SKILL / "references/delegating-child.md").read_text(encoding="utf-8").lower()
         evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8").lower()
 
         for term in (
@@ -2280,9 +2297,12 @@ class PackageContractTests(unittest.TestCase):
             "do not classify each transient coding step",
             "risk differs from ownership",
             "reclassify when new material evidence changes the risk",
-            "critical work requires independent verification, including architect-written work",
         ):
             self.assertIn(term, plan)
+        self.assertIn(
+            "critical work requires independent evidence, including lead-written work",
+            shared,
+        )
         for term in (
             "project purpose, value, behavior boundary, scope, stage, and version promise",
             "one root `tasks.csv` remains authoritative",
@@ -2293,22 +2313,24 @@ class PackageContractTests(unittest.TestCase):
         for term in (
             "the architect owns intent, public behavior, architecture, material assumptions, interfaces, permissions, task ownership, acceptance, conflict resolution, integration, and final signoff",
             "allocate useful children within native runtime capacity",
-            "do not impose a fixed workflow-agent or engineer count",
+            "serialization restricts concurrency, not role ownership",
             "count every active descendant, including nested verifiers",
             "unique mutable ownership",
-            "this capacity rule does not create a coordinator role or permit uncontrolled spawning",
             "writable paths, generated outputs, mutable fixtures, caches, services, ports, devices, and external targets do not overlap",
             "shared read-only contracts are stable",
-            "combined checkpoints use one architect-started verifier",
+            "a verifier can check a completed independent boundary while unrelated work continues",
             "do not integrate active, unaccepted, or unassigned sibling work",
             "explicitly assigned integration outcome may combine accepted pieces within its owned boundary",
             "never take arbitrary ownership",
         ):
             self.assertIn(term, subagents)
         self.assertIn("stop before the shared resource", child)
-        self.assertIn("check the complete contract for material contradiction before coding", child)
-        self.assertIn("proceed without another approval pause when the contract is clear", child)
-        self.assertIn("escalate any contradiction", child)
+        self.assertIn(
+            "check the complete contract for material contradiction before coding",
+            delegating_child,
+        )
+        self.assertIn("proceed without another approval pause when the contract is clear", delegating_child)
+        self.assertIn("escalate any contradiction", delegating_child)
         for scenario in (
             "brain-dump discussion",
             "clear implementation authority",
@@ -2382,29 +2404,30 @@ class PackageContractTests(unittest.TestCase):
             self.assertIn(phrase, evaluations)
 
         self.assertEqual(root_agents, template_agents)
-        self.assertIn("project unresolved", root_agents)
-        self.assertIn("rebuild only unresolved rows from", root_agents)
-        self.assertIn("brainstorming remains read-only and creates no task view", root_agents)
+        self.assertIn("execution contract", root_agents)
+        self.assertIn("tasks.csv", root_agents)
+        self.assertIn("docs/project.md", root_agents)
 
     def test_child_policy_sections_and_identity_contract(self) -> None:
-        subagents_path = SKILL / "references/subagents.md"
+        subagents_path = SKILL / "references/delegating.md"
         subagents = subagents_path.read_text(encoding="utf-8")
+        support = (SKILL / "references/support.md").read_text(encoding="utf-8")
         child = (SKILL / "references/child.md").read_text(encoding="utf-8")
 
         for heading in [
-            "## Authority and modes",
-            "## Route the current work",
-            "## Independence gate",
-            "## Allocate and reuse",
-            "## Model and spawn",
-            "## Handoff and finish",
+            "## Authority and routing",
+            "## External tools and execution economy",
+            "## Parallel assignment gate",
+            "## Delegating handoffs",
         ]:
             self.assertIn(heading, subagents)
+        for heading in ["## Allocation and reuse", "## Profiles", "## Assignment and return"]:
+            self.assertIn(heading, support)
         for heading in ["## Common boundary", "## Roles", "## Report and stop"]:
             self.assertIn(heading, child)
-        self.assertIn("Choose a lowercase role prefix and Greek suffix", subagents)
-        self.assertIn("Allocate the next unused label", subagents)
-        self.assertIn("Keep the exact name with the reusable child", subagents)
+        self.assertIn("Use a lowercase role prefix and Greek suffix", support)
+        self.assertIn("Choose an unused suffix", support)
+        self.assertIn("Keep the existing name when reusing an agent", support)
         self.assertIn("No ledger edits or Git mutations", child)
         self.assertIn("Do not integrate active, unaccepted, or unassigned sibling work", child)
         self.assertIn("An explicitly assigned integration outcome may combine accepted pieces within its owned boundary", child)
@@ -2414,7 +2437,7 @@ class PackageContractTests(unittest.TestCase):
             "Send an explicit parent message only for immediate action",
             child,
         )
-        self.assertIn("Send one final return with outcome", child)
+        self.assertIn("Finish with one final response containing outcome", child)
         self.assertIn("The thread can be reused later", child)
         self.assertNotIn("role-trigger matrix", subagents)
         self.assertNotIn("sentence template", child.casefold())
@@ -2444,7 +2467,7 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("These rows are scenarios and assertions", evaluations)
         self.assertNotIn("Failure indicators", evaluations)
 
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8").lower()
+        subagents = (SKILL / "references/delegating.md").read_text(encoding="utf-8").lower()
         child = (SKILL / "references/child.md").read_text(encoding="utf-8").lower()
         verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
         operations = (SKILL / "references/operations.md").read_text(encoding="utf-8").lower()
@@ -2460,40 +2483,42 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("run the full suite once for", verify)
         self.assertIn("maintainer records and later replays the canonical command", operations)
         deliver = (SKILL / "references/deliver.md").read_text(encoding="utf-8").lower()
-        self.assertIn("after the final engineer return", deliver)
+        self.assertIn("after assigned work returns", deliver)
         self.assertIn("one short visible alignment signoff", deliver)
-        self.assertIn("reviews scope, architecture, contract alignment", deliver)
+        self.assertIn("reviews scope, architecture, and contract alignment", deliver)
         self.assertNotIn("verification is running against unchanged source", verify)
         self.assertNotIn("verification passed", verify)
         for name in ("deliver", "verify", "operations"):
             lane = (SKILL / "references" / f"{name}.md").read_text(encoding="utf-8")
-            self.assertIn("subagents.md", lane)
+            self.assertIn("selected mode", lane.casefold())
 
     def test_child_evidence_and_checkpoint_boundaries(self) -> None:
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8").lower()
+        subagents = (SKILL / "references/delegating.md").read_text(encoding="utf-8").lower()
+        support = (SKILL / "references/support.md").read_text(encoding="utf-8").lower()
         child = (SKILL / "references/child.md").read_text(encoding="utf-8").lower()
         verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
         operations = (SKILL / "references/operations.md").read_text(encoding="utf-8").lower()
         evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8").lower()
 
+        policy = subagents + support
         for phrase in (
             "task id, title, owner, both exact roots, writable paths, stable reads",
-            "acceptance, planned proof, and stop conditions",
-            "reused children receive the change in instructions plus relevant refreshed evidence",
+            "acceptance, proof, and stop conditions",
+            "reuse relevant source references; refresh them when their inputs change",
             "short public brief with the decision, reason, owned boundary, acceptance, and material risks",
             "put the precise task contract in the child assignment once",
-            "relevant code, responsibilities, interfaces, data flow, mandatory sequencing, failure behavior, invariants, exclusions",
+            "responsibilities, interfaces, data flow, sequencing, failure behavior, invariants, exclusions",
             "decisions versus suggestions",
-            "engineer freedom",
+            "freedom, acceptance, proof, and stop conditions",
             "one concrete example or the reason for any choice where misunderstanding would matter",
             "do not use time or percentage thresholds for reporting",
         ):
-            self.assertIn(phrase, subagents)
+            self.assertIn(phrase, policy)
         for phrase in (
             "short natural progress updates",
             "outcome, focused changes or citations, proof, and remaining risks",
             "inspect the contract, actual code, relevant failure cases, and test adequacy directly",
-            "do not only endorse engineer conclusions",
+            "do not only endorse implementation-owner conclusions",
         ):
             self.assertIn(phrase, child)
         verify_order = [
@@ -2503,7 +2528,7 @@ class PackageContractTests(unittest.TestCase):
                 "verifier runs",
                 "compare returned sha-256 values locally",
                 "collect independent safe failures together",
-                "stop after all required proof passes",
+                "stop after all required review and proof pass",
             )
         ]
         self.assertEqual(verify_order, sorted(verify_order))
@@ -2518,8 +2543,11 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("environment", evaluations)
 
     def test_lifecycle_and_proof_boundaries_are_behavioral(self) -> None:
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8").lower()
+        subagents = (SKILL / "references/delegating.md").read_text(encoding="utf-8").lower()
         child = (SKILL / "references/child.md").read_text(encoding="utf-8").lower()
+        delegating_child = (
+            SKILL / "references/delegating-child.md"
+        ).read_text(encoding="utf-8").lower()
         deliver = (SKILL / "references/deliver.md").read_text(encoding="utf-8").lower()
         verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
         evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8").lower()
@@ -2542,7 +2570,7 @@ class PackageContractTests(unittest.TestCase):
             "no other child spawning",
             "escalate repeated equivalent failures without new evidence",
         ):
-            self.assertIn(term, child)
+            self.assertIn(term, child + delegating_child)
         for term in (
             "selected authoritative contracts",
             "focused patches",
@@ -2574,16 +2602,16 @@ class PackageContractTests(unittest.TestCase):
         ):
             self.assertIn(term, verify)
         for term in (
-            "after the final engineer return",
+            "after assigned work returns",
             "one short visible alignment signoff",
-            "reviews scope, architecture, contract alignment",
+            "reviews scope, architecture, and contract alignment",
             "stop writers touching the checkpoint inputs or resources",
         ):
             self.assertIn(term, deliver + subagents)
         self.assertNotIn("parent metadata", evaluations)
 
     def test_child_progress_is_event_driven_and_not_template_bound(self) -> None:
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
+        subagents = (SKILL / "references/delegating.md").read_text(encoding="utf-8")
         child = (SKILL / "references/child.md").read_text(encoding="utf-8")
         evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8")
 
@@ -2593,7 +2621,7 @@ class PackageContractTests(unittest.TestCase):
             "send an explicit parent message only for immediate action",
             "blocker",
             "scope change",
-            "one final return",
+            "one final response",
             "end the active turn",
             "the thread can be reused later",
         ]:
@@ -2603,7 +2631,7 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("silence alone is not failure", evaluations.casefold())
         self.assertIn("end the active turn", evaluations.casefold())
         self.assertIn("followup_task", evaluations)
-        self.assertIn("routine progress stays in the child thread", subagents.casefold())
+        self.assertIn("ordinary progress stays local", child.casefold())
         self.assertIn("for a small settled assignment, do not send routine architect updates", subagents.casefold())
         self.assertIn("for larger or uncertain work, split the assignment or define a specific decision or risk checkpoint before delegation", subagents.casefold())
         self.assertIn("architect does not echo unchanged child facts", evaluations.casefold())
@@ -2615,9 +2643,9 @@ class PackageContractTests(unittest.TestCase):
 
         for term in ["intent", "approach", "tasks", "implement", "verify"]:
             self.assertIn(term, lowered)
-        self.assertIn("child-agent policy", lowered)
+        self.assertIn("detailed rules", lowered)
         self.assertEqual(
-            lowered.count("plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md"),
+            lowered.count("plugins/lean-sdlc/skills/lean-sdlc/references/delegating.md"),
             1,
         )
         for pattern in [
@@ -2631,13 +2659,14 @@ class PackageContractTests(unittest.TestCase):
             self.assertIsNone(re.search(pattern, lowered), pattern)
 
     def test_native_luna_routing_and_hard_cut_are_packaged(self) -> None:
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
+        subagents = (SKILL / "references/support.md").read_text(encoding="utf-8")
         policy = "\n".join(
             path.read_text(encoding="utf-8")
             for path in [
                 ROOT / "AGENTS.md",
                 SKILL / "SKILL.md",
-                SKILL / "references/subagents.md",
+                SKILL / "references/mode-common.md",
+                SKILL / "references/support.md",
             ]
         ).lower()
 
@@ -2649,7 +2678,7 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("reasoning_effort=max", subagents)
         self.assertIn("fork_turns=none", subagents)
         self.assertIn("Omit `agent_type`", subagents)
-        self.assertIn("Standard Luna omits `service_tier`", subagents)
+        self.assertIn("Omit `agent_type` and `service_tier`", subagents)
         self.assertIn("no `service_tier` or `agent_type`", subagents)
         self.assertIn("gpt-5.6-terra", subagents)
         self.assertIn("reasoning_effort=xhigh", subagents)
@@ -2657,15 +2686,12 @@ class PackageContractTests(unittest.TestCase):
         self.assertNotIn("lean_sdlc_luna", policy)
         for phrase in [
             "asd-ste100 issue 9",
-            "active voice",
-            "20 words or fewer",
-            "25 words or fewer",
-            "one term for one meaning",
-            "conditions before actions",
-            "american english spelling",
-            "idioms, unnecessary synonyms, and vague pronouns",
-            "preserve code, commands, paths, identifiers, protocol fields, quotations",
-            "certified or full controlled-dictionary compliance",
+            "short, active american english",
+            "procedural sentences at most 20 words",
+            "descriptive sentences at most 25 words",
+            "one term per meaning",
+            "preserve exact code, identifiers, paths, and protocol fields",
+            "certified compliance without a checker",
         ]:
             self.assertIn(phrase, policy)
 
