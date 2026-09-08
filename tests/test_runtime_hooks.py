@@ -120,11 +120,11 @@ class RuntimeHookTests(unittest.TestCase):
                     denied["hookSpecificOutput"]["permissionDecision"], "deny"
                 )
 
-    def test_engineer_beta_is_accepted(self) -> None:
+    def test_scout_beta_is_accepted(self) -> None:
         self.assertIsNone(
             self.guard(
                 {
-                    "task_name": "engineer_beta",
+                    "task_name": "scout_beta",
                     "model": "gpt-5.6-luna",
                     "reasoning_effort": "max",
                     "fork_turns": "none",
@@ -133,7 +133,7 @@ class RuntimeHookTests(unittest.TestCase):
         )
 
     def test_all_standard_roles_use_native_luna_fields(self) -> None:
-        for role in ("engineer", "maintainer", "verifier", "scout"):
+        for role in ("maintainer", "verifier", "scout"):
             with self.subTest(role=role):
                 self.assertIsNone(
                     self.guard(
@@ -149,7 +149,7 @@ class RuntimeHookTests(unittest.TestCase):
     def test_standard_priority_is_rejected(self) -> None:
         denied = self.guard(
             {
-                "task_name": "engineer_beta",
+                "task_name": "scout_beta",
                 "model": "gpt-5.6-luna",
                 "reasoning_effort": "max",
                 "fork_turns": "none",
@@ -163,7 +163,7 @@ class RuntimeHookTests(unittest.TestCase):
         self.assertIsNone(
             self.guard(
                 {
-                    "task_name": "engineer_beta",
+                    "task_name": "scout_beta",
                     "model": "gpt-5.6-luna",
                     "reasoning_effort": "max",
                     "fork_turns": "none",
@@ -172,10 +172,38 @@ class RuntimeHookTests(unittest.TestCase):
             )
         )
 
-    def test_solo_mode_denies_agent_spawns(self) -> None:
-        self.set_state("--mode", "solo")
-        denied = self.guard({"task_name": "engineer_beta"})
+    def test_retired_engineer_role_is_rejected(self) -> None:
+        denied = self.guard({
+            "task_name": "engineer_beta", "model": "gpt-5.6-luna",
+            "reasoning_effort": "max", "fork_turns": "none",
+        })
         self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
+        self.assertIn("Lead owns implementation", denied["hookSpecificOutput"]["permissionDecisionReason"])
+
+    def test_legacy_state_does_not_select_workflow_and_upgrade_preserves_tier(self) -> None:
+        path = self.codex_home / "state/lean-sdlc" / f"{self.owner()}.json"
+        path.parent.mkdir(parents=True)
+        for retired in ("solo", "assisted"):
+            with self.subTest(retired=retired):
+                original = json.dumps({"mode": retired, "fast_children": True})
+                path.write_text(original, encoding="utf-8")
+                self.assertIsNone(self.guard({
+                    "task_name": "scout_beta", "model": "gpt-5.6-luna",
+                    "reasoning_effort": "max", "fork_turns": "none",
+                    "service_tier": "priority",
+                }))
+                self.assertEqual(path.read_text(encoding="utf-8"), original)
+                self.set_state("--upgrade")
+                self.assertEqual(json.loads(path.read_text()), {"fast_children": True})
+
+    def test_removed_mode_option_is_rejected_without_changing_state(self) -> None:
+        self.set_state("--fast-children")
+        path = self.codex_home / "state/lean-sdlc" / f"{self.owner()}.json"
+        before = path.read_bytes()
+        result = run_script(SESSION_STATE, codex_home=self.codex_home,
+                            arguments=("--owner", self.owner(), "--mode", "solo"))
+        self.assertEqual(result.returncode, 2)
+        self.assertEqual(path.read_bytes(), before)
 
     def test_direct_user_custom_role_is_accepted(self) -> None:
         self.assertIsNone(self.guard({"task_name": "researcher_beta"}))
@@ -193,7 +221,7 @@ class RuntimeHookTests(unittest.TestCase):
     def test_missing_native_model_is_rejected(self) -> None:
         denied = self.guard(
             {
-                "task_name": "engineer_beta",
+                "task_name": "scout_beta",
                 "fork_turns": "all",
             }
         )
@@ -202,7 +230,7 @@ class RuntimeHookTests(unittest.TestCase):
     def test_wrong_native_model_is_rejected(self) -> None:
         denied = self.guard(
             {
-                "task_name": "engineer_beta",
+                "task_name": "scout_beta",
                 "model": "gpt-5.6-sol",
                 "reasoning_effort": "max",
                 "fork_turns": "none",
@@ -213,7 +241,7 @@ class RuntimeHookTests(unittest.TestCase):
     def test_wrong_native_reasoning_is_rejected(self) -> None:
         denied = self.guard(
             {
-                "task_name": "engineer_beta",
+                "task_name": "scout_beta",
                 "model": "gpt-5.6-luna",
                 "reasoning_effort": "high",
                 "fork_turns": "none",
@@ -224,7 +252,7 @@ class RuntimeHookTests(unittest.TestCase):
     def test_agent_type_is_rejected_for_standard_role(self) -> None:
         denied = self.guard(
             {
-                "task_name": "engineer_beta",
+                "task_name": "scout_beta",
                 "model": "gpt-5.6-luna",
                 "reasoning_effort": "max",
                 "fork_turns": "none",
@@ -236,7 +264,7 @@ class RuntimeHookTests(unittest.TestCase):
     def test_full_history_native_spawn_is_rejected(self) -> None:
         denied = self.guard(
             {
-                "task_name": "engineer_beta",
+                "task_name": "scout_beta",
                 "model": "gpt-5.6-luna",
                 "reasoning_effort": "max",
                 "fork_turns": "all",
@@ -248,7 +276,7 @@ class RuntimeHookTests(unittest.TestCase):
         self.assertIsNone(
             self.guard(
                 {
-                    "task_name": "engineer_beta",
+                    "task_name": "scout_beta",
                     "model": "gpt-5.6-luna",
                     "reasoning_effort": "max",
                     "fork_turns": "none",
@@ -261,7 +289,7 @@ class RuntimeHookTests(unittest.TestCase):
         self.assertIsNone(
             self.guard(
                 {
-                    "task_name": "engineer_beta",
+                    "task_name": "scout_beta",
                     "model": "gpt-5.6-luna",
                     "reasoning_effort": "max",
                     "fork_turns": "none",
@@ -273,7 +301,7 @@ class RuntimeHookTests(unittest.TestCase):
         self.assertIsNone(
             self.guard(
                 {
-                    "task_name": "engineer_beta",
+                    "task_name": "scout_beta",
                     "model": "gpt-5.6-terra",
                     "reasoning_effort": "xhigh",
                     "fork_turns": "none",
@@ -284,7 +312,7 @@ class RuntimeHookTests(unittest.TestCase):
     def test_terra_fallback_rejects_service_tier(self) -> None:
         denied = self.guard(
             {
-                "task_name": "engineer_beta",
+                "task_name": "scout_beta",
                 "model": "gpt-5.6-terra",
                 "reasoning_effort": "xhigh",
                 "fork_turns": "none",
@@ -303,16 +331,17 @@ class RuntimeHookTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         message = json.loads(result.stdout)["systemMessage"]
         self.assertIn(self.owner(), message)
-        self.assertIn("Mode: assisted", message)
+        self.assertNotIn("Mode:", message)
         self.assertIn("Child tier: Standard", message)
-        self.assertIn("reload subagents.md before Deliver", message)
+        self.assertIn("Read SKILL.md", message)
+        self.assertEqual(json.loads(result.stdout)["hookSpecificOutput"]["additionalContext"], message)
         skill = SCRIPTS.parent.resolve()
         self.assertIn(f"Tasks helper: {skill / 'scripts/tasks.py'}.", message)
         self.assertIn(f"Check helper: {skill / 'scripts/lean_check.py'}.", message)
         self.assertIn(f"State helper: {skill / 'scripts/session_state.py'}.", message)
 
-    def test_context_returns_exact_roots_helpers_owner_mode_and_tier(self) -> None:
-        self.set_state("--mode", "solo", "--fast-children")
+    def test_context_returns_exact_roots_helpers_owner_and_tier(self) -> None:
+        self.set_state("--fast-children")
         result = run_script(
             SESSION_STATE,
             codex_home=self.codex_home,
@@ -332,7 +361,6 @@ class RuntimeHookTests(unittest.TestCase):
                 "check_helper": str(skill / "scripts/lean_check.py"),
                 "state_helper": str(skill / "scripts/session_state.py"),
                 "owner": self.owner(),
-                "mode": "solo",
                 "tier": "Fast",
             },
         )
@@ -488,7 +516,7 @@ class RuntimeHookTests(unittest.TestCase):
         self.assertEqual(result.stdout, "")
 
     def test_state_persistence(self) -> None:
-        self.set_state("--mode", "solo", "--fast-children")
+        self.set_state("--fast-children")
         event = {
             "session_id": self.session_id,
             "cwd": str(self.repository),
@@ -497,7 +525,7 @@ class RuntimeHookTests(unittest.TestCase):
         result = run_script(SESSION_STATE, event, codex_home=self.codex_home)
         self.assertEqual(result.returncode, 0, result.stderr)
         message = json.loads(result.stdout)["systemMessage"]
-        self.assertIn("Mode: solo", message)
+        self.assertNotIn("Mode:", message)
         self.assertIn("Child tier: Fast", message)
 
     def test_invalid_state_falls_back_to_defaults(self) -> None:
@@ -512,7 +540,7 @@ class RuntimeHookTests(unittest.TestCase):
         result = run_script(SESSION_STATE, event, codex_home=self.codex_home)
         self.assertEqual(result.returncode, 0, result.stderr)
         message = json.loads(result.stdout)["systemMessage"]
-        self.assertIn("Mode: assisted", message)
+        self.assertNotIn("Mode:", message)
         self.assertIn("Child tier: Standard", message)
 
     def test_version_advisory_requires_genuine_startup(self) -> None:

@@ -1,100 +1,35 @@
-# Operations
+# Recorded operations
 
-Apply the Maintainer trigger, authority, profile, spawn, and handoff rules from [subagents.md](subagents.md). This file owns only how project-specific procedures are learned and repeated.
+Read this reference when learning or replaying a project procedure. Lead owns domain decisions. Maintainer records and runs authorized bounded operations. Verifier runs test steps, including smoke checks. Agree on ownership before a procedure that combines build, deployment, and tests.
 
-## Learn, then repeat
+## Learn and record
 
-An operation moves through:
+A procedure progresses from unknown, through guided success and a verified record, to repeatable use. Changed inputs or contracts make it stale.
 
-`unknown -> guided success -> recorded -> verified -> repeatable -> stale`
+For the first guided build, package, deploy, flash, runtime, or smoke procedure, record the successful commands and result in `docs/OPERATIONS.md`. Use an `OPS-*` document when independent target or recovery detail needs its own subject. Follow the documentation reference for indexes and sizing.
 
-For the first build, package, deploy, flash, runtime, or smoke operation:
+A record contains purpose, maintenance owner, status, canonical command, explicit inputs, safe defaults, prerequisites, ordered steps, exact target, artifacts, success signal, known failure signal, authorized recovery, and last verified context. Do not record an unsuccessful guess as a working procedure.
 
-1. The lead, user, or bounded worker guides the exact attempt.
-2. The Maintainer observes commands, inputs, target, success signal, artifacts, and recovery facts.
-3. After success, the Maintainer returns a short procedure draft.
-4. The lead records it in optional `docs/OPERATIONS.md` under the active task.
-5. Later Maintainer runs replay the recorded procedure exactly.
+## Replay and authority
 
-Update the recorded procedure after another guided success when reality changes. Stop when a procedure is missing, ambiguous, or stale.
+Read the existing valid procedure first. Reuse project commands and scripts. An operation record or script never grants permission.
 
-Use `docs/operations/OPS-*.md` for a procedure with an independent target, recovery rule, lifecycle, or useful standalone detail. Create `docs/operations/INDEX.md` with the first numbered procedure. Keep `docs/OPERATIONS.md` for the first simple recorded procedure and shared operation map.
+Honor explicit current or standing authority for the same scope and target. This can include build, deployment, publication, commits, and pushes. Do not ask again when the authority remains valid. Do not infer those actions from a request for an idea or code change.
 
-## Automation lifecycle
+Run one state-changing operation at a time for the same target. Use the accepted source identity. Do not guess a target, silently alter steps, or retry a state-changing failure without an authorized recovery rule.
 
-Reuse recorded operations as the only automation catalog. Do not add another file, registry, hook, state field, role, mode, dependency, or runtime framework.
+If a recorded failure matches, use only its already-authorized recovery. For an unknown failure, changed target, stale procedure, or source defect, stop and return evidence to Lead. Lead owns diagnosis and repairs.
 
-A stable repeated mechanic may include repository checks, transforms, reports, build, package, deploy, flash, runtime, smoke work, or repeated external-tool procedures. Never automate product, architecture, permission, security, acceptance, or conflict decisions. A script never grants authority.
+Cancellation follows the common protocol: check the underlying process or command, not only the agent status. Keep uncertain targets blocked. Relevant source or target changes invalidate previous operation results.
 
-Any child that directly observes a second equivalent successful mechanic reports a transient automation candidate to the Architect. The report adds no scan, registry, Backlog entry, automatic script, or state. Direct evidence that the mechanic will recur may also raise a candidate. Candidates do not enter durable docs automatically. After accepted implementation, Maintainer owns record/replay and the Architect approves the contract before scripting.
+## Reusable commands
 
-Use this selection ladder, stopping at the first existing option:
+Automatic routine discovery and automatic script-creation suggestions are not part of this workflow. Existing commands remain usable and documented. Create a new reusable script only when the user explicitly requests it.
 
-1. existing project command or target;
-2. existing script;
-3. native or installed tool;
-4. smallest new script.
+Lead implements such a script using an existing command, installed tool, or the smallest necessary code. Verifier runs a focused check. Require explicit inputs, target validation, stable exit status, noninteractive behavior, atomic output where practical, and bounded output. Use dry-run when mutation risk warrants it.
 
-Engineer implements an approved script and one focused runnable check. Maintainer records and later replays the canonical command in `docs/OPERATIONS.md` or an existing `OPS-*` document. Later work reads recorded operations first and uses the valid canonical command. Solo follows the same record.
+## Result
 
-Maintainer marks an automation as stale when its contract, dependency, environment, target, or output changes. Architect approves meaning changes.
+Return status, target, artifact, and next Lead action. Keep successful raw logs out of routine reports. Retain failure logs only as useful temporary evidence. Redact tokens, passwords, keys, authorization headers, connection strings, and secret environment values.
 
-## Runtime contract
-
-Every approved script must:
-
-- take explicit inputs and safe defaults;
-- validate the target;
-- return a stable exit status;
-- run noninteractive;
-- write output atomically when practical;
-- omit secrets and machine-specific paths;
-- bound default output and include detailed logs only on failure or explicit request.
-
-Use dry-run only when mutation risk is meaningful.
-
-## Failure routing
-
-A transient signal may retry only under recorded recovery. A recorded failure follows authorized recovery. A script defect goes to Engineer. A changed contract or unknown cause stops and returns to Architect/Diagnose.
-
-## Procedure record
-
-For each operation, keep:
-
-- status and maintenance owner;
-- purpose;
-- canonical command;
-- explicit inputs and safe defaults;
-- outputs and artifacts;
-- exact target;
-- prerequisites;
-- exact ordered steps;
-- success signal;
-- recorded operation failure signal and authorized recovery or rollback rule;
-- last verified context.
-
-Do not store secrets. Redact tokens, passwords, keys, authorization headers, connection strings, and secret environment values from procedures and reports.
-
-## Run contract
-
-Keep the task, operation, source identity, target, expected signal, and recovery context in the internal machine handoff. Keep Verifier fingerprints local. Omit them from visible operation reports.
-
-Visible operation result order: `<status> -> <target> -> <artifact> -> <next Architect action>`. Add failure-log context only when needed.
-
-Arrow sequence is fact order, not output wording; replace slots with project facts and omit slot labels.
-
-Run one state-changing operation at a time for the same `task + operation + target`. Never guess a target, silently change a procedure, or retry a state-changing failure without authority and a recorded recovery rule.
-
-Maintainer classifies failures only by matching a recorded operation failure signal. It runs only an already-authorized recorded recovery. Unknown, ambiguous, source-changing, or new retry behavior stops and routes to Diagnose/Scout and Architect.
-
-Discard successful raw logs after the compact result. Keep failed logs only as temporary artifacts and report their path. The Maintainer reports failure; Diagnose owns root cause and Deliver owns repairs.
-
-## Delivery classes
-
-Infer the operation sequence from task proof:
-
-- routine: Deliver -> Verify;
-- artifact: Deliver -> Verify -> build or package;
-- operational: Deliver -> Verify -> build -> deploy or flash -> smoke.
-
-In Solo mode, the lead follows the same recorded procedures and visible result order.
+Report ready for testing only when the actual artifact or deployment and required immediate checks are ready. Final delivery also requires the agreed integration proof, documentation, and ledger reconciliation.

@@ -28,7 +28,7 @@ class LiveEvaluationTests(unittest.TestCase):
 
     def test_command_uses_ephemeral_read_only_structured_output(self) -> None:
         command = build_command(Path("/repo"), DEFAULT_SCHEMA, Path("/tmp/one.json"), "inspect")
-        self.assertEqual(command[0:4], ["codex", "exec", "--ephemeral", "--json"])
+        self.assertEqual(command[:6], ["codex", "--ask-for-approval", "never", "exec", "--ephemeral", "--json"])
         self.assertIn("--sandbox", command)
         self.assertIn("read-only", command)
         self.assertIn("--output-schema", command)

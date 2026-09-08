@@ -1,69 +1,52 @@
-# Plan
+# Plan and task shape
 
-Require information, not fixed labels. Use natural prose for outcome, constraints, and exclusions. Only the plan needs visible structure. Show a concise visible plan. Define each durable plan item in natural prose with an observable completion condition and verification method. The verification method is its proof. A one-item plan is valid.
+Before task creation, restate the user's intended outcome, relevant constraints, and implementation authority. Read-only planning creates no ledger rows. A request to plan and implement uses this same coverage, then proceeds without another approval round.
 
-Use the confirmed Shape contract `why -> what -> how -> proof`. Plan adds task shape and Proof after Why and What are stable. Derive observable acceptance from the confirmed outcome and affected value. Implementation mechanisms, changed files, and test commands support acceptance but do not define it alone.
+## Visible plan
 
-## Quick Fix classification
+Use these five fields:
 
-Quick Fix is inline Plan classification, not a mode, lane, task type, or prompt. Record Context `Quick Fix`.
+- Outcome: the observable result and why it matters.
+- Work: independently accepted changes, their grades, and real sequencing.
+- Acceptance: what must be true for each result.
+- Checks: how Verifier will establish those facts.
+- Limits: exclusions, unresolved choices, and operation authority.
 
-Eligibility requires an exact requested outcome, local reversible scope, no unresolved product, design, architecture, public interface, schema, migration, dependency, security, generated-file, or external-state choice, and one immediate narrow proof. If uncertain, use Standard work. A user may choose Standard. A request to use Quick Fix never bypasses eligibility.
+Keep a small plan small. Necessary facts matter more than word count. Preserve all explicit user requirements. Label proposed additions and material assumptions rather than silently making them requirements.
 
-Every Quick Fix write needs implementation authority, one visible plan item, one owned task, and `python3 "<skill-root>/scripts/lean_check.py" "<repo-root>" --before-write` before the first non-control write. Show classification briefly in plan prose. Keep `update_plan` names exact: `TASK-NNN — Title`.
+Before asking Maintainer to create tasks, Lead reviews atomicity. One task has one independently accepted outcome, owning contract boundary, proof cluster, and close decision. Split when parts can succeed, fail, defer, revert, or be accepted independently. Do not split by file count, estimated time, or agent availability. Keep tests, documentation, and corrections with their owning outcome unless independently deliverable. Local implementation steps remain transient.
 
-Architect may execute Quick Fix in Assisted or Solo. Do not spawn Engineer, Maintainer, or Verifier per Quick Fix. Shared batch may reuse or start Verifier when normal proof trigger applies. Review diff and run narrow proof before close.
+## Grades
 
-Mixed: Standard final checkpoint reviews pending Quick Fixes and closes with `--review-through TASK-NNN`. Quick-only multi-fix batch: last Quick Fix may close with that flag after review. Standalone remains pending until next Standard checkpoint.
+Assign Simple, Normal, or Complex to each task, not the project. Grades describe work complexity, not authority or safety.
 
-## Backlog
+- Simple: settled, bounded work with known paths and an immediate narrow check. Avoid routine Scout use and unnecessary broad tests.
+- Normal: one understood behavior with several related implementation or verification steps.
+- Complex: uncertain or cross-boundary work needing a reading map, explicit decisions, or stronger integration proof.
 
-Backlog is parked work. It never authorizes planning or implementation. Only a direct user request may add or promote it. An Architect may propose placement only for a substantial reason and must wait for approval.
+Keep grades in the visible table and handoffs, not a CSV column or new state file. Recover their basis after compaction; reassess when facts change.
 
-Before new Standard work, the Architect reads `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" backlog` and checks duplicates, broader items, or related ideas. Do not load Backlog on startup, resume, brainstorming, or Quick Fix work.
+## Ledger and visible status
 
-Promotion is Shape and Plan, not a raw status flip. It adds proper title sizing, acceptance, proof, and dependencies. Promotion to In Progress adds an owner and requires explicit implementation authority. Planned promotion is not implementation authority. If a Backlog idea is broad, promote the original ID as the first coherent task and create sibling tasks for other independent outcomes. A Feature document remains optional under its existing trigger.
+Before new execution tasks, use compact Backlog and current-work views to check duplicates or related work. Do not load Backlog during ordinary conversation or startup. Only direct user authority permits adding or promoting an idea. An existing row does not authorize execution.
 
-## Task preflight
+Maintainer creates or claims work through [ledger](ledger.md). Lead confirms owned In Progress status, acceptance, proof, and the before-write gate before implementation. Dependencies must be Done before dependent work starts. All roles may read task facts.
 
-Before task creation, ask whether one behavior, one contract boundary, one proof cluster, and one accept-or-reject decision cover all work. Split on any independent answer. Treat `and` in a title as a review signal, not an automatic split.
+Show this table after creation and material status, scope, or task-boundary changes:
 
-## Task transaction
+| Task ID | Short description | Grade | Status |
+| --- | --- | --- | --- |
 
-Use `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" plan` for work and `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" start` for immediate or claimed work. Use `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" update` for corrections and `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" close` only after Verify. Never edit `tasks.csv`. Each task has observable acceptance and explicit proof. Add dependencies only when sequencing is real. Keep `tasks.csv` as the only durable task plan; each durable plan item maps to one task.
+Use real IDs and exact task titles. Never invent IDs for a proposal. If `update_plan` is available, mirror each unresolved task there as `TASK-NNN — Title`. Map Planned to `pending`, In Progress to `in_progress`, and accepted closure to `completed`. Rebuild unresolved rows after resume. The ledger remains authoritative; the native view is optional.
 
-## Plan view projection
+Lead may update visible status when requesting a normal transaction. Maintainer reports failures immediately. Confirm prerequisites before depending on them and reconcile the table against actual rows before final completion. Keep unrelated stopped tasks separate; do not silently resume or close them.
 
-During implementation, `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" open` supplies unresolved `Planned` and `In Progress` rows and excludes Backlog. Project each row into `update_plan` with the exact name `TASK-NNN — Title`. Map `Planned` to `pending` and `In Progress` to `in_progress`.
+## Simple tasks and deferred review
 
-Refresh `update_plan` after task creation or start, split, merge, or material plan change. Before or with `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" close`, mark the closing row `completed`; this is an active close transition, not a rebuild state. On startup, resume, clear, or compaction, call `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" open` and rebuild only unresolved non-Backlog rows before Deliver. Do not load full `Done` history. Brainstorming and rephrasing remain read-only and create no task view.
+Eligible Simple tasks use the existing `Quick Fix` context and pending-review markers. This is a review classification, not another workflow. Eligibility requires an exact reversible result, settled boundaries, and one useful immediate proof. Use Normal or Complex when architecture, interfaces, migration, security, permissions, or other material choices remain unresolved.
 
-Keep every unresolved task in its own exact row. Parallel work changes status or plan prose, never task identity. `tasks.csv` remains authoritative.
+Lead implements and writes any necessary test. Verifier runs the immediate essential check. Once the artifact and required safety or usage instructions are ready, the user can test the result.
 
-## Task sizing
+Broader regression and documentation/interaction reviews may wait for a shared checkpoint. A task may be Done with that review explicitly pending; do not call it fully reviewed. At the next shared checkpoint, and before release, Verifier covers the pending range. Maintainer records `--review-through TASK-ID` only after Lead acceptance and only for a valid Done prefix. A failed shared review needs an owned correction.
 
-One ledger task represents one Engineer checkpoint. One ledger task equals one independently accepted behavior change under one owning contract boundary, one proof cluster, and one close decision. It may touch several files, tests, documentation, or migration steps only when all work is inseparable for that behavior.
-
-Require settled architecture, one coherent outcome, one independent bounded proof, and one accept-or-reject review. Keep implementation tests inside the task. Keep Maintainer and Verifier work attached unless independently deliverable. Keep one task resumable from repository truth and its ledger row after compaction.
-
-Split a task when a part can succeed, fail, defer, revert, release, or be accepted independently; belongs to another behavior or contract area; or needs another Architect decision. Merge pieces without independent value or proof.
-
-Keep a correction in the same task when it only satisfies unchanged acceptance. A new behavior needs a new task. Never size by elapsed time, file count, line count, or command count.
-
-## Task split and execution choice
-
-First size tasks for independent acceptance. Then ask whether broad work can become valid independent tasks.
-
-A valid split needs independent value, acceptance, proof, close or revert behavior, and a settled boundary. Each result must remain useful if another result is delayed. Otherwise, keep the work together. Do not split only to occupy a child or because files differ.
-
-Risk-benefit check:
-
-- Keep together without independent value or when coordination risk exceeds value.
-- Split serially when resources, dependencies, or savings block parallel work.
-- Split for parallel execution only when tasks have separate mutable resources, no unfinished dependency, and meaningful elapsed-time savings after coordination and verification.
-
-Choice stays in plan prose. Dependencies remain the durable ordering mechanism. No mode, score, tasks.csv column, persistent group, or automation.
-
-When at least two tasks are ready, Architect checks the next ready pair with the same risk-benefit rule. Parallelize only when the runtime resource gate also passes.
-
-Keep local implementation steps and correction handoffs transient.
+Never defer essential validation, a known documentation defect, or safety proof. Do not add mandatory tests for a purely cosmetic change when an immediate inspection supplies the necessary evidence.

@@ -13,8 +13,7 @@ from pathlib import Path
 from typing import Any
 
 
-DEFAULT_STATE = {"mode": "assisted", "fast_children": False}
-MODES = frozenset({"assisted", "solo"})
+DEFAULT_STATE = {"fast_children": False}
 SCAN_DEPTH = 3
 SCAN_EXCLUSIONS = frozenset(
     {".git", ".hg", ".svn", ".venv", "__pycache__", "build", "dist", "node_modules", "target", "vendor", "venv"}
@@ -100,7 +99,6 @@ def _startup_context(
         "check_helper": str(loaded_skill / "scripts/lean_check.py"),
         "state_helper": str(loaded_skill / "scripts/session_state.py"),
         "owner": owner,
-        "mode": str(state["mode"]),
         "tier": tier,
     }, False
 
@@ -118,11 +116,11 @@ def state_path(owner: str) -> Path:
 def _valid_state(value: Any) -> dict[str, Any] | None:
     if not isinstance(value, dict):
         return None
-    mode = value.get("mode")
     fast_children = value.get("fast_children")
-    if mode not in MODES or not isinstance(fast_children, bool):
+    if not isinstance(fast_children, bool):
         return None
-    return {"mode": mode, "fast_children": fast_children}
+    # Released state may contain mode; it never selects workflow behavior now.
+    return {"fast_children": fast_children}
 
 
 def load_state(owner: str) -> dict[str, Any]:
@@ -138,7 +136,7 @@ def load_state(owner: str) -> dict[str, Any]:
 def save_state(owner: str, state: dict[str, Any]) -> Path:
     valid = _valid_state(state)
     if valid is None:
-        raise ValueError("state must contain a valid mode and fast_children flag")
+        raise ValueError("state must contain a boolean fast_children flag")
     path = state_path(owner)
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary: Path | None = None
@@ -180,10 +178,13 @@ def _arguments() -> argparse.Namespace:
     parser.add_argument(
         "--context",
         action="store_true",
-        help="print exact startup repository, helper, owner, mode, and tier context",
+        help="print exact startup repository, helper, owner, and child-tier context",
     )
     parser.add_argument("--owner", help="eight-digit session owner")
-    parser.add_argument("--mode", choices=sorted(MODES))
+    parser.add_argument(
+        "--upgrade", action="store_true",
+        help="remove retired state fields while preserving the child-tier preference",
+    )
     parser.add_argument(
         "--fast-children",
         nargs="?",
@@ -229,21 +230,19 @@ def _run_cli(arguments: argparse.Namespace) -> int:
     if arguments.context:
         if (
             arguments.owner is not None
-            or arguments.mode is not None
+            or arguments.upgrade
             or arguments.fast_children is not None
         ):
             raise ValueError(
-                "--context cannot be combined with --owner, --mode, or child-tier options"
+                "--context cannot be combined with --owner, --upgrade, or child-tier options"
             )
         return _run_context()
     if arguments.owner is None:
         return 0
     try:
         state = load_state(arguments.owner)
-        if arguments.mode is None and arguments.fast_children is None:
-            raise ValueError("set --mode or --fast-children")
-        if arguments.mode is not None:
-            state["mode"] = arguments.mode
+        if not arguments.upgrade and arguments.fast_children is None:
+            raise ValueError("set --upgrade or --fast-children")
         if arguments.fast_children is not None:
             state["fast_children"] = arguments.fast_children
         path = save_state(arguments.owner, state)
@@ -282,29 +281,32 @@ def _run_hook() -> int:
             )
         return 0
 
-    print(
-        json.dumps(
-            {
-                "systemMessage": (
-                    f"Lean-SDLC Owner: {context['owner']}. "
-                    f"Repository root: {context['repository_root']}. "
-                    f"Skill root: {context['skill_root']}. "
-                    f"Tasks helper: {context['tasks_helper']}. "
-                    f"Check helper: {context['check_helper']}. "
-                    f"State helper: {context['state_helper']}. "
-                    f"Mode: {context['mode']}. Child tier: {context['tier']}. "
-                    "After lifecycle restoration, reload subagents.md before Deliver."
-                )
-            }
-        )
+    message = (
+        f"Lean-SDLC Owner: {context['owner']}. "
+        f"Repository root: {context['repository_root']}. "
+        f"Skill root: {context['skill_root']}. "
+        f"Tasks helper: {context['tasks_helper']}. "
+        f"Check helper: {context['check_helper']}. "
+        f"State helper: {context['state_helper']}. "
+        f"Child tier: {context['tier']}. "
+        "Read SKILL.md and only the instructions for the current request or role. "
+        "Discussion remains read-only. Recover current authority before resuming work."
     )
+    print(json.dumps({
+        "systemMessage": message,
+        "hookSpecificOutput": {
+            "hookEventName": "SessionStart", "additionalContext": message,
+        },
+    }))
     return 0
 
 
 def main() -> int:
     arguments = _arguments()
-    if arguments.context or arguments.owner is not None:
+    if arguments.context or arguments.owner is not None or arguments.upgrade or arguments.fast_children is not None:
         try:
+            if arguments.owner is None and not arguments.context:
+                raise ValueError("state changes require --owner")
             return _run_cli(arguments)
         except (OSError, ValueError) as exc:
             print(f"Lean-SDLC startup context failed: {exc}", file=sys.stderr)

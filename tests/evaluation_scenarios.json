@@ -1,14 +1,25 @@
 {
   "format": 1,
-  "required_categories": ["routing", "delegation", "proof", "lifecycle"],
+  "required_categories": [
+    "routing",
+    "delegation",
+    "proof",
+    "lifecycle"
+  ],
   "scenarios": [
     {
       "id": "routing-unresolved-decision",
       "category": "routing",
       "prompt": "Use $lean-sdlc. A product acceptance decision is unresolved, so implementation work cannot proceed until the decision is settled. Return only JSON fields: route, writes.",
       "assertions": [
-        {"path": "route", "equals": "Architect"},
-        {"path": "writes", "equals": false}
+        {
+          "path": "route",
+          "equals": "Lead"
+        },
+        {
+          "path": "writes",
+          "equals": false
+        }
       ]
     },
     {
@@ -16,8 +27,14 @@
       "category": "routing",
       "prompt": "Use $lean-sdlc. Two implementation tasks require writes to the same mutable file at the same time. Return only JSON fields: execution, shared_resource.",
       "assertions": [
-        {"path": "execution", "equals": "serial"},
-        {"path": "shared_resource", "equals": true}
+        {
+          "path": "execution",
+          "equals": "serial"
+        },
+        {
+          "path": "shared_resource",
+          "equals": true
+        }
       ]
     },
     {
@@ -25,9 +42,18 @@
       "category": "routing",
       "prompt": "Use $lean-sdlc. First size a broad task for independent acceptance. It has no valid independent split, or coordination risk exceeds its value. Return only JSON fields: first_check, outcome, reason.",
       "assertions": [
-        {"path": "first_check", "equals": "independent acceptance"},
-        {"path": "outcome", "equals": "keep together"},
-        {"path": "reason", "equals": "no valid independent split or coordination risk exceeds value"}
+        {
+          "path": "first_check",
+          "equals": "independent acceptance"
+        },
+        {
+          "path": "outcome",
+          "equals": "keep together"
+        },
+        {
+          "path": "reason",
+          "equals": "no valid independent split or coordination risk exceeds value"
+        }
       ]
     },
     {
@@ -35,27 +61,51 @@
       "category": "routing",
       "prompt": "Use $lean-sdlc. A broad task has valid independent tasks, but shared resources or low elapsed-time savings block parallel execution. Return only JSON fields: outcome, reason.",
       "assertions": [
-        {"path": "outcome", "equals": "split serially"},
-        {"path": "reason", "equals": "independent acceptance exists, but shared resources or low savings require serial execution"}
+        {
+          "path": "outcome",
+          "equals": "split serially"
+        },
+        {
+          "path": "reason",
+          "equals": "independent acceptance exists, but shared resources or low savings require serial execution"
+        }
       ]
     },
     {
       "id": "planning-split-parallel",
       "category": "delegation",
-      "prompt": "Use $lean-sdlc. A broad task has valid independent tasks and passes the parallel risk-benefit check. Return only JSON fields: outcome, safety, savings.",
+      "prompt": "Use $lean-sdlc. Two implementation outcomes are independent. Lead writes code while a support role can check a separate stable scope. Return only JSON fields: implementation, support_overlap, safety.",
       "assertions": [
-        {"path": "outcome", "equals": "split for parallel execution"},
-        {"path": "safety", "equals": ["separate mutable resources", "no unfinished dependency"]},
-        {"path": "savings", "equals": "meaningful elapsed-time savings after coordination and verification"}
+        {
+          "path": "implementation",
+          "equals": "Lead serially"
+        },
+        {
+          "path": "support_overlap",
+          "equals": "independent stable inputs only"
+        },
+        {
+          "path": "safety",
+          "equals": [
+            "separate mutable resources",
+            "no unfinished dependency"
+          ]
+        }
       ]
     },
     {
       "id": "runtime-parallel-revalidation",
       "category": "delegation",
-      "prompt": "Use $lean-sdlc. A parallel Engineer spawn is ready after planning, but runtime state may have changed. Return only JSON fields: before_spawn, fallback.",
+      "prompt": "Use $lean-sdlc. Lead wants to continue work while Verifier tests a completed change. Runtime resources may have changed. Return only JSON fields: before_overlap, fallback.",
       "assertions": [
-        {"path": "before_spawn", "equals": "revalidate safety immediately"},
-        {"path": "fallback", "equals": "serial execution"}
+        {
+          "path": "before_overlap",
+          "equals": "revalidate stable inputs"
+        },
+        {
+          "path": "fallback",
+          "equals": "serialize affected work"
+        }
       ]
     },
     {
@@ -63,9 +113,18 @@
       "category": "delegation",
       "prompt": "Use $lean-sdlc. A read-only inquiry compares multiple platforms and versions and crosses a shared boundary. Return only JSON fields: role, coverage.",
       "assertions": [
-        {"path": "role", "equals": "Scout"},
-        {"path": "coverage", "contains": "shared core"},
-        {"path": "coverage", "contains": "variants"}
+        {
+          "path": "role",
+          "equals": "Scout"
+        },
+        {
+          "path": "coverage",
+          "contains": "shared core"
+        },
+        {
+          "path": "coverage",
+          "contains": "variants"
+        }
       ]
     },
     {
@@ -73,8 +132,14 @@
       "category": "delegation",
       "prompt": "Use $lean-sdlc. The implementation contract, interfaces, acceptance, proof, and paths are settled, with no decision left open. Return only JSON fields: role, decision.",
       "assertions": [
-        {"path": "role", "equals": "Engineer"},
-        {"path": "decision", "equals": "settled"}
+        {
+          "path": "role",
+          "equals": "Lead"
+        },
+        {
+          "path": "decision",
+          "equals": "settled"
+        }
       ]
     },
     {
@@ -82,8 +147,14 @@
       "category": "delegation",
       "prompt": "Use $lean-sdlc. An accepted implementation now requires synchronization of shared documentation. Return only JSON fields: role, stage.",
       "assertions": [
-        {"path": "role", "equals": "Maintainer"},
-        {"path": "stage", "equals": "accepted implementation"}
+        {
+          "path": "role",
+          "equals": "Maintainer"
+        },
+        {
+          "path": "stage",
+          "equals": "accepted implementation"
+        }
       ]
     },
     {
@@ -91,8 +162,14 @@
       "category": "delegation",
       "prompt": "Use $lean-sdlc. A checkpoint is ready for independent proof after implementation has stopped changing. Return only JSON fields: role, checkpoint.",
       "assertions": [
-        {"path": "role", "equals": "Verifier"},
-        {"path": "checkpoint", "equals": true}
+        {
+          "path": "role",
+          "equals": "Verifier"
+        },
+        {
+          "path": "checkpoint",
+          "equals": true
+        }
       ]
     },
     {
@@ -100,33 +177,237 @@
       "category": "proof",
       "prompt": "Use $lean-sdlc. A coherent implementation checkpoint changed behavior and affects an existing boundary. Return only JSON fields: targeted, acceptance, regression.",
       "assertions": [
-        {"path": "targeted", "equals": "changed behavior"},
-        {"path": "acceptance", "equals": "observable completion"},
-        {"path": "regression", "equals": "affected boundary"}
+        {
+          "path": "targeted",
+          "equals": "changed behavior"
+        },
+        {
+          "path": "acceptance",
+          "equals": "observable completion"
+        },
+        {
+          "path": "regression",
+          "equals": "affected boundary"
+        }
       ]
     },
     {
       "id": "lifecycle-six-lanes",
       "category": "lifecycle",
-      "prompt": "Use $lean-sdlc. A work item needs intent shaping, a technical decision, a plan, implementation, and proof, with no failure cause currently known. Return only JSON fields: lanes, diagnose, closeout, visible_plan.",
+      "prompt": "Use $lean-sdlc. The user asks for an implementation plan but does not authorize implementation. Return only JSON fields: plan_fields, create_tasks, writes, next_action.",
       "assertions": [
-        {"path": "lanes", "equals": ["Shape", "Decide", "Plan", "Diagnose", "Deliver", "Verify"]},
-        {"path": "diagnose", "equals": "conditional"},
-        {"path": "closeout", "equals": "Verify"},
-        {"path": "visible_plan", "equals": true}
+        {
+          "path": "plan_fields",
+          "equals": [
+            "Outcome",
+            "Work",
+            "Acceptance",
+            "Checks",
+            "Limits"
+          ]
+        },
+        {
+          "path": "create_tasks",
+          "equals": false
+        },
+        {
+          "path": "writes",
+          "equals": false
+        },
+        {
+          "path": "next_action",
+          "equals": "stop after the plan"
+        }
       ]
     },
     {
       "id": "child-communication-routing",
       "category": "lifecycle",
-      "prompt": "Use $lean-sdlc. A child performs routine work, encounters one of the listed action-required events, and completes its task. Return only JSON fields: routine_progress, routine_parent_message, action_required_events, action_required_route, completion, architect_echo.",
+      "prompt": "Use $lean-sdlc. A support agent makes ordinary progress, detects a failed check, and later completes its assignment. Return only JSON fields: progress, failure_route, completion, lead_echo.",
       "assertions": [
-        {"path": "routine_progress", "equals": "child thread"},
-        {"path": "routine_parent_message", "equals": false},
-        {"path": "action_required_events", "equals": ["blocker", "collision", "scope change", "proof mismatch", "decision"]},
-        {"path": "action_required_route", "equals": "Architect immediately"},
-        {"path": "completion", "equals": "one final return"},
-        {"path": "architect_echo", "equals": false}
+        {
+          "path": "progress",
+          "equals": "meaningful changes only"
+        },
+        {
+          "path": "failure_route",
+          "equals": "Lead immediately"
+        },
+        {
+          "path": "completion",
+          "equals": "one final return"
+        },
+        {
+          "path": "lead_echo",
+          "equals": false
+        }
+      ]
+    },
+    {
+      "id": "conversation-no-write",
+      "category": "routing",
+      "prompt": "Use $lean-sdlc. I want to brainstorm an idea, not start a project yet. Return only JSON fields: conversation, task_creation, helper_discovery.",
+      "assertions": [
+        {
+          "path": "conversation",
+          "equals": "natural exploration"
+        },
+        {
+          "path": "task_creation",
+          "equals": false
+        },
+        {
+          "path": "helper_discovery",
+          "equals": false
+        }
+      ]
+    },
+    {
+      "id": "plan-and-implement",
+      "category": "routing",
+      "prompt": "Use $lean-sdlc. Plan and implement the bounded change I described; all relevant choices are settled. Return only JSON fields: visible_plan, extra_approval, implementer.",
+      "assertions": [
+        {
+          "path": "visible_plan",
+          "equals": true
+        },
+        {
+          "path": "extra_approval",
+          "equals": false
+        },
+        {
+          "path": "implementer",
+          "equals": "Lead"
+        }
+      ]
+    },
+    {
+      "id": "maintainer-ledger",
+      "category": "delegation",
+      "prompt": "Use $lean-sdlc. A task needs an authorized ledger update. Return only JSON fields: writer, owner, acceptance_decision.",
+      "assertions": [
+        {
+          "path": "writer",
+          "equals": "Maintainer"
+        },
+        {
+          "path": "owner",
+          "equals": "Lead-assigned owner"
+        },
+        {
+          "path": "acceptance_decision",
+          "equals": "Lead"
+        }
+      ]
+    },
+    {
+      "id": "simple-deferred-review",
+      "category": "proof",
+      "prompt": "Use $lean-sdlc. An eligible Simple task has passed its essential check and has no missing safety or usage instructions. Broader review is pending. Return only JSON fields: user_testing, broad_review, review_marker, test_runner.",
+      "assertions": [
+        {
+          "path": "user_testing",
+          "equals": "ready"
+        },
+        {
+          "path": "broad_review",
+          "equals": "deferred to shared checkpoint"
+        },
+        {
+          "path": "review_marker",
+          "equals": "preserve pending obligation"
+        },
+        {
+          "path": "test_runner",
+          "equals": "Verifier"
+        }
+      ]
+    },
+    {
+      "id": "changed-proof-input",
+      "category": "proof",
+      "prompt": "Use $lean-sdlc. Source files are unchanged, but a configuration input changed during verification. Return only JSON fields: proof_valid, next_action.",
+      "assertions": [
+        {
+          "path": "proof_valid",
+          "equals": false
+        },
+        {
+          "path": "next_action",
+          "equals": "recheck affected proof on stable inputs"
+        }
+      ]
+    },
+    {
+      "id": "documentation-trigger",
+      "category": "delegation",
+      "prompt": "Use $lean-sdlc. A change introduces a shared external interface, but no document owns that contract. Return only JSON fields: assessment_owner, optional_document, decision_owner.",
+      "assertions": [
+        {
+          "path": "assessment_owner",
+          "equals": "Maintainer"
+        },
+        {
+          "path": "optional_document",
+          "equals": "Interface"
+        },
+        {
+          "path": "decision_owner",
+          "equals": "Lead"
+        }
+      ]
+    },
+    {
+      "id": "routine-discovery-removed",
+      "category": "lifecycle",
+      "prompt": "Use $lean-sdlc. A recorded operation succeeded again. The user did not request a reusable script. Return only JSON fields: create_script, suggest_automatic_routine, replay_existing.",
+      "assertions": [
+        {
+          "path": "create_script",
+          "equals": false
+        },
+        {
+          "path": "suggest_automatic_routine",
+          "equals": false
+        },
+        {
+          "path": "replay_existing",
+          "equals": true
+        }
+      ]
+    },
+    {
+      "id": "cancel-command",
+      "category": "lifecycle",
+      "prompt": "Use $lean-sdlc. An agent was interrupted while its underlying command may still run. Return only JSON fields: cancellation_confirmed, next_action, late_result_authority.",
+      "assertions": [
+        {
+          "path": "cancellation_confirmed",
+          "equals": false
+        },
+        {
+          "path": "next_action",
+          "equals": "confirm underlying command termination"
+        },
+        {
+          "path": "late_result_authority",
+          "equals": false
+        }
+      ]
+    },
+    {
+      "id": "maintainer-replacement",
+      "category": "lifecycle",
+      "prompt": "Use $lean-sdlc. A new Maintainer replaces the previous agent after a documentation review. Return only JSON fields: full_review, review_storage.",
+      "assertions": [
+        {
+          "path": "full_review",
+          "equals": true
+        },
+        {
+          "path": "review_storage",
+          "equals": "existing task proof or evidence"
+        }
       ]
     }
   ]

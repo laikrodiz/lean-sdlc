@@ -10,76 +10,67 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 
 ## Scope
 
-- Shape, Decide, Plan, Diagnose, Deliver, and Verify lanes.
-- One canonical lifecycle from intent through owned work, proof, and closeout.
-- Executable assertions over recorded behavioral observations, with optional live fresh sessions.
-- One portable release gate for local and CI checks.
-- One consistent task, direct-path, and proof contract.
-- Visible ambiguous repository discovery and durability warnings.
-- One Git-free, task-scoped checkpoint helper.
-- A complete `why -> what -> how -> proof` intent gate before changes.
-- Three required repository files: `AGENTS.md`, `docs/PROJECT.md`, and root `tasks.csv`.
-- An atomic, human-readable task ledger with one task per independently accepted repository state. Dependencies must be `Done` before a task starts.
-- Task planning first preserves independent acceptance boundaries, then classifies broad work as together, serial, or parallel. Runtime revalidates safety before parallel Engineer spawn.
-- During implementation, unresolved ledger task IDs and titles project into Codex's plan view. Brainstorming and rephrasing remain read-only and create no task view.
-- Architect ownership of intent, architecture, interfaces, task boundaries, acceptance, integration, evidence, and closeout.
-- A visible pre-handoff design brief with bounded child decisions and no exposed chain-of-thought.
-- Four standard roles with stage-aware routing: Engineer for approved implementation, Maintainer for shared documents and recorded operations, Verifier for independent checks, and Scout for map-before-read bounded cited evidence.
-- One role-routing precedence chain, layered targeted, acceptance, and regression proof, and bounded full-suite use.
-- Assisted mode as the default and Solo mode as the lead-only alternative. Both modes use the same task and proof rules.
-- A running child lifecycle state remains available despite wait expiry or silence. The Engineer visibly restates its understanding and completes routine targeted proof.
-- Routine child progress, including the start restatement, stays in the child thread. Explicit parent messages are only for events that require immediate Architect action. Completion produces one final return. The Architect does not repeat unchanged child facts.
-- One preauthorized read-only Verifier may be nested for a qualifying single task. Combined checkpoints use one Architect-started Verifier. The Architect gives one final visible alignment signoff. Verification is risk-based and not duplicated.
-- Conservative parallel work for separate scopes and resources. Shared files, changing interfaces, migrations, generated output, and external targets remain serial. Child work stays in one shared worktree.
-- Substantial external-tool work keeps decisions with the Architect. The matching role handles bounded discovery, approved mutation, repeated operations, or independent checking. One agent owns each mutable external target.
-- Bounded read-only evidence work stays limited to its defined question, groups independent discovery, and preserves complete authoritative reads.
-- Repeated repository mechanics can yield transient automation candidates without adding new durable state. Retain a maintained deterministic command only when later reuse justifies it.
-- Readable checkpoint reports with exact machine proof retained for verification. Integration, documentation synchronization, verification, operations, and closeout run serially.
-- Inline Quick Fix classification during Plan for trivial settled edits, with immediate narrow proof and deferred shared review.
-- `docs/PROJECT.md` is the only mandatory shared project document.
-- Optional document families use concrete triggers and semantic sizing.
-- Each numbered family gets a small `INDEX.md` with its first document.
-- The Maintainer owns shared narrative truth and indexes.
-- The Architect approves document meaning and splits.
-- Root `archive/` requires an explicit user request and remains inert.
+- One workflow with no mode selector and no Engineer route.
+- Natural conversation, brainstorming, shaping, investigation, and diagnosis remain read-only until explicit implementation authority exists.
+- Plan-only requests show a five-field plan and stop. Plan-and-implement requests continue within their authority.
+- One canonical lifecycle from intent through owned work, proof, documentation, operations, and closeout.
+- Five visible plan fields: Outcome, Work, Acceptance, Checks, and Limits.
+- Simple, Normal, and Complex task grades remain transient in the visible plan and handoffs. Grades do not add ledger columns.
+- Root tasks.csv remains the only durable task plan. The ledger keeps atomic outcomes, owners, dependencies, acceptance, proof, and evidence.
+- Backlog remains parked work. Direct user authority is required to add or promote it.
+- Lead owns intent, architecture, scope, permissions, task boundaries, acceptance, integration, and final decisions.
+- Lead implements code and writes code-local tests. Scout performs bounded read-only evidence work. Maintainer performs routine ledger writes, shared-document work, and authorized recorded operations. Verifier runs all tests and independent proof.
+- Support roles cannot assign peers, widen scope, change decisions, or modify tracked source outside their boundary.
+- Independent stable scopes may overlap only with stable inputs, separate mutable resources, no unfinished dependency, and meaningful time savings. Shared interfaces, schemas, manifests, generated output, and external targets remain serial.
+- Cancellation checks the underlying process or command. Uncertain termination keeps the target blocked.
+- Required repository files are AGENTS.md, docs/PROJECT.md, and root tasks.csv.
+- Optional document families use concrete triggers and semantic sizing. Each numbered family gets INDEX.md with its first document.
+- docs/PROJECT.md is the only mandatory shared project document. The Maintainer owns shared narrative truth and indexes. The Lead approves meaning and document splits.
+- A first build, package, deployment, flash, runtime, or smoke procedure enters docs/OPERATIONS.md only after a guided success. No new required document family is implied.
+- Existing recorded procedures replay exact commands against explicit targets and accepted source identity.
+- Automatic routine discovery and automatic script-creation suggestions are excluded. A new reusable script requires an explicit user request.
+- Upgrade preserves task IDs, owners, evidence, documents, custom instructions, valid preferences, supported earlier ledger conversions, and stopped work. Conflicting repository state stops without silent selection. No field selects a workflow.
+- The ledger remains authoritative. Mirror unresolved task IDs and titles in the native plan view when available. Keep checkpoint values local and report equality or mismatch without exposing full fingerprints.
+- Release validation covers package structure, version consistency, portable checks, exact remote identity, installed/source equality, selected-repository scope, structural integrity, and final ledger reconciliation.
 
 ## Constraints
 
-- Keep durable planning in root `tasks.csv`. Use bundled task commands for ledger changes.
-- Keep discussion read-only until the user gives implementation authority.
-- Keep shared truth in its owning document. Keep code-local truth with the Engineer.
+- Keep discussion and planning read-only until the user gives implementation authority.
+- Use the packaged tasks.py helper for every ledger mutation. Maintainer performs routine ledger writes with the Lead owner.
+- Require an owned In Progress task and a successful before-write gate before non-control repository writes.
+- Keep one agent as the writer for each mutable path or external target.
+- Lead owns implementation and test code. Verifier owns test execution. Maintainer does not run tests.
 - Use shell and Python standard library only. Keep repository state readable and recoverable.
-- Preserve task ownership, dependency order, acceptance, and proof across resume and compaction.
+- Preserve existing project documents, custom rules, task IDs, ownership, evidence, valid preferences, and unrelated stopped work.
+- Do not infer commit, push, publication, deployment, or reusable-script authority. Use explicit or valid standing authority for the exact target.
+- Do not create new optional documents without their concrete trigger. Do not create a release operation record before guided release checks produce exact successful evidence.
+- Normal source replacement relies on Git. Root archive/ requires an explicit user request and remains inert.
 
 ## Deferred
 
 - Hosted task services or issue-tracker replacement.
-- Mandatory feature, decision, architecture, state-machine, interface, data, operations, security, glossary, or verification documents.
+- New required document families.
+- Optional feature, decision, architecture, state-machine, interface, data, security, glossary, verification, and operation documents until their triggers exist.
 - A repository-wide documentation archive policy.
-- Dashboards, telemetry, cache accounting, and project-specific operational recipes.
+- Dashboards, telemetry, cache accounting, and project-specific operational recipes beyond accepted recorded procedures.
 
 ## Success
 
 - Users can invoke Lean-SDLC explicitly or through repository rules.
-- A new repository can start with the three required files and a root ledger.
-- The plan view mirrors each unresolved ledger task ID and title during implementation. Brainstorming creates no task view.
-- Tasks remain atomic, owner-aware, dependency-valid, and cycle-free.
-- Broad work is split only when each result remains independently acceptable; parallel execution also needs a favorable runtime risk-benefit check.
-- The Architect retains decisions. Delegated external-tool work has one mutable-target owner and returns bounded evidence.
-- Routine progress stays in child threads. Action-required events reach the Architect immediately. Completion produces one final return without duplicate Architect commentary.
-- Read-only evidence work maps the evidence space before bounded, question-specific reads. It returns evidence without mutation authority and preserves authoritative reads.
-- Transient automation candidates add no new durable state. A maintained deterministic command needs a later reuse case and maintenance evidence.
-- Release checks use one portable gate in local and CI contexts.
-- Recorded observations use deterministic assertions; optional live sessions collect new observations.
-- Task, direct-path, and proof inputs follow one consistent contract.
-- Ambiguous repository discovery is visible, and durability warnings identify risks before they persist.
-- Task-scoped checkpoints can run without Git access.
-- Eligible Quick Fixes receive narrow proof immediately and broad review in a later Standard or final batch checkpoint.
-- Checkpoint reports stay readable, exact machine proof remains available, and serial closeout uses repository truth.
+- Conversation, investigation, and plan-only requests do not create tasks or change repository files.
+- Plan-and-implement work proceeds within explicit authority without redundant approval.
+- Tasks remain atomic, owner-aware, dependency-valid, and cycle-free. Exact task state remains visible.
+- Lead retains decisions. Scout returns bounded evidence. Maintainer records accepted ledger, document, and operation changes. Verifier runs the required tests and proof.
+- Original user requirements, task acceptance, affected regression risk, and documentation parity are checked before closure.
+- Documentation triggers, semantic sizing, family templates, and index navigation remain valid.
+- Recorded operations replay only with valid authority, explicit targets, accepted source identity, safe recovery, and redacted output.
+- Supported upgrades preserve ledger history, custom rules, valid preferences, and stopped work.
+- Release exit evidence includes portable release checks, validators, exact remote commit and tag on origin main, byte-equal installed and source packages, selected-repository isolation, structural validation, and final ledger reconciliation.
+- No completion claim relies only on a dispatched action, saved response, structural assertion, or unexecuted command.
 
 ## Current promise
 
 - Stage: Evolution
-- Version: 1.24.3
-- Version goal: Task-authorized, atomic repair of missing, invalid, or stale managed startup blocks that preserves project rules and file permissions; normal initialization remains create-only.
-- Exit evidence: Tests, behavioral evaluation, skill and plugin validation, local installation, portable release-gate checks, accepted checkpoints, repository checks, tagged commit, and successful push.
+- Version: 1.28.0
+- Version goal: Deliver one task-authorized workflow with Lead-owned implementation, bounded Scout, Maintainer, and Verifier support, explicit authority separation, preserved project state, and validated release and installation behavior.
+- Exit evidence required: Actual authority and interruption cases; focused ledger transactions; full Verifier test execution; changed-input and failure handling; documentation trigger and parity review; controlled operation and cancellation cases; upgrade preservation evidence; portable release checks; exact remote identity; installed/source comparison; selected-repository structural validation; and final ledger reconciliation.

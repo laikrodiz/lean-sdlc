@@ -22,7 +22,9 @@ from task_ledger import (
     thread_owner,
     write_ledger,
 )
-from startup_contract import StartupContractError, read_template_block, repair_text
+from startup_contract import (
+    StartupContractError, read_template_block, repair_text, template_path, upgrade_text,
+)
 
 
 PROJECT = """# Project
@@ -76,12 +78,17 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Repository root (default: current directory)",
     )
-    parser.add_argument(
+    action = parser.add_mutually_exclusive_group()
+    action.add_argument(
         "--repair-startup",
         "--repair",
         dest="repair_startup",
         action="store_true",
         help="Repair only the managed AGENTS.md startup block",
+    )
+    action.add_argument(
+        "--upgrade-contract", action="store_true",
+        help="Upgrade the recognized v1.24.3 contract while preserving custom rules",
     )
     parser.add_argument("--task", help="Owned In Progress task authorizing repair")
     parser.add_argument("--owner", help="Owner of the authorizing task")
@@ -119,8 +126,9 @@ def update_gitignore(root: Path, missing: list[str]) -> str:
     return "updated" if existed else "created"
 
 
-def atomic_replace_text(path: Path, content: str) -> None:
-    mode = path.stat().st_mode & 0o777 if path.exists() else 0o644
+def atomic_replace_text(path: Path, content: str, *, mode: int | None = None) -> None:
+    if mode is None:
+        mode = path.stat().st_mode & 0o777 if path.exists() else 0o644
     descriptor, temporary_name = tempfile.mkstemp(
         prefix=f".{path.name}.",
         dir=path.parent,
@@ -204,8 +212,9 @@ def initialize(root: Path) -> int:
 
 def authorize_repair(root: Path, args: argparse.Namespace) -> None:
     if not args.task or not args.owner:
+        action = "--upgrade-contract" if args.upgrade_contract else "--repair-startup"
         raise TaskError(
-            "--repair-startup requires --task TASK-ID and --owner OWNER"
+            f"{action} requires --task TASK-ID and --owner OWNER"
         )
 
     path = task_path(root)
@@ -251,16 +260,45 @@ def repair_startup(root: Path, args: argparse.Namespace) -> int:
     return 0
 
 
+def upgrade_contract(root: Path, args: argparse.Namespace) -> int:
+    authorize_repair(root, args)
+    target = root / "AGENTS.md"
+    if target.is_symlink():
+        raise TaskError("AGENTS.md is a symbolic link; review its target before upgrading")
+    try:
+        if target.exists():
+            with target.open(encoding="utf-8", newline="") as handle:
+                current = handle.read()
+        else:
+            current = ""
+        replacement = template_path().read_text(encoding="utf-8")
+        upgraded = upgrade_text(current, replacement)
+        if upgraded == current:
+            print("kept    AGENTS.md")
+            return 0
+        if target.exists():
+            recovery = Path(tempfile.mkdtemp(prefix="lean-sdlc-upgrade-")) / "AGENTS.md"
+            atomic_replace_text(recovery, current, mode=target.stat().st_mode & 0o777)
+            print(f"recovery copy: {recovery}")
+        atomic_replace_text(target, upgraded)
+    except (OSError, StartupContractError) as exc:
+        raise TaskError(str(exc)) from exc
+    print("upgraded AGENTS.md; custom rules and project data preserved")
+    return 0
+
+
 def main() -> int:
     args = parse_args()
     root = Path(args.repository).resolve()
     if not root.is_dir():
         raise SystemExit(f"Repository directory does not exist: {root}")
-    if not args.repair_startup and (args.task or args.owner):
-        raise SystemExit("--task and --owner require --repair-startup")
+    if not (args.repair_startup or args.upgrade_contract) and (args.task or args.owner):
+        raise SystemExit("--task and --owner require --repair-startup or --upgrade-contract")
 
     try:
         with ledger_lock(root):
+            if args.upgrade_contract:
+                return upgrade_contract(root, args)
             if args.repair_startup:
                 return repair_startup(root, args)
             return initialize(root)

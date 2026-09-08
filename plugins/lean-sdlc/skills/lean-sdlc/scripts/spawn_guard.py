@@ -39,7 +39,7 @@ GREEK_LABELS = (
     "psi",
     "omega",
 )
-ROLE_PREFIXES = frozenset({"engineer", "maintainer", "verifier", "scout"})
+ROLE_PREFIXES = frozenset({"maintainer", "verifier", "scout"})
 LUNA_MODEL = "gpt-5.6-luna"
 LUNA_REASONING = "max"
 TERRA_MODEL = "gpt-5.6-terra"
@@ -67,10 +67,10 @@ def _deny(reason: str) -> None:
 
 def _task_name_error(task_name: Any) -> str | None:
     if not isinstance(task_name, str):
-        return "Set task_name to a role-prefixed Greek label, for example engineer_beta."
+        return "Set task_name to a role-prefixed Greek label, for example scout_beta."
     match = LABEL_PATTERN.fullmatch(task_name)
     if match is None:
-        return "Set task_name to a role-prefixed Greek label, for example engineer_beta."
+        return "Set task_name to a role-prefixed Greek label, for example scout_beta."
     return None
 
 
@@ -94,6 +94,8 @@ def _validate_tool_input(tool_input: Any, fast_children: bool) -> str | None:
         return error
 
     task_prefix = LABEL_PATTERN.fullmatch(task_name).group("prefix").casefold()
+    if task_prefix == "engineer":
+        return "Lead owns implementation. Use Scout, Maintainer, or Verifier for support."
     if task_prefix not in ROLE_PREFIXES:
         return None
 
@@ -146,9 +148,6 @@ def main() -> int:
 
     owner = owner_id(session_id)
     state = load_state(owner)
-    if state["mode"] == "solo":
-        _deny("Solo mode is lead-only; restore Assisted mode before spawning an Agent.")
-        return 0
     error = _validate_tool_input(tool_input, state["fast_children"])
     if error is not None:
         _deny(error)

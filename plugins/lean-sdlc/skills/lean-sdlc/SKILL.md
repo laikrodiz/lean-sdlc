@@ -1,78 +1,28 @@
 ---
 name: lean-sdlc
-description: Run Lean-SDLC when the user explicitly invokes Lean-SDLC or `$lean-sdlc`, or when repository AGENTS.md requires Lean-SDLC. Require explicit implementation authority, the visible Plan contract, an owned task before writes, and evidence-based completion. Do not invoke implicitly for read-only work outside a Lean-SDLC repository.
+description: Use Lean-SDLC when explicitly requested or required by repository instructions. Support conversation and planning without writes; implement authorized work through owned tasks, focused support roles, and evidence-based completion.
 ---
 
 # Lean-SDLC
 
-Keep intent, work, implementation, and proof coherent with the smallest useful process.
+Use one workflow. Lead implements; Scout researches; Maintainer manages tasks, shared documentation, and authorized recorded operations; Verifier runs tests.
 
-At lifecycle startup, use exact startup fields from the lifecycle system message.
-The system message supplies `Repository root`, `Skill root`, `Tasks helper`, `Check helper`, `State helper`, `Owner`, `Mode`, and `Child tier`.
-The `Skill root` is the parent of the loaded `SKILL.md`.
-If any field is absent, run `python3 "<directory containing the loaded SKILL.md>/scripts/session_state.py" --context`.
-Use the existing `CODEX_SESSION_ID`.
-Never set, replace, or invent `CODEX_SESSION_ID`.
-The fallback fails when `CODEX_SESSION_ID` is absent.
-Only this fallback returns structured JSON with snake_case fields: `repository_root`, `skill_root`, `tasks_helper`, `check_helper`, `state_helper`, `owner`, `mode`, and `tier`.
-Use returned fields, paths, and owner exactly.
-Never reconstruct paths, shorten cache paths, search for helpers, or use placeholder owners.
-If the checker reports a missing, invalid, or stale managed startup block, run `python3 "<skill-root>/scripts/init_repo.py" "<repo-root>" --repair-startup --task TASK-ID --owner OWNER` after task start and before the general before-write gate. Treat this repair as a control transaction; it changes only that block, and normal initialization remains create-only.
+Interpret the request before loading execution details. Conversation, brainstorming, diagnosis, and planning do not imply implementation authority. Read-only requests create no tasks or project files.
 
-- `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" <command>` for ledger commands.
-- `python3 "<skill-root>/scripts/lean_check.py" "<repo-root>" <options>` for repository checks.
-- `python3 "<skill-root>/scripts/session_state.py" --owner OWNER <options>` for session state.
+## Read only what applies
 
-Children receive task facts, assigned paths, acceptance, proof, and both roots. Children do not locate or run ledger, checker, or session-state helpers.
+- Conversation, brainstorming, shaping, or read-only investigation: [conversation](references/conversation.md).
+- Planning: [plan](references/plan.md). A plan-only request stops after the plan.
+- Authorized execution: [common](protocols/common.md), [Lead](protocols/lead.md), and [plan](references/plan.md).
+- Assigned support: [common](protocols/common.md) and only [Scout](protocols/scout.md), [Maintainer](protocols/maintainer.md), or [Verifier](protocols/verifier.md).
+- Ledger operations, initialization, or upgrade: [ledger](references/ledger.md).
+- Shared-document work: [documentation](references/documentation.md).
+- Recorded delivery operations: [operations](references/operations.md).
 
-## Start and route
+Read selected files completely. Do not follow every link. Reuse unchanged instructions already loaded. After compaction, reload this entry and the applicable role or request instructions, then recover current authority and unresolved work.
 
-1. Read `AGENTS.md`, `docs/PROJECT.md`, and current work with `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" open`. Use `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" show TASK-ID` for one task and dependencies. Follow [Plan view projection](references/plan.md).
-2. Assisted mode is the default. Restore owner, mode, and tier after lifecycle events. Missing state restores Assisted with Standard children. Fast children require opt-in. Reload [subagents.md](references/subagents.md) before Deliver.
-3. Require explicit implementation authority before task creation or changes. Discussion and proposals remain read-only. If ambiguous, remain read-only.
-4. Apply [Shape](references/shape.md), then [Plan](references/plan.md), before task creation. Confirm `why -> what -> how -> proof`; show a concise plan; define acceptance and proof.
-5. Read [repository-contracts.md](references/repository-contracts.md) only for initialization, legacy migration, or document ownership. It is also canonical for optional-document triggers, semantic sizing, indexes, and source-archive boundaries.
-6. Read [subagents.md](references/subagents.md) before delegation. Solo planning does not load child policy. Assisted delegation loads it before child use.
-7. During Plan, classify eligible trivial settled edits inline as Quick Fix; see [Plan](references/plan.md) for eligibility. Record Context `Quick Fix`.
+For an authorized new project, follow [ledger initialization](references/ledger.md#initialization-and-upgrade) before requesting startup context.
 
-Backlog is parked work. `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" backlog` is its compact view. Only a direct user request may add or promote Backlog work. An Architect may propose placement only for a substantial reason and must wait for approval. Backlog never authorizes planning or implementation. Before new Standard work, read the compact view and check duplicates, broader items, or related ideas. Do not load Backlog on startup, resume, brainstorming, or Quick Fix work.
+For execution, use exact repository, skill, helper, owner, and child-tier fields from startup context. If missing, run `python3 "<directory containing this SKILL.md>/scripts/session_state.py" --context` from the selected repository. Preserve `CODEX_SESSION_ID`; never invent paths or owners. Conversation needs no helper discovery.
 
-| Lane | Use when |
-| --- | --- |
-| Shape | Problem, user, behavior, scope, stage, or promise is unclear. |
-| Decide | Stable intent needs a durable technical choice or boundary. |
-| Plan | Approved work needs a task, dependency, or owner. |
-| Diagnose | A failure exists and its cause or boundary is uncertain. |
-| Deliver | Cause, scope, acceptance, proof, and owned task are ready. |
-| Verify | Completion is claimed, truth conflicts, or a task may close. |
-
-Read only the active lane reference: [shape.md](references/shape.md), [decide.md](references/decide.md), [diagnose.md](references/diagnose.md), [deliver.md](references/deliver.md), [verify.md](references/verify.md), or [operations.md](references/operations.md).
-
-## Canonical lifecycle
-
-Start at the earliest unresolved lane and skip settled lanes. Use the six lanes in this order:
-
-1. Shape confirms authority, Why, What, constraints, exclusions, and any material ambiguity.
-2. Decide settles technical choices that need durable agreement.
-3. Plan shows the visible plan, owned task, observable acceptance, and proof.
-4. Diagnose runs only when the cause or fault boundary is unknown, then returns to Deliver.
-5. Deliver claims the task, runs the before-write gate, posts the pre-handoff design brief, and routes work by stage-aware precedence.
-6. Verify checks observable acceptance and affected-boundary regression risk, reconciles scope, interfaces, invariants, and documentation, and closes the task.
-
-Read-only discussion stops before task creation. The Architect reports decisions and relevant grounds, never private chain-of-thought.
-
-## Hard gates
-
-Treat ledger commands as control transactions. Confirm `why -> what -> how -> proof` before mutation. Before any other repository mutation, run `python3 "<skill-root>/scripts/tasks.py" --repo "<repo-root>" start` or claim planned work; the packaged `tasks.py` helper is the only ledger mutation path. Require an owned `In Progress` task, acceptance, proof, and a visible plan. Follow [Plan view projection](references/plan.md) for `update_plan`. Run `python3 "<skill-root>/scripts/lean_check.py" "<repo-root>" --before-write` before the first non-control write. Diagnose unknown causes before fixes. Verify acceptance and docs parity. Only the owner closes; direct-user override requires a recorded reason.
-
-One ledger task is one Engineer checkpoint. Mode: `python3 "<skill-root>/scripts/session_state.py" --owner OWNER --mode assisted|solo`. Tier: `python3 "<skill-root>/scripts/session_state.py" --owner OWNER --fast-children` or `--no-fast-children`.
-
-## Child boundary
-
-The canonical [subagent policy](references/subagents.md) is the sole authority for roles, triggers, spawns, handoffs, reuse, and failures. The Architect owns architecture, interfaces, tasks, integration, acceptance, and closeout. Assisted delegates; Solo keeps execution.
-
-## Engineering and technical English
-
-Build smallest cohesive units and readable orchestrator. Avoid project-size tiers, speculative interfaces, and pass-through modules. Classify plausible edge cases as `Handle`, `Reject`, `Defer`, or `Impossible by invariant`. Use small Mermaid diagrams. Never use ASCII pseudographics.
-
-Apply ASD-STE100 Issue 9: active voice, one term for one meaning, conditions before actions, and American English spelling. Avoid idioms, unnecessary synonyms, and vague pronouns. Keep procedural sentences to 20 words or fewer and descriptive sentences to 25 words or fewer. Preserve code, commands, paths, identifiers, protocol fields, quotations. Do not claim certified or full controlled-dictionary compliance.
+[Plan](references/plan.md) owns the visible plan and task gates. [Common](protocols/common.md) owns assignments and role boundaries. Optional documents do not create additional workflow stages.

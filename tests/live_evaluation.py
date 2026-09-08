@@ -30,13 +30,13 @@ def build_command(
 ) -> list[str]:
     return [
         "codex",
+        "--ask-for-approval",
+        "never",
         "exec",
         "--ephemeral",
         "--json",
         "--sandbox",
         "read-only",
-        "--ask-for-approval",
-        "never",
         "--ignore-user-config",
         "--cd",
         str(repo.resolve()),

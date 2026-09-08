@@ -1562,8 +1562,7 @@ class TaskLedgerTests(unittest.TestCase):
         cases = {
             "missing managed startup block": "project-specific rules\n",
             "stale managed startup block": packaged_startup_block().replace(
-                "Use exact startup fields from the lifecycle system message.",
-                "Use outdated startup fields from the lifecycle system message.",
+                "\n", "\nStale instruction.\n",
                 1,
             ),
         }
@@ -1583,8 +1582,7 @@ class TaskLedgerTests(unittest.TestCase):
             repository = Path(directory)
             initialize_repository(repository)
             stale = packaged_startup_block().replace(
-                "Use exact startup fields from the lifecycle system message.",
-                "Use outdated startup fields from the lifecycle system message.",
+                "\n", "\nStale instruction.\n",
                 1,
             )
             repository.joinpath("AGENTS.md").write_text(stale, encoding="utf-8")
@@ -1627,8 +1625,7 @@ class TaskLedgerTests(unittest.TestCase):
             prefix = "# Project-specific rules\n\n"
             suffix = "\n## Local rules\nKeep this text unchanged.\n"
             stale = block.replace(
-                "Use exact startup fields from the lifecycle system message.",
-                "Use outdated startup fields from the lifecycle system message.",
+                "\n", "\nStale instruction.\n",
                 1,
             )
             repository.joinpath("AGENTS.md").write_text(
@@ -1712,58 +1709,18 @@ class TaskLedgerTests(unittest.TestCase):
 
 
 class PackageContractTests(unittest.TestCase):
-    def test_package_contains_one_skill_and_no_legacy_lanes(self) -> None:
+    def test_package_contains_one_skill_and_eleven_instruction_files(self) -> None:
+        self.assertEqual({path.name for path in PLUGIN.iterdir()}, {".codex-plugin", "hooks", "skills"})
+        self.assertEqual([path.parent.name for path in PLUGIN.glob("skills/*/SKILL.md")], ["lean-sdlc"])
         self.assertEqual(
-            {path.name for path in PLUGIN.iterdir()},
-            {".codex-plugin", "hooks", "skills"},
+            {path.name for path in (SKILL / "references").glob("*.md")},
+            {"conversation.md", "plan.md", "ledger.md", "documentation.md", "operations.md"},
         )
-        self.assertFalse(
-            any(
-                path.name in {"__pycache__", ".DS_Store"} or path.suffix == ".pyc"
-                for path in PLUGIN.rglob("*")
-            )
+        self.assertEqual(
+            {path.name for path in (SKILL / "protocols").glob("*.md")},
+            {"common.md", "lead.md", "scout.md", "maintainer.md", "verifier.md"},
         )
-
-        skill_roots = sorted(
-            path.parent.name for path in PLUGIN.glob("skills/*/SKILL.md")
-        )
-        self.assertEqual(skill_roots, ["lean-sdlc"])
-
-        references = SKILL / "references"
-        names = {path.name for path in references.glob("*.md")}
-        self.assertTrue(
-            {
-                "shape.md",
-                "decide.md",
-                "plan.md",
-                "diagnose.md",
-                "deliver.md",
-                "verify.md",
-                "subagents.md",
-                "operations.md",
-                "repository-contracts.md",
-                "trigger-evals.md",
-            }.issubset(names)
-        )
-        self.assertNotIn("agent-coordination.md", names)
-        self.assertTrue(
-            names.isdisjoint(
-                {
-                    "brainstorm.md",
-                    "refine.md",
-                    "architecture.md",
-                    "task-planning.md",
-                    "execution.md",
-                    "debugging.md",
-                    "implementation.md",
-                    "verification.md",
-                    "traceability.md",
-                    "versioning.md",
-                    "doc-maintenance.md",
-                    "lifecycle.md",
-                }
-            )
-        )
+        self.assertFalse(any(path.name in {"__pycache__", ".DS_Store"} or path.suffix == ".pyc" for path in PLUGIN.rglob("*")))
 
     def test_optional_document_templates_are_complete_and_on_demand(self) -> None:
         assets = SKILL / "assets"
@@ -1801,68 +1758,6 @@ class PackageContractTests(unittest.TestCase):
         ]:
             self.assertIn(term, templates)
 
-    def test_automation_lifecycle_uses_recorded_operations_and_bounds_authority(self) -> None:
-        operations = (SKILL / "references/operations.md").read_text(encoding="utf-8").lower()
-        contracts = (SKILL / "references/repository-contracts.md").read_text(encoding="utf-8").lower()
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8").lower()
-        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8").lower()
-        asset = (SKILL / "assets/operation.md").read_text(encoding="utf-8").lower()
-
-        for phrase in [
-            "reuse recorded operations as the only automation catalog",
-            "status and maintenance owner",
-            "second equivalent successful mechanic",
-            "direct evidence that the mechanic will recur",
-            "candidates do not enter durable docs automatically",
-            "architect approves the contract before scripting",
-            "existing project command or target",
-            "existing script",
-            "native or installed tool",
-            "smallest new script",
-            "engineer implements an approved script and one focused runnable check",
-            "maintainer records and later replays the canonical command",
-            "later work reads recorded operations first",
-            "solo follows the same record",
-            "maintainer marks an automation as stale",
-            "explicit inputs and safe defaults",
-            "validate the target",
-            "stable exit status",
-            "run noninteractive",
-            "write output atomically when practical",
-            "omit secrets and machine-specific paths",
-            "bound default output",
-            "transient signal may retry only under recorded recovery",
-            "recorded failure follows authorized recovery",
-            "script defect goes to engineer",
-            "changed contract or unknown cause stops and returns to architect/diagnose",
-        ]:
-            self.assertIn(phrase, operations)
-
-        for phrase in [
-            "first approved and recorded automation",
-            "recorded operations are the only automation catalog",
-            "do not add another automation file, registry, hook, state field, role, mode, dependency, or runtime framework",
-        ]:
-            self.assertIn(phrase, contracts)
-
-        for phrase in [
-            "follow [operations.md](operations.md) for automation candidates and record/replay after accepted implementation",
-            "maintainer owns each recorded operation run",
-        ]:
-            self.assertIn(phrase, subagents)
-
-        self.assertIn("automation lifecycle", evaluations)
-
-        for heading in [
-            "## maintenance owner",
-            "## canonical command",
-            "## inputs and defaults",
-            "## outputs and artifacts",
-            "## failure and recovery",
-            "## last verified",
-        ]:
-            self.assertIn(heading, asset)
-
     def test_local_markdown_links_resolve(self) -> None:
         failures: list[str] = []
         for document in SKILL.rglob("*.md"):
@@ -1875,740 +1770,44 @@ class PackageContractTests(unittest.TestCase):
                     failures.append(f"{document.relative_to(ROOT)} -> {target}")
         self.assertEqual(failures, [])
 
-    def test_dispatcher_trigger_is_explicit_and_model_floor_has_no_assignment_to_low(
-        self,
-    ) -> None:
+    def test_root_entry_matches_current_template_without_copied_workflow(self) -> None:
+        template = (SKILL / "assets/AGENTS.md").read_text(encoding="utf-8")
+        self.assertEqual((ROOT / "AGENTS.md").read_text(encoding="utf-8"), template)
+        self.assertIn("$lean-sdlc", template)
+        self.assertIn("scripts/session_state.py", template)
+        self.assertIn("Preserve CODEX_SESSION_ID", template)
+        self.assertLess(len(template.split()), 200)
+        self.assertNotIn("subagents.md", template)
+        self.assertNotIn("--mode", template)
+
+    def test_entry_and_ui_metadata_do_not_force_implementation(self) -> None:
         dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8")
         frontmatter = dispatcher.split("---", 2)[1]
-        self.assertIn("explicitly invokes Lean-SDLC", frontmatter)
-        self.assertIn("repository AGENTS.md requires Lean-SDLC", frontmatter)
-        self.assertIn("Do not invoke implicitly for read-only work", frontmatter)
+        self.assertIn("explicitly requested", frontmatter)
+        self.assertIn("required by repository instructions", frontmatter)
+        for path in (SKILL / "agents/openai.yaml", PLUGIN / ".codex-plugin/plugin.json"):
+            text = path.read_text(encoding="utf-8")
+            self.assertIn("discuss or plan without writes", text)
+            self.assertIn("implement only authorized work", text)
 
-        policy_files = [
-            ROOT / "README.md",
-            SKILL / "assets/AGENTS.md",
-            SKILL / "references/subagents.md",
-        ]
-        policy = "\n".join(path.read_text(encoding="utf-8") for path in policy_files)
-        self.assertNotIn("GPT-5.4", policy)
-        self.assertNotRegex(policy, r"\|\s*`?low`?\s*\|")
-
-    def test_minimal_modularity_edge_cases_and_diagrams_are_explicit(self) -> None:
-        dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
-        decide = (SKILL / "references/decide.md").read_text(encoding="utf-8").lower()
-        deliver = (SKILL / "references/deliver.md").read_text(encoding="utf-8").lower()
-        verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
-        contracts = (
-            SKILL / "references/repository-contracts.md"
-        ).read_text(encoding="utf-8").lower()
-        evaluations = (
-            SKILL / "references/trigger-evals.md"
-        ).read_text(encoding="utf-8").lower()
-
-        self.assertIn("smallest cohesive units", dispatcher)
-        self.assertIn("project-size", decide)
-        self.assertIn("readable orchestrator", deliver)
-        self.assertIn("handle", deliver)
-        self.assertIn("reject", deliver)
-        self.assertIn("defer", deliver)
-        self.assertIn("impossible by invariant", deliver)
-        self.assertIn("change locality", verify)
-        self.assertIn("mermaid", contracts)
-        self.assertIn("ascii pseudographics", contracts)
-        self.assertIn("plausible edge cases", evaluations)
-
-    def test_quick_fix_policy_is_inline_and_batch_review_is_bounded(self) -> None:
-        plan = (SKILL / "references/plan.md").read_text(encoding="utf-8")
-        contracts = (
-            SKILL / "references/repository-contracts.md"
-        ).read_text(encoding="utf-8")
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
-        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8")
-        ledger = (SCRIPTS / "task_ledger.py").read_text(encoding="utf-8")
-        tasks_script = (SCRIPTS / "tasks.py").read_text(encoding="utf-8")
-
-        for phrase in [
-            "Quick Fix is inline Plan classification",
-            "not a mode, lane, task type, or prompt",
-            "Record Context `Quick Fix`",
-            "exact requested outcome",
-            "local reversible scope",
-            "no unresolved product, design, architecture, public interface, schema, migration, dependency, security, generated-file, or external-state choice",
-            "one immediate narrow proof",
-            "request to use Quick Fix never bypasses eligibility",
-            "one visible plan item",
-            "one owned task",
-            "python3 \"<skill-root>/scripts/lean_check.py\" \"<repo-root>\" --before-write",
-            "Architect may execute Quick Fix in Assisted or Solo",
-            "Do not spawn Engineer, Maintainer, or Verifier per Quick Fix",
-            "Shared batch may reuse or start Verifier when normal proof trigger applies",
-            "Review diff and run narrow proof before close",
-            "Quick-only multi-fix batch",
-            "Standalone remains pending",
-            "names exact",
-            "`TASK-NNN — Title`",
-        ]:
-            self.assertIn(phrase.casefold(), plan.casefold())
-
-        for phrase in [
-            "Closing a Quick Fix records pending broad batch review",
-            "`python3 \"<skill-root>/scripts/tasks.py\" --repo \"<repo-root>\" quick-fixes` lists completed Quick Fixes that remain unreviewed",
-            "Standard checkpoint reviews every pending Quick Fix",
-            "`--review-through TASK-NNN`",
-            "review prefix must contain only `Done` Quick Fix tasks through the target",
-            "Invalid review references fail without ledger mutation",
-            "several Quick Fixes may defer broad checks until one shared checkpoint",
-            "A standalone Quick Fix may remain pending",
-            "failed shared review creates a Standard correction task",
-            "Deferred Quick Fix assurance is not automatic technical debt",
-        ]:
-            self.assertIn(phrase.casefold(), contracts.casefold())
-
-        for phrase in [
-            "Quick Fix",
-            "SPECIAL_CONTEXTS",
-            "QUICK_FIX_PENDING_MARKER",
-        ]:
-            self.assertIn(phrase.casefold(), ledger.casefold())
-        for phrase in ["quick-fixes", "review-through"]:
-            self.assertIn(phrase.casefold(), tasks_script.casefold())
-        self.assertIn("Quick Fix classification", evaluations)
-        self.assertIn("Quick Fix batch review", evaluations)
-        self.assertIn("Do not spawn Engineer, Maintainer, or Verifier per Quick Fix", subagents)
-
-        readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
-        quick_fix_sentences = [
-            sentence
-            for sentence in re.findall(r"[^.!?]*(?:Quick Fix|Quick Fixes)[^.!?]*[.!?]", readme)
-            if sentence.strip()
-        ]
-        self.assertGreaterEqual(len(quick_fix_sentences), 1)
-        self.assertLessEqual(len(quick_fix_sentences), 2)
-        for cli_detail in ["tasks.py quick-fixes", "--review-through", "[Quick Fix batch"]:
-            self.assertNotIn(cli_detail.casefold(), readme.casefold())
-
-    def test_work_boundaries_keep_tasks_atomic_and_steps_transient(self) -> None:
-        dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
-        agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8").lower()
-        template = (
-            SKILL / "assets/AGENTS.md"
-        ).read_text(encoding="utf-8").lower()
-        shape = (SKILL / "references/shape.md").read_text(encoding="utf-8").lower()
-        decide = (SKILL / "references/decide.md").read_text(encoding="utf-8").lower()
-        plan = (SKILL / "references/plan.md").read_text(encoding="utf-8").lower()
-        contracts = (
-            SKILL / "references/repository-contracts.md"
-        ).read_text(encoding="utf-8").lower()
-        evaluations = (
-            SKILL / "references/trigger-evals.md"
-        ).read_text(encoding="utf-8").lower()
-
-        for phrase in [
-            "the packaged `tasks.py` helper is the only ledger mutation path",
-            "plan view",
-            "python3 \"<skill-root>/scripts/lean_check.py\" \"<repo-root>\" --before-write",
-            "one engineer checkpoint",
-        ]:
-            self.assertIn(phrase, dispatcher)
-        for phrase in [
-            "tasks.py",
-            "in progress",
-            "dependencies must be `done` before start",
-            "update_plan",
-            "rebuild only unresolved rows",
-            "python3 \"<skill-root>/scripts/session_state.py\"",
-        ]:
-            self.assertIn(phrase, agents)
-        self.assertEqual(agents, template)
-
-        for phrase in [
-            "group the current outcome in the project promise.",
-            "use an optional feature document when one durable behavior spans tasks.",
-            "split a feature when a part has an independent promise, test, or change.",
-            "merge feature candidates when neither part has useful behavior alone.",
-        ]:
-            self.assertIn(phrase, shape)
-
-        self.assertIn(
-            "record one decision for one independent reversal boundary.",
-            decide,
-        )
-        self.assertIn(
-            "keep a choice local when it is cheap to reverse and clear in code, tests, or technical documentation.",
-            decide,
-        )
-
-        for phrase in [
-            "before task creation",
-            "one behavior, one contract boundary, one proof cluster, and one accept-or-reject decision",
-            "split on any independent answer",
-            "and` in a title as a review signal, not an automatic split",
-            "one ledger task represents one engineer checkpoint.",
-            "one independently accepted behavior change",
-            "one owning contract boundary",
-            "one proof cluster",
-            "one close decision",
-            "may touch several files, tests, documentation, or migration steps",
-            "only when all work is inseparable for that behavior",
-            "require settled architecture, one coherent outcome, one independent bounded proof, and one accept-or-reject review.",
-            "keep one task resumable from repository truth and its ledger row after compaction.",
-            "split a task when a part can succeed, fail, defer, revert, release, or be accepted independently",
-            "belongs to another behavior or contract area",
-            "needs another architect decision",
-            "merge pieces without independent value or proof.",
-            "keep a correction in the same task",
-            "only satisfies unchanged acceptance",
-            "a new behavior needs a new task",
-            "keep implementation tests inside the task.",
-            "keep maintainer and verifier work attached unless independently deliverable.",
-            "never size by elapsed time, file count, line count, or command count.",
-            "keep local implementation steps and correction handoffs transient.",
-        ]:
-            self.assertIn(phrase, plan)
-
-        for phrase in [
-            "## work hierarchy",
-            "- project promise: current outcome, scope, stage, and exit evidence.",
-            "- feature: durable behavior that spans tasks.",
-            "- task: one independently accepted repository state with one change boundary, acceptance set, proof set, and close decision.",
-            "- local step: transient implementation or correction work that does not become a ledger row.",
-            "## task sizing summary",
-            "split or merge tasks by the independent boundaries in [plan.md](plan.md).",
-        ]:
-            self.assertIn(phrase, contracts)
-
-        self.assertIn("assisted parallel work", evaluations)
-        self.assertIn("verifier and maintainer sidecars", evaluations)
-
-    def test_task_sizing_preflight_and_split_rules_are_operational(self) -> None:
-        plan = (SKILL / "references/plan.md").read_text(encoding="utf-8")
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
-        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8")
-
-        self.assertIn("## Task preflight", plan)
-        self.assertIn("Before task creation", plan)
-        self.assertIn("Task preflight", evaluations)
-        for phrase in [
-            "one independently accepted behavior change under one owning contract boundary",
-            "one proof cluster, and one close decision",
-            "can succeed, fail, defer, revert, release, or be accepted independently",
-            "belongs to another behavior or contract area",
-            "needs another Architect decision",
-            "Keep a correction in the same task when it only satisfies unchanged acceptance",
-            "A new behavior needs a new task",
-            "Never size by elapsed time, file count, line count, or command count",
-            "Treat `and` in a title as a review signal, not an automatic split",
-            "First size tasks for independent acceptance",
-            "Keep together",
-            "Split serially",
-            "Split for parallel execution",
-            "No mode, score, tasks.csv column, persistent group, or automation",
-        ]:
-            self.assertIn(phrase, plan)
-        self.assertIn("Immediately before a parallel Engineer spawn", subagents)
-        self.assertIn("fall back to serial execution", subagents)
-        self.assertNotIn("Split on elapsed time", plan)
-        self.assertNotIn("Split on file count", plan)
-
-    def test_task_sizing_and_session_state_routes_use_canonical_sources(self) -> None:
-        dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
-        subagents = (
-            SKILL / "references/subagents.md"
-        ).read_text(encoding="utf-8").lower()
-        evaluations = (
-            SKILL / "references/trigger-evals.md"
-        ).read_text(encoding="utf-8").lower()
-
-        self.assertIn("valid engineer checkpoint", evaluations)
-        self.assertIn("oversized task", evaluations)
-        for token in [
-            "python3 \"<skill-root>/scripts/session_state.py\" --owner owner --mode assisted|solo",
-            "python3 \"<skill-root>/scripts/session_state.py\" --owner owner --fast-children",
-            "--no-fast-children",
-        ]:
-            self.assertIn(token, dispatcher + subagents)
-
-    def test_implementation_authority_and_visible_plan_gate_are_explicit(self) -> None:
-        dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
-        plan = (SKILL / "references/plan.md").read_text(encoding="utf-8").lower()
-        shape = (SKILL / "references/shape.md").read_text(encoding="utf-8").lower()
-        deliver = (SKILL / "references/deliver.md").read_text(encoding="utf-8").lower()
-        subagents = (
-            SKILL / "references/subagents.md"
-        ).read_text(encoding="utf-8").lower()
-        evaluations = (
-            SKILL / "references/trigger-evals.md"
-        ).read_text(encoding="utf-8").lower()
-        root_agents = ROOT.joinpath("AGENTS.md").read_text(encoding="utf-8").lower()
-        template_agents = (
-            SKILL / "assets/AGENTS.md"
-        ).read_text(encoding="utf-8").lower()
-
-        for phrase in [
-            "require information, not fixed labels",
-            "use natural prose for outcome, constraints, and exclusions",
-            "only the plan needs visible structure",
-            "concise visible plan",
-            "define each durable plan item in natural prose",
-            "observable completion condition and verification method",
-            "the verification method is its proof",
-            "a one-item plan is valid",
-            "only durable task plan",
-        ]:
-            self.assertIn(phrase, plan)
-
-        self.assertIn("explicit implementation authority", dispatcher + shape + deliver)
-        self.assertIn("discussion and proposals remain read-only", dispatcher)
-        self.assertIn("brainstorming and rephrasing remain read-only", shape)
-        self.assertIn("each durable plan item maps to one task", plan)
-        self.assertIn("keep local implementation steps and correction handoffs transient", plan + subagents)
-
-        self.assertIn(
-            "engineer cannot start until the visible plan exists",
-            subagents,
-        )
-        self.assertIn(
-            "the task matches one durable plan item",
-            plan + subagents + deliver,
-        )
-        self.assertIn(
-            "discussion, proposal, or non-concrete proceed request",
-            evaluations,
-        )
-        self.assertIn("task or implementation request", evaluations)
-        self.assertIn("valid engineer checkpoint", evaluations)
-        self.assertIn("architect direct path", evaluations)
-        self.assertEqual(root_agents, template_agents)
-
-    def test_policy_invariants_are_canonical_and_safe(self) -> None:
-        dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8").lower()
-        verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
-        operations = (SKILL / "references/operations.md").read_text(encoding="utf-8").lower()
-        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8").lower()
-
-        self.assertIn("## canonical lifecycle", dispatcher)
-        self.assertEqual(subagents.count("## role-routing precedence"), 1)
-        route_order = [
-            subagents.index("1. keep unresolved"),
-            subagents.index("2. force work"),
-            subagents.index("3. route broad"),
-            subagents.index("4. route settled mutable"),
-            subagents.index("5. route independent"),
-            subagents.index("6. route shared documentation"),
-            subagents.index("7. use the narrow architect"),
-        ]
-        self.assertEqual(route_order, sorted(route_order))
-        for role in ("engineer", "maintainer", "verifier", "scout"):
-            self.assertIn(role, subagents)
-        for model_term in (
-            "model=gpt-5.6-luna",
-            "reasoning_effort=max",
-            "non-full-history `fork_turns`",
-            "gpt-5.6-terra",
-            "reasoning_effort=xhigh",
-        ):
-            self.assertIn(model_term, subagents)
-
-        for safety_term in (
-            "read-only",
-            "no child edits `tasks.csv`",
-            "one agent owns each mutable external target",
-            "no scan, registry, backlog entry",
-            "never chain-of-thought",
-            "full suite only for",
-        ):
-            self.assertIn(safety_term, subagents + verify + operations)
-        for naming_term in (
-            "one lowercase role prefix and one greek suffix",
-            "allocates the next never-used label",
-            "task_name=engineer_beta",
-            "a child never chooses or changes its task name",
-        ):
-            self.assertIn(naming_term, subagents)
-        for lifecycle_term in (
-            "running lifecycle state means available",
-            "completed child sends one final return",
-            "the completed thread remains reachable",
-            "visible pre-handoff design brief",
-            "child decision limits",
-        ):
-            self.assertIn(lifecycle_term, dispatcher + subagents)
-        for boundary_term in (
-            "assigned implementation paths",
-            "settled source boundary",
-            "affected-boundary risk",
-            "independent proof",
-            "do not repeat an identical targeted command",
-        ):
-            self.assertIn(boundary_term, subagents + verify)
-        self.assertIn("these rows are scenarios and assertions", evaluations)
-        self.assertNotIn("failure indicators", evaluations)
-        self.assertNotIn("role-trigger matrix", subagents)
-    def test_intent_and_boundary_contracts_are_explicit(self) -> None:
-        shape = (SKILL / "references/shape.md").read_text(encoding="utf-8").lower()
-        plan = (SKILL / "references/plan.md").read_text(encoding="utf-8").lower()
-        contracts = (SKILL / "references/repository-contracts.md").read_text(encoding="utf-8").lower()
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8").lower()
-        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8").lower()
-
-        for term in (
-            "shape owns the complete intent gate",
-            "why -> what -> how -> proof",
-            "smallest observable outcome plus constraints and non-goals",
-            "stop for user confirmation",
-            "brainstorming and rephrasing remain read-only",
-        ):
-            self.assertIn(term, shape)
-        for term in (
-            "derive observable acceptance from the confirmed outcome and affected value",
-            "implementation mechanisms, changed files, and test commands support acceptance",
-            "one proof cluster",
-            "never size by elapsed time, file count, line count, or command count",
-        ):
-            self.assertIn(term, plan)
-        for term in (
-            "project purpose, value, behavior boundary, scope, stage, and version promise",
-            "one root `tasks.csv` remains authoritative",
-            "dependencies must exist, remain acyclic, and be `done` before start or close",
-            "the ledger lock is not a source-file lock",
-        ):
-            self.assertIn(term, contracts)
-        for term in (
-            "the architect always owns intent, public behavior, architecture, tasks, acceptance, integration, and closeout",
-            "at most two active children",
-            "separate mutable code and test paths",
-            "independent acceptance and proof",
-            "one verifier checks the combined checkpoint",
-            "stop before the shared resource and report the collision and checkpoint",
-            "a child never integrates sibling work",
-        ):
-            self.assertIn(term, subagents)
-        for scenario in (
-            "brain-dump discussion",
-            "clear implementation authority",
-            "material ambiguity",
-            "behavior-based acceptance",
-            "assisted parallel work",
-            "bounded scout evidence",
-            "dependency start block",
-            "architect writer barrier",
-            "collision stop",
-        ):
-            self.assertIn(f"| {scenario} |", evaluations)
-        rows = [
-            line
-            for line in evaluations.splitlines()
-            if line.startswith("| ") and not line.startswith("| ---") and "Scenario" not in line
-        ]
-        self.assertGreaterEqual(len(rows), 20)
-        self.assertLessEqual(len(rows), 50)
-    def test_ledger_plan_view_projection_is_deterministic_and_read_only_for_brainstorming(self) -> None:
-        dispatcher = (SKILL / "SKILL.md").read_text(encoding="utf-8").lower()
-        plan = (SKILL / "references/plan.md").read_text(encoding="utf-8").lower()
-        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8").lower()
-        root_agents = ROOT.joinpath("AGENTS.md").read_text(encoding="utf-8").lower()
-        template_agents = (SKILL / "assets/AGENTS.md").read_text(encoding="utf-8").lower()
-
-        for phrase in [
-            "task-nnn — title",
-            "update_plan",
-            "unresolved",
-            "planned",
-           "in_progress",
-           "completed",
-            "mark the closing row",
-            "active close transition",
-            "rebuild only unresolved non-backlog rows",
-            "do not load full",
-            "startup, resume, clear, or compaction",
-            "python3 \"<skill-root>/scripts/tasks.py\" --repo \"<repo-root>\" open",
-            "brainstorming and rephrasing remain read-only and create no task view",
-            "every unresolved task in its own exact row",
-            "parallel work changes status or plan prose, never task identity",
-            "remains authoritative",
-        ]:
-            self.assertIn(phrase, dispatcher + plan)
-
-        for phrase in [
-            "brain-dump discussion",
-            "creates no task or plan view",
-            "ledger-to-plan projection",
-        ]:
-            self.assertIn(phrase, evaluations)
-
-        self.assertEqual(root_agents, template_agents)
-        self.assertIn("project unresolved", root_agents)
-        self.assertIn("rebuild only unresolved rows from", root_agents)
-        self.assertIn("brainstorming remains read-only and creates no task view", root_agents)
-
-    def test_child_policy_compaction_bounds_and_identity_contract(self) -> None:
-        subagents_path = SKILL / "references/subagents.md"
-        subagents = subagents_path.read_text(encoding="utf-8")
-
-        self.assertGreaterEqual(len(subagents.splitlines()), 100)
-        self.assertLessEqual(len(subagents.splitlines()), 190)
-        for heading in [
-            "## Role-routing precedence",
-            "## Independence gate",
-            "## Child lifecycle",
-            "## Shared handoff envelope",
-            "## Role-specific rules",
-            "## Model and spawn",
-            "## Checkpoint barrier",
-            "## Return and stop conditions",
-        ]:
-            self.assertIn(heading, subagents)
-        self.assertIn("The Architect owns each child name at spawn time", subagents)
-        self.assertIn("task_name=engineer_beta", subagents)
-        self.assertIn("Each child update stays 1–3 natural sentences", subagents)
-        self.assertIn("Routine progress stays in the child thread", subagents)
-        self.assertIn(
-            "Send an explicit parent message only when immediate Architect action is required",
-            subagents,
-        )
-        self.assertIn("At completion, send exactly one final return", subagents)
-        self.assertIn("The Architect does not echo unchanged child facts", subagents)
-        self.assertIn(
-            "Arrow sequence is fact order, not output wording",
-            subagents,
-        )
-        self.assertIn("A completed child sends one final return and ends its active turn", subagents)
-        self.assertIn("The completed thread remains reachable for later `followup_task` reuse", subagents)
-        self.assertNotIn("after about two minutes", subagents)
-        self.assertNotIn("continued silent work", subagents.casefold())
-        self.assertNotIn("total cap", subagents)
-        self.assertNotIn("at most two useful heartbeats", subagents)
-        self.assertNotIn("Architecture alignment:", subagents)
-        self.assertNotIn("Return labels remain explicit", subagents)
-        self.assertNotIn("labeled report", subagents)
-        self.assertNotIn("First" + "name", subagents)
-
-    def test_trigger_evals_and_proof_ownership_are_compact(self) -> None:
-        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8")
-        rows = [
-            line
-            for line in evaluations.splitlines()
-            if line.startswith("| ") and not line.startswith("| ---") and "Scenario" not in line
-        ]
-        self.assertGreaterEqual(len(rows), 20)
-        self.assertLessEqual(len(rows), 50)
-        self.assertIn("These rows are scenarios and assertions", evaluations)
-        self.assertNotIn("Failure indicators", evaluations)
-
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8").lower()
-        verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
-        operations = (SKILL / "references/operations.md").read_text(encoding="utf-8").lower()
-        for term in (
-            "targeted proof is the smallest check",
-            "acceptance proof for observable completion",
-            "regression proof for affected-boundary risk",
-            "verifier is read-only",
-            "do not repeat an identical targeted command",
-            "reports a transient automation candidate to the architect",
-        ):
-            self.assertIn(term, subagents + verify + operations)
-        self.assertIn("run the full suite once under verifier only for", verify)
-        self.assertIn("maintainer owns each recorded operation run", subagents)
-        self.assertIn("after the final engineer return", subagents)
-        self.assertIn("short visible alignment signoff covering architecture, scope, and contract alignment", subagents)
-        self.assertNotIn("verification is running against unchanged source", subagents)
-        self.assertNotIn("verification passed", subagents)
-        for name in ("deliver", "verify", "operations"):
-            lane = (SKILL / "references" / f"{name}.md").read_text(encoding="utf-8")
-            self.assertIn("subagents.md", lane)
-
-    def test_delegated_evidence_and_checkpoint_capture_are_bounded(self) -> None:
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8").lower()
-        diagnose = (SKILL / "references/diagnose.md").read_text(encoding="utf-8").lower()
-        verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
-        operations = (SKILL / "references/operations.md").read_text(encoding="utf-8").lower()
-        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8").lower()
-
-        for phrase in (
-            "product intent, public behavior, architecture, assumptions, acceptance, permissions, task ownership, conflict resolution, and final signoff",
-            "cross-boundary source and log evidence",
-            "focused semantic changes and targeted check results",
-            "contract-sensitive semantic changes",
-            "before and after proof",
-            "same explicit task-owned paths",
-            "compares the returned sha-256 values locally",
-            "verifier blocks if the local values differ",
-            "does not persist values or expose full values in routine reports",
-            "do not make the architect calculate them",
-            "recorded operation failure signal",
-            "already-authorized recorded recovery",
-            "unknown, ambiguous, source-changing, or new retry behavior",
-            "routes to diagnose/scout and architect",
-        ):
-            self.assertIn(phrase, subagents)
-        verify_order = [
-            verify.index(term)
-            for term in (
-                "select one optional nested verifier",
-                "scripts/checkpoint.py",
-                "verifier is read-only",
-                "compare the sha-256 values locally and block if they differ",
-            )
-        ]
-        self.assertEqual(verify_order, sorted(verify_order))
-        self.assertIn("scripts/checkpoint.py", verify)
-        self.assertIn("do not persist values, expose full values in routine reports, or make architect calculate them", verify)
-        self.assertIn("maintainer classifies failures only by matching a recorded operation failure signal", operations)
-        self.assertIn("omit them from visible operation reports", operations)
-        self.assertIn("packaged checkpoint helper before and after proof", evaluations)
-        self.assertIn("compares values locally", evaluations)
-        self.assertNotIn("architect records an exact commit or working-tree fingerprint", evaluations)
-
-    def test_lifecycle_and_proof_boundaries_are_behavioral(self) -> None:
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8").lower()
-        deliver = (SKILL / "references/deliver.md").read_text(encoding="utf-8").lower()
-        verify = (SKILL / "references/verify.md").read_text(encoding="utf-8").lower()
-        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8").lower()
-
-        for term in (
-            "running lifecycle state means available",
-            "parent wait timeout, missed update, or silence is not failure",
-            "architect may request status and wait again",
-            "architect allocates and preauthorizes the exact named verifier",
-            "authorized engineer may spawn or reuse that one read-only verifier",
-            "no other child may spawn",
-            "verifier cannot spawn",
-            "descendants count toward the limit",
-            "interrupt or replace only for an explicit blocker",
-            "engineer may fix only implementation defects that preserve settled behavior",
-            "same proof failure repeats",
-        ):
-            self.assertIn(term, subagents)
-        for term in (
-            "selected authoritative contracts",
-            "focused patches",
-            "exact evidence",
-            "broad or cross-boundary source",
-            "do not require complete broad source reads",
-        ):
-            self.assertIn(term, deliver + verify)
-        for term in (
-            "one optional nested verifier",
-            "one architect-started verifier",
-            "do not repeat an identical targeted command",
-        ):
-            self.assertIn(term, verify)
-        for term in (
-            "for one task, engineer continues through implementation and targeted proof",
-            "after the final engineer return",
-            "short visible alignment signoff covering architecture, scope, and contract alignment",
-            "full stop barrier",
-        ):
-            self.assertIn(term, subagents + deliver)
-        self.assertNotIn("parent metadata", evaluations)
-
-    def test_child_progress_is_event_driven_and_not_template_bound(self) -> None:
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
-        evaluations = (SKILL / "references/trigger-evals.md").read_text(encoding="utf-8")
-
-        for phrase in [
-            "1–3 natural sentences",
-            "current action, why it matters, observed result or next action",
-            "routine progress stays in the child thread",
-            "send an explicit parent message only when immediate architect action is required",
-            "blocker",
-            "scope change",
-            "one final return",
-            "architect does not echo unchanged child facts",
-            "a completed child sends one final return",
-            "ends its active turn",
-            "the completed thread remains reachable for later `followup_task` reuse",
-            "no child update includes greetings, role repetition, raw logs, full fingerprints, or scripted phrases",
-            "do not create rigid templates",
-        ]:
-            self.assertIn(phrase.casefold(), subagents.casefold())
-
-        self.assertIn("Child visible update", evaluations)
-        self.assertIn("silence alone is not failure", evaluations.casefold())
-        self.assertIn("end the active turn", evaluations.casefold())
-        self.assertIn("followup_task", evaluations)
-        for stale in ("heartbeat", "two minutes", "continued silent work", "total cap"):
-            self.assertNotIn(stale, (subagents + evaluations).casefold())
-        self.assertNotIn("at most two useful heartbeats", subagents.casefold())
-        self.assertNotIn("sentence template", subagents.casefold())
-        self.assertIn("role repetition", evaluations.casefold())
-
-    def test_readme_stays_public_and_links_detailed_policy(self) -> None:
-        readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
-        lowered = readme.lower()
-
-        for term in ["intent", "approach", "tasks", "implement", "verify"]:
-            self.assertIn(term, lowered)
-        self.assertIn("child-agent policy", lowered)
-        self.assertEqual(
-            lowered.count("plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md"),
-            1,
-        )
-        for pattern in [
-            r"multi-agent v2",
-            r"\bgpt-\d",
-            r"\b(?:service_tier|reasoning_effort)\b",
-            r"\b(?:greeting|self-introduction|sentence template)\b",
-            r"\b(?:heartbeat|two minutes)\b",
-            r"\b(?:deviation|task name)\b",
-        ]:
-            self.assertIsNone(re.search(pattern, lowered), pattern)
-
-    def test_native_luna_routing_and_hard_cut_are_packaged(self) -> None:
-        subagents = (SKILL / "references/subagents.md").read_text(encoding="utf-8")
-        policy = "\n".join(
-            path.read_text(encoding="utf-8")
-            for path in [
-                ROOT / "AGENTS.md",
-                SKILL / "SKILL.md",
-                SKILL / "references/subagents.md",
-            ]
-        ).lower()
-
-        self.assertFalse((SCRIPTS / "configure_codex.py").exists())
-        self.assertFalse((SKILL / "assets/lean_sdlc_luna.toml").exists())
-        self.assertNotIn("configure_codex", subagents)
-        self.assertNotIn("lean_sdlc_luna", subagents)
-        self.assertIn("model=gpt-5.6-luna", subagents)
-        self.assertIn("reasoning_effort=max", subagents)
-        self.assertIn("non-full-history `fork_turns`", subagents)
-        self.assertIn("Omit `agent_type`", subagents)
-        self.assertIn("Luna Max uses Standard service by default", subagents)
-        self.assertIn("normal spawns omit `service_tier`", subagents)
-        self.assertIn("gpt-5.6-terra", subagents)
-        self.assertIn("reasoning_effort=xhigh", subagents)
-        self.assertNotIn("configure_codex", policy)
-        self.assertNotIn("lean_sdlc_luna", policy)
-        for phrase in [
-            "asd-ste100 issue 9",
-            "active voice",
-            "20 words or fewer",
-            "25 words or fewer",
-            "one term for one meaning",
-            "conditions before actions",
-            "american english spelling",
-            "idioms, unnecessary synonyms, and vague pronouns",
-            "preserve code, commands, paths, identifiers, protocol fields, quotations",
-            "certified or full controlled-dictionary compliance",
-        ]:
-            self.assertIn(phrase, policy)
+    def test_readme_is_public_and_links_current_rules(self) -> None:
+        text = (ROOT / "README.md").read_text(encoding="utf-8")
+        for role in ("Lead", "Scout", "Maintainer", "Verifier"):
+            self.assertIn(role, text)
+        self.assertNotIn("Assisted mode", text)
+        self.assertNotIn("Solo mode", text)
+        self.assertNotIn("subagents.md", text)
+        self.assertNotRegex(text, r"\b(?:service_tier|reasoning_effort)\b")
+        for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", text):
+            if "://" not in target and not target.startswith("#"):
+                self.assertTrue((ROOT / target.split("#", 1)[0]).exists(), target)
 
     def test_release_version_is_consistent(self) -> None:
-        manifest = json.loads(
-            PLUGIN.joinpath(".codex-plugin/plugin.json").read_text(encoding="utf-8")
-        )
+        manifest = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         version = manifest["version"]
-        readme = ROOT.joinpath("README.md").read_text(encoding="utf-8")
-        project = ROOT.joinpath("docs/PROJECT.md").read_text(encoding="utf-8")
-
-        self.assertEqual(version, "1.24.3")
-        self.assertIn(f"`v{version}`", readme)
-        self.assertIn(f"- Version: {version}", project)
-        self.assertIn(
-            "- Version goal: Task-authorized, atomic repair of missing, invalid, or stale managed startup blocks that preserves project rules and file permissions; normal initialization remains create-only.",
-            project,
-        )
+        self.assertEqual(version, "1.28.0")
+        self.assertIn(f"v{version}", (ROOT / "README.md").read_text(encoding="utf-8"))
+        self.assertIn(f"- Version: {version}", (ROOT / "docs/PROJECT.md").read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

@@ -89,22 +89,31 @@ class CheckpointTests(unittest.TestCase):
             self.assertIn("symbolic links are not allowed", nested.stderr)
 
     def test_policy_names_read_only_checkpoint_use_and_output_boundary(self) -> None:
-        verify = (ROOT / "plugins/lean-sdlc/skills/lean-sdlc/references/verify.md").read_text(
+        verify = (ROOT / "plugins/lean-sdlc/skills/lean-sdlc/protocols/verifier.md").read_text(
             encoding="utf-8"
         )
-        subagents = (
-            ROOT / "plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md"
-        ).read_text(encoding="utf-8")
-        evaluations = (
-            ROOT / "plugins/lean-sdlc/skills/lean-sdlc/references/trigger-evals.md"
-        ).read_text(encoding="utf-8")
         command = '`python3 "<skill-root>/scripts/checkpoint.py" --repo "<repo-root>" PATH [PATH ...]`'
         self.assertIn(command, verify)
-        self.assertIn(command, subagents)
-        self.assertIn("same explicit task-owned paths", verify)
-        self.assertIn("named temporary or incidental test outputs outside tracked truth", verify)
-        self.assertIn("compares values locally", evaluations)
-        self.assertIn("omits full values from routine reports", evaluations)
+        self.assertIn("same explicit scope", verify)
+        self.assertIn("outside tracked truth", verify)
+        self.assertIn("Keep checkpoint values local", verify)
+        self.assertIn("does not identify external state", verify)
+
+    def test_declared_config_is_an_input_but_independent_work_is_not(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory)
+            for name in ("source.py", "config.json", "independent.md"):
+                (repository / name).write_text("original\n", encoding="utf-8")
+            before = run_checkpoint(repository, "source.py", "config.json")
+            self.assertEqual(before.returncode, 0, before.stderr)
+            (repository / "independent.md").write_text("changed\n", encoding="utf-8")
+            independent = run_checkpoint(repository, "source.py", "config.json")
+            self.assertEqual(independent.returncode, 0, independent.stderr)
+            self.assertEqual(independent.stdout, before.stdout)
+            (repository / "config.json").write_text("changed\n", encoding="utf-8")
+            invalidated = run_checkpoint(repository, "source.py", "config.json")
+            self.assertEqual(invalidated.returncode, 0, invalidated.stderr)
+            self.assertNotEqual(invalidated.stdout, before.stdout)
 
 
 if __name__ == "__main__":

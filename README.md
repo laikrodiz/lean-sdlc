@@ -13,110 +13,111 @@ This reduces accidental scope growth, forgotten decisions, oversized tasks, repe
 
 ## How it works
 
-Lean-SDLC follows one practical flow:
+Lean-SDLC has one workflow. It has no mode selector and no Engineer role.
 
-```mermaid
+~~~mermaid
 flowchart LR
-    A[Understand the intent] --> B[Choose the approach]
-    B --> C[Create owned tasks]
-    C --> D[Implement]
-    D --> E[Verify the result]
-    E --> F[Update repository truth]
-```
+    A[Understand the request] --> B[Show the plan]
+    B --> C[Lead implements]
+    C --> D[Verifier checks]
+    D --> E[Maintainer records]
+    E --> F[Lead reconciles]
+~~~
 
-The workflow starts by restating the user's intent in clear language.
+The Lead interprets the request, confirms authority, and chooses the technical direction.
 
-The Architect then chooses the technical direction. It explains important decisions before implementation starts.
+The plan divides work into independently accepted tasks with clear acceptance and proof.
 
-The plan divides the work into independently testable tasks. Each task has an owner, acceptance criteria, and proof.
+Implementation starts only after the plan is ready. Completion requires evidence that matches the original request.
 
-Implementation starts only after the plan is ready. Completion requires evidence that matches the requested result.
+## Conversation and authority
 
-If the request is already clear, these steps can be very short.
+Conversation, brainstorming, shaping, investigation, and diagnosis remain read-only until the user gives implementation authority.
 
-## The Architect and child agents
+A plan-only request shows the five-field plan and then stops.
 
-Your selected Codex model remains the Architect. Lean-SDLC does not replace it with another model.
+A plan-and-implement request continues within the stated authority without another approval round.
 
-The Architect owns:
+Material ambiguity stops for user direction. A clear request keeps moving.
 
-- User and business intent.
-- Product behavior.
-- Architecture and interfaces.
-- Task boundaries.
-- Acceptance criteria.
-- Integration and final approval.
+## Roles
 
-In Assisted mode, the Architect delegates suitable work to four child roles:
+The selected Codex model is the Lead. The Lead remains responsible for the result.
 
 | Role | Work |
 | --- | --- |
-| Engineer | Implements one approved task and runs its focused checks. |
-| Scout | Searches code, documentation, logs, or external sources for a defined question. |
-| Maintainer | Updates shared documentation and runs recorded project operations. |
-| Verifier | Independently checks acceptance and important regression risks. |
+| Lead | Owns intent, architecture, scope, permissions, tasks, acceptance, integration, and final decisions. Implements code and writes code-local tests. |
+| Scout | Maps bounded read-only evidence, contracts, callers, and gaps. |
+| Maintainer | Performs routine ledger writes, maintains shared documents and indexes, and replays authorized recorded operations. |
+| Verifier | Runs all tests and independent acceptance and regression proof. It does not change tracked files. |
 
-The Architect gives each child a clear boundary. The child does not redesign the product or widen the task.
+The Lead gives each support role an exact boundary, input, acceptance, proof, and stop condition.
 
-The Architect reviews the returned work and remains responsible for the result.
+Independent stable scopes may overlap only with stable inputs, separate mutable resources, no unfinished dependency, and meaningful time savings. Shared interfaces and external targets stay serial.
 
-## Assisted and Solo modes
+## Planning and task state
 
-Assisted mode is the default. It uses child agents when delegation should save time or Architect context.
+The visible plan uses five fields:
 
-Solo mode keeps all work with the Architect. You can request Solo mode at any time.
+- Outcome: the observable result and why it matters.
+- Work: independently accepted changes, their grades, and sequencing.
+- Acceptance: what must be true.
+- Checks: how Verifier establishes those facts.
+- Limits: exclusions, unresolved choices, and operation authority.
 
-Both modes use the same planning, task ownership, and verification rules.
+Each task has one accepted outcome, one proof cluster, and one close decision.
 
-During planning, Lean-SDLC checks whether broad work can become independent tasks. It runs them together only when separation is safe and saves meaningful time.
+Simple, Normal, and Complex grades describe task complexity. They stay in the visible plan and handoffs. They do not change the ledger schema.
 
-Parallel work is allowed only when the scopes are clearly separate. Shared files, changing interfaces, and external targets stay serial.
+The root tasks.csv ledger is authoritative. It records task IDs, titles, statuses, contexts, dependencies, owners, acceptance, proof, and evidence.
 
-## Tasks and repository memory
+The visible task state uses exact task IDs and titles. It never invents IDs or replaces ledger state with generic progress reports.
 
-Lean-SDLC keeps work in a human-readable `tasks.csv` file at the repository root.
-
-Each implementation task represents one independently accepted result. Large requests become several tasks when their parts need separate implementation or verification.
-
-The current task list also appears in the Codex plan view.
-
-Three files form the minimum repository contract:
-
-- `AGENTS.md` contains durable repository instructions.
-- `docs/PROJECT.md` explains the project purpose, scope, and success criteria.
-- `tasks.csv` contains planned and active work.
-
-Other documents remain optional. Lean-SDLC creates them only when the project needs durable shared information.
-
-This repository state helps Codex continue correctly after a restart or context compaction.
+Backlog is parked work. Only direct user authority can add or promote a Backlog item.
 
 ## Small changes
 
-Small and settled changes can use a Quick Fix with an owner and focused check.
+An eligible Simple task uses the Quick Fix context and its pending-review markers.
 
-It avoids unnecessary child agents and broad verification. Related Quick Fixes can receive one shared review later.
+Verifier runs the immediate essential check. Broader regression and documentation review can remain explicitly pending for a shared checkpoint.
+
+Do not defer a known safety failure, required usage instruction, or necessary validation.
+
+## Documentation
+
+Every initialized repository needs:
+
+- AGENTS.md for the workflow entry and project rules.
+- docs/PROJECT.md for project purpose, scope, constraints, promise, and exit evidence.
+- Root tasks.csv for durable task state.
+
+Optional documents appear only when a concrete trigger needs durable shared detail.
+
+Numbered document families use the matching template in assets/. Each family receives an INDEX.md when its first numbered document exists.
+
+The Maintainer owns shared narrative truth and indexes. The Lead approves meaning and document splits.
 
 ## Verification
 
-Lean-SDLC separates three types of evidence:
+Lead writes implementation and test code. Verifier runs the required test and proof commands.
 
-- Focused checks cover the changed behavior.
-- Acceptance checks prove the requested result.
-- Regression checks cover important nearby risks.
+Verification checks the original user request, the task acceptance, and affected regression risk.
 
-The workflow avoids repeating identical checks without a reason.
+Stable inputs are checked before and after proof. Changed inputs invalidate affected evidence.
 
-Large test suites run only when the change or repository risk justifies them.
+The workflow preserves the distinction between actual behavioral checks, structural assertions, and saved-response checks.
 
-A task closes only after the evidence matches its acceptance criteria.
+## Recorded operations
 
-## Repeated operations
+A first build, package, deployment, flash, runtime, or smoke procedure becomes recorded only after a guided success.
 
-Builds, deployments, firmware flashing, packaging, and similar operations can become recorded procedures.
+Later Maintainer runs replay the valid procedure against its explicit target and accepted source identity.
 
-If a repeated procedure becomes stable, Lean-SDLC can propose a deterministic script. It does not create permanent automation without a useful reuse case.
+Automatic routine discovery and automatic script-creation suggestions are not part of this workflow.
 
-Recorded procedures remain visible and maintainable inside the repository.
+Create a new reusable script only after an explicit user request.
+
+Standing authority can cover the same recorded scope and target. Do not infer publication, deployment, commit, or push authority from an idea or code request.
 
 ## Install
 
@@ -126,51 +127,67 @@ Requirements:
 - Python 3
 - Codex with plugin support
 
-Install the immutable `v1.24.3` release:
+Install the immutable v1.28.0 release:
 
-```bash
-git clone --depth 1 --branch v1.24.3 https://github.com/laikrodiz/lean-sdlc.git
+~~~bash
+git clone --depth 1 --branch v1.28.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc
-```
+~~~
 
 Restart Codex after installation. Then start a new thread.
 
-Lean-SDLC checks for a newer release once daily. It never updates itself automatically.
+For release validation, run:
+
+~~~bash
+python3 scripts/release_check.py
+~~~
 
 ## Use
 
-Initialize a repository:
+Discuss an idea without repository changes:
 
-```text
-Use $lean-sdlc to initialize this repository and shape the project.
-```
+~~~text
+Use $lean-sdlc to discuss this idea without changing files.
+~~~
+
+Create a plan only:
+
+~~~text
+Use $lean-sdlc to make a plan only.
+~~~
+
+Plan and implement an authorized change:
+
+~~~text
+Use $lean-sdlc to plan and implement this change.
+~~~
 
 Continue existing work:
 
-```text
+~~~text
 Use $lean-sdlc to continue this repository task.
-```
-
-Use only the Architect:
-
-```text
-Use $lean-sdlc in Solo mode.
-```
+~~~
 
 Upgrade an older Lean-SDLC repository:
 
-```text
+~~~text
 Use $lean-sdlc to upgrade this repository to the current contract.
-```
+~~~
 
 ## Detailed rules
 
-The README explains the product. The following documents define the exact behavior:
+The following documents define exact behavior:
 
-- [Shape](plugins/lean-sdlc/skills/lean-sdlc/references/shape.md)
+- [Conversation](plugins/lean-sdlc/skills/lean-sdlc/references/conversation.md)
 - [Plan](plugins/lean-sdlc/skills/lean-sdlc/references/plan.md)
-- [Repository contract](plugins/lean-sdlc/skills/lean-sdlc/references/repository-contracts.md)
-- [Child-agent policy](plugins/lean-sdlc/skills/lean-sdlc/references/subagents.md)
-- [Verification](plugins/lean-sdlc/skills/lean-sdlc/references/verify.md)
+- [Ledger](plugins/lean-sdlc/skills/lean-sdlc/references/ledger.md)
+- [Documentation](plugins/lean-sdlc/skills/lean-sdlc/references/documentation.md)
+- [Operations](plugins/lean-sdlc/skills/lean-sdlc/references/operations.md)
+- [Recorded release check](docs/OPERATIONS.md)
+- [Shared protocol](plugins/lean-sdlc/skills/lean-sdlc/protocols/common.md)
+- [Lead protocol](plugins/lean-sdlc/skills/lean-sdlc/protocols/lead.md)
+- [Maintainer protocol](plugins/lean-sdlc/skills/lean-sdlc/protocols/maintainer.md)
+- [Scout protocol](plugins/lean-sdlc/skills/lean-sdlc/protocols/scout.md)
+- [Verifier protocol](plugins/lean-sdlc/skills/lean-sdlc/protocols/verifier.md)
