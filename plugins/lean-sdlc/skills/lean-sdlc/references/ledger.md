@@ -25,7 +25,7 @@ Backlog rows remain sparse. They contain only ID, title, status, and context; no
 
 Dependencies must exist, be cycle-free, and be Done before start or close. The helper locks, rereads, validates, and atomically replaces the ledger. Preserve durability warnings. Owner IDs coordinate work; they are not a security boundary. A ledger lock does not protect source files.
 
-After ownership is confirmed, run `python3 "<check-helper>" "<repo-root>" --before-write --task TASK-ID --owner OWNER` before the first non-control write. Do not continue on failure. Ordinary status transactions can run asynchronously, but write prerequisites need confirmed results. Report failures immediately and reconcile actual rows before completion.
+After ownership is confirmed, run `python3 "<check-helper>" "<repo-root>" --before-write --task TASK-ID --owner OWNER` before the first non-control write. Do not continue on failure. Ordinary status transactions can run asynchronously under [plan](plan.md), but write prerequisites need confirmed results. Maintainer can batch accepted closure and dependent start into one assignment using the existing helper commands in order. A failed prerequisite stops the dependent transaction, not unrelated ready work. Report failures immediately and reconcile actual rows before completion.
 
 ## Initialization and upgrade
 

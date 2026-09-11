@@ -12,14 +12,16 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 
 - One workflow with no mode selector and no Engineer route.
 - Natural conversation, brainstorming, shaping, investigation, and diagnosis remain read-only until explicit implementation authority exists.
-- Plan-only requests show a five-field plan and stop. Plan-and-implement requests continue within their authority.
+- Before the initial task set, new authorized work, or a material scope change, Lead visibly restates meaningful intent and shows all five fields. Later task claims reuse the unchanged visible approved plan. Plan-only requests remain read-only and stop after the plan. Plan-and-implement requests continue within their authority without repeated approval.
 - One canonical lifecycle from intent through owned work, proof, documentation, operations, and closeout.
 - Five visible plan fields: Outcome, Work, Acceptance, Checks, and Limits.
 - Simple, Normal, and Complex task grades remain transient in the visible plan and handoffs. Grades do not add ledger columns.
 - Root tasks.csv remains the only durable task plan. The ledger keeps atomic outcomes, owners, dependencies, acceptance, proof, and evidence.
+- The initial current-work table shows all authorized tasks with the first task In Progress. Middle updates show changed rows only. Final tables reconcile actual states. After accepted closure, Lead may show Done and continue ready work without waiting for ledger acknowledgment. Failed transactions correct only affected rows. Real IDs, ownership, dependencies, and before-write gates remain prerequisites.
 - Backlog remains parked work. Direct user authority is required to add or promote it.
 - Lead owns intent, architecture, scope, permissions, task boundaries, acceptance, integration, and final decisions.
 - Lead implements code and writes code-local tests. Scout performs bounded read-only evidence work. Maintainer performs routine ledger writes, shared-document work, and authorized recorded operations. Verifier runs all tests and independent proof.
+- Before launch or reassignment, support handoffs state one sentence of purpose and whether work waits or continues. Event-driven waits avoid unchanged status or log polling. Routine subagent start, acknowledgment, and progress messages are omitted. Report failures, blockers, and required decisions immediately; otherwise return one useful final result without duplicate success messages. Related ledger transactions may be batched; a next-task Scout, consolidated proof, and Maintainer handoff facts are optional support patterns. Routine ledger success is silent unless IDs, prerequisites, or final reconciliation are needed.
 - Support roles cannot assign peers, widen scope, change decisions, or modify tracked source outside their boundary.
 - Independent stable scopes may overlap only with stable inputs, separate mutable resources, no unfinished dependency, and meaningful time savings. Shared interfaces, schemas, manifests, generated output, and external targets remain serial.
 - Cancellation checks the underlying process or command. Uncertain termination keeps the target blocked.
@@ -71,6 +73,6 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 ## Current promise
 
 - Stage: Evolution
-- Version: 1.28.0
-- Version goal: Deliver one task-authorized workflow with Lead-owned implementation, bounded Scout, Maintainer, and Verifier support, explicit authority separation, preserved project state, and validated release and installation behavior.
-- Exit evidence required: Actual authority and interruption cases; focused ledger transactions; full Verifier test execution; changed-input and failure handling; documentation trigger and parity review; controlled operation and cancellation cases; upgrade preservation evidence; portable release checks; exact remote identity; installed/source comparison; selected-repository structural validation; and final ledger reconciliation.
+- Version: 1.29.0
+- Version goal: Deliver complete visible planning, concise task-state updates, optimistic accepted closure, and lower subagent coordination overhead without weakening ownership or verification boundaries.
+- Exit evidence required: Full local tests, structural and package checks, documentation review, exact remote identity, installed/source comparison, selected-repository upgrade validation, and final ledger reconciliation. Full native model behavior remains partly unverified under user-approved reduced acceptance.

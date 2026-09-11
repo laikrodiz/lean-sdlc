@@ -19,23 +19,26 @@ Supply exact repository and skill roots plus required helper paths. Do not make 
 
 ## Communication
 
-Make assignments and returns visible as short, readable bullets. State decisions and relevant evidence, never private reasoning. Use active American English, one meaning per term, and short sentences. Keep procedures within 20 words and descriptions within 25 words where technical meaning permits. Do not claim certified ASD-STE100 compliance.
+Before launching or materially reassigning an agent, Lead gives one short sentence naming the agent, its purpose, and whether Lead waits or continues. For example: "Verifier gamma will check the completed change while I implement the next independent task." Wording is flexible; "report back" alone does not show the waiting relationship. Keep the detailed assignment separate and do not repeat it in the announcement. Report a failed launch instead of implying it started.
 
-- Start: confirm the assignment, boundary, expected result, and immediate action. Do not request approval again for settled work.
-- Progress: exact task ID and title; status; observed evidence; next action; blocker if present. Report a meaningful change, not repeated status.
-- Success: one sentence stating what is Done. Verifier uses PASS and names executed checks and acceptance scope.
+State decisions and relevant evidence, never private reasoning. Use active American English, one meaning per term, and short sentences. Keep procedures within 20 words and descriptions within 25 words where technical meaning permits. Do not claim certified ASD-STE100 compliance.
+
+- Start and progress: no routine acknowledgment or "still working" report. Send a partial result only when requested or when it releases a real dependency; identify incomplete coverage.
+- Success: one useful final result, with no duplicate completion message. Verifier uses PASS and names executed checks and acceptance scope. Routine ledger success needs no conversational reply unless IDs, prerequisite confirmation, or final reconciliation are needed. If the runtime requires a terminal response, keep it minimal.
 - Failure or Blocked: failed check or action; expected and actual result; location; affected work; decision needed.
 - Correction: identify the defect, unchanged acceptance, allowed changes, and required recheck.
 - Operation: status, target, artifact, and next Lead action. Include failure-log location only when useful.
 - Completion: outcome, acceptance evidence, deferred review or remaining risk, and release or next action.
 
-An agent sends one final return, not a separate duplicate completion message. Send immediate messages for failures, collisions, changed assumptions, or decisions. Lead does not repeat unchanged agent output. Never replace visible task state with a generic step report.
+Send immediate messages for failures, blockers, collisions, unsafe conditions, changed assumptions, or required decisions. Lead does not repeat unchanged agent output. Never replace visible task state with a generic step report. A required final result remains mandatory; silence is not evidence of successful verification, ownership, or delivery.
 
 ## Concurrency and interruption
 
 One writer owns each mutable path or external target. A ledger lock protects only the ledger. Independent work may overlap only with stable inputs and no unfinished dependency. Include generated outputs, caches, fixtures, services, ports, and devices in the boundary.
 
-A wait timeout or silence is not failure. Reuse reachable agents and use bounded waits. Request status before replacing an apparently inactive agent.
+Continue useful independent authorized work instead of waiting for routine acknowledgment. When a result is required, use an event-driven wait with the longest practical duration allowed by the host. After an unchanged timeout, renew the wait without listing agents, rereading logs, or requesting status. Do not poll unchanged results or send repeated waiting updates. If Lead changes from independent work to waiting, announce the transition once.
+
+A wait timeout or silence is not failure. Request status only when evidence suggests a problem or an agreed checkpoint has passed. Reuse reachable agents. Establish why replacement is necessary before replacing an apparently inactive agent. Waiting cannot bypass an unconfirmed prerequisite or shared-resource boundary.
 
 For cancellation, stop the affected assignment and confirm whether its underlying command or process stopped. A stopped agent does not prove command termination. If termination cannot be confirmed, keep the target blocked. Late results cannot restore canceled authority.
 

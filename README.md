@@ -34,7 +34,9 @@ Implementation starts only after the plan is ready. Completion requires evidence
 
 Conversation, brainstorming, shaping, investigation, and diagnosis remain read-only until the user gives implementation authority.
 
-A plan-only request shows the five-field plan and then stops.
+Before the initial task set, new authorized work, or a material scope change, the Lead visibly restates meaningful intent and shows all five plan fields. Later task claims reuse the unchanged visible approved plan.
+
+A plan-only request remains read-only and stops after the plan.
 
 A plan-and-implement request continues within the stated authority without another approval round.
 
@@ -52,6 +54,8 @@ The selected Codex model is the Lead. The Lead remains responsible for the resul
 | Verifier | Runs all tests and independent acceptance and regression proof. It does not change tracked files. |
 
 The Lead gives each support role an exact boundary, input, acceptance, proof, and stop condition.
+
+Before launch or reassignment, each support handoff states its purpose and whether work waits or continues. Event-driven waits avoid routine status and log polling. Routine subagent start, acknowledgment, and progress messages are omitted. Report failures, blockers, and required decisions immediately; otherwise return one useful final result without duplicate success messages. Related ledger work may be batched, a next-task Scout may prepare ready work, proof may be consolidated, and Maintainer returns final handoff facts. Routine ledger success stays silent unless IDs, prerequisites, or final reconciliation are needed.
 
 Independent stable scopes may overlap only with stable inputs, separate mutable resources, no unfinished dependency, and meaningful time savings. Shared interfaces and external targets stay serial.
 
@@ -72,6 +76,8 @@ Simple, Normal, and Complex grades describe task complexity. They stay in the vi
 The root tasks.csv ledger is authoritative. It records task IDs, titles, statuses, contexts, dependencies, owners, acceptance, proof, and evidence.
 
 The visible task state uses exact task IDs and titles. It never invents IDs or replaces ledger state with generic progress reports.
+
+The initial table shows all current authorized work, with the first task In Progress. Middle updates show changed rows only. The final table reconciles actual ledger state. After accepted closure, Lead may show Done and continue ready work without waiting for ledger acknowledgment. A failed transaction corrects only affected visible rows. Real IDs, ownership, dependencies, and before-write gates remain prerequisites.
 
 Backlog is parked work. Only direct user authority can add or promote a Backlog item.
 
@@ -127,10 +133,10 @@ Requirements:
 - Python 3
 - Codex with plugin support
 
-Install the immutable v1.28.0 release:
+Install the immutable v1.29.0 release:
 
 ~~~bash
-git clone --depth 1 --branch v1.28.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.29.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc

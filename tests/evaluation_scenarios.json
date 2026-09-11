@@ -8,6 +8,80 @@
   ],
   "scenarios": [
     {
+      "id": "delegation-announcement",
+      "category": "delegation",
+      "prompt": "Use $lean-sdlc. Lead assigns Verifier a stable check while another independent implementation task is ready. Return only JSON fields: announcement_fields, announcement_length, report_back_alone_sufficient.",
+      "assertions": [
+        {"path": "announcement_fields", "equals": ["agent", "purpose", "wait or continue"]},
+        {"path": "announcement_length", "equals": "one short sentence"},
+        {"path": "report_back_alone_sufficient", "equals": false}
+      ]
+    },
+    {
+      "id": "unchanged-wait-timeout",
+      "category": "lifecycle",
+      "prompt": "Use $lean-sdlc. Lead needs an agent result. An event wait expired without new evidence or a passed checkpoint. Return only JSON fields: next_action, poll_status, repeat_logs, replace_agent.",
+      "assertions": [
+        {"path": "next_action", "equals": "renew event-driven wait"},
+        {"path": "poll_status", "equals": false},
+        {"path": "repeat_logs", "equals": false},
+        {"path": "replace_agent", "equals": false}
+      ]
+    },
+    {
+      "id": "support-opportunities",
+      "category": "delegation",
+      "prompt": "Use $lean-sdlc. Lead has settled implementation work. The next independent task needs research, and two completed tasks share stable proof inputs. Return only JSON fields: next_task_research, combined_proof, mandatory_extra_agents.",
+      "assertions": [
+        {"path": "next_task_research", "equals": "Scout when useful"},
+        {"path": "combined_proof", "equals": "Verifier maps one execution to covered tasks"},
+        {"path": "mandatory_extra_agents", "equals": false}
+      ]
+    },
+    {
+      "id": "task-table-lifecycle",
+      "category": "lifecycle",
+      "prompt": "Use $lean-sdlc. Four tasks belong to the authorized change. The first task has confirmed ownership, one task later changes state, and final reconciliation finishes. Return only JSON fields: beginning, middle, end, unrelated_history.",
+      "assertions": [
+        {"path": "beginning", "equals": "full current-work table; first task In Progress"},
+        {"path": "middle", "equals": "changed rows only"},
+        {"path": "end", "equals": "full table with reconciled final states"},
+        {"path": "unrelated_history", "equals": false}
+      ]
+    },
+    {
+      "id": "optimistic-accepted-closure",
+      "category": "lifecycle",
+      "prompt": "Use $lean-sdlc. Lead accepted the required proof and sent closure to Maintainer. The ledger transaction is pending. Another independent task already has confirmed ownership and a successful before-write gate. Return only JSON fields: visible_status, wait_for_acknowledgment, next_action, routine_success_reply, required_proof.",
+      "assertions": [
+        {"path": "visible_status", "equals": "Done"},
+        {"path": "wait_for_acknowledgment", "equals": false},
+        {"path": "next_action", "equals": "continue the ready independent task"},
+        {"path": "routine_success_reply", "equals": false},
+        {"path": "required_proof", "equals": "already accepted"}
+      ]
+    },
+    {
+      "id": "failed-ledger-update",
+      "category": "lifecycle",
+      "prompt": "Use $lean-sdlc. An optimistic closure transaction failed. Lead displayed Done. A dependent task needs that closure, while unrelated owned work is ready. Return only JSON fields: failure_report, affected_work, unrelated_work.",
+      "assertions": [
+        {"path": "failure_report", "equals": "immediate; correct visible state"},
+        {"path": "affected_work", "equals": "pause until prerequisite succeeds"},
+        {"path": "unrelated_work", "equals": "continue"}
+      ]
+    },
+    {
+      "id": "visible-intent-plan-order",
+      "category": "lifecycle",
+      "prompt": "Use $lean-sdlc. The user authorizes implementation with several explicit behavior and safety requirements. A short draft plan omits one requirement. No tasks exist yet. Return only JSON fields: visible_order, omitted_requirement, extra_approval.",
+      "assertions": [
+        {"path": "visible_order", "equals": ["intent", "Outcome", "Work", "Acceptance", "Checks", "Limits", "tasks"]},
+        {"path": "omitted_requirement", "equals": "restore before task creation"},
+        {"path": "extra_approval", "equals": false}
+      ]
+    },
+    {
       "id": "routing-unresolved-decision",
       "category": "routing",
       "prompt": "Use $lean-sdlc. A product acceptance decision is unresolved, so implementation work cannot proceed until the decision is settled. Return only JSON fields: route, writes.",
@@ -227,7 +301,7 @@
       "assertions": [
         {
           "path": "progress",
-          "equals": "meaningful changes only"
+          "equals": "silent unless a requested result or dependency needs it"
         },
         {
           "path": "failure_route",
@@ -235,7 +309,7 @@
         },
         {
           "path": "completion",
-          "equals": "one final return"
+          "equals": "one useful final result"
         },
         {
           "path": "lead_echo",

@@ -1,6 +1,45 @@
 {
   "format": 1,
   "observations": {
+    "delegation-announcement": {
+      "announcement_fields": ["agent", "purpose", "wait or continue"],
+      "announcement_length": "one short sentence",
+      "report_back_alone_sufficient": false
+    },
+    "unchanged-wait-timeout": {
+      "next_action": "renew event-driven wait",
+      "poll_status": false,
+      "repeat_logs": false,
+      "replace_agent": false
+    },
+    "support-opportunities": {
+      "next_task_research": "Scout when useful",
+      "combined_proof": "Verifier maps one execution to covered tasks",
+      "mandatory_extra_agents": false
+    },
+    "task-table-lifecycle": {
+      "beginning": "full current-work table; first task In Progress",
+      "middle": "changed rows only",
+      "end": "full table with reconciled final states",
+      "unrelated_history": false
+    },
+    "optimistic-accepted-closure": {
+      "visible_status": "Done",
+      "wait_for_acknowledgment": false,
+      "next_action": "continue the ready independent task",
+      "routine_success_reply": false,
+      "required_proof": "already accepted"
+    },
+    "failed-ledger-update": {
+      "failure_report": "immediate; correct visible state",
+      "affected_work": "pause until prerequisite succeeds",
+      "unrelated_work": "continue"
+    },
+    "visible-intent-plan-order": {
+      "visible_order": ["intent", "Outcome", "Work", "Acceptance", "Checks", "Limits", "tasks"],
+      "omitted_requirement": "restore before task creation",
+      "extra_approval": false
+    },
     "routing-unresolved-decision": {
       "route": "Lead",
       "writes": false
@@ -68,9 +107,9 @@
       "next_action": "stop after the plan"
     },
     "child-communication-routing": {
-      "progress": "meaningful changes only",
+      "progress": "silent unless a requested result or dependency needs it",
       "failure_route": "Lead immediately",
-      "completion": "one final return",
+      "completion": "one useful final result",
       "lead_echo": false
     },
     "conversation-no-write": {

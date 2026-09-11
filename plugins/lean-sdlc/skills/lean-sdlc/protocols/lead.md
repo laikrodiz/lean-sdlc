@@ -4,11 +4,13 @@ Read [common](common.md) and [plan](../references/plan.md). Lead implements all 
 
 ## Prepare
 
-Restate the user's full intended outcome, relevant boundaries, and requested actions. Preserve important details; do not compress away requirements. Separate user requirements from proposed additions. If discussion is still exploratory, use [conversation](../references/conversation.md) instead of execution machinery.
+Follow [plan](../references/plan.md) for the visible intent restatement, complete five-field plan, and requirement check before task creation or claiming. If discussion is still exploratory, use [conversation](../references/conversation.md) instead of execution machinery.
 
-Show the plan before task creation. Review independent acceptance boundaries, then ask Maintainer to create or claim the tasks. Before writing, confirm the exact task, Lead owner, acceptance, proof, and successful before-write gate. A dispatched request is not proof of an owned task. All roles may read compact task views; Maintainer alone performs routine ledger transactions.
+Review independent acceptance boundaries, then ask Maintainer to create or claim the tasks. Before writing, confirm the exact task, Lead owner, acceptance, proof, and successful before-write gate. A dispatched request is not proof of an owned task. All roles may read compact task views; Maintainer alone performs routine ledger transactions.
 
 For broad or uncertain scope, give Scout a bounded question without a preferred answer. Require a complete map of affected paths, callers, consumers, contracts, tests, and gaps. Read the required implementation files and decisive evidence yourself. Do not repeat Scout's completed search or implement from an incomplete summary.
+
+Use existing support roles when the work saves useful time or context: Maintainer batches bookkeeping and prepares final handoff facts; Scout can map the next independent uncertain task; Verifier can consolidate proof across stable task scopes. These are opportunities, not mandatory assignments. Do not create agents or duplicate reading merely to fill available capacity. Announcements and waiting follow [common](common.md).
 
 ## Implement
 
@@ -16,7 +18,7 @@ Trace the real flow before choosing the smallest change. Reuse existing code or 
 
 For a bug, reproduce the symptom or state why reproduction is unavailable. Separate evidence from hypotheses. Trace callers and shared contracts to the owning cause. Fix the cause once, not each symptom. If the same failure repeats without new evidence, stop the patch loop and reassess. A confident explanation without reproduction or equivalent evidence remains a hypothesis.
 
-Implement tasks serially. Write the smallest useful regression test with non-trivial logic; Verifier runs it. A cosmetic edit does not automatically need a new test or broad suite. Classify relevant edge cases as Handle, Reject, Defer, or Impossible by invariant. Never defer essential validation or safety proof.
+Implement tasks serially. Write the smallest useful regression test with non-trivial logic; Verifier runs it. Verifier runs all tests, including existing, baseline, preflight, and regression tests; Lead does not execute test commands. A cosmetic edit does not automatically need a new test or broad suite. Classify relevant edge cases as Handle, Reject, Defer, or Impossible by invariant. Never defer essential validation or safety proof.
 
 Before each verification handoff, identify stable inputs and the required checks. Continue a ready independent task while Verifier runs. Do not edit its inputs. If an input must change, notify Verifier, invalidate affected evidence, and arrange a fresh check.
 
@@ -26,7 +28,7 @@ If an unrelated failure arrives, finish only the current coherent edit, then cor
 
 Compare the original request, approved plan, implementation, actual proof, and affected documentation. Task text alone cannot replace the user's requirements. Lead decides acceptance; Maintainer records the accepted closure using the Lead owner.
 
-Update the visible task table when requesting ordinary status or closure transactions. Do not wait idle if independent authorized work remains. Maintainer must report failures immediately; correct the table when a transaction fails. Confirm ownership and other write prerequisites before depending on them.
+Follow [plan](../references/plan.md) for optimistic status updates and beginning, changed-row, and final tables. Accepted closure does not require a ledger acknowledgment before continuing ready work. Confirm write prerequisites, not routine bookkeeping success; Maintainer reports transaction failures.
 
 Report ready for user testing when the actual artifact and immediate required checks are ready. Identify deferred Simple-task reviews explicitly. Do not imply deployment occurred merely because source changed.
 

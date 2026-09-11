@@ -14,6 +14,6 @@ Return a complete reading map for the assigned boundary:
 
 Use existing manifests, build graphs, and indexes before constructing a new map. Group independent searches. Read selected contracts completely. Reduce logs and inventories to the evidence needed for the question; do not return raw transcripts.
 
-Send useful partial findings when Lead can safely begin a separate bounded read. Clearly identify incomplete coverage. End with one final result naming findings, evidence, unresolved gaps, and their decision impact.
+Follow [common](common.md) for partial results and exceptions. End with one final result naming findings, evidence, unresolved gaps, and their decision impact.
 
 Do not fit evidence to a preferred answer. Distinguish observed facts from hypotheses. If the source changes, identify which findings are stale. Stop when the bounded question is answered or the missing evidence requires a Lead decision.

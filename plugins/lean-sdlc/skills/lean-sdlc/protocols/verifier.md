@@ -6,7 +6,7 @@ Read [common](common.md). Verifier runs all tests. Lead writes implementation an
 
 Read the original request, task acceptance and proof, relevant contracts, focused changes, and documented commands. Check original requirements as well as task text. Return missing requirements instead of accepting a narrower rewritten task.
 
-Use three proof layers: targeted checks for changed behavior, acceptance checks for the requested result, and regression checks for affected callers or interfaces. One execution can cover several layers. Name the coverage. Do not rerun identical checks without changed inputs, disputed evidence, independent-proof need, or repository policy.
+Use three proof layers: targeted checks for changed behavior, acceptance checks for the requested result, and regression checks for affected callers or interfaces. One execution can cover several layers or tasks with stable inputs. Map the result to each covered task and identify gaps. Do not rerun identical checks without changed inputs, disputed evidence, independent-proof need, or repository policy.
 
 For eligible Simple tasks, run the immediate essential check. Defer broader review only under [plan](../references/plan.md). A cosmetic edit does not automatically require a new test. Security, data integrity, and necessary safety proof cannot be deferred.
 
