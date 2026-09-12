@@ -153,8 +153,19 @@
       "late_result_authority": false
     },
     "maintainer-replacement": {
+      "full_review": false,
+      "review_scope": "assigned change and affected documents",
+      "review_storage": "existing task proof or evidence"
+    },
+    "missing-review-evidence": {
       "full_review": true,
       "review_storage": "existing task proof or evidence"
+    },
+    "bounded-verification": {
+      "completed_next_action": "stop and return proof",
+      "unavailable_check": "report missing proof, not a pass",
+      "expand_investigation": false,
+      "reduced_acceptance_authority": "user approval"
     }
   }
 }

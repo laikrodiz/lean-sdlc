@@ -472,16 +472,40 @@
     {
       "id": "maintainer-replacement",
       "category": "lifecycle",
-      "prompt": "Use $lean-sdlc. A new Maintainer replaces the previous agent after a documentation review. Return only JSON fields: full_review, review_storage.",
+      "prompt": "Use $lean-sdlc. A new Maintainer receives a narrow documentation change. The previous review evidence is recoverable and valid, and the change has no broad effects. Return only JSON fields: full_review, review_scope, review_storage.",
       "assertions": [
         {
           "path": "full_review",
-          "equals": true
+          "equals": false
+        },
+        {
+          "path": "review_scope",
+          "equals": "assigned change and affected documents"
         },
         {
           "path": "review_storage",
           "equals": "existing task proof or evidence"
         }
+      ]
+    },
+    {
+      "id": "missing-review-evidence",
+      "category": "lifecycle",
+      "prompt": "Use $lean-sdlc. A Maintainer cannot recover the relevant documentation review evidence. Return only JSON fields: full_review, review_storage.",
+      "assertions": [
+        {"path": "full_review", "equals": true},
+        {"path": "review_storage", "equals": "existing task proof or evidence"}
+      ]
+    },
+    {
+      "id": "bounded-verification",
+      "category": "proof",
+      "prompt": "Use $lean-sdlc. One verification assignment has sufficient proof and met its stopping condition. In another assignment, a required check is unavailable and needs unassigned infrastructure diagnosis. Return only JSON fields: completed_next_action, unavailable_check, expand_investigation, reduced_acceptance_authority.",
+      "assertions": [
+        {"path": "completed_next_action", "equals": "stop and return proof"},
+        {"path": "unavailable_check", "equals": "report missing proof, not a pass"},
+        {"path": "expand_investigation", "equals": false},
+        {"path": "reduced_acceptance_authority", "equals": "user approval"}
       ]
     }
   ]

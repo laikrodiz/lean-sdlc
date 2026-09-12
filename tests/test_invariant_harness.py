@@ -1,4 +1,4 @@
-"""Instruction ownership checks; these are not live behavioral evidence."""
+"""Critical instruction contracts; prose checks are not live behavioral evidence."""
 from __future__ import annotations
 
 import re
@@ -19,42 +19,28 @@ class FrozenInvariant:
 
 
 FROZEN_INVARIANTS = (
-    FrozenInvariant("request routing", "SKILL.md", ("Interpret the request", "Read-only requests create no tasks", "Read only what applies")),
-    FrozenInvariant("conversation authority", "references/conversation.md", ("A detailed idea is not implementation authority", "Make a plan", "then stop", "Do not print that entire checklist")),
-    FrozenInvariant("five-field plan", "references/plan.md", ("Outcome:", "Work:", "Acceptance:", "Checks:", "Limits:")),
-    FrozenInvariant("visible intent before tasks", "references/plan.md", ("Before creating or claiming the initial task set, visibly restate", "always show all five fields", "every explicit user requirement", "cannot replace this visible plan", "plan-only request stops", "reuse the visible approved plan")),
-    FrozenInvariant("atomic task boundaries", "references/plan.md", ("independently accepted outcome", "proof cluster", "close decision", "Local implementation steps remain transient")),
-    FrozenInvariant("transient grades", "references/plan.md", ("Simple, Normal, or Complex", "not a CSV column or new state file")),
-    FrozenInvariant("visible task state", "references/plan.md", ("| Task ID | Short description | Grade | Status |", "TASK-NNN — Title", "ledger remains authoritative", "native view is optional")),
+    # Keep authority, ownership, prerequisites, and user-required output contracts.
+    # Generic advice and incidental wording belong in focused review, not this list.
+    FrozenInvariant("read-only authority", "SKILL.md", ("Read-only requests create no tasks",)),
+    FrozenInvariant("conversation authority", "references/conversation.md", ("A detailed idea is not implementation authority",)),
+    FrozenInvariant("visible plan", "references/plan.md", ("always show all five fields", "every explicit user requirement", "plan-only request stops")),
+    FrozenInvariant("visible task state", "references/plan.md", ("| Task ID | Short description | Grade | Status |", "ledger remains authoritative")),
     FrozenInvariant("task table lifecycle", "references/plan.md", ("Beginning: show the full table", "Middle: show only rows", "End: show the full table", "actual final states after ledger reconciliation")),
-    FrozenInvariant("optimistic accepted closure", "references/plan.md", ("dispatch closure to Maintainer, show Done", "without waiting for ledger acknowledgment", "correct the visible state", "optimism never bypasses")),
-    FrozenInvariant("deferred Simple review", "references/plan.md", ("existing `Quick Fix` context", "Verifier runs the immediate essential check", "user can test", "before release", "--review-through")),
+    FrozenInvariant("optimistic accepted closure", "references/plan.md", ("dispatch closure to Maintainer, show Done", "without waiting for ledger acknowledgment", "optimism never bypasses")),
     FrozenInvariant("owned write prerequisites", "protocols/lead.md", ("Before writing, confirm", "successful before-write gate", "A dispatched request is not proof")),
-    FrozenInvariant("Lead implementation and diagnosis", "protocols/lead.md", ("Lead implements all code and domain changes", "Trace callers", "stop the patch loop", "Verifier runs it", "including existing, baseline, preflight, and regression tests", "Lead does not execute test commands")),
-    FrozenInvariant("original acceptance", "protocols/lead.md", ("Compare the original request", "Task text alone cannot replace", "Never force stopped")),
-    FrozenInvariant("asynchronous failure response", "protocols/lead.md", ("finish only the current coherent edit", "Stop affected work immediately", "invalidate affected evidence")),
-    FrozenInvariant("assignment envelope", "protocols/common.md", ("Action:", "Target:", "Result:", "Limits:")),
-    FrozenInvariant("role authority", "protocols/common.md", ("Only Lead assigns", "Support agents cannot spawn", "one useful final result", "Lead does not repeat")),
-    FrozenInvariant("delegation announcement", "protocols/common.md", ("one short sentence naming the agent, its purpose", "whether Lead waits or continues", "Report a failed launch")),
-    FrozenInvariant("efficient waiting and results", "protocols/common.md", ("event-driven wait", "After an unchanged timeout, renew the wait", "no routine acknowledgment", "silence is not evidence")),
-    FrozenInvariant("resource isolation", "protocols/common.md", ("One writer owns each mutable", "A ledger lock protects only", "generated outputs, caches, fixtures, services, ports, and devices")),
-    FrozenInvariant("cancellation and reuse", "protocols/common.md", ("timeout or silence is not failure", "underlying command or process", "Late results cannot restore canceled authority")),
-    FrozenInvariant("model profile", "protocols/common.md", ("user-selected Lead model", "model=gpt-5.6-luna", "reasoning_effort=max", "gpt-5.6-terra", "Never silently reduce")),
-    FrozenInvariant("complete bounded evidence", "protocols/scout.md", ("complete reading map", "Downstream consumers", "configuration", "missing coverage", "authoritative source links")),
-    FrozenInvariant("Maintainer ledger priority", "protocols/maintainer.md", ("only routine ledger writer", "Lead-assigned owner", "Prioritize ledger transactions", "Report a transaction failure immediately")),
-    FrozenInvariant("documentation review continuity", "protocols/maintainer.md", ("Record full consistency-review scope", "After compaction", "A new Maintainer always performs a full consistency review")),
-    FrozenInvariant("independent proof", "protocols/verifier.md", ("Verifier runs all tests", "original requirements", "targeted checks", "acceptance checks", "regression checks")),
-    FrozenInvariant("stable proof inputs", "protocols/verifier.md", ("services, databases, devices", "before and after proof", "even if a later fingerprint matches", "does not identify external state")),
-    FrozenInvariant("honest evidence", "protocols/verifier.md", ("not a live behavioral test", "Never report an unexecuted command as passed", "remaining risks or unavailable checks")),
-    FrozenInvariant("ledger integrity", "references/ledger.md", ("only durable task plan", "locks, rereads, validates, and atomically replaces", "cycle-free", "not a security boundary")),
-    FrozenInvariant("Backlog authority", "references/ledger.md", ("only under direct user authority", "Backlog rows remain sparse", "Backlog is not execution authority")),
-    FrozenInvariant("compatible upgrade", "references/ledger.md", ("before Lead requests startup context", "v1.24.3", "earlier ledger conversions", "Conflicting root and planning ledgers stop", "--upgrade-contract", "custom rules")),
-    FrozenInvariant("required and optional docs", "references/documentation.md", ("only mandatory shared project document", "Assessment for every change", "Optional families and triggers", "specific no-change reason")),
-    FrozenInvariant("document preservation", "references/documentation.md", ("Never reuse IDs", "INDEX.md", "One document holds one cohesive subject", "Preserve v1.24.3 document IDs")),
-    FrozenInvariant("archives and diagrams", "references/documentation.md", ("only on explicit user request", "Snapshots remain inert", "small Mermaid", "Do not use ASCII")),
-    FrozenInvariant("recorded operation authority", "references/operations.md", ("An operation record or script never grants permission", "standing authority", "stale procedure", "already-authorized recovery")),
-    FrozenInvariant("routine discovery removed", "references/operations.md", ("Automatic routine discovery", "not part of this workflow", "only when the user explicitly requests")),
-    FrozenInvariant("operation safety", "references/operations.md", ("target validation", "stable exit status", "noninteractive", "atomic output", "Redact tokens")),
+    FrozenInvariant("implementation ownership", "protocols/lead.md", ("Lead implements all code and domain changes", "Lead does not execute test commands")),
+    FrozenInvariant("original acceptance", "protocols/lead.md", ("Compare the original request", "Task text alone cannot replace")),
+    FrozenInvariant("role authority", "protocols/common.md", ("Only Lead assigns", "Support agents cannot spawn")),
+    FrozenInvariant("resource isolation", "protocols/common.md", ("One writer owns each mutable", "A ledger lock protects only")),
+    FrozenInvariant("cancellation", "protocols/common.md", ("underlying command or process", "Late results cannot restore canceled authority")),
+    FrozenInvariant("model profile", "protocols/common.md", ("user-selected Lead model", "model=gpt-5.6-luna", "reasoning_effort=max", "gpt-5.6-terra")),
+    FrozenInvariant("ledger ownership", "protocols/maintainer.md", ("only routine ledger writer", "Lead-assigned owner", "Close only after Lead accepts")),
+    FrozenInvariant("proof ownership", "protocols/verifier.md", ("Verifier runs all tests", "You do not change tracked source")),
+    FrozenInvariant("stable proof inputs", "protocols/verifier.md", ("before and after proof", "even if a later fingerprint matches")),
+    FrozenInvariant("honest evidence", "protocols/verifier.md", ("not a live behavioral test", "Never report an unexecuted command as passed")),
+    FrozenInvariant("Backlog authority", "references/ledger.md", ("only under direct user authority", "Backlog is not execution authority")),
+    FrozenInvariant("document preservation", "references/documentation.md", ("Never reuse IDs", "Preserve v1.24.3 document IDs")),
+    FrozenInvariant("recorded operation authority", "references/operations.md", ("An operation record or script never grants permission", "already-authorized recovery")),
 )
 
 

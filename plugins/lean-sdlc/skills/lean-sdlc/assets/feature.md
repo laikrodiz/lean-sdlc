@@ -10,7 +10,7 @@ State the included behavior, constraints, and exclusions.
 
 ## Edge Cases
 
-- <Handle, Reject, Defer, or Impossible by invariant>: <Case and treatment>
+- <Relevant case>: <Treatment or reason for an important omission>
 
 ## Acceptance
 

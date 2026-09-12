@@ -103,9 +103,13 @@ Numbered document families use the matching template in assets/. Each family rec
 
 The Maintainer owns shared narrative truth and indexes. The Lead approves meaning and document splits.
 
+Documentation review defaults to affected work and reuses valid review evidence. Broad review applies only for broad impact or missing relevant evidence.
+
 ## Verification
 
 Lead writes implementation and test code. Verifier runs the required test and proof commands.
+
+Verification assignments state a specific acceptance question, minimum sufficient checks, and a stop condition. Report unavailable proof; runtime investigation is not automatic. Required proof is not silently waived; reduced acceptance requires user approval.
 
 Verification checks the original user request, the task acceptance, and affected regression risk.
 
@@ -133,10 +137,10 @@ Requirements:
 - Python 3
 - Codex with plugin support
 
-Install the immutable v1.29.0 release:
+Install the immutable v1.30.0 release:
 
 ~~~bash
-git clone --depth 1 --branch v1.29.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.30.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc

@@ -21,6 +21,8 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 - Backlog remains parked work. Direct user authority is required to add or promote it.
 - Lead owns intent, architecture, scope, permissions, task boundaries, acceptance, integration, and final decisions.
 - Lead implements code and writes code-local tests. Scout performs bounded read-only evidence work. Maintainer performs routine ledger writes, shared-document work, and authorized recorded operations. Verifier runs all tests and independent proof.
+- Verification assignments state a specific acceptance question, minimum sufficient checks, and a stop condition. Unavailable proof is reported; runtime investigation is not automatic. Required proof is not silently waived; reduced acceptance requires user approval.
+- Documentation review defaults to affected work and reuses valid review evidence. Broad review applies only for broad impact or missing relevant evidence.
 - Before launch or reassignment, support handoffs state one sentence of purpose and whether work waits or continues. Event-driven waits avoid unchanged status or log polling. Routine subagent start, acknowledgment, and progress messages are omitted. Report failures, blockers, and required decisions immediately; otherwise return one useful final result without duplicate success messages. Related ledger transactions may be batched; a next-task Scout, consolidated proof, and Maintainer handoff facts are optional support patterns. Routine ledger success is silent unless IDs, prerequisites, or final reconciliation are needed.
 - Support roles cannot assign peers, widen scope, change decisions, or modify tracked source outside their boundary.
 - Independent stable scopes may overlap only with stable inputs, separate mutable resources, no unfinished dependency, and meaningful time savings. Shared interfaces, schemas, manifests, generated output, and external targets remain serial.
@@ -73,6 +75,6 @@ Lean-SDLC is a small, shareable Codex workflow for turning a clear user outcome 
 ## Current promise
 
 - Stage: Evolution
-- Version: 1.29.0
-- Version goal: Deliver complete visible planning, concise task-state updates, optimistic accepted closure, and lower subagent coordination overhead without weakening ownership or verification boundaries.
-- Exit evidence required: Full local tests, structural and package checks, documentation review, exact remote identity, installed/source comparison, selected-repository upgrade validation, and final ledger reconciliation. Full native model behavior remains partly unverified under user-approved reduced acceptance.
+- Version: 1.30.0
+- Version goal: Deliver bounded verification, affected-work documentation reviews, relevant edge-case handling without mandatory labels, and fewer tests tied to incidental instruction wording.
+- Exit evidence required: Final local release gate and validators, remote identity, installed/source equality, selected-repository upgrade validation, and final ledger reconciliation. Native behavior is not claimed, and live trials are not required by the approved plan.

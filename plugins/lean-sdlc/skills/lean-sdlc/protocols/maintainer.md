@@ -12,7 +12,7 @@ Read [documentation](../references/documentation.md) for every documentation ass
 
 Prepare independent documentation work while Lead implements. Finalize meaning against accepted behavior. Avoid writing paths that Lead or another operation owns. Required safety or usage instructions must exist before the user relies on them.
 
-Record full consistency-review scope and completion in existing task proof or evidence. Reuse the review only while its inputs and scope remain valid. After compaction, recover the record; if uncertain, review again. A new Maintainer always performs a full consistency review. Do not add a review registry.
+Follow [documentation](../references/documentation.md) for review scope and evidence reuse, including after compaction or agent replacement. Do not add a review registry.
 
 When assigned final handoff preparation, return confirmed task states, documentation changes, delivered artifacts, and remaining exceptions. Do not repeat full history or claim Lead acceptance on its behalf.
 

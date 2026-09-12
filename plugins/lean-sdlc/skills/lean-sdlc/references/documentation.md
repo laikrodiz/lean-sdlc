@@ -44,7 +44,7 @@ Create `docs/SECURITY.md` when trust boundaries or controls need a shared review
 
 One document holds one cohesive subject. Split for different outcomes, owners, contracts, change reasons, or update cadences. Merge parts without independent value or maintenance pressure. Do not impose arbitrary line limits or create numbered documents for transient task notes.
 
-Review links, indexes, owning facts, documented commands, and affected unchanged documents. A full consistency review covers the current project documentation and implementation boundary. Record scope, inputs, result, and remaining work in existing task proof or evidence. Reuse that review only while valid. After compaction, recover the record or repeat uncertain work. A new Maintainer performs a full review.
+Review the assigned change and affected documents, including links, indexes, owning facts, and documented commands. Record scope, inputs, result, and remaining work in existing task proof or evidence. Reuse that review only while valid. After compaction or agent replacement, recover the evidence and review affected work. Agent replacement alone does not require a full review. Use a full consistency review when effects are broad or relevant review evidence cannot be recovered; cover the current project documentation and implementation boundary.
 
 Preserve v1.24.3 document IDs, paths, links, content, and custom rules during upgrade. Do not rewrite project decisions to match a new template. Unknown legacy differences require a bounded review, not silent removal. Historical task contexts continue to resolve to their owning documents.
 

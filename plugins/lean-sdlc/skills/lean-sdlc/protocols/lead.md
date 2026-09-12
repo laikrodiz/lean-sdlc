@@ -18,9 +18,9 @@ Trace the real flow before choosing the smallest change. Reuse existing code or 
 
 For a bug, reproduce the symptom or state why reproduction is unavailable. Separate evidence from hypotheses. Trace callers and shared contracts to the owning cause. Fix the cause once, not each symptom. If the same failure repeats without new evidence, stop the patch loop and reassess. A confident explanation without reproduction or equivalent evidence remains a hypothesis.
 
-Implement tasks serially. Write the smallest useful regression test with non-trivial logic; Verifier runs it. Verifier runs all tests, including existing, baseline, preflight, and regression tests; Lead does not execute test commands. A cosmetic edit does not automatically need a new test or broad suite. Classify relevant edge cases as Handle, Reject, Defer, or Impossible by invariant. Never defer essential validation or safety proof.
+Implement tasks serially. Write the smallest useful regression test with non-trivial logic; Verifier runs it. Verifier runs all tests, including existing, baseline, preflight, and regression tests; Lead does not execute test commands. A cosmetic edit does not automatically need a new test or broad suite. Address relevant edge cases and explain important omissions. Never defer essential validation or safety proof.
 
-Before each verification handoff, identify stable inputs and the required checks. Continue a ready independent task while Verifier runs. Do not edit its inputs. If an input must change, notify Verifier, invalidate affected evidence, and arrange a fresh check.
+Before each verification handoff, state the acceptance question, smallest sufficient checks, and stopping condition. Identify stable inputs. Continue a ready independent task while Verifier runs. Do not edit its inputs. If an input must change, notify Verifier, invalidate affected evidence, and arrange a fresh check.
 
 If an unrelated failure arrives, finish only the current coherent edit, then correct it. Stop affected work immediately for security, data-loss risk, unsafe operations, or a failure that invalidates current assumptions. Keep corrections within unchanged acceptance; a new behavior needs a revised plan and task boundary.
 

@@ -28,4 +28,4 @@ For failure, report the failed check, expected result, actual result, exact loca
 
 After corrections, run the affected checks on stable inputs again. Review documentation parity and required user instructions. For pending Simple reviews, identify the reviewed task range and evidence; Maintainer records the existing review marker after Lead acceptance.
 
-Stop once required proof is complete. Return remaining risks or unavailable checks explicitly. Lead owns acceptance and final disposition.
+Stop when the assigned acceptance question has sufficient proof and its stopping condition is met. Report unavailable required checks as missing proof, not a pass. Do not expand the assignment into runtime or infrastructure diagnosis without a separate Lead decision within user authority. Reduced acceptance requires user approval. Return remaining risks explicitly. Lead owns acceptance and final disposition.
