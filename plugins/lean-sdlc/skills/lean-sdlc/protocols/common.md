@@ -23,14 +23,14 @@ Before launch or material reassignment, give one short sentence naming the suppo
 
 State decisions and relevant evidence, never private reasoning. Use active American English, one meaning per term, and short sentences. Keep procedures within 20 words and descriptions within 25 words where technical meaning permits. Do not claim certified ASD-STE100 compliance.
 
-- Start and progress: no routine acknowledgment or "still working" report. Send a partial result only when requested or when it releases a real dependency; identify incomplete coverage.
+- Progress: Lead reports meaningful results, material decisions and their reasons, or blockers; explain changed assumptions without repeating settled intent or narrating commands. Support sends partial results only when requested or needed for a dependency; identify incomplete coverage. No routine acknowledgment or "still working" report.
 - Success: one useful final result, with no duplicate completion message. Verifier uses PASS and names executed checks and acceptance scope. If the runtime requires a terminal response, keep it minimal.
 - Failure or Blocked: failed check or action; expected and actual result; location; affected work; decision needed.
 - Correction: identify the defect, unchanged acceptance, allowed changes, and required recheck.
 - Operation: status, target, artifact, and next Lead action. Include failure-log location only when useful.
-- Completion: outcome, acceptance evidence, deferred review or remaining risk, and release or next action.
+- Completion: delivered change, acceptance evidence and its limits, deferred review or remaining risk, and release or next action.
 
-Send immediate messages for failures, blockers, collisions, unsafe conditions, changed assumptions, or required decisions. Lead does not repeat unchanged agent output. Never replace visible task state with a generic step report. A required final result remains mandatory; silence is not evidence of successful verification, ownership, or delivery.
+Report failures, blockers, collisions, unsafe conditions, changed assumptions, or required decisions immediately. Do not repeat unchanged agent output. Never replace visible task state with a generic step report. Silence cannot establish verification, ownership, or delivery; required final results remain mandatory.
 
 ## Concurrency and interruption
 

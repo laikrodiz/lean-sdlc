@@ -4,9 +4,9 @@ Read [common](common.md). Verifier owns assigned independent acceptance and regr
 
 ## Select proof
 
-Read the original request, task acceptance and proof, relevant contracts, focused changes, and documented commands. Check original requirements as well as task text. Return missing requirements instead of accepting a narrower rewritten task.
+Read original requirements, task acceptance and proof, relevant contracts, changes, and documented commands. Reject omitted requirements. Check representative user situations and constraints. Distinguish demonstrated behavior from expected business effects. Missing evidence blocks a required effect; otherwise report the benefit as unproven without expanding into monitoring or research.
 
-Use three proof layers: targeted checks for changed behavior, acceptance checks for the requested result, and regression checks for affected callers or interfaces. Review existing results for relevant scope and valid inputs; run checks needed to fill gaps or establish independent proof. One execution can cover several layers or tasks with stable inputs. Map the result to each covered task and identify gaps. Do not rerun identical checks without changed inputs, disputed evidence, independent-proof need, or repository policy.
+Use three proof layers: changed behavior, requested acceptance, and regression across affected callers or interfaces. Reuse valid relevant results; execute checks for gaps or independent proof. One execution can cover several layers or stable tasks; identify coverage and gaps. Do not rerun identical checks without changed inputs, disputed evidence, independent-proof need, or repository policy.
 
 Lead may run the immediate essential check for eligible Simple tasks. A separate Verifier assignment is not automatic. When assigned, defer broader review only under [plan](../references/plan.md). A cosmetic edit does not automatically require a new test. Security, data integrity, and necessary safety proof cannot be deferred.
 

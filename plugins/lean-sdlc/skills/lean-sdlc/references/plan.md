@@ -6,13 +6,13 @@ Before creating or claiming the initial task set, visibly restate the user's int
 
 After the intent restatement, always show all five fields:
 
-- Outcome: the observable result and why it matters.
-- Work: independently accepted changes, their grades, and real sequencing.
-- Acceptance: what must be true for each result.
-- Checks: how required proof will establish those facts and who checks it.
+- Outcome: who needs what improvement and why, using established context without invented business benefits.
+- Work: independently accepted changes, grades, sequencing, and the chosen approach with its main reason.
+- Acceptance: observable behavior and constraints that must hold for each result.
+- Checks: evidence needed to establish acceptance, its limits, and who checks it.
 - Limits: exclusions, unresolved choices, and operation authority.
 
-Complete coverage matters more than length. A small plan can use five short fields; a detailed request needs its relevant detail preserved. A task table, internal plan, or progress summary cannot replace this visible plan. Label material assumptions rather than silently making them requirements.
+Use five short fields for small work; preserve relevant detail for larger requests. Reuse settled context and decisions. Tables and progress summaries cannot replace the plan. Label material assumptions.
 
 Compare the visible plan with every explicit user requirement before creating or claiming tasks. Supply missing coverage first. A plan-only request stops after the plan. A request to plan and implement proceeds without another approval round unless a material choice remains unresolved. For new authorized work or a material scope change, restate the changed intent and update the affected plan fields before changing tasks. Otherwise, reuse the visible approved plan; do not reprint it for each task transition.
 
@@ -34,7 +34,7 @@ Before new execution tasks, use compact Backlog and current-work views to check 
 
 Lead creates or claims work directly through [ledger](ledger.md). Confirm owned In Progress status, acceptance, proof, and the before-write gate before implementation. Dependencies must be Done before dependent work starts. All roles may read task facts.
 
-Use real IDs and exact task titles, never invented proposal IDs. After confirmed creation and ownership, announce each task:
+Name tasks by their intended change. Use real IDs and exact titles, never invented proposal IDs. After confirmed creation and ownership, announce each task:
 
 > Starting <real task ID>: <exact title>.
 > Optimal process: <actual execution, support work, and wait or continue relationship>.

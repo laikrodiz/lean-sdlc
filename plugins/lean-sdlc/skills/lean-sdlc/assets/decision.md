@@ -6,11 +6,11 @@
 
 ## Context
 
-State the problem, constraints, and reversal cost.
+State the need, driving requirements, constraints, and reversal cost.
 
 ## Decision
 
-Record one chosen path and its boundary.
+Record the chosen approach, its boundary, and why it fits those requirements. Include relevant alternatives only for a consequential choice.
 
 ## Consequences
 

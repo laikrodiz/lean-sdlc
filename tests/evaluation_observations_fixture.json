@@ -38,11 +38,15 @@
     "visible-intent-plan-order": {
       "visible_order": ["intent", "Outcome", "Work", "Acceptance", "Checks", "Limits", "tasks"],
       "omitted_requirement": "restore before task creation",
-      "extra_approval": false
+      "extra_approval": false,
+      "outcome_scope": "established beneficiary and improvement; no invented benefit",
+      "work_reason": "requirement-based rationale and consequential alternatives",
+      "extra_stage": false
     },
     "routing-unresolved-decision": {
       "route": "Lead",
-      "writes": false
+      "writes": false,
+      "question_scope": "only the material missing fact"
     },
     "routing-shared-resource": {
       "execution": "serial",
@@ -79,7 +83,10 @@
     },
     "delegation-settled-implementation": {
       "role": "Lead",
-      "decision": "settled"
+      "decision": "settled",
+      "reuse_context": true,
+      "reopen_architecture": false,
+      "extra_agents": false
     },
     "delegation-accepted-documentation": {
       "role": "Maintainer",
@@ -92,7 +99,10 @@
     "proof-layers": {
       "targeted": "changed behavior",
       "acceptance": "observable completion",
-      "regression": "affected boundary"
+      "regression": "affected boundary",
+      "representative_scope": "user situations and constraints",
+      "effect_required_missing": "blocks required acceptance",
+      "effect_optional_missing": "report unproven benefit; no automatic monitoring"
     },
     "lifecycle-six-lanes": {
       "plan_fields": [
@@ -110,12 +120,18 @@
       "progress": "silent unless a requested result or dependency needs it",
       "failure_route": "Lead immediately",
       "completion": "one useful final result",
-      "lead_echo": false
+      "lead_echo": false,
+      "lead_update": "material change and reason; delivered result with evidence limits",
+      "repeat_intent": false,
+      "routine_cadence": false
     },
     "conversation-no-write": {
       "conversation": "natural exploration",
       "task_creation": false,
-      "helper_discovery": false
+      "helper_discovery": false,
+      "intent_basis": "reuse established beneficiary situation and progress",
+      "inferred_need": "label assumption; do not convert into requirement",
+      "mandatory_interview": false
     },
     "plan-and-implement": {
       "visible_plan": true,

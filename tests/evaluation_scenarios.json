@@ -74,17 +74,20 @@
     {
       "id": "visible-intent-plan-order",
       "category": "lifecycle",
-      "prompt": "Use $lean-sdlc. The user authorizes implementation with several explicit behavior and safety requirements. A short draft plan omits one requirement. No tasks exist yet. Return only JSON fields: visible_order, omitted_requirement, extra_approval.",
+      "prompt": "Use $lean-sdlc. The user authorizes implementation with established intent and several behavior and safety requirements. A draft omits one requirement. A consequential design choice has alternatives that could affect the result. No tasks exist yet. Return only JSON fields: visible_order, omitted_requirement, extra_approval, outcome_scope, work_reason, extra_stage.",
       "assertions": [
         {"path": "visible_order", "equals": ["intent", "Outcome", "Work", "Acceptance", "Checks", "Limits", "tasks"]},
         {"path": "omitted_requirement", "equals": "restore before task creation"},
-        {"path": "extra_approval", "equals": false}
+        {"path": "extra_approval", "equals": false},
+        {"path": "outcome_scope", "equals": "established beneficiary and improvement; no invented benefit"},
+        {"path": "work_reason", "equals": "requirement-based rationale and consequential alternatives"},
+        {"path": "extra_stage", "equals": false}
       ]
     },
     {
       "id": "routing-unresolved-decision",
       "category": "routing",
-      "prompt": "Use $lean-sdlc. A product acceptance decision is unresolved, so implementation work cannot proceed until the decision is settled. Return only JSON fields: route, writes.",
+      "prompt": "Use $lean-sdlc. A product acceptance decision is unresolved and could change the solution. Other intent and constraints are settled. Return only JSON fields: route, writes, question_scope.",
       "assertions": [
         {
           "path": "route",
@@ -93,7 +96,8 @@
         {
           "path": "writes",
           "equals": false
-        }
+        },
+        {"path": "question_scope", "equals": "only the material missing fact"}
       ]
     },
     {
@@ -204,7 +208,7 @@
     {
       "id": "delegation-settled-implementation",
       "category": "delegation",
-      "prompt": "Use $lean-sdlc. The implementation contract, interfaces, acceptance, proof, and paths are settled, with no decision left open. Return only JSON fields: role, decision.",
+      "prompt": "Use $lean-sdlc. Existing project intent, architecture, contract, acceptance, proof, and paths fit a routine change. No relevant facts changed or independent support need exists. Return only JSON fields: role, decision, reuse_context, reopen_architecture, extra_agents.",
       "assertions": [
         {
           "path": "role",
@@ -213,7 +217,10 @@
         {
           "path": "decision",
           "equals": "settled"
-        }
+        },
+        {"path": "reuse_context", "equals": true},
+        {"path": "reopen_architecture", "equals": false},
+        {"path": "extra_agents", "equals": false}
       ]
     },
     {
@@ -249,7 +256,7 @@
     {
       "id": "proof-layers",
       "category": "proof",
-      "prompt": "Use $lean-sdlc. A coherent implementation checkpoint changed behavior and affects an existing boundary. Return only JSON fields: targeted, acceptance, regression.",
+      "prompt": "Use $lean-sdlc. A checkpoint changed behavior across an existing boundary. Software checks pass, but a predicted business effect lacks evidence. Consider separately whether that effect is required acceptance or only an expected benefit. Return only JSON fields: targeted, acceptance, regression, representative_scope, effect_required_missing, effect_optional_missing.",
       "assertions": [
         {
           "path": "targeted",
@@ -262,7 +269,10 @@
         {
           "path": "regression",
           "equals": "affected boundary"
-        }
+        },
+        {"path": "representative_scope", "equals": "user situations and constraints"},
+        {"path": "effect_required_missing", "equals": "blocks required acceptance"},
+        {"path": "effect_optional_missing", "equals": "report unproven benefit; no automatic monitoring"}
       ]
     },
     {
@@ -297,7 +307,7 @@
     {
       "id": "child-communication-routing",
       "category": "lifecycle",
-      "prompt": "Use $lean-sdlc. A support agent makes ordinary progress, detects a failed check, and later completes its assignment. Return only JSON fields: progress, failure_route, completion, lead_echo.",
+      "prompt": "Use $lean-sdlc. A support agent makes ordinary progress, detects a failed check, and later completes. Lead changes the approach because a relevant assumption changed. Return only JSON fields: progress, failure_route, completion, lead_echo, lead_update, repeat_intent, routine_cadence.",
       "assertions": [
         {
           "path": "progress",
@@ -314,13 +324,16 @@
         {
           "path": "lead_echo",
           "equals": false
-        }
+        },
+        {"path": "lead_update", "equals": "material change and reason; delivered result with evidence limits"},
+        {"path": "repeat_intent", "equals": false},
+        {"path": "routine_cadence", "equals": false}
       ]
     },
     {
       "id": "conversation-no-write",
       "category": "routing",
-      "prompt": "Use $lean-sdlc. I want to brainstorm an idea, not start a project yet. Return only JSON fields: conversation, task_creation, helper_discovery.",
+      "prompt": "Use $lean-sdlc. I want to brainstorm an idea, not start a project. The conversation establishes a beneficiary, situation, and desired progress. A proposed solution implies an unstated motive. Return only JSON fields: conversation, task_creation, helper_discovery, intent_basis, inferred_need, mandatory_interview.",
       "assertions": [
         {
           "path": "conversation",
@@ -333,7 +346,10 @@
         {
           "path": "helper_discovery",
           "equals": false
-        }
+        },
+        {"path": "intent_basis", "equals": "reuse established beneficiary situation and progress"},
+        {"path": "inferred_need", "equals": "label assumption; do not convert into requirement"},
+        {"path": "mandatory_interview", "equals": false}
       ]
     },
     {

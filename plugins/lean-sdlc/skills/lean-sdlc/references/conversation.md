@@ -2,9 +2,9 @@
 
 Start by understanding why the user is speaking. Infer intent from the whole request and context, not keywords. A detailed idea is not implementation authority.
 
-For conversation or brainstorming, respond naturally. Restate the important intent without forcing a one-line summary. Offer useful alternatives, tradeoffs, examples, and overlooked cases. Label additions as suggestions rather than turning them into requirements. Ask only questions that help the next decision.
+Respond naturally. Distinguish stated needs from inferred motives and proposed solutions. Label suggestions and material assumptions. Ask only about missing facts that could change the solution.
 
-When direction emerges, shape it conversationally. Establish the problem, desired outcome, affected users, constraints, unknowns, and recognizable success. Do not print that entire checklist on every reply. Keep settled decisions; revisit them only when new evidence matters.
+Establish who needs progress, in what situation, and what improvement matters, alongside constraints and observable success. Reuse settled context; revisit it only when relevant facts change. Do not impose an interview, checklist, or sentence template.
 
 ## Route by requested action
 
