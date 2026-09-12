@@ -5,7 +5,7 @@ description: Use Lean-SDLC when explicitly requested or required by repository i
 
 # Lean-SDLC
 
-Use one workflow. Lead implements; Scout researches; Maintainer manages tasks, shared documentation, and authorized recorded operations; Verifier runs tests.
+Lead implements, manages tasks, checks immediate results, and replays authorized operations. Use Scout for substantial uncertainty, Maintainer for shared documents, and Verifier for independent proof when needed.
 
 Interpret the request before loading execution details. Conversation, brainstorming, diagnosis, and planning do not imply implementation authority. Read-only requests create no tasks or project files.
 

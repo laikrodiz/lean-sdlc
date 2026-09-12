@@ -6,9 +6,9 @@ An initialized project needs `AGENTS.md`, `docs/PROJECT.md`, and root `tasks.csv
 
 `AGENTS.md` is a small workflow entry plus custom project rules, not a copy of the skill. `docs/PROJECT.md` is the only mandatory shared project document. It owns problem and user, intended outcome, scope, constraints, assumptions, observable success, current stage, version promise, and exit evidence. Implementation mechanisms belong in code, tests, or technical documents.
 
-## Assessment for every change
+## Changed documentation
 
-Maintainer assesses changed facts and their existing document owners for every task, including Simple work. Determine required updates, newly applicable optional-document triggers, and affected unchanged documents. Return a specific no-change reason when no shared document needs an update. Do not create a document merely to show activity.
+While understanding and implementing a change, Lead identifies required documentation work from changed facts and existing document owners. Assign Maintainer actual shared-document work, not an assessment for every task. No mandatory no-change report is needed when shared truth remains accurate. Within an assignment, Maintainer checks required updates, applicable optional-document triggers, and affected unchanged documents. Do not create a document merely to show activity.
 
 Lead supplies the behavior and decision delta and approves meaning or document splits. Maintainer owns shared narrative truth and indexes. Lead owns code-local tests, comments, docstrings, annotations, and examples. Resolve conflicting facts in the authoritative source before copying them elsewhere.
 

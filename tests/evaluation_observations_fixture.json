@@ -23,15 +23,15 @@
       "end": "full table with reconciled final states",
       "unrelated_history": false
     },
-    "optimistic-accepted-closure": {
-      "visible_status": "Done",
-      "wait_for_acknowledgment": false,
+    "direct-accepted-closure": {
+      "writer": "Lead",
+      "closure_method": "tasks.py directly",
+      "visible_done": "after confirmed closure",
       "next_action": "continue the ready independent task",
-      "routine_success_reply": false,
       "required_proof": "already accepted"
     },
     "failed-ledger-update": {
-      "failure_report": "immediate; correct visible state",
+      "failure_report": "immediate; report actual state, not Done",
       "affected_work": "pause until prerequisite succeeds",
       "unrelated_work": "continue"
     },
@@ -122,16 +122,16 @@
       "extra_approval": false,
       "implementer": "Lead"
     },
-    "maintainer-ledger": {
-      "writer": "Maintainer",
-      "owner": "Lead-assigned owner",
+    "lead-ledger": {
+      "writer": "Lead",
+      "owner": "startup Lead owner",
       "acceptance_decision": "Lead"
     },
     "simple-deferred-review": {
       "user_testing": "ready",
       "broad_review": "deferred to shared checkpoint",
       "review_marker": "preserve pending obligation",
-      "test_runner": "Verifier"
+      "test_runner": "Lead"
     },
     "changed-proof-input": {
       "proof_valid": false,
@@ -160,6 +160,34 @@
     "missing-review-evidence": {
       "full_review": true,
       "review_storage": "existing task proof or evidence"
+    },
+    "single-task-announcement": {
+      "start_fields": ["real task ID and exact title", "Optimal process: actual work"],
+      "single_task_table": false,
+      "process_assessment_stage": false,
+      "duplicate_support_announcement": false
+    },
+    "recorded-operation-direct": {
+      "runner": "Lead",
+      "split_test_steps": false,
+      "mandatory_verifier": false,
+      "mandatory_maintainer": false
+    },
+    "recorded-operation-missing-proof": {
+      "completion": "blocked on missing proof",
+      "accept_exit_only": false,
+      "automatic_recovery": false
+    },
+    "verification-conclusion": {
+      "while_verifying": "Lead continues independent stable work",
+      "dependent_work": "waits for required result",
+      "lead_repeats_checks": false,
+      "closure_owner": "Lead"
+    },
+    "no-documentation-work": {
+      "mandatory_maintainer": false,
+      "no_change_report": false,
+      "reconciliation_owner": "Lead"
     },
     "bounded-verification": {
       "completed_next_action": "stop and return proof",

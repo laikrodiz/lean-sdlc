@@ -10,7 +10,7 @@ Active as a recorded procedure. Each release candidate requires a fresh run. The
 
 ### Maintenance Owner
 
-Maintainer records and coordinates this procedure. Verifier owns test execution. Lead accepts the result.
+Lead is the default executor and records this procedure, including its built-in checks. An explicitly assigned Verifier may execute the canonical check once as the designated independent executor; do not duplicate the gate. Maintainer updates this document only for an actual shared-document change and reports substantial reconciliation discrepancies. Lead applies accepted ledger corrections and accepts the result.
 
 ### Purpose and Target
 
@@ -38,7 +38,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/release_check.py
 ### Prerequisites
 
 - Lead authorizes validation of this selected repository and candidate.
-- Verifier owns test execution. Maintainer records the result.
+- Lead owns direct recording. Maintainer does not replay the procedure.
 - The required inputs exist and the candidate source is frozen.
 - The command runs from the selected repository root.
 - Python 3 and the repository test environment are available.
@@ -48,9 +48,10 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/release_check.py
 
 1. Confirm the selected repository root and required inputs.
 2. Confirm that source, tests, scripts, instructions, project documents, manifest, and ledger remain frozen.
-3. From the selected repository root, run the canonical command.
-4. Verifier confirms the exit status and every reported check layer.
-5. Maintainer records the result and keeps successful logs ephemeral.
+3. From the selected repository root, the designated executor runs the canonical command.
+4. The designated executor confirms the exit status and every reported check layer. Lead records the result directly.
+5. Do not run the same canonical check again only to duplicate the designated executor's proof.
+6. Maintainer updates this record only when shared documentation changes and reports substantial reconciliation discrepancies. Lead applies accepted ledger corrections. Keep successful logs ephemeral.
 
 ### Outputs and Artifacts
 
@@ -61,9 +62,11 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/release_check.py
 
 ### Success
 
-The guided command exited with status 0. That result included 122 unit tests, the structural check, 60 saved-fixture assertions, and release checks.
+The historical guided command exited with status 0. That result included 122 unit tests, the structural check, 60 saved-fixture assertions, and release checks.
 
 Later test and documentation changes invalidate that checkpoint. The final accepted candidate must pass a fresh run.
+
+This historical result is not fresh evidence for the current candidate.
 
 This procedure validates the selected local candidate only. It does not establish a commit, remote identity, tag, push, installation, or installed/source equality.
 
@@ -81,7 +84,9 @@ The historical guided checkpoint covered candidate version 1.28.0 before a commi
 
 The earlier guided result does not cover the changed final candidate.
 
-Invalidate this record after any change to source, tests, scripts, AGENTS.md, README.md, docs/PROJECT.md, the plugin manifest, tasks.csv, Python or test dependencies, release-check logic, or the selected repository target.
+A change to source, tests, scripts, AGENTS.md, README.md, docs/PROJECT.md, the plugin manifest, tasks.csv, Python or test dependencies, release-check logic, or the selected repository target invalidates the previous result because an input changed. It does not invalidate this procedure by itself.
+
+Invalidate this procedure when its canonical command, prerequisites, ordered steps, success or failure contract, authority, or target contract changes.
 
 ### Last Verified
 

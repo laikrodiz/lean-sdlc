@@ -1,6 +1,6 @@
 # Ledger and project control
 
-Root `tasks.csv` is the only durable task plan. Maintainer performs routine writes through the packaged `tasks.py` helper. All roles can use read-only `open`, `show TASK-ID`, `backlog`, and `quick-fixes`. Do not load full Done history for ordinary work.
+Root `tasks.csv` is the only durable task plan. Lead performs all task writes directly through the packaged `tasks.py` helper. Do not delegate routine transactions or add a mandatory final reconciliation agent. All roles can use read-only `open`, `show TASK-ID`, `backlog`, and `quick-fixes`. Do not load full Done history for ordinary work.
 
 ## Exact context
 
@@ -25,11 +25,11 @@ Backlog rows remain sparse. They contain only ID, title, status, and context; no
 
 Dependencies must exist, be cycle-free, and be Done before start or close. The helper locks, rereads, validates, and atomically replaces the ledger. Preserve durability warnings. Owner IDs coordinate work; they are not a security boundary. A ledger lock does not protect source files.
 
-After ownership is confirmed, run `python3 "<check-helper>" "<repo-root>" --before-write --task TASK-ID --owner OWNER` before the first non-control write. Do not continue on failure. Ordinary status transactions can run asynchronously under [plan](plan.md), but write prerequisites need confirmed results. Maintainer can batch accepted closure and dependent start into one assignment using the existing helper commands in order. A failed prerequisite stops the dependent transaction, not unrelated ready work. Report failures immediately and reconcile actual rows before completion.
+After ownership confirmation, run `python3 "<check-helper>" "<repo-root>" --before-write --task TASK-ID --owner OWNER` before the first non-control write. Stop on failure. Run closure and dependent start directly, confirming each prerequisite in order. Report failures immediately; unrelated ready work can continue. Reconcile compact rows against accepted results before completion. The helper validates records, not whether the original request was fulfilled. Lead applies missing authorized transactions; Maintainer may investigate substantial discrepancies without writing records.
 
 ## Initialization and upgrade
 
-Control transactions are the task-before-write exception. For an explicitly authorized new project, give Maintainer the selected repository directory and the loaded skill root. Maintainer runs `python3 "<skill-root>/scripts/init_repo.py" "<repo-root>"` before Lead requests startup context. Context discovery needs the initialized core files; do not treat their absence as a missing user decision. Initialization preserves existing files and creates missing core files under the helper's `bootstrap` owner. Then obtain the real session context. Complete bootstrap proof before closing TASK-000 as owner `bootstrap`.
+Control transactions are the task-before-write exception. For an explicitly authorized new project, Lead runs `python3 "<skill-root>/scripts/init_repo.py" "<repo-root>"` in the selected repository before requesting startup context. Context discovery needs the initialized core files; do not treat their absence as a missing user decision. Initialization preserves existing files and creates missing core files under the helper's `bootstrap` owner. Then obtain the real session context. Complete bootstrap proof before closing TASK-000 as owner `bootstrap`.
 
 The compatibility baseline is v1.24.3. Retain existing earlier ledger conversions. `tasks.py ... upgrade --task TASK-ID --owner OWNER` converts the supported Parent or lowercase planning header. Conflicting root and planning ledgers stop without selecting one silently. Preserve IDs, owners, dependencies, acceptance, proof, evidence, and pending reviews.
 

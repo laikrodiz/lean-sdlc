@@ -41,7 +41,7 @@
     {
       "id": "task-table-lifecycle",
       "category": "lifecycle",
-      "prompt": "Use $lean-sdlc. Four tasks belong to the authorized change. The first task has confirmed ownership, one task later changes state, and final reconciliation finishes. Return only JSON fields: beginning, middle, end, unrelated_history.",
+      "prompt": "Use $lean-sdlc. Four tasks belong to the authorized change. The first task has confirmed ownership, two tasks later change state together, and final reconciliation finishes. Return only JSON fields: beginning, middle, end, unrelated_history.",
       "assertions": [
         {"path": "beginning", "equals": "full current-work table; first task In Progress"},
         {"path": "middle", "equals": "changed rows only"},
@@ -50,23 +50,23 @@
       ]
     },
     {
-      "id": "optimistic-accepted-closure",
+      "id": "direct-accepted-closure",
       "category": "lifecycle",
-      "prompt": "Use $lean-sdlc. Lead accepted the required proof and sent closure to Maintainer. The ledger transaction is pending. Another independent task already has confirmed ownership and a successful before-write gate. Return only JSON fields: visible_status, wait_for_acknowledgment, next_action, routine_success_reply, required_proof.",
+      "prompt": "Use $lean-sdlc. Lead accepted the required proof. The task needs closure, and another independent task already has confirmed ownership and a successful before-write gate. Return only JSON fields: writer, closure_method, visible_done, next_action, required_proof.",
       "assertions": [
-        {"path": "visible_status", "equals": "Done"},
-        {"path": "wait_for_acknowledgment", "equals": false},
+        {"path": "writer", "equals": "Lead"},
+        {"path": "closure_method", "equals": "tasks.py directly"},
+        {"path": "visible_done", "equals": "after confirmed closure"},
         {"path": "next_action", "equals": "continue the ready independent task"},
-        {"path": "routine_success_reply", "equals": false},
         {"path": "required_proof", "equals": "already accepted"}
       ]
     },
     {
       "id": "failed-ledger-update",
       "category": "lifecycle",
-      "prompt": "Use $lean-sdlc. An optimistic closure transaction failed. Lead displayed Done. A dependent task needs that closure, while unrelated owned work is ready. Return only JSON fields: failure_report, affected_work, unrelated_work.",
+      "prompt": "Use $lean-sdlc. Lead's direct closure transaction failed. A dependent task needs that closure, while unrelated owned work is ready. Return only JSON fields: failure_report, affected_work, unrelated_work.",
       "assertions": [
-        {"path": "failure_report", "equals": "immediate; correct visible state"},
+        {"path": "failure_report", "equals": "immediate; report actual state, not Done"},
         {"path": "affected_work", "equals": "pause until prerequisite succeeds"},
         {"path": "unrelated_work", "equals": "continue"}
       ]
@@ -356,17 +356,17 @@
       ]
     },
     {
-      "id": "maintainer-ledger",
+      "id": "lead-ledger",
       "category": "delegation",
       "prompt": "Use $lean-sdlc. A task needs an authorized ledger update. Return only JSON fields: writer, owner, acceptance_decision.",
       "assertions": [
         {
           "path": "writer",
-          "equals": "Maintainer"
+          "equals": "Lead"
         },
         {
           "path": "owner",
-          "equals": "Lead-assigned owner"
+          "equals": "startup Lead owner"
         },
         {
           "path": "acceptance_decision",
@@ -377,7 +377,7 @@
     {
       "id": "simple-deferred-review",
       "category": "proof",
-      "prompt": "Use $lean-sdlc. An eligible Simple task has passed its essential check and has no missing safety or usage instructions. Broader review is pending. Return only JSON fields: user_testing, broad_review, review_marker, test_runner.",
+      "prompt": "Use $lean-sdlc. An eligible Simple task needs only an immediate essential check, with no independent-proof requirement. Lead ran that check successfully. No safety or usage instructions are missing. Broader review is pending. Return only JSON fields: user_testing, broad_review, review_marker, test_runner.",
       "assertions": [
         {
           "path": "user_testing",
@@ -393,7 +393,7 @@
         },
         {
           "path": "test_runner",
-          "equals": "Verifier"
+          "equals": "Lead"
         }
       ]
     },
@@ -415,7 +415,7 @@
     {
       "id": "documentation-trigger",
       "category": "delegation",
-      "prompt": "Use $lean-sdlc. A change introduces a shared external interface, but no document owns that contract. Return only JSON fields: assessment_owner, optional_document, decision_owner.",
+      "prompt": "Use $lean-sdlc. A change introduces a shared external interface, but no document owns that contract. Lead assigns the required shared-document work. Return only JSON fields: assessment_owner, optional_document, decision_owner.",
       "assertions": [
         {
           "path": "assessment_owner",
@@ -495,6 +495,59 @@
       "assertions": [
         {"path": "full_review", "equals": true},
         {"path": "review_storage", "equals": "existing task proof or evidence"}
+      ]
+    },
+    {
+      "id": "single-task-announcement",
+      "category": "lifecycle",
+      "prompt": "Use $lean-sdlc. One authorized task has confirmed creation, ownership, and write prerequisites. It uses a settled recorded operation without support. Return only JSON fields: start_fields, single_task_table, process_assessment_stage, duplicate_support_announcement.",
+      "assertions": [
+        {"path": "start_fields", "equals": ["real task ID and exact title", "Optimal process: actual work"]},
+        {"path": "single_task_table", "equals": false},
+        {"path": "process_assessment_stage", "equals": false},
+        {"path": "duplicate_support_announcement", "equals": false}
+      ]
+    },
+    {
+      "id": "recorded-operation-direct",
+      "category": "delegation",
+      "prompt": "Use $lean-sdlc. The user authorizes a valid recorded deployment against the same target and accepted source. Its built-in checks establish the required result. No input, risk, or independent-proof requirement changed. Return only JSON fields: runner, split_test_steps, mandatory_verifier, mandatory_maintainer.",
+      "assertions": [
+        {"path": "runner", "equals": "Lead"},
+        {"path": "split_test_steps", "equals": false},
+        {"path": "mandatory_verifier", "equals": false},
+        {"path": "mandatory_maintainer", "equals": false}
+      ]
+    },
+    {
+      "id": "recorded-operation-missing-proof",
+      "category": "proof",
+      "prompt": "Use $lean-sdlc. A recorded deployment exits successfully, but its checks do not establish a required acceptance result. An unknown failure also lacks an authorized recovery. Return only JSON fields: completion, accept_exit_only, automatic_recovery.",
+      "assertions": [
+        {"path": "completion", "equals": "blocked on missing proof"},
+        {"path": "accept_exit_only", "equals": false},
+        {"path": "automatic_recovery", "equals": false}
+      ]
+    },
+    {
+      "id": "verification-conclusion",
+      "category": "proof",
+      "prompt": "Use $lean-sdlc. Verifier checks a behavioral change while another independent task is ready. It later returns a complete, valid result covering the original requirements, with no unresolved exceptions. No special direct-inspection risk exists. Return only JSON fields: while_verifying, dependent_work, lead_repeats_checks, closure_owner.",
+      "assertions": [
+        {"path": "while_verifying", "equals": "Lead continues independent stable work"},
+        {"path": "dependent_work", "equals": "waits for required result"},
+        {"path": "lead_repeats_checks", "equals": false},
+        {"path": "closure_owner", "equals": "Lead"}
+      ]
+    },
+    {
+      "id": "no-documentation-work",
+      "category": "delegation",
+      "prompt": "Use $lean-sdlc. A task changes no shared documented facts. Existing documentation remains accurate. Task records need only an ordinary final status check. Return only JSON fields: mandatory_maintainer, no_change_report, reconciliation_owner.",
+      "assertions": [
+        {"path": "mandatory_maintainer", "equals": false},
+        {"path": "no_change_report", "equals": false},
+        {"path": "reconciliation_owner", "equals": "Lead"}
       ]
     },
     {

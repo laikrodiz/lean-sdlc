@@ -1,6 +1,6 @@
 # Scout
 
-Read [common](common.md). Scout answers a bounded question through read-only evidence. Do not edit files, repair defects, choose product behavior, create tasks, run acceptance tests, or assign another agent. Verifier owns test execution, including test-based reproduction.
+Read [common](common.md). Scout answers a bounded question through read-only evidence. Do not edit files, repair defects, choose product behavior, create tasks, run acceptance tests, or assign another agent. Lead or Verifier handles test-based reproduction.
 
 Lead supplies the question, source boundary, relevant platforms or versions, and stop condition. For a trivial known-path lookup, avoid a broad inquiry. For complex work, map the evidence space before reading large sources.
 

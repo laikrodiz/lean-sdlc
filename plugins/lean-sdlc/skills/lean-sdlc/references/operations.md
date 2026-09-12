@@ -1,6 +1,8 @@
 # Recorded operations
 
-Read this reference when learning or replaying a project procedure. Lead owns domain decisions. Maintainer records and runs authorized bounded operations. Verifier runs test steps, including smoke checks. Agree on ownership before a procedure that combines build, deployment, and tests.
+Read this reference when learning or replaying a project procedure. Lead runs authorized bounded operations directly, including built-in build, test, and smoke checks. Maintainer documents confirmed procedures when shared-document work is needed. Do not split a valid procedure among agents merely because it includes tests. Use Verifier for missing independent proof, changed behavior or risk, or disputed evidence.
+
+Verifier may run an assigned read-only validation procedure for independent proof. Lead does not repeat that run.
 
 ## Learn and record
 
@@ -16,9 +18,9 @@ Read the existing valid procedure first. Reuse project commands and scripts. An 
 
 Honor explicit current or standing authority for the same scope and target. This can include build, deployment, publication, commits, and pushes. Do not ask again when the authority remains valid. Do not infer those actions from a request for an idea or code change.
 
-Run one state-changing operation at a time for the same target. Use the accepted source identity. Do not guess a target, silently alter steps, or retry a state-changing failure without an authorized recovery rule.
+Run one state-changing operation at a time for the same target. Use the accepted source identity. Do not guess a target, silently alter steps, or retry a state-changing failure without an authorized recovery rule. Reuse valid artifact proof; do not repeat it solely to add a support handoff. A successful exit is sufficient only when the procedure's success checks establish the required result. Missing required proof blocks completion.
 
-If a recorded failure matches, use only its already-authorized recovery. For an unknown failure, changed target, stale procedure, or source defect, stop and return evidence to Lead. Lead owns diagnosis and repairs.
+If a recorded failure matches, use only its already-authorized recovery. For an unknown failure, changed target, stale procedure, or source defect, stop the procedure and preserve the evidence. Lead diagnoses within current authority; a changed target or unapproved recovery requires user direction.
 
 Cancellation follows the common protocol: check the underlying process or command, not only the agent status. Keep uncertain targets blocked. Relevant source or target changes invalidate previous operation results.
 
