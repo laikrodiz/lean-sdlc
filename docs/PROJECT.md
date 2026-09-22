@@ -15,7 +15,7 @@ For a stated beneficiary in a defined situation, Lean-SDLC turns desired progres
 - Before initial tasks, authorized work, or material scope change, Lead visibly restates intent and shows all five fields. Later claims reuse the approved plan. Plan-only requests remain read-only after the plan. Plan-and-implement requests continue under authority without repeated approval. Reuse settled context, decisions, and suitable architecture. Ask only material missing questions. Compare alternatives only when consequential.
 - One canonical lifecycle runs from intent through owned work, proof, documentation, operations, and closeout.
 - Five visible fields: Outcome states beneficiary, situation, desired progress, and established reason without invented business benefits. Work states independently accepted changes, grades, sequencing, approach, and rationale; its How covers architecture and implementation. Acceptance states observable behavior and constraints. Checks state needed evidence, its limits, and who checks it. Limits state exclusions, unresolved choices, and operation authority.
-- Simple, Normal, and Complex task grades remain transient in the visible plan and handoffs. Grades do not add ledger columns.
+- Settle task boundaries and grades before creation or task tables. Reconsider Complex candidates for separately acceptable outcomes; retain intrinsic difficulty or inseparable coupling. Stop before implementation fragments; revisit only changed facts. Preserve user outcomes, dependencies, and combined-result proof. The [plan protocol](../plugins/lean-sdlc/skills/lean-sdlc/references/plan.md) owns detailed sizing rules. Grades remain in plans and handoffs, not ledger columns.
 - Root tasks.csv remains the only durable task plan. The ledger keeps atomic outcomes, owners, dependencies, acceptance, proof, and evidence.
 - The [plan protocol](../plugins/lean-sdlc/skills/lean-sdlc/references/plan.md) governs display: real IDs, exact titles, and process lines start one-task work after creation and ownership; changed rows show middle updates; initial and final tables cover multi-task work. Lead closes accepted tasks through `tasks.py`, then confirms success before showing Done. Failed transactions affect affected rows; ownership, dependencies, and before-write gates remain prerequisites.
 - Lead may continue stable, independent ready work during verification; dependent work waits. Closure uses accepted verification without repeating it. Requirements, safety, authority, and proof remain binding.
@@ -71,6 +71,6 @@ For a stated beneficiary in a defined situation, Lean-SDLC turns desired progres
 ## Current promise
 
 - Stage: Evolution
-- Version: 1.32.0
-- Version goal: Deliver reason-to-result intent plans, settled-context reuse, direct Lead implementation, conditional support, proportional proof with evidence limits, and clear status.
+- Version: 1.33.0
+- Version goal: Deliver reason-to-result intent plans, settled-context reuse, direct Lead implementation, conditional support, proportional proof with evidence limits, clear status, and settled task granularity before creation and display.
 - Exit evidence required: Final local release gate and validators, remote identity, installed/source equality, selected-repository upgrade validation, and final ledger reconciliation. Native behavior and performance are not claimed, and live trials are not required by the approved plan.

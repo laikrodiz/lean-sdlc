@@ -25,7 +25,7 @@ The visible plan has five fields:
 - Checks: evidence needed, its limits, and who checks it.
 - Limits: exclusions, unresolved choices, and operation authority.
 
-Each task delivers a result that can be checked separately. Simple work uses narrow checks. Uncertain or cross-system work needs more investigation and proof. Simple, Normal, and Complex grades describe task complexity. They remain in the visible plan, handoffs, and multi-task tables.
+Each task delivers a separately checkable result. Before recording tasks, split combined scope and keep genuinely difficult outcomes together. Stop when further splitting creates only implementation steps. Task tables show the settled work. Simple, Normal, and Complex grades guide the needed investigation and checks. Dependencies and checks of the complete result remain necessary.
 
 ## How
 
@@ -63,10 +63,10 @@ Requirements:
 - Python 3
 - Codex with plugin support
 
-Install the immutable v1.32.0 release:
+Install the immutable v1.33.0 release:
 
 ~~~bash
-git clone --depth 1 --branch v1.32.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.33.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc

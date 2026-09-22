@@ -118,7 +118,7 @@
     {
       "id": "planning-keep-together",
       "category": "routing",
-      "prompt": "Use $lean-sdlc. First size a broad task for independent acceptance. It has no valid independent split, or coordination risk exceeds its value. Return only JSON fields: first_check, outcome, reason.",
+      "prompt": "Use $lean-sdlc. A Complex candidate has one coherent outcome with inseparable difficult reasoning. Proposed smaller parts are implementation steps without separate acceptance. Return only JSON fields: first_check, outcome, reason, grade, reason_location, split_steps.",
       "assertions": [
         {
           "path": "first_check",
@@ -130,14 +130,17 @@
         },
         {
           "path": "reason",
-          "equals": "no valid independent split or coordination risk exceeds value"
-        }
+          "equals": "intrinsic difficulty without separately acceptable outcomes"
+        },
+        {"path": "grade", "equals": "Complex"},
+        {"path": "reason_location", "equals": "briefly in Work"},
+        {"path": "split_steps", "equals": false}
       ]
     },
     {
       "id": "planning-split-serially",
       "category": "routing",
-      "prompt": "Use $lean-sdlc. A broad task has valid independent tasks, but shared resources or low elapsed-time savings block parallel execution. Return only JSON fields: outcome, reason.",
+      "prompt": "Use $lean-sdlc. A provisional Complex candidate combines several separately acceptable outcomes. Their reasoning and paths are settled, but shared mutable resources prevent overlap. Final task boundaries are not yet decided. Return only JSON fields: outcome, reason, candidate, children, creation_order, integration, parallel.",
       "assertions": [
         {
           "path": "outcome",
@@ -145,8 +148,35 @@
         },
         {
           "path": "reason",
-          "equals": "independent acceptance exists, but shared resources or low savings require serial execution"
-        }
+          "equals": "separate acceptance with shared resources requiring serial execution"
+        },
+        {"path": "candidate", "equals": "reconsider combined scope"},
+        {"path": "children", "equals": "grade each resulting outcome by remaining difficulty"},
+        {"path": "creation_order", "equals": ["settle boundaries and grades", "present plan", "create authorized tasks", "show real task table"]},
+        {"path": "integration", "equals": "preserve dependencies and combined-result proof responsibility"},
+        {"path": "parallel", "equals": false}
+      ]
+    },
+    {
+      "id": "planning-boundary-uncertainty",
+      "category": "routing",
+      "prompt": "Use $lean-sdlc. A candidate's scope is uncertain. One unanswered question could materially change its acceptance boundaries; other unknowns concern implementation details. Return only JSON fields: inquiry_scope, extra_stage, create_before_settled, automatic_scout.",
+      "assertions": [
+        {"path": "inquiry_scope", "equals": "only uncertainty that could materially change boundaries"},
+        {"path": "extra_stage", "equals": false},
+        {"path": "create_before_settled", "equals": false},
+        {"path": "automatic_scout", "equals": false}
+      ]
+    },
+    {
+      "id": "planning-split-stop",
+      "category": "lifecycle",
+      "prompt": "Use $lean-sdlc. After useful splitting, one intrinsically difficult candidate remains Complex. No further part has separate acceptance. Later, new evidence changes one settled boundary. Return only JSON fields: repeat_without_change, revisit_changed_boundary, objective, new_fields.",
+      "assertions": [
+        {"path": "repeat_without_change", "equals": false},
+        {"path": "revisit_changed_boundary", "equals": true},
+        {"path": "objective", "equals": "independently acceptable outcomes, not lower grades"},
+        {"path": "new_fields", "equals": false}
       ]
     },
     {

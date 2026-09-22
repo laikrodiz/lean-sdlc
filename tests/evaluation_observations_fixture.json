@@ -55,11 +55,31 @@
     "planning-keep-together": {
       "first_check": "independent acceptance",
       "outcome": "keep together",
-      "reason": "no valid independent split or coordination risk exceeds value"
+      "reason": "intrinsic difficulty without separately acceptable outcomes",
+      "grade": "Complex",
+      "reason_location": "briefly in Work",
+      "split_steps": false
     },
     "planning-split-serially": {
       "outcome": "split serially",
-      "reason": "independent acceptance exists, but shared resources or low savings require serial execution"
+      "reason": "separate acceptance with shared resources requiring serial execution",
+      "candidate": "reconsider combined scope",
+      "children": "grade each resulting outcome by remaining difficulty",
+      "creation_order": ["settle boundaries and grades", "present plan", "create authorized tasks", "show real task table"],
+      "integration": "preserve dependencies and combined-result proof responsibility",
+      "parallel": false
+    },
+    "planning-boundary-uncertainty": {
+      "inquiry_scope": "only uncertainty that could materially change boundaries",
+      "extra_stage": false,
+      "create_before_settled": false,
+      "automatic_scout": false
+    },
+    "planning-split-stop": {
+      "repeat_without_change": false,
+      "revisit_changed_boundary": true,
+      "objective": "independently acceptable outcomes, not lower grades",
+      "new_fields": false
     },
     "planning-split-parallel": {
       "implementation": "Lead serially",
