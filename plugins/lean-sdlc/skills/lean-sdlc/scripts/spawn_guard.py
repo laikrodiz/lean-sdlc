@@ -40,7 +40,7 @@ GREEK_LABELS = (
     "omega",
 )
 ROLE_PREFIXES = frozenset({"maintainer", "verifier", "scout"})
-LUNA_MODEL = "gpt-5.6-luna"
+LUNA_MODEL = "gpt-6-luna"
 LUNA_REASONING = "max"
 TERRA_MODEL = "gpt-5.6-terra"
 TERRA_REASONING = "xhigh"
@@ -106,7 +106,7 @@ def _validate_tool_input(tool_input: Any, fast_children: bool) -> str | None:
     elif model == TERRA_MODEL:
         expected_reasoning = TERRA_REASONING
     else:
-        return "Set model to gpt-5.6-luna for a standard child or gpt-5.6-terra for fallback."
+        return f"Set model to {LUNA_MODEL} for a standard child or {TERRA_MODEL} for fallback."
 
     if reasoning_effort != expected_reasoning:
         return f"Set reasoning_effort to {expected_reasoning} for {model}."

@@ -33,7 +33,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant("role authority", "protocols/common.md", ("Only Lead assigns", "Support agents cannot spawn")),
     FrozenInvariant("resource isolation", "protocols/common.md", ("One writer owns each mutable", "A ledger lock protects only")),
     FrozenInvariant("cancellation", "protocols/common.md", ("underlying command or process", "Late results cannot restore canceled authority")),
-    FrozenInvariant("model profile", "protocols/common.md", ("user-selected Lead model", "model=gpt-5.6-luna", "reasoning_effort=max", "gpt-5.6-terra")),
+    FrozenInvariant("model profile", "protocols/common.md", ("user-selected Lead model", "model=gpt-6-luna", "reasoning_effort=max", "gpt-5.6-terra")),
     FrozenInvariant("ledger ownership", "references/ledger.md", ("Lead performs all task writes directly", "using the Lead owner", "helper validates records, not whether the original request was fulfilled")),
     FrozenInvariant("proof ownership", "protocols/verifier.md", ("Verifier owns assigned independent acceptance", "You do not change tracked source")),
     FrozenInvariant("stable proof inputs", "protocols/verifier.md", ("before and after proof", "even if a later fingerprint matches")),

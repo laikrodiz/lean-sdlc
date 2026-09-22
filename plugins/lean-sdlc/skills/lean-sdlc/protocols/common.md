@@ -46,6 +46,6 @@ For a material direction change, pause affected work, preserve evidence, and obt
 
 ## Child profile
 
-Preserve the user-selected Lead model. Standard support roles use `model=gpt-5.6-luna`, `reasoning_effort=max`, and non-full-history `fork_turns`; omit `agent_type`. Use unique role-prefixed Greek names, such as `scout_alpha`, and retain names on reuse.
+Preserve the user-selected Lead model. Standard support roles use `model=gpt-6-luna`, `reasoning_effort=max`, and non-full-history `fork_turns`; omit `agent_type`. Use unique role-prefixed Greek names, such as `scout_alpha`, and retain names on reuse.
 
 Fast children require user opt-in. Use `service_tier=priority` only when supported and enabled. On priority failure, retry the same Luna profile without that field. If Luna is unavailable, report the failure before using `gpt-5.6-terra` at `xhigh`, without `service_tier` or `agent_type`. Never silently reduce requested effort. If no permitted support profile works, report the affected blocker; do not create another workflow.

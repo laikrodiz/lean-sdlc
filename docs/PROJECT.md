@@ -71,6 +71,6 @@ For a stated beneficiary in a defined situation, Lean-SDLC turns desired progres
 ## Current promise
 
 - Stage: Evolution
-- Version: 1.33.0
-- Version goal: Deliver reason-to-result intent plans, settled-context reuse, direct Lead implementation, conditional support, proportional proof with evidence limits, clear status, and settled task granularity before creation and display.
-- Exit evidence required: Final local release gate and validators, remote identity, installed/source equality, selected-repository upgrade validation, and final ledger reconciliation. Native behavior and performance are not claimed, and live trials are not required by the approved plan.
+- Version: 1.34.0
+- Version goal: Upgrade authorized support-agent selection to gpt-6-luna at max reasoning effort while preserving the existing workflow, Lead ownership, and fallback.
+- Exit evidence required: Final local release gate and validators, remote identity, installed/source equality, selected-repository upgrade validation, a live gpt-6-luna max-effort support-profile check, and final ledger reconciliation. No performance claim is required.
