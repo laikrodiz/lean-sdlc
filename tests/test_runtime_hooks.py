@@ -125,22 +125,22 @@ class RuntimeHookTests(unittest.TestCase):
             self.guard(
                 {
                     "task_name": "scout_beta",
-                    "model": "gpt-6-luna",
-                    "reasoning_effort": "max",
+                    "model": "gpt-6.2-sol",
+                    "reasoning_effort": "medium",
                     "fork_turns": "none",
                 }
             )
         )
 
-    def test_all_standard_roles_use_native_luna_fields(self) -> None:
+    def test_all_standard_roles_use_fixed_sol_fields(self) -> None:
         for role in ("maintainer", "verifier", "scout"):
             with self.subTest(role=role):
                 self.assertIsNone(
                     self.guard(
                         {
                             "task_name": f"{role}_beta",
-                            "model": "gpt-6-luna",
-                            "reasoning_effort": "max",
+                            "model": "gpt-6.2-sol",
+                            "reasoning_effort": "medium",
                             "fork_turns": "none",
                         }
                     )
@@ -150,8 +150,8 @@ class RuntimeHookTests(unittest.TestCase):
         denied = self.guard(
             {
                 "task_name": "scout_beta",
-                "model": "gpt-6-luna",
-                "reasoning_effort": "max",
+                "model": "gpt-6.2-sol",
+                "reasoning_effort": "medium",
                 "fork_turns": "none",
                 "service_tier": "priority",
             }
@@ -164,8 +164,8 @@ class RuntimeHookTests(unittest.TestCase):
             self.guard(
                 {
                     "task_name": "scout_beta",
-                    "model": "gpt-6-luna",
-                    "reasoning_effort": "max",
+                    "model": "gpt-6.2-sol",
+                    "reasoning_effort": "medium",
                     "fork_turns": "none",
                     "service_tier": "priority",
                 }
@@ -174,8 +174,8 @@ class RuntimeHookTests(unittest.TestCase):
 
     def test_retired_engineer_role_is_rejected(self) -> None:
         denied = self.guard({
-            "task_name": "engineer_beta", "model": "gpt-6-luna",
-            "reasoning_effort": "max", "fork_turns": "none",
+            "task_name": "engineer_beta", "model": "gpt-6.2-sol",
+            "reasoning_effort": "medium", "fork_turns": "none",
         })
         self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
         self.assertIn("Lead owns implementation", denied["hookSpecificOutput"]["permissionDecisionReason"])
@@ -188,8 +188,8 @@ class RuntimeHookTests(unittest.TestCase):
                 original = json.dumps({"mode": retired, "fast_children": True})
                 path.write_text(original, encoding="utf-8")
                 self.assertIsNone(self.guard({
-                    "task_name": "scout_beta", "model": "gpt-6-luna",
-                    "reasoning_effort": "max", "fork_turns": "none",
+                    "task_name": "scout_beta", "model": "gpt-6.2-sol",
+                    "reasoning_effort": "medium", "fork_turns": "none",
                     "service_tier": "priority",
                 }))
                 self.assertEqual(path.read_text(encoding="utf-8"), original)
@@ -232,25 +232,29 @@ class RuntimeHookTests(unittest.TestCase):
             {
                 "task_name": "scout_beta",
                 "model": "gpt-5.6-sol",
-                "reasoning_effort": "max",
+                "reasoning_effort": "medium",
                 "fork_turns": "none",
             }
         )
         self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
 
-    def test_previous_luna_model_is_rejected_with_current_model_hint(self) -> None:
-        denied = self.guard({
-            "task_name": "scout_beta", "model": "gpt-5.6-luna",
-            "reasoning_effort": "max", "fork_turns": "none",
-        })
-        self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
-        self.assertIn("gpt-6-luna", denied["hookSpecificOutput"]["permissionDecisionReason"])
+    def test_previous_models_are_rejected_without_fallback(self) -> None:
+        for model in ("gpt-5.6-luna", "gpt-6-luna", "gpt-5.6-terra", "gpt-6.2-astra"):
+            with self.subTest(model=model):
+                denied = self.guard({
+                    "task_name": "scout_beta", "model": model,
+                    "reasoning_effort": "medium", "fork_turns": "none",
+                })
+                decision = denied["hookSpecificOutput"]
+                self.assertEqual(decision["permissionDecision"], "deny")
+                self.assertIn("gpt-6.2-sol", decision["permissionDecisionReason"])
+                self.assertIn("No automatic fallback", decision["permissionDecisionReason"])
 
-    def test_luna_wrong_reasoning_is_rejected(self) -> None:
+    def test_sol_wrong_reasoning_is_rejected(self) -> None:
         denied = self.guard(
             {
                 "task_name": "scout_beta",
-                "model": "gpt-6-luna",
+                "model": "gpt-6.2-sol",
                 "reasoning_effort": "high",
                 "fork_turns": "none",
             }
@@ -261,8 +265,8 @@ class RuntimeHookTests(unittest.TestCase):
         denied = self.guard(
             {
                 "task_name": "scout_beta",
-                "model": "gpt-6-luna",
-                "reasoning_effort": "max",
+                "model": "gpt-6.2-sol",
+                "reasoning_effort": "medium",
                 "fork_turns": "none",
                 "agent_type": "custom",
             }
@@ -273,8 +277,8 @@ class RuntimeHookTests(unittest.TestCase):
         denied = self.guard(
             {
                 "task_name": "scout_beta",
-                "model": "gpt-6-luna",
-                "reasoning_effort": "max",
+                "model": "gpt-6.2-sol",
+                "reasoning_effort": "medium",
                 "fork_turns": "all",
             }
         )
@@ -285,8 +289,8 @@ class RuntimeHookTests(unittest.TestCase):
             self.guard(
                 {
                     "task_name": "scout_beta",
-                    "model": "gpt-6-luna",
-                    "reasoning_effort": "max",
+                    "model": "gpt-6.2-sol",
+                    "reasoning_effort": "medium",
                     "fork_turns": "none",
                 }
             )
@@ -298,35 +302,20 @@ class RuntimeHookTests(unittest.TestCase):
             self.guard(
                 {
                     "task_name": "scout_beta",
-                    "model": "gpt-6-luna",
-                    "reasoning_effort": "max",
+                    "model": "gpt-6.2-sol",
+                    "reasoning_effort": "medium",
                     "fork_turns": "none",
                 }
             )
         )
 
-    def test_terra_fallback_is_accepted_without_profile_fields(self) -> None:
-        self.assertIsNone(
-            self.guard(
-                {
-                    "task_name": "scout_beta",
-                    "model": "gpt-5.6-terra",
-                    "reasoning_effort": "xhigh",
-                    "fork_turns": "none",
-                }
-            )
-        )
-
-    def test_terra_fallback_rejects_service_tier(self) -> None:
-        denied = self.guard(
-            {
-                "task_name": "scout_beta",
-                "model": "gpt-5.6-terra",
-                "reasoning_effort": "xhigh",
-                "fork_turns": "none",
-                "service_tier": "priority",
-            }
-        )
+    def test_sol_rejects_unsupported_service_tier(self) -> None:
+        self.set_state("--fast-children")
+        denied = self.guard({
+            "task_name": "scout_beta", "model": "gpt-6.2-sol",
+            "reasoning_effort": "medium", "fork_turns": "none",
+            "service_tier": "ultrafast",
+        })
         self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
 
     def test_default_restoration(self) -> None:

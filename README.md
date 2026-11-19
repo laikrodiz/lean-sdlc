@@ -1,123 +1,54 @@
 # Lean-SDLC for Codex
 
-Lean-SDLC is a small workflow that turns a stated user need into an owned, reviewable repository change. It connects:
-
-- Why: the beneficiary, situation, desired progress, and established reason.
-- What: observable behavior and constraints that must hold.
-- How: the chosen approach and rationale, covering architecture and implementation.
-- Proof: the checks, evidence limits, and remaining risk.
-
-It keeps work proportional, reuses settled context, and requires evidence for completion claims.
-
 ## Why
 
-Repository work can lose intent, ownership, or proof even when implementation is fast. Lean-SDLC keeps the reason visible, records only the needed work, and closes with evidence that matches the request. It does not invent business benefits for technical work.
+Fast code is not useful if it solves the wrong problem or no one can show that it works. Lean-SDLC keeps the user's purpose, the owner, and the evidence visible from request to result.
 
 ## What
 
-Lean-SDLC follows one lifecycle from intent through owned work, proof, documentation, operations, and closeout.
+Lean-SDLC gives Codex one workflow for discussion, planning, and authorized changes. You can discuss an idea or ask for a plan without changing files or creating tasks. A request to plan and implement lets Codex proceed within the agreed limits.
 
-The visible plan has five fields:
+The Lead starts in plain prose. The opening explains who needs the change, what must improve, and why. It states the proposed approach, shared limits, and important unknowns. No fixed headings are required.
 
-- Outcome: who needs what progress, in which situation, and why it matters, using established context.
-- Work: independently accepted changes, grades, sequence, approach, and rationale. How covers architecture and implementation.
-- Acceptance: observable behavior and constraints.
-- Checks: evidence needed, its limits, and who checks it.
-- Limits: exclusions, unresolved choices, and operation authority.
-
-Each task delivers a separately checkable result. Before recording tasks, split combined scope and keep genuinely difficult outcomes together. Stop when further splitting creates only implementation steps. Task tables show the settled work. Simple, Normal, and Complex grades guide the needed investigation and checks. Dependencies and checks of the complete result remain necessary.
+Each task has one result that the Lead can accept on its own. It states what must be true when done and which checks will show it. The Lead checks every candidate for separate outcomes before grading it, even when it looks Normal. One sizing pass settles the boundaries and assigns Simple, Normal, or Complex. Related steps stay with their result. A genuinely Complex task stays together, with a short reason why another split would not help.
 
 ## How
 
-Before the initial task set, new authorized work, or a material scope change, Lead visibly restates the intent and all five fields. Later work reuses the approved plan. A plan-only request remains read-only and stops after the plan. A plan-and-implement request continues within its authority without another approval round.
+The Lead owns the result and works on one task at a time. Before changes start, the task must have an owner and pass the required check. If another outcome appears during work, the Lead separates it before implementing it. The original task still needs its unfinished requirements and proof.
 
-Reuse settled context, decisions, and suitable architecture. Ask only about missing facts that could change the solution. Explain consequential choices through requirements and tradeoffs in Work. Compare alternatives only when they could change the choice. Material ambiguity waits for user direction.
+The Lead makes small documentation edits and runs focused checks. A Scout investigates important uncertainty. A Maintainer updates shared documents when the change is substantial. A Verifier provides required independent proof or checks material risk. The Lead uses support only as needed and waits for each assignment before doing more work.
 
-Lead is accountable for the result and implements the change. Scout investigates bounded uncertainty. Maintainer updates assigned shared documentation. Verifier provides independent acceptance and regression proof when needed.
+The Lead checks that valid evidence covers the request and examines gaps or exceptions. The Lead does not repeat an accepted review. Essential checks, safety proof, and required usage instructions cannot wait. Eligible Simple work can defer broader review only if the Lead marks that review as pending.
 
-Support is conditional. Handoffs state their purpose and whether work waits or continues. Stable independent work continues while dependent work waits. Shared resources stay serial. Support roles cannot widen scope or change decisions.
-
-Users track meaningful changes, decisions with reasons, evidence limits, and risk. Progress reports show results, decisions, or blockers, not command logs. Report failures, collisions, unsafe conditions, changed assumptions, and required decisions immediately.
-
-Lead runs immediate focused checks. Verifier runs assigned independent proof. For eligible Simple work, broader regression or documentation reviews can remain explicitly pending for a shared checkpoint. Do not defer safety failures, required usage instructions, or essential validation. Changed inputs invalidate affected evidence and require rechecking.
-
-Proof separates demonstrated behavior and constraints from expected effects. If Acceptance requires measured impact, missing proof blocks closure. Otherwise report the effect as unproven and do not invent a business benefit. Completion needs executed evidence that matches the request; a dispatched action, saved response, structural assertion, or unexecuted command is not enough. An accepted verified conclusion can close work without repeating the same verification.
-
-## Authority and progress
-
-The user controls scope and explicitly authorizes changes, commits, pushes, publication, and deployment. Clear requests do not need repeated approval. Conversation, brainstorming, shaping, investigation, and diagnosis remain read-only until implementation authority exists.
-
-Users see meaningful changes, decisions, evidence limits, and risk. Stable independent work continues while dependent work waits. Original requirements, safety, and missing proof remain binding.
-
-## Documentation
-
-The project keeps its purpose and limits in one shared document and tracks agreed work. Add separate documentation only when a behavior, decision, or procedure needs a lasting explanation.
-
-A first guided build, package, deployment, flash, runtime, or smoke success adds its procedure to `docs/OPERATIONS.md`. Existing procedures replay exact commands against explicit targets and accepted source identities, with valid authority, safe recovery, and redacted output. Lead is the default executor. An assigned Verifier may execute one procedure as independent proof.
+The user controls what may change and which delivery actions are authorized. A source change does not authorize a commit, push, installation, publication, or deployment. If work is canceled, the Lead confirms that its process stopped before work resumes on that target.
 
 ## Install
 
-Requirements:
+Requirements: Git, Python 3, and Codex with plugin support.
 
-- Git
-- Python 3
-- Codex with plugin support
-
-Install the immutable v1.34.0 release:
+These commands install the immutable v1.35.0 release with the sequential workflow and fixed Sol support profile.
 
 ~~~bash
-git clone --depth 1 --branch v1.34.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.35.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc
 ~~~
 
-Restart Codex after installation. Then start a new thread.
+Restart Codex. Then start a new chat.
 
 ## Use
 
-Discuss an idea without repository changes:
+Start with `Use $lean-sdlc to`, then say what you want:
 
-~~~text
-Use $lean-sdlc to discuss this idea without changing files.
-~~~
+- Discuss this idea without changing files.
+- Make a plan only.
+- Plan and implement this change.
+- Continue this repository task.
+- Upgrade this repository to the current contract.
 
-Create a plan only:
+Upgrades preserve existing project documents, custom rules, and task history. See the [upgrade rules](plugins/lean-sdlc/skills/lean-sdlc/references/ledger.md#initialization-and-upgrade).
 
-~~~text
-Use $lean-sdlc to make a plan only.
-~~~
+## Details
 
-Plan and implement an authorized change:
-
-~~~text
-Use $lean-sdlc to plan and implement this change.
-~~~
-
-Continue existing work:
-
-~~~text
-Use $lean-sdlc to continue this repository task.
-~~~
-
-Upgrade an older Lean-SDLC repository:
-
-~~~text
-Use $lean-sdlc to upgrade this repository to the current contract.
-~~~
-
-## Detailed rules
-
-The following documents define exact behavior:
-
-- [Conversation](plugins/lean-sdlc/skills/lean-sdlc/references/conversation.md)
-- [Plan](plugins/lean-sdlc/skills/lean-sdlc/references/plan.md)
-- [Ledger](plugins/lean-sdlc/skills/lean-sdlc/references/ledger.md)
-- [Documentation](plugins/lean-sdlc/skills/lean-sdlc/references/documentation.md)
-- [Operations](plugins/lean-sdlc/skills/lean-sdlc/references/operations.md)
-- [Recorded release check](docs/OPERATIONS.md)
-- [Shared protocol](plugins/lean-sdlc/skills/lean-sdlc/protocols/common.md)
-- [Lead protocol](plugins/lean-sdlc/skills/lean-sdlc/protocols/lead.md)
-- [Maintainer protocol](plugins/lean-sdlc/skills/lean-sdlc/protocols/maintainer.md)
-- [Scout protocol](plugins/lean-sdlc/skills/lean-sdlc/protocols/scout.md)
-- [Verifier protocol](plugins/lean-sdlc/skills/lean-sdlc/protocols/verifier.md)
+See the [project scope and release status](docs/PROJECT.md) and the [skill entry](plugins/lean-sdlc/skills/lean-sdlc/SKILL.md). The skill entry links to the planning, documentation, operations, and role rules. See the [recorded release check](docs/OPERATIONS.md) when you need to validate a release candidate.

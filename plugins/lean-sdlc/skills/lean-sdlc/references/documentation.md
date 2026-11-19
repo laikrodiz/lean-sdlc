@@ -8,11 +8,11 @@ An initialized project needs `AGENTS.md`, `docs/PROJECT.md`, and root `tasks.csv
 
 ## Changed documentation
 
-While understanding and implementing a change, Lead identifies required documentation work from changed facts and existing document owners. Assign Maintainer actual shared-document work, not an assessment for every task. No mandatory no-change report is needed when shared truth remains accurate. Within an assignment, Maintainer checks required updates, applicable optional-document triggers, and affected unchanged documents. Do not create a document merely to show activity.
+Lead identifies documentation changes from affected facts and document owners. Lead makes small edits alongside code; Maintainer handles substantive shared-document work, not an assessment for every task. No no-change report is required when shared truth remains accurate. Within an assignment, check required updates, optional-document triggers, and affected unchanged documents. Do not create documents merely to show activity.
 
-Lead supplies the behavior and decision delta and approves meaning or document splits. Maintainer owns shared narrative truth and indexes. Lead owns code-local tests, comments, docstrings, annotations, and examples. Resolve conflicting facts in the authoritative source before copying them elsewhere.
+Lead supplies the behavior and decision delta and approves meaning or document splits. Maintainer owns assigned narrative changes and indexes. Lead owns code-local tests, comments, docstrings, annotations, and examples. Resolve conflicts in the authoritative source before copying facts elsewhere.
 
-Prepare independent documentation work in parallel when inputs are stable. Finalize against accepted implementation. Required safety and usage instructions must exist before the user relies on the result. A Simple task may defer a broader documentation/interaction review, not a known necessary correction.
+Finalize documentation against accepted implementation. Required safety and usage instructions must exist before the user relies on the result. A Simple task may defer a broader review, not a known necessary correction.
 
 ## Optional families and triggers
 

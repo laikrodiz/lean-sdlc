@@ -14,11 +14,11 @@ Use the full suite for a release, broad shared contracts, migrations, build-grap
 
 ## Stable inputs
 
-Before running tests, identify all inputs: source, tests, configuration, fixtures, generated outputs, dependencies, services, databases, devices, and target state. Coordinate ownership with Lead. Independent work may proceed only outside those inputs.
+Before running tests, identify all inputs: source, tests, configuration, fixtures, generated outputs, dependencies, services, databases, devices, and target state. Lead waits during verification; other writers or external processes can still invalidate proof.
 
 For task-owned files, run `python3 "<skill-root>/scripts/checkpoint.py" --repo "<repo-root>" PATH [PATH ...]` before and after proof. Use the same explicit scope. Keep checkpoint values local; report equality or mismatch, not full fingerprints. The helper works without Git but does not identify external state, process lifetime, or every transient change. Stop and invalidate affected proof if an input changes, even if a later fingerprint matches.
 
-Coordinate separate checks for external inputs. If stability cannot be established, serialize the affected work. Shared formatters or generators must finish before verification of their outputs.
+Check external input stability separately. If stability cannot be established, stop affected proof. Formatters and generators must finish before verification of their outputs.
 
 ## Results and failure
 

@@ -15,7 +15,7 @@ Commands below use supplied paths. Grades do not add columns. The schema stays:
 Use `python3 "<tasks-helper>" --repo "<repo-root>" COMMAND`:
 
 - `plan`: create unowned Planned work with title, acceptance, proof, and real dependencies.
-- `start`: create or claim In Progress work using `--owner` with the Lead owner.
+- `start --check`: create or claim In Progress work using `--owner` with the Lead owner; pass the full before-write check before saving.
 - `update`: correct task facts; active work requires its owner.
 - `close`: record accepted evidence using the Lead owner. Only direct user authority permits an ownership override with a reason.
 - `backlog-add` and `promote`: add or promote ideas only under direct user authority. Promotion adds proper acceptance and proof, not a raw status flip.
@@ -25,7 +25,7 @@ Backlog rows remain sparse. They contain only ID, title, status, and context; no
 
 Dependencies must exist, be cycle-free, and be Done before start or close. The helper locks, rereads, validates, and atomically replaces the ledger. Preserve durability warnings. Owner IDs coordinate work; they are not a security boundary. A ledger lock does not protect source files.
 
-After ownership confirmation, run `python3 "<check-helper>" "<repo-root>" --before-write --task TASK-ID --owner OWNER` before the first non-control write. Stop on failure. Run closure and dependent start directly, confirming each prerequisite in order. Report failures immediately; unrelated ready work can continue. Reconcile compact rows against accepted results before completion. The helper validates records, not whether the original request was fulfilled. Lead applies missing authorized transactions; Maintainer may investigate substantial discrepancies without writing records.
+Use `start --check` before the first non-control write. It returns the owned task and gate result in one transaction. Validation failure leaves the ledger unchanged. For an already-active task or control-only promotion, run `python3 "<check-helper>" "<repo-root>" --before-write --task TASK-ID --owner OWNER`. Stop on failure. Confirm closure before starting dependent work. Reconcile compact rows against accepted results before completion. The helper validates records, not whether the original request was fulfilled. Lead applies missing authorized transactions; Maintainer may investigate substantial discrepancies without writing records.
 
 ## Initialization and upgrade
 

@@ -12,7 +12,7 @@
       "category": "delegation",
       "prompt": "Use $lean-sdlc. Lead assigns Verifier a stable check while another independent implementation task is ready. Return only JSON fields: announcement_fields, announcement_length, report_back_alone_sufficient.",
       "assertions": [
-        {"path": "announcement_fields", "equals": ["agent", "purpose", "wait or continue"]},
+        {"path": "announcement_fields", "equals": ["agent", "purpose", "Lead waits"]},
         {"path": "announcement_length", "equals": "one short sentence"},
         {"path": "report_back_alone_sufficient", "equals": false}
       ]
@@ -33,7 +33,7 @@
       "category": "delegation",
       "prompt": "Use $lean-sdlc. Lead has settled implementation work. The next independent task needs research, and two completed tasks share stable proof inputs. Return only JSON fields: next_task_research, combined_proof, mandatory_extra_agents.",
       "assertions": [
-        {"path": "next_task_research", "equals": "Scout when useful"},
+        {"path": "next_task_research", "equals": "Scout when useful after the active task finishes or pauses"},
         {"path": "combined_proof", "equals": "Verifier maps one execution to covered tasks"},
         {"path": "mandatory_extra_agents", "equals": false}
       ]
@@ -68,20 +68,38 @@
       "assertions": [
         {"path": "failure_report", "equals": "immediate; report actual state, not Done"},
         {"path": "affected_work", "equals": "pause until prerequisite succeeds"},
-        {"path": "unrelated_work", "equals": "continue"}
+        {"path": "unrelated_work", "equals": "pause active work before selecting another ready task"}
       ]
     },
     {
       "id": "visible-intent-plan-order",
       "category": "lifecycle",
-      "prompt": "Use $lean-sdlc. The user authorizes implementation with established intent and several behavior and safety requirements. A draft omits one requirement. A consequential design choice has alternatives that could affect the result. No tasks exist yet. Return only JSON fields: visible_order, omitted_requirement, extra_approval, outcome_scope, work_reason, extra_stage.",
+      "prompt": "Use $lean-sdlc. The user authorizes several changes with established intent and safety constraints. A draft omits one requirement, and a design alternative could affect acceptance. No tasks exist yet. Return only JSON fields: opening, omitted_requirement, acceptance_scope, approach_basis, extra_approval, extra_stage.",
       "assertions": [
-        {"path": "visible_order", "equals": ["intent", "Outcome", "Work", "Acceptance", "Checks", "Limits", "tasks"]},
-        {"path": "omitted_requirement", "equals": "restore before task creation"},
-        {"path": "extra_approval", "equals": false},
-        {"path": "outcome_scope", "equals": "established beneficiary and improvement; no invented benefit"},
-        {"path": "work_reason", "equals": "requirement-based rationale and consequential alternatives"},
-        {"path": "extra_stage", "equals": false}
+        {
+          "path": "opening",
+          "equals": "natural prose with distinct outcomes and shared constraints"
+        },
+        {
+          "path": "omitted_requirement",
+          "equals": "restore before task creation"
+        },
+        {
+          "path": "acceptance_scope",
+          "equals": "each task has its own outcome acceptance and checks"
+        },
+        {
+          "path": "approach_basis",
+          "equals": "requirements and consequential alternatives; label uncertainty"
+        },
+        {
+          "path": "extra_approval",
+          "equals": false
+        },
+        {
+          "path": "extra_stage",
+          "equals": false
+        }
       ]
     },
     {
@@ -133,7 +151,7 @@
           "equals": "intrinsic difficulty without separately acceptable outcomes"
         },
         {"path": "grade", "equals": "Complex"},
-        {"path": "reason_location", "equals": "briefly in Work"},
+        {"path": "reason_location", "equals": "one sentence with the retained Complex task"},
         {"path": "split_steps", "equals": false}
       ]
     },
@@ -180,7 +198,7 @@
       ]
     },
     {
-      "id": "planning-split-parallel",
+      "id": "planning-independent-sequential",
       "category": "delegation",
       "prompt": "Use $lean-sdlc. Two implementation outcomes are independent. Lead writes code while a support role can check a separate stable scope. Return only JSON fields: implementation, support_overlap, safety.",
       "assertions": [
@@ -190,7 +208,7 @@
         },
         {
           "path": "support_overlap",
-          "equals": "independent stable inputs only"
+          "equals": false
         },
         {
           "path": "safety",
@@ -202,17 +220,17 @@
       ]
     },
     {
-      "id": "runtime-parallel-revalidation",
+      "id": "runtime-sequential-verification",
       "category": "delegation",
-      "prompt": "Use $lean-sdlc. Lead wants to continue work while Verifier tests a completed change. Runtime resources may have changed. Return only JSON fields: before_overlap, fallback.",
+      "prompt": "Use $lean-sdlc. Lead wants to continue work while Verifier tests a completed change. Runtime resources may have changed. Return only JSON fields: lead_action, input_change.",
       "assertions": [
         {
-          "path": "before_overlap",
-          "equals": "revalidate stable inputs"
+          "path": "lead_action",
+          "equals": "wait without other task work"
         },
         {
-          "path": "fallback",
-          "equals": "serialize affected work"
+          "path": "input_change",
+          "equals": "invalidate affected proof and recheck"
         }
       ]
     },
@@ -256,7 +274,7 @@
     {
       "id": "delegation-accepted-documentation",
       "category": "delegation",
-      "prompt": "Use $lean-sdlc. An accepted implementation now requires synchronization of shared documentation. Return only JSON fields: role, stage.",
+      "prompt": "Use $lean-sdlc. An accepted implementation now requires substantive revision of shared documentation. Return only JSON fields: role, stage.",
       "assertions": [
         {
           "path": "role",
@@ -306,19 +324,13 @@
       ]
     },
     {
-      "id": "lifecycle-six-lanes",
+      "id": "planning-without-write-authority",
       "category": "lifecycle",
-      "prompt": "Use $lean-sdlc. The user asks for an implementation plan but does not authorize implementation. Return only JSON fields: plan_fields, create_tasks, writes, next_action.",
+      "prompt": "Use $lean-sdlc. The user asks for an implementation plan but does not authorize implementation. Return only JSON fields: coverage, create_tasks, writes, next_action.",
       "assertions": [
         {
-          "path": "plan_fields",
-          "equals": [
-            "Outcome",
-            "Work",
-            "Acceptance",
-            "Checks",
-            "Limits"
-          ]
+          "path": "coverage",
+          "equals": "user need, outcomes, acceptance, checks, constraints, uncertainty"
         },
         {
           "path": "create_tasks",
@@ -548,7 +560,7 @@
       "category": "lifecycle",
       "prompt": "Use $lean-sdlc. One authorized task has confirmed creation, ownership, and write prerequisites. It uses a settled recorded operation without support. Return only JSON fields: start_fields, single_task_table, process_assessment_stage, duplicate_support_announcement.",
       "assertions": [
-        {"path": "start_fields", "equals": ["real task ID and exact title", "Optimal process: actual work"]},
+        {"path": "start_fields", "equals": ["real task ID and exact title", "outcome, completion criteria, grade, confirmed status"]},
         {"path": "single_task_table", "equals": false},
         {"path": "process_assessment_stage", "equals": false},
         {"path": "duplicate_support_announcement", "equals": false}
@@ -580,7 +592,7 @@
       "category": "proof",
       "prompt": "Use $lean-sdlc. Verifier checks a behavioral change while another independent task is ready. It later returns a complete, valid result covering the original requirements, with no unresolved exceptions. No special direct-inspection risk exists. Return only JSON fields: while_verifying, dependent_work, lead_repeats_checks, closure_owner.",
       "assertions": [
-        {"path": "while_verifying", "equals": "Lead continues independent stable work"},
+        {"path": "while_verifying", "equals": "Lead waits"},
         {"path": "dependent_work", "equals": "waits for required result"},
         {"path": "lead_repeats_checks", "equals": false},
         {"path": "closure_owner", "equals": "Lead"}
@@ -605,6 +617,101 @@
         {"path": "unavailable_check", "equals": "report missing proof, not a pass"},
         {"path": "expand_investigation", "equals": false},
         {"path": "reduced_acceptance_authority", "equals": "user approval"}
+      ]
+    },
+    {
+      "id": "shaping-bundled-outcomes",
+      "category": "routing",
+      "prompt": "Use $lean-sdlc. Plan only. Support staff need to restore archived tickets. Managers need monthly CSV reports. Customers need password reset without contacting staff. The existing application has separate ticket, reporting, and identity modules. Return only JSON fields: tasks (each with outcome, acceptance, checks, grade), task_count, per_task_acceptance, shared_constraints_repeated.",
+      "assertions": [
+        {
+          "path": "task_count",
+          "equals": 3
+        },
+        {
+          "path": "per_task_acceptance",
+          "equals": true
+        },
+        {
+          "path": "shared_constraints_repeated",
+          "equals": false
+        }
+      ]
+    },
+    {
+      "id": "shaping-intrinsic-complexity",
+      "category": "routing",
+      "prompt": "Use $lean-sdlc. Plan only. Replace a numerical solver's unstable recurrence while preserving its public API. Acceptance requires one new recurrence with a convergence argument and bounded floating-point error across the same input domain. A derivation without implementation, or an implementation without the error argument, cannot establish correctness. Return only JSON fields: tasks (each with outcome, acceptance, checks, grade, complexity_reason), task_count, retained_grade, separate_implementation_fragments.",
+      "assertions": [
+        {
+          "path": "task_count",
+          "equals": 1
+        },
+        {
+          "path": "retained_grade",
+          "equals": "Complex"
+        },
+        {
+          "path": "separate_implementation_fragments",
+          "equals": false
+        }
+      ]
+    },
+    {
+      "id": "shaping-misleading-normal",
+      "category": "routing",
+      "prompt": "Use $lean-sdlc. Plan only. Existing notes label 'Improve account access' Normal. The requested work lets customers recover forgotten passwords and lets organization administrators assign roles. Password recovery uses the identity module. Role assignment changes the organization's membership policy. Return only JSON fields: tasks (each with outcome, acceptance, checks, grade), task_count, existing_grade_prevents_split.",
+      "assertions": [
+        {
+          "path": "task_count",
+          "equals": 2
+        },
+        {
+          "path": "existing_grade_prevents_split",
+          "equals": false
+        }
+      ]
+    },
+    {
+      "id": "shaping-discovered-scope",
+      "category": "lifecycle",
+      "prompt": "Use $lean-sdlc. TASK-042 owns webhook retry correctness. One retry test now passes, but the required timeout behavior remains unverified. During implementation, Lead discovers that the authorized user request also needs downloadable delivery audit records. That outcome is absent from TASK-042 and needs a reporting endpoint. Explain the next actions without making changes. Return only JSON fields: next_actions, separate_task_before_new_implementation, preserve_original_evidence, preserve_unresolved_timeout, close_original_now.",
+      "assertions": [
+        {
+          "path": "separate_task_before_new_implementation",
+          "equals": true
+        },
+        {
+          "path": "preserve_original_evidence",
+          "equals": true
+        },
+        {
+          "path": "preserve_unresolved_timeout",
+          "equals": true
+        },
+        {
+          "path": "close_original_now",
+          "equals": false
+        }
+      ]
+    },
+    {
+      "id": "small-documentation-edit",
+      "category": "delegation",
+      "prompt": "Use $lean-sdlc. A small code change needs one factual sentence corrected in its existing README. The decision and behavior are settled. Return only JSON fields: writer, mandatory_handoff, required_correction.",
+      "assertions": [
+        {
+          "path": "writer",
+          "equals": "Lead"
+        },
+        {
+          "path": "mandatory_handoff",
+          "equals": false
+        },
+        {
+          "path": "required_correction",
+          "equals": true
+        }
       ]
     }
   ]

@@ -10,6 +10,7 @@ from pathlib import Path
 
 sys.dont_write_bytecode = True
 
+from lean_check import check_repository
 from task_ledger import (
     BACKLOG_FORBIDDEN_CONTEXTS,
     BACKLOG_STATUS,
@@ -72,6 +73,10 @@ def parser() -> argparse.ArgumentParser:
     )
     start.add_argument("task_id", nargs="?")
     start.add_argument("--owner", required=True)
+    start.add_argument(
+        "--check", action="store_true",
+        help="Pass the full before-write check before saving the claimed task",
+    )
     add_definition_arguments(start, required=False)
 
     plan = subparsers.add_parser("plan", help="Create an unowned Planned task")
@@ -236,7 +241,7 @@ def start_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
         ]
         if supplied_definition:
             raise TaskError(
-                "starting an existing task accepts only TASK-ID and --owner; "
+                "starting an existing task accepts only TASK-ID, --owner, and --check; "
                 "use update first"
             )
         task = find_task(rows, args.task_id)
@@ -601,7 +606,17 @@ def main() -> int:
                     message = update_task(args, rows)
                 else:
                     message = close_task(args, rows)
-                require_integrity(rows)
+                if args.command == "start" and args.check:
+                    selected_id = args.task_id or rows[0]["Task ID"]
+                    errors, _ = check_repository(
+                        root, selected_task=selected_id, selected_owner=args.owner,
+                        before_write=True, rows=rows,
+                    )
+                    if errors:
+                        raise TaskError("before-write check failed:\n- " + "\n- ".join(errors))
+                    message += "; before-write check passed"
+                else:
+                    require_integrity(rows)
                 write_ledger(path, rows)
     except (TaskError, OSError) as exc:
         print(f"Task operation failed: {exc}", file=sys.stderr)
@@ -609,6 +624,8 @@ def main() -> int:
 
     if message is not None:
         print(message)
+        if args.command == "start" and args.check:
+            emit_rows([find_task(rows, selected_id)])
     return 0
 
 

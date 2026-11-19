@@ -108,6 +108,79 @@ def write_document_family(
 
 
 class TaskLedgerTests(unittest.TestCase):
+    def test_checked_start_creates_or_claims_and_returns_owned_task(self) -> None:
+        for existing in (False, True):
+            with self.subTest(existing=existing), tempfile.TemporaryDirectory() as directory:
+                repository = Path(directory)
+                write_ledger(repository, "")
+                definition = (
+                    "--title", "Bounded change", "--context", "Project",
+                    "--acceptance", "Changed behavior works", "--proof", "Focused test",
+                )
+                if existing:
+                    planned = task(repository, "plan", *definition)
+                    self.assertEqual(planned.returncode, 0, planned.stderr)
+                result = task(
+                    repository, "start", "--check", "--owner", "12345678",
+                    *(("TASK-000",) if existing else definition),
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn("before-write check passed", result.stdout)
+                self.assertIn("Changed behavior works", result.stdout)
+                row = read_rows(repository)[0]
+                self.assertEqual((row["Task ID"], row["Status"], row["Owner"]),
+                                 ("TASK-000", "In Progress", "12345678"))
+                checked = run(str(CHECK), str(repository), "--before-write",
+                              "--task", "TASK-000", "--owner", "12345678")
+                self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)
+
+    def test_checked_start_failure_preserves_ledger_for_create_and_claim(self) -> None:
+        for existing in (False, True):
+            for defect in ("startup", "unrelated context", "unrelated acceptance"):
+                with self.subTest(existing=existing, defect=defect), tempfile.TemporaryDirectory() as directory:
+                    repository = Path(directory)
+                    context = "FEAT-001" if defect == "unrelated context" else "Project"
+                    acceptance = "" if defect == "unrelated acceptance" else "Done"
+                    ledger = write_ledger(
+                        repository,
+                        "TASK-001,Bounded change,Planned,Project,,,Works,Focused test,\n"
+                        f"TASK-000,Historical task,Done,{context},,12345678,{acceptance},Check,Passed\n",
+                    )
+                    if defect == "startup":
+                        (repository / "AGENTS.md").write_text("Obsolete startup instructions.\n", encoding="utf-8")
+                    before = ledger.read_bytes()
+                    result = task(
+                        repository, "start", "--check", "--owner", "12345678",
+                        *(("TASK-001",) if existing else (
+                            "--title", "New change", "--context", "Project",
+                            "--acceptance", "Works", "--proof", "Focused test",
+                        )),
+                    )
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn("before-write check failed", result.stderr)
+                    self.assertEqual(ledger.read_bytes(), before)
+                    self.assertNotIn("started", result.stdout)
+                    self.assertFalse((repository / ".tasks.lock").exists())
+
+    def test_checked_start_preserves_ownership_and_dependency_guards(self) -> None:
+        for status, owner, dependencies in (
+            ("In Progress", "87654321", ""),
+            ("Planned", "", "TASK-000"),
+            ("Planned", "", "TASK-999"),
+            ("Planned", "", "TASK-001"),
+        ):
+            with self.subTest(status=status, dependencies=dependencies), tempfile.TemporaryDirectory() as directory:
+                repository = Path(directory)
+                ledger = write_ledger(
+                    repository,
+                    f"TASK-001,Selected,{status},Project,{dependencies},{owner},Works,Test,\n"
+                    "TASK-000,Prerequisite,Planned,Project,,,Works,Test,\n",
+                )
+                before = ledger.read_bytes()
+                result = task(repository, "start", "TASK-001", "--check", "--owner", "12345678")
+                self.assertNotEqual(result.returncode, 0)
+                self.assertEqual(ledger.read_bytes(), before)
+
     def test_context_mapping_accepts_valid_contexts_and_rejects_invalid_values_atomically(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             repository = Path(directory)
@@ -211,7 +284,7 @@ class TaskLedgerTests(unittest.TestCase):
                     "Read ledger",
                 ]
                 if number % 2:
-                    command.extend(["--owner", "12345678"])
+                    command.extend(["--owner", "12345678", "--check"])
                 processes.append(
                     subprocess.Popen(
                         command,
@@ -302,7 +375,7 @@ class TaskLedgerTests(unittest.TestCase):
             self.assertEqual(row["Owner"], "12345678")
             self.assertEqual(row["Status"], "In Progress")
 
-    def test_one_owner_can_hold_two_parallel_tasks_under_before_write_gate(self) -> None:
+    def test_owner_can_recover_existing_active_tasks_under_before_write_gate(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             repository = Path(directory)
             write_ledger(
@@ -1805,7 +1878,7 @@ class PackageContractTests(unittest.TestCase):
     def test_release_version_is_consistent(self) -> None:
         manifest = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         version = manifest["version"]
-        self.assertEqual(version, "1.34.0")
+        self.assertEqual(version, "1.35.0")
         self.assertIn(f"v{version}", (ROOT / "README.md").read_text(encoding="utf-8"))
         self.assertIn(f"- Version: {version}", (ROOT / "docs/PROJECT.md").read_text(encoding="utf-8"))
 

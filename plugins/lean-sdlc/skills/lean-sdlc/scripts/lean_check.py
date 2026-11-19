@@ -292,19 +292,21 @@ def startup_contract_errors(root: Path, *, report_missing: bool) -> list[str]:
     return [f"AGENTS.md: {error}"] if error else []
 
 
-def main() -> int:
-    args = parse_args()
-    root = Path(args.repository).resolve()
-    if not root.is_dir():
-        raise SystemExit(f"Repository directory does not exist: {root}")
-
+def check_repository(
+    root: Path,
+    *,
+    selected_task: str | None = None,
+    selected_owner: str | None = None,
+    before_write: bool = False,
+    rows: list[dict[str, str]] | None = None,
+) -> tuple[list[str], int]:
     errors: list[str] = []
-    required_files = ("tasks.csv",) if args.before_write else REQUIRED_FILES
+    required_files = ("tasks.csv",) if before_write else REQUIRED_FILES
     for relative_path in required_files:
         if not (root / relative_path).is_file():
             errors.append(f"missing required file: {relative_path}")
 
-    if not args.before_write and (root / ".gitignore").is_file():
+    if not before_write and (root / ".gitignore").is_file():
         try:
             ignores = {
                 line.strip()
@@ -320,16 +322,16 @@ def main() -> int:
                 errors.append(f".gitignore: missing required entry {entry}")
 
     errors.extend(
-        startup_contract_errors(root, report_missing=not args.before_write)
+        startup_contract_errors(root, report_missing=not before_write)
     )
 
-    if not args.before_write:
+    if not before_write:
         errors.extend(document_collection_errors(root))
         errors.extend(source_archive_errors(root))
 
-    tasks: list[dict[str, str]] = []
+    tasks = rows if rows is not None else []
     path = task_path(root)
-    if path.is_file():
+    if rows is None and path.is_file():
         try:
             columns, tasks = read_ledger(path)
             if columns != list(TASK_COLUMNS):
@@ -398,21 +400,34 @@ def main() -> int:
     if bootstrap_tasks > 1:
         errors.append("tasks.csv: more than one Bootstrap task exists")
 
-    if args.task and args.task not in tasks_by_id:
-        errors.append(f"requested task does not exist: {args.task}")
-    if args.owner and not args.task:
+    if selected_task and selected_task not in tasks_by_id:
+        errors.append(f"requested task does not exist: {selected_task}")
+    if selected_owner and not selected_task:
         errors.append("--owner requires --task TASK-ID")
-    if args.before_write:
-        if not args.task:
+    if before_write:
+        if not selected_task:
             errors.append("--before-write requires --task TASK-ID")
-        if not args.owner:
+        if not selected_owner:
             errors.append("--before-write requires --owner OWNER")
-        elif args.task in tasks_by_id:
-            selected = tasks_by_id[args.task]
+        elif selected_task in tasks_by_id:
+            selected = tasks_by_id[selected_task]
             if selected.get("Status") != "In Progress":
-                errors.append(f"{args.task} must be In Progress before mutation")
-            if selected.get("Owner") != args.owner:
-                errors.append(f"{args.task} is not owned by {args.owner}")
+                errors.append(f"{selected_task} must be In Progress before mutation")
+            if selected.get("Owner") != selected_owner:
+                errors.append(f"{selected_task} is not owned by {selected_owner}")
+
+    return errors, len(tasks)
+
+
+def main() -> int:
+    args = parse_args()
+    root = Path(args.repository).resolve()
+    if not root.is_dir():
+        raise SystemExit(f"Repository directory does not exist: {root}")
+    errors, count = check_repository(
+        root, selected_task=args.task, selected_owner=args.owner,
+        before_write=args.before_write,
+    )
 
     if errors:
         print(f"Lean-SDLC check failed with {len(errors)} error(s):")
@@ -420,7 +435,7 @@ def main() -> int:
             print(f"- {error}")
         return 1
 
-    print(f"Lean-SDLC structural check passed ({len(tasks)} tasks).")
+    print(f"Lean-SDLC structural check passed ({count} tasks).")
     return 0
 
 

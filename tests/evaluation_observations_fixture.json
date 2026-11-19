@@ -2,7 +2,7 @@
   "format": 1,
   "observations": {
     "delegation-announcement": {
-      "announcement_fields": ["agent", "purpose", "wait or continue"],
+      "announcement_fields": ["agent", "purpose", "Lead waits"],
       "announcement_length": "one short sentence",
       "report_back_alone_sufficient": false
     },
@@ -13,7 +13,7 @@
       "replace_agent": false
     },
     "support-opportunities": {
-      "next_task_research": "Scout when useful",
+      "next_task_research": "Scout when useful after the active task finishes or pauses",
       "combined_proof": "Verifier maps one execution to covered tasks",
       "mandatory_extra_agents": false
     },
@@ -33,14 +33,14 @@
     "failed-ledger-update": {
       "failure_report": "immediate; report actual state, not Done",
       "affected_work": "pause until prerequisite succeeds",
-      "unrelated_work": "continue"
+      "unrelated_work": "pause active work before selecting another ready task"
     },
     "visible-intent-plan-order": {
-      "visible_order": ["intent", "Outcome", "Work", "Acceptance", "Checks", "Limits", "tasks"],
+      "opening": "natural prose with distinct outcomes and shared constraints",
       "omitted_requirement": "restore before task creation",
+      "acceptance_scope": "each task has its own outcome acceptance and checks",
+      "approach_basis": "requirements and consequential alternatives; label uncertainty",
       "extra_approval": false,
-      "outcome_scope": "established beneficiary and improvement; no invented benefit",
-      "work_reason": "requirement-based rationale and consequential alternatives",
       "extra_stage": false
     },
     "routing-unresolved-decision": {
@@ -57,7 +57,7 @@
       "outcome": "keep together",
       "reason": "intrinsic difficulty without separately acceptable outcomes",
       "grade": "Complex",
-      "reason_location": "briefly in Work",
+      "reason_location": "one sentence with the retained Complex task",
       "split_steps": false
     },
     "planning-split-serially": {
@@ -81,17 +81,17 @@
       "objective": "independently acceptable outcomes, not lower grades",
       "new_fields": false
     },
-    "planning-split-parallel": {
+    "planning-independent-sequential": {
       "implementation": "Lead serially",
-      "support_overlap": "independent stable inputs only",
+      "support_overlap": false,
       "safety": [
         "separate mutable resources",
         "no unfinished dependency"
       ]
     },
-    "runtime-parallel-revalidation": {
-      "before_overlap": "revalidate stable inputs",
-      "fallback": "serialize affected work"
+    "runtime-sequential-verification": {
+      "lead_action": "wait without other task work",
+      "input_change": "invalidate affected proof and recheck"
     },
     "delegation-broad-evidence": {
       "role": "Scout",
@@ -124,14 +124,8 @@
       "effect_required_missing": "blocks required acceptance",
       "effect_optional_missing": "report unproven benefit; no automatic monitoring"
     },
-    "lifecycle-six-lanes": {
-      "plan_fields": [
-        "Outcome",
-        "Work",
-        "Acceptance",
-        "Checks",
-        "Limits"
-      ],
+    "planning-without-write-authority": {
+      "coverage": "user need, outcomes, acceptance, checks, constraints, uncertainty",
       "create_tasks": false,
       "writes": false,
       "next_action": "stop after the plan"
@@ -198,7 +192,7 @@
       "review_storage": "existing task proof or evidence"
     },
     "single-task-announcement": {
-      "start_fields": ["real task ID and exact title", "Optimal process: actual work"],
+      "start_fields": ["real task ID and exact title", "outcome, completion criteria, grade, confirmed status"],
       "single_task_table": false,
       "process_assessment_stage": false,
       "duplicate_support_announcement": false
@@ -215,7 +209,7 @@
       "automatic_recovery": false
     },
     "verification-conclusion": {
-      "while_verifying": "Lead continues independent stable work",
+      "while_verifying": "Lead waits",
       "dependent_work": "waits for required result",
       "lead_repeats_checks": false,
       "closure_owner": "Lead"
@@ -230,6 +224,79 @@
       "unavailable_check": "report missing proof, not a pass",
       "expand_investigation": false,
       "reduced_acceptance_authority": "user approval"
+    },
+    "shaping-bundled-outcomes": {
+      "tasks": [
+        {
+          "outcome": "Restore archived tickets",
+          "acceptance": "Authorized support staff can restore an archived ticket without losing its history",
+          "checks": "Restore and authorization regressions",
+          "grade": "Normal"
+        },
+        {
+          "outcome": "Monthly CSV reports",
+          "acceptance": "Managers can export the selected month with correct totals",
+          "checks": "Date boundaries, access, and CSV content",
+          "grade": "Normal"
+        },
+        {
+          "outcome": "Customer password reset",
+          "acceptance": "Customers can reset passwords with valid single-use links",
+          "checks": "Expiry, token reuse, and account isolation",
+          "grade": "Normal"
+        }
+      ],
+      "task_count": 3,
+      "per_task_acceptance": true,
+      "shared_constraints_repeated": false
+    },
+    "shaping-intrinsic-complexity": {
+      "tasks": [
+        {
+          "outcome": "Stable recurrence with demonstrated correctness",
+          "acceptance": "The replacement converges and meets the error bound across the supported domain without API changes",
+          "checks": "Derivation review, error bounds, and numerical regression",
+          "grade": "Complex",
+          "complexity_reason": "The recurrence and its numerical proof are inseparable parts of one correctness claim."
+        }
+      ],
+      "task_count": 1,
+      "retained_grade": "Complex",
+      "separate_implementation_fragments": false
+    },
+    "shaping-misleading-normal": {
+      "tasks": [
+        {
+          "outcome": "Customer password recovery",
+          "acceptance": "Customers recover access through valid single-use reset links",
+          "checks": "Expiry and token reuse",
+          "grade": "Normal"
+        },
+        {
+          "outcome": "Organization role assignment",
+          "acceptance": "Authorized administrators assign roles without crossing organization boundaries",
+          "checks": "Permission matrix and organization isolation",
+          "grade": "Normal"
+        }
+      ],
+      "task_count": 2,
+      "existing_grade_prevents_split": false
+    },
+    "shaping-discovered-scope": {
+      "next_actions": [
+        "Define the audit-download outcome and checks in a separate task before implementing it",
+        "Keep TASK-042 open with its passing retry evidence and outstanding timeout check",
+        "Finish the active task before starting the new task"
+      ],
+      "separate_task_before_new_implementation": true,
+      "preserve_original_evidence": true,
+      "preserve_unresolved_timeout": true,
+      "close_original_now": false
+    },
+    "small-documentation-edit": {
+      "writer": "Lead",
+      "mandatory_handoff": false,
+      "required_correction": true
     }
   }
 }

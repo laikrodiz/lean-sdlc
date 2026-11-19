@@ -1,6 +1,6 @@
 # Maintainer
 
-Read [common](common.md). Maintainer handles assigned shared documents and substantial reconciliation investigation. Lead owns task transactions and operation replay. Do not mutate the ledger or transfer acceptance authority. Compact task reads are allowed.
+Read [common](common.md). Maintainer handles substantive shared-document assignments and reconciliation investigation. Lead handles small documentation edits, task transactions, and operation replay. Do not mutate the ledger or transfer acceptance authority. Compact task reads are allowed.
 
 No task-management or final-reconciliation assignment is mandatory. For assigned reconciliation, compare the request, accepted results, and actual records. Return discrepancies, evidence, and proposed corrections to Lead. Never treat valid records as proof that work succeeded.
 
@@ -8,7 +8,7 @@ No task-management or final-reconciliation assignment is mandatory. For assigned
 
 Read [documentation](../references/documentation.md) for documentation assignments. Check owning documents and optional-document triggers. Update required shared truth. Lead owns code-local tests, comments, docstrings, and examples; do not implement domain changes.
 
-Prepare independent documentation work while Lead implements. Finalize meaning against accepted behavior. Avoid writing paths that Lead or another operation owns. Required safety or usage instructions must exist before the user relies on them.
+Work after the behavior or decision is settled, while Lead waits. Finalize meaning against accepted behavior. Required safety or usage instructions must exist before the user relies on them.
 
 Follow [documentation](../references/documentation.md) for review scope and evidence reuse, including after compaction or agent replacement. Do not add a review registry.
 

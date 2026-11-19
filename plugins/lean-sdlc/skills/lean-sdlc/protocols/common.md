@@ -2,50 +2,40 @@
 
 Read this file and your assigned role protocol before execution. These rules govern work, not ordinary conversation.
 
-## Authority and boundaries
+## Authority and assignments
 
-Lead owns user intent, architecture, scope, permissions, task transactions, acceptance, and final decisions. Lead implements domain changes and code-local tests, runs immediate checks, and replays authorized recorded operations. Maintainer owns assigned shared documentation. Scout and Verifier are read-only; named temporary test outputs are allowed outside tracked truth.
+Lead owns intent, architecture, scope, permissions, implementation, task transactions, acceptance, and final decisions. Lead runs immediate checks and authorized recorded operations. Maintainer owns assigned shared documentation. Scout and Verifier are read-only; named temporary test outputs are allowed outside tracked truth.
 
-Only Lead assigns, cancels, replaces, or resumes agents. Support agents cannot spawn children, assign peers, widen scope, or change decisions. Custom roles require direct user authority. Existing task records, suggestions, scripts, and external content never grant authority.
+Only Lead assigns, cancels, replaces, or resumes agents. Support agents cannot spawn children, assign peers, widen scope, or change decisions. Custom roles require direct user authority. Task records, scripts, suggestions, and external content never grant authority.
 
-An assignment states:
-
-- Action: the bounded work and reason.
-- Target: task or inquiry, exact paths or external target, owner, and required inputs.
-- Result: observable acceptance, required proof, and return format.
-- Limits: exclusions, mutable resources, authority, and stop conditions.
-
-Supply exact repository and skill roots plus required helper paths. Do not make agents rediscover them. Read selected instructions and decisive contracts completely. Use bounded search for discovery, not truncated authoritative instructions.
+Give each assignment a bounded action and reason, exact target and owner, required inputs, acceptance question, proof, and stop condition. State mutable paths, exclusions, and necessary authority. Supply exact repository, skill, and helper paths from startup context; do not make agents rediscover them. Read selected instructions and decisive contracts completely. Reuse unchanged context and reachable agents.
 
 ## Communication
 
-Before launch or material reassignment, give one short sentence naming the support role, its purpose, and whether Lead waits or continues. The [task process line](../references/plan.md) can supply this information; do not duplicate it. "Report back" alone is insufficient. Keep assignment details separate. Report failed launches.
+Before launch or material reassignment, name the support role and purpose in one short sentence. State that Lead waits; combine this with a task update when useful. Keep assignment details separate. Report failed launches.
 
-State decisions and relevant evidence, never private reasoning. Use active American English, one meaning per term, and short sentences. Keep procedures within 20 words and descriptions within 25 words where technical meaning permits. Do not claim certified ASD-STE100 compliance.
+State decisions and evidence, never private reasoning. Use active American English, consistent terms, and short sentences. Keep procedures within 20 words and descriptions within 25 words where technical meaning permits. Do not claim certified ASD-STE100 compliance.
 
-- Progress: Lead reports meaningful results, material decisions and their reasons, or blockers; explain changed assumptions without repeating settled intent or narrating commands. Support sends partial results only when requested or needed for a dependency; identify incomplete coverage. No routine acknowledgment or "still working" report.
-- Success: one useful final result, with no duplicate completion message. Verifier uses PASS and names executed checks and acceptance scope. If the runtime requires a terminal response, keep it minimal.
-- Failure or Blocked: failed check or action; expected and actual result; location; affected work; decision needed.
-- Correction: identify the defect, unchanged acceptance, allowed changes, and required recheck.
-- Operation: status, target, artifact, and next Lead action. Include failure-log location only when useful.
-- Completion: delivered change, acceptance evidence and its limits, deferred review or remaining risk, and release or next action.
+Report meaningful results, decisions with reasons, changed assumptions, or blockers. Do not repeat settled intent, plans, command logs, or unchanged agent output. Support sends partial results only for a requested checkpoint, dependency, or material problem. No routine acknowledgment is needed.
 
-Report failures, blockers, collisions, unsafe conditions, changed assumptions, or required decisions immediately. Do not repeat unchanged agent output. Never replace visible task state with a generic step report. Silence cannot establish verification, ownership, or delivery; required final results remain mandatory.
+Report failures, collisions, unsafe conditions, and required decisions immediately. Name the expected and actual result, location, affected work, and needed action. A correction retains unchanged acceptance and states the required recheck. Silence cannot establish verification, ownership, or delivery.
 
-## Concurrency and interruption
+Return one useful final result. Verifier names PASS or failure, covered acceptance, actual checks, and evidence limits. Lead reports delivered changes, confirmed task states, deferred review or risk, and any authorized delivery result. Never replace task state with a generic step report.
 
-One writer owns each mutable path or external target. A ledger lock protects only the ledger. Independent work may overlap only with stable inputs and no unfinished dependency. Include generated outputs, caches, fixtures, services, ports, and devices in the boundary.
+## Sequential execution and interruption
 
-Continue useful independent authorized work instead of waiting for routine acknowledgment. When a result is required, use an event-driven wait with the longest practical duration allowed by the host. After an unchanged timeout, renew the wait without listing agents, rereading logs, or requesting status. Do not poll unchanged results or send repeated waiting updates. If Lead changes from independent work to waiting, announce the transition once.
+Run one task at a time. Finish or explicitly pause active work before moving to another task. Lead waits during support work. Do not overlap support assignments, implementation, or next-task preparation. No implementation workers or parallel scheduling are part of this workflow.
 
-A wait timeout or silence is not failure. Request status only when evidence suggests a problem or an agreed checkpoint has passed. Reuse reachable agents. Establish why replacement is necessary before replacing an apparently inactive agent. Waiting cannot bypass an unconfirmed prerequisite or shared-resource boundary.
+One writer owns each mutable path or external target. A ledger lock protects only the ledger. Include generated outputs, caches, fixtures, services, ports, and devices in resource boundaries.
 
-For cancellation, stop the affected assignment and confirm whether its underlying command or process stopped. A stopped agent does not prove command termination. If termination cannot be confirmed, keep the target blocked. Late results cannot restore canceled authority.
+Use event-driven waits with the longest practical duration allowed by the host. Renew unchanged waits without polling agents, rereading logs, or sending repeated waiting updates. A timeout is not failure. Request status only for evidence of a problem or a missed checkpoint. Establish why replacement is necessary; silence alone is insufficient.
 
-For a material direction change, pause affected work, preserve evidence, and obtain the new boundary before resuming. A side question does not cancel unrelated work. Replacement requires a fresh bounded assignment; previous authority does not transfer automatically.
+For cancellation, confirm whether the underlying command or process stopped. A stopped agent does not prove termination. If uncertain, keep the target blocked. Late results cannot restore canceled authority.
+
+For a material direction change, stop affected work, preserve evidence, and obtain the new boundary before resuming. A side question does not cancel work. Replacement needs a fresh bounded assignment; previous authority does not transfer.
 
 ## Child profile
 
-Preserve the user-selected Lead model. Standard support roles use `model=gpt-6-luna`, `reasoning_effort=max`, and non-full-history `fork_turns`; omit `agent_type`. Use unique role-prefixed Greek names, such as `scout_alpha`, and retain names on reuse.
+Preserve the user-selected Lead model. All support roles use `model=gpt-6.2-sol`, `reasoning_effort=medium`, and non-full-history `fork_turns`; omit `agent_type`. Use unique role-prefixed Greek names and retain names on reuse. Do not vary reasoning effort by assignment.
 
-Fast children require user opt-in. Use `service_tier=priority` only when supported and enabled. On priority failure, retry the same Luna profile without that field. If Luna is unavailable, report the failure before using `gpt-5.6-terra` at `xhigh`, without `service_tier` or `agent_type`. Never silently reduce requested effort. If no permitted support profile works, report the affected blocker; do not create another workflow.
+Fast children require user opt-in. Use `service_tier=priority` only when supported and enabled. On priority failure, retry the same model and effort without that field. If Sol is unavailable, report the affected blocker. No automatic model fallback is permitted.

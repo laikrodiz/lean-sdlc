@@ -1,60 +1,47 @@
 # Plan and task shape
 
-Before initial task creation or claiming, visibly restate the intended result, constraints, and authorized actions. Preserve detailed requirements; distinguish proposed additions. Read-only planning creates no ledger rows.
+## Understand and shape
 
-## Visible plan
+Before creating or claiming tasks, restate the request in natural prose. Explain who needs the change and why, using established context. Keep distinct outcomes visible. Include shared constraints, material uncertainty, and authorized actions. State a proposed approach as a proposal, not a verified fact. Do not require fixed headings or a separate opening checklist.
 
-After the intent restatement, always show all five fields:
+Compare the plan with every explicit user requirement. Restore missing coverage before task creation. A plan-only request stops after the plan without ledger writes. Plan-and-implement needs no renewed approval unless a material choice remains unresolved. Reuse an approved plan without reprinting it.
 
-- Outcome: who needs what improvement and why, using established context without invented business benefits.
-- Work: independently accepted changes, grades, sequencing, and the chosen approach with its main reason.
-- Acceptance: observable behavior and constraints that must hold for each result.
-- Checks: evidence needed to establish acceptance, its limits, and who checks it.
-- Limits: exclusions, unresolved choices, and operation authority.
+Check every candidate for bundled outcomes before assigning a grade. One task has one independently acceptable outcome, coherent contract boundary, proof cluster, and close decision. Split outcomes that can succeed or fail independently, even when the original candidate looks Simple or Normal. Keep implementation steps, tests, documentation, and corrections with their outcome unless independently deliverable.
 
-Use short fields for small work; preserve necessary detail. Reuse settled context and decisions. Tables cannot replace the plan. Label material assumptions.
+Use one sizing pass before creating tasks or showing their table. Stop at independently acceptable outcomes, not implementation fragments. Preserve real dependencies and responsibility for combined-result proof. Do not split by file count, time estimate, agent availability, or a target grade. Resolve only uncertainty that could materially change boundaries.
 
-Compare the visible plan with every explicit user requirement; restore missing coverage before creating or claiming tasks. A plan-only request stops after the plan. Plan-and-implement proceeds without renewed approval unless a material choice remains unresolved. For new work or material scope changes, update intent and affected fields before tasks. Otherwise reuse the approved plan without reprinting it.
+Retain Complex for intrinsic difficulty or inseparable coupling, not accumulated scope. Give each retained Complex task a one-sentence reason explaining why further splitting would not help. A broad feature name is not a reason. Do not repeat splitting because Complex remains.
 
-Before creating tasks or showing a task table, settle outcome boundaries and grades. One task has one independently accepted outcome, owning contract boundary, proof cluster, and close decision. For Complex candidates, distinguish combined scope from intrinsic difficulty or inseparable coupling. Split separately acceptable outcomes; grade the resulting tasks. Stop before implementation fragments or duplicated proof. Retain Complex when difficulty cannot usefully be separated; briefly explain why in Work. Resolve only uncertainty that could materially change boundaries. Revisit settled boundaries only when relevant facts change, not because Complex remains. Preserve the user outcome, real dependencies, and responsibility for combined-result proof. Splitting does not authorize parallel execution. Keep tests, documentation, and corrections with their outcome unless independently deliverable. Never split by file count, estimated time, agent availability, or a target grade.
+Each task carries its own observable outcome, acceptance criteria, required checks, and task-specific limits in existing ledger fields. State shared constraints once and refer to them where needed. Do not add fields, documents, or an approval stage for sizing.
+
+If implementation reveals a new independently acceptable outcome, define a separate task before implementing that outcome. Update the affected boundary and dependency if needed. Preserve existing evidence and unresolved original requirements. Do not close the original task merely because some work moved elsewhere. Revisit only the changed boundary, not the whole plan.
 
 ## Grades
 
-Assign Simple, Normal, or Complex to each task, not the project. Grades describe work complexity, not authority or safety.
+Assign Simple, Normal, or Complex after settling boundaries. Grades describe complexity, not authority or safety.
 
 - Simple: settled, bounded work with known paths and an immediate narrow check. Avoid routine Scout use and unnecessary broad tests.
 - Normal: one understood behavior with several related implementation or verification steps.
 - Complex: one coherent outcome with intrinsic uncertainty, difficult reasoning, or inseparable cross-boundary changes needing stronger proof.
 
-Keep grades in plans, multi-task tables, and handoffs, not new columns or state files. Recover their basis after compaction.
+Keep grades and Complex reasons in the visible plan and handoffs, not new columns or state files. Recover their basis after compaction.
 
 ## Ledger and visible status
 
-Before new execution tasks, check compact Backlog and current-work views for duplicates or related work, never during ordinary conversation or startup. Adding or promoting ideas requires direct user authority; existing rows do not authorize execution.
+Before new execution tasks, check compact Backlog and current-work views for duplicates or related work. Do not do this during ordinary conversation. Adding or promoting ideas requires direct user authority; existing rows do not authorize execution.
 
-Lead creates or claims work directly through [ledger](ledger.md). Confirm owned In Progress status, acceptance, proof, and the before-write gate before implementation. Dependencies must be Done before dependent work starts. All roles may read task facts.
+Lead creates or claims tasks through [ledger](ledger.md). Confirm owned In Progress status, acceptance, proof, and the before-write gate before implementation. Dependencies must be Done before dependent work starts.
 
-Name tasks by their intended change. Use real IDs and exact titles, never invented proposal IDs. After confirmed creation and ownership, announce each task:
+Use real task IDs, outcomes, completion criteria, grades, and confirmed status. For one task, a short task line is sufficient. For multiple tasks, show the settled current work before implementation:
 
-> Starting <real task ID>: <exact title>.
-> Optimal process: <actual execution, support work, and wait or continue relationship>.
+| Task ID | Outcome | Done when | Grade | Status |
+| --- | --- | --- | --- | --- |
 
-List only needed roles and steps, without a separate assessment stage. Repeat the process only when it changes. This can satisfy the [support announcement](../protocols/common.md).
+The table excludes unrelated history and stopped work. Show actual final states after ledger reconciliation. Between these checkpoints, report changed tasks, decisions, failures, or results only. A support announcement can accompany the relevant change; no process slogan or repeated plan is required.
 
-For one task, replace the table with this announcement and short status-change and final-state lines. For multiple tasks, use these overview columns:
+After accepting required proof, close the task directly through the helper, confirm success, and show Done. Report transaction failures immediately; do not present pending writes as confirmed state. Pause affected work; never bypass dependencies. Follow [common](../protocols/common.md) for sequential execution and waiting.
 
-| Task ID | Short description | Grade | Status |
-| --- | --- | --- | --- |
-
-The full table covers the current authorized work, not unrelated history or stopped tasks.
-
-- Beginning: for multiple tasks, show the full table after creation and confirmed ownership, before implementation. The first task is In Progress; report blocked prerequisites instead of announcing a blocked task as started.
-- Middle: show one changed task as a short status line, or simultaneous changes as changed rows only. Identify newly authorized scope.
-- End: for multiple tasks, show the full table with actual final states after ledger reconciliation. If work stops, show the unfinished states. Do not force stopped or blocked work to Done.
-
-After accepting required proof, close the task directly through the helper, confirm success, and show Done. Report transaction failures immediately; never present pending or failed writes as confirmed state. Pause affected work, but continue independent ready work. Confirm IDs, ownership, and write prerequisites; never bypass dependencies.
-
-If `update_plan` is available, mirror each unresolved task there as `TASK-NNN — Title`. Map Planned to `pending`, In Progress to `in_progress`, and Done to `completed`. Rebuild unresolved rows after resume. The ledger remains authoritative; the native view is optional.
+If `update_plan` is available, mirror unresolved tasks as `TASK-NNN — Title`. Map Planned to `pending`, In Progress to `in_progress`, and Done to `completed`. The ledger remains authoritative; the native view is optional.
 
 ## Simple tasks and deferred review
 

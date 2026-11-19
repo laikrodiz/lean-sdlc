@@ -40,10 +40,8 @@ GREEK_LABELS = (
     "omega",
 )
 ROLE_PREFIXES = frozenset({"maintainer", "verifier", "scout"})
-LUNA_MODEL = "gpt-6-luna"
-LUNA_REASONING = "max"
-TERRA_MODEL = "gpt-5.6-terra"
-TERRA_REASONING = "xhigh"
+SUPPORT_MODEL = "gpt-6.2-sol"
+SUPPORT_REASONING = "medium"
 LABEL_PATTERN = re.compile(
     r"^(?P<prefix>[a-z0-9]+(?:_[a-z0-9]+)*)_(?P<label>"
     + "|".join(GREEK_LABELS)
@@ -101,15 +99,11 @@ def _validate_tool_input(tool_input: Any, fast_children: bool) -> str | None:
 
     model = tool_input.get("model")
     reasoning_effort = tool_input.get("reasoning_effort")
-    if model == LUNA_MODEL:
-        expected_reasoning = LUNA_REASONING
-    elif model == TERRA_MODEL:
-        expected_reasoning = TERRA_REASONING
-    else:
-        return f"Set model to {LUNA_MODEL} for a standard child or {TERRA_MODEL} for fallback."
+    if model != SUPPORT_MODEL:
+        return f"Set model to {SUPPORT_MODEL} for support roles. No automatic fallback is permitted."
 
-    if reasoning_effort != expected_reasoning:
-        return f"Set reasoning_effort to {expected_reasoning} for {model}."
+    if reasoning_effort != SUPPORT_REASONING:
+        return f"Set reasoning_effort to {SUPPORT_REASONING} for {model}."
     if "agent_type" in tool_input:
         return "Remove agent_type from direct native model spawns."
     if "fork_turns" not in tool_input or not _fork_turns_is_non_full_history(
@@ -118,12 +112,9 @@ def _validate_tool_input(tool_input: Any, fast_children: bool) -> str | None:
         return "Set fork_turns to none or a positive non-full-history value."
 
     service_tier = tool_input.get("service_tier")
-    if model == TERRA_MODEL:
-        if "service_tier" in tool_input:
-            return "Remove service_tier from direct Terra fallback spawns."
-    elif "service_tier" in tool_input:
+    if "service_tier" in tool_input:
         if service_tier != "priority":
-            return "Omit service_tier for Standard Luna or set priority for Fast Luna."
+            return "Omit service_tier for Standard children or set priority for Fast children."
         if not fast_children:
             return "Omit service_tier for the standard child tier, or enable Fast children first."
     return None

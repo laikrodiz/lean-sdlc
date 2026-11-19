@@ -21,11 +21,12 @@ class EvaluationRunnerTests(unittest.TestCase):
     def setUp(self) -> None:
         self.scenarios = load_scenarios(SCENARIOS)
         self.observations = load_observations(OBSERVATIONS)
+        self.assertion_count = sum(len(item["assertions"]) for item in self.scenarios["scenarios"])
 
     def test_repository_scenarios_pass_against_separate_observations(self) -> None:
         self.assertTrue(all("observed" not in scenario for scenario in self.scenarios["scenarios"]))
         checked, failures = evaluate(self.scenarios, self.observations)
-        self.assertEqual((checked, failures), (142, ()))
+        self.assertEqual((checked, failures), (self.assertion_count, ()))
 
     def test_missing_observation_fails(self) -> None:
         observations = copy.deepcopy(self.observations)
@@ -33,7 +34,7 @@ class EvaluationRunnerTests(unittest.TestCase):
 
         checked, failures = evaluate(self.scenarios, observations)
 
-        self.assertEqual(checked, 136)
+        self.assertEqual(checked, self.assertion_count - 6)
         self.assertIn("missing observation: proof-layers", failures)
 
     def test_wrong_observation_fails_its_assertion(self) -> None:
@@ -42,7 +43,7 @@ class EvaluationRunnerTests(unittest.TestCase):
 
         checked, failures = evaluate(self.scenarios, observations)
 
-        self.assertEqual(checked, 142)
+        self.assertEqual(checked, self.assertion_count)
         self.assertIn(
             "routing-unresolved-decision:route equals 'Lead'; observed 'Engineer'",
             failures,
@@ -54,8 +55,21 @@ class EvaluationRunnerTests(unittest.TestCase):
 
         checked, failures = evaluate(self.scenarios, observations)
 
-        self.assertEqual(checked, 142)
+        self.assertEqual(checked, self.assertion_count)
         self.assertIn("extra observation: unlisted-scenario", failures)
+
+    def test_task_shaping_rejects_bundles_fragments_and_premature_closure(self) -> None:
+        for scenario, key, wrong in (
+            ("shaping-bundled-outcomes", "task_count", 1),
+            ("shaping-intrinsic-complexity", "separate_implementation_fragments", True),
+            ("shaping-misleading-normal", "existing_grade_prevents_split", True),
+            ("shaping-discovered-scope", "close_original_now", True),
+        ):
+            with self.subTest(scenario=scenario):
+                observations = copy.deepcopy(self.observations)
+                observations["observations"][scenario][key] = wrong
+                _, failures = evaluate(self.scenarios, observations)
+                self.assertTrue(any(failure.startswith(f"{scenario}:{key} ") for failure in failures))
 
     def test_invalid_shape_and_missing_category_fail_before_evaluation(self) -> None:
         document = copy.deepcopy(self.scenarios)
