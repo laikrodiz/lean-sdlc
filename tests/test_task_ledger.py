@@ -1782,7 +1782,7 @@ class TaskLedgerTests(unittest.TestCase):
 
 
 class PackageContractTests(unittest.TestCase):
-    def test_package_contains_one_skill_and_eleven_instruction_files(self) -> None:
+    def test_package_contains_one_skill_and_expected_instructions(self) -> None:
         self.assertEqual({path.name for path in PLUGIN.iterdir()}, {".codex-plugin", "hooks", "skills"})
         self.assertEqual([path.parent.name for path in PLUGIN.glob("skills/*/SKILL.md")], ["lean-sdlc"])
         self.assertEqual(
@@ -1791,7 +1791,7 @@ class PackageContractTests(unittest.TestCase):
         )
         self.assertEqual(
             {path.name for path in (SKILL / "protocols").glob("*.md")},
-            {"common.md", "lead.md", "scout.md", "maintainer.md", "verifier.md"},
+            {"common.md", "lead.md", "scout.md", "maintainer.md", "verifier.md", "parallel.md"},
         )
         self.assertFalse(any(path.name in {"__pycache__", ".DS_Store"} or path.suffix == ".pyc" for path in PLUGIN.rglob("*")))
 

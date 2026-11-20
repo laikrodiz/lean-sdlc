@@ -1,5 +1,6 @@
 """Local Git operations for an explicitly authorized parallel Engineer run."""
 import argparse
+import json
 import os
 from pathlib import Path
 import re
@@ -32,13 +33,39 @@ def head(root):
     return git(root, "rev-parse", "HEAD").decode().strip()
 
 
+def admin_dir(root):
+    return (root / os.fsdecode(git(root, "rev-parse", "--git-dir")).strip()).resolve()
+
+
+def ref(root):
+    return git(root, "rev-parse", "--symbolic-full-name", "HEAD").decode().strip()
+
+
+def record(root, data):
+    with (admin_dir(root) / "lean-run.json").open("x") as stream:
+        json.dump(data, stream)
+
+
+def ownership(root):
+    data = json.loads((admin_dir(root) / "lean-run.json").read_text())
+    require(data["path"] == str(root) and data["ref"] == ref(root), "Checkout identity changed")
+    return data
+
+
 def clean(root, ignored=False):
+    admin = admin_dir(root)
+    for marker in ("MERGE_HEAD", "CHERRY_PICK_HEAD", "REVERT_HEAD", "rebase-apply", "rebase-merge", "sequencer", "index.lock"):
+        require(not (admin / marker).exists(), f"Unfinished Git operation: {root}")
     options = ["--ignored"] if ignored else []
-    require(not git(root, "status", "--porcelain", "-z", "--untracked-files=all",
+    entries = git(root, "ls-files", "-v", "-z").split(b"\0")
+    require(not any(entry[:1].islower() or entry.startswith(b"S ") for entry in entries),
+            f"Index flags can hide changes: {root}")
+    require(not git(root, "-c", "core.fsmonitor=false", "status", "--porcelain", "-z", "--untracked-files=all",
                     "--ignore-submodules=none", *options), f"Preserved nonempty changes: {root}")
 
 
 def check_integration(root):
+    require((root / ".git").is_file(), "Integration needs a linked worktree")
     name = git(root, "symbolic-ref", "--short", "HEAD").decode().strip()
     require(name.startswith("lean-integrate/"), "Expected a run integration branch")
     return name
@@ -73,9 +100,13 @@ def main(argv=None):
         git(repo, "symbolic-ref", "--quiet", "HEAD")
         clean(repo)
         require(re.fullmatch(r"[A-Za-z0-9_-]+", args.run), "Invalid run name")
-        path = tempfile.mkdtemp(prefix="lean-integrate-")
+        previous = [os.fsdecode(f[9:]) for f in git(repo, "worktree", "list", "--porcelain", "-z").split(b"\0")
+                    if f.startswith(b"worktree ")]
+        path = Path(tempfile.mkdtemp(prefix="lean-integrate-")).resolve()
         try:
             git(repo, "worktree", "add", "-b", "lean-integrate/" + args.run, path, head(repo))
+            record(path, dict(path=str(path), ref=ref(path), repo=str(repo), original_ref=ref(repo),
+                              base=head(path), previous=previous))
         except subprocess.CalledProcessError:
             if not os.listdir(path):
                 os.rmdir(path)
@@ -90,6 +121,10 @@ def main(argv=None):
                 (temporary / os.fsdecode(git(temporary, "rev-parse", "--git-dir")).strip()).resolve().parent
                 == common(keeper) / "worktrees", "Not a linked worktree")
         require(head(temporary) == args.checkpoint, "Checkpoint changed")
+        data = ownership(temporary)
+        require(str(keeper) in (data["repo"], data.get("integration")), "Keeper belongs to another run")
+        if "accepted" in data:
+            require(data["accepted"] == args.checkpoint, "Not the accepted worker checkpoint")
         git(keeper, "symbolic-ref", "--quiet", "HEAD")
         git(keeper, "merge-base", "--is-ancestor", args.checkpoint, "HEAD")
         clean(temporary, ignored=True)
@@ -97,11 +132,14 @@ def main(argv=None):
         return
     integration = checkout(args.integration)
     check_integration(integration)
+    run = ownership(integration)
     clean(integration)
     if args.command == "accept":
         worker = checkout(args.worker)
         require(worker != integration and common(worker) == common(integration), "Wrong Engineer checkout")
         require((worker / ".git").is_file(), "Engineer needs a linked worktree")
+        require(str(worker) not in run["previous"] and not (admin_dir(worker) / "lean-run.json").exists(),
+                "Not a new, unassigned Engineer checkout")
         clean(worker)
         require(head(worker) == args.checkpoint, "Engineer checkpoint changed")
         require(git(worker, "rev-list", "--parents", "-n1", "HEAD").decode().split()[1:] == [args.base],
@@ -111,9 +149,13 @@ def main(argv=None):
         require(bool(changed) and set(map(os.fsdecode, changed)) <= set(args.paths), "Changes outside assignment or empty checkpoint")
         git(integration, "-c", "rerere.enabled=false", "merge", "--no-overwrite-ignore",
             "--no-ff", "--no-edit", args.checkpoint)
+        record(worker, dict(path=str(worker), ref=ref(worker), repo=run["repo"],
+                            integration=str(integration), accepted=args.checkpoint))
     else:
         repo = checkout(args.repository)
         require(repo != integration and common(repo) == common(integration), "Wrong destination")
+        require(run["repo"] == str(repo) and run["original_ref"] == ref(repo) and run["base"] == args.base,
+                "Destination differs from run start")
         require(git(repo, "symbolic-ref", "--short", "HEAD").decode().strip() == args.branch,
                 "Destination branch changed")
         require(head(repo) == args.base and head(integration) == args.verified, "Destination or verified revision changed")

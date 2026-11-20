@@ -67,6 +67,21 @@ class ParallelTests(unittest.TestCase):
         self.assertEqual(self.git(self.repo, "rev-parse", "HEAD"), self.base)
         self.op("retire", self.repo, self.integration, tip, ok=False)
 
+    def test_commit_delivery_refuses_moved_or_dirty_destination(self):
+        path, sha = self.worker("one", "one")
+        self.op("accept", self.integration, path, self.base, sha, "one")
+        tip = self.git(self.integration, "rev-parse", "HEAD")
+        self.op("land", self.repo, self.integration, "main", sha, tip, "--commit", ok=False)
+        (self.repo / "one").write_text("user work")
+        self.op("land", self.repo, self.integration, "main", self.base, tip, "--commit", ok=False)
+        self.assertEqual((self.repo / "one").read_text(), "user work")
+        (self.repo / "one").unlink()
+        self.op("land", self.repo, self.integration, "main", self.base, tip, "--commit")
+        self.assertEqual(self.git(self.repo, "rev-parse", "HEAD"), tip)
+        self.op("retire", self.repo, path, sha)
+        self.op("retire", self.repo, self.integration, tip)
+        self.assertFalse(self.integration.exists())
+
     def test_conflict_keeps_both_commits_and_original_checkout(self):
         first, a = self.worker("one", "shared")
         second, b = self.worker("two", "shared")
@@ -76,6 +91,21 @@ class ParallelTests(unittest.TestCase):
         self.assertEqual((second / "shared").read_text(), "two")
         self.assertEqual(self.git(self.repo, "rev-parse", "HEAD"), self.base)
         self.op("retire", self.integration, second, b, ok=False)
+
+    def test_retire_preserves_hidden_edits_and_unrelated_checkouts(self):
+        other = self.root / "unrelated"
+        self.git(self.repo, "worktree", "add", "--detach", str(other), self.base)
+        self.op("retire", self.repo, other, self.base, ok=False)
+        self.assertTrue(other.exists())
+        path, sha = self.worker("one", "tracked")
+        self.op("accept", self.integration, path, self.base, sha, "tracked")
+        for flag in ("assume-unchanged", "skip-worktree"):
+            self.git(path, "update-index", "--" + flag, "tracked")
+            (path / "tracked").write_text("user work")
+            self.op("retire", self.integration, path, sha, ok=False)
+            self.assertEqual((path / "tracked").read_text(), "user work")
+            self.git(path, "update-index", "--no-" + flag, "tracked")
+            (path / "tracked").write_text("one")
 
     def test_ready_fifty_no_claims_and_no_checkouts(self):
         ledger = self.repo / "tasks.csv"
