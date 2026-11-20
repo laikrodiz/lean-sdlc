@@ -34,10 +34,10 @@ The Lead removes only recorded temporary checkouts after their processes stop an
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-These commands install the immutable v1.36.1 release.
+These commands install the immutable v1.36.2 release.
 
 ~~~bash
-git clone --depth 1 --branch v1.36.1 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.36.2 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc

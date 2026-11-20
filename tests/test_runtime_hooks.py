@@ -132,6 +132,16 @@ class RuntimeHookTests(unittest.TestCase):
             )
         )
 
+    def test_reserved_roles_reject_extra_words(self) -> None:
+        profile = {"model": "gpt-6.2-sol", "reasoning_effort": "medium", "fork_turns": "none"}
+        for name in ("verifier_naming_tau", "verifier_release_xi", "maintainer_release_tau",
+                     "scout_code_review_beta", "engineer_release_tau"):
+            for fields in ({}, profile):
+                with self.subTest(name=name, fields=fields):
+                    result = self.guard({"task_name": name, **fields})
+                    self.assertIsNotNone(result)
+                    self.assertEqual(result["hookSpecificOutput"]["permissionDecision"], "deny")
+
     def test_all_standard_roles_use_fixed_sol_fields(self) -> None:
         for role in ("maintainer", "verifier", "scout"):
             with self.subTest(role=role):
@@ -207,6 +217,7 @@ class RuntimeHookTests(unittest.TestCase):
 
     def test_direct_user_custom_role_is_accepted(self) -> None:
         self.assertIsNone(self.guard({"task_name": "researcher_beta"}))
+        self.assertIsNone(self.guard({"task_name": "design_researcher_beta"}))
 
     def test_direct_user_custom_role_can_use_custom_routing(self) -> None:
         self.assertIsNone(

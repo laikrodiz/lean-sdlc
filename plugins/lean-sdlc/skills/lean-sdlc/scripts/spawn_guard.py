@@ -63,15 +63,6 @@ def _deny(reason: str) -> None:
     )
 
 
-def _task_name_error(task_name: Any) -> str | None:
-    if not isinstance(task_name, str):
-        return "Set task_name to a role-prefixed Greek label, for example scout_beta."
-    match = LABEL_PATTERN.fullmatch(task_name)
-    if match is None:
-        return "Set task_name to a role-prefixed Greek label, for example scout_beta."
-    return None
-
-
 def _fork_turns_is_non_full_history(value: Any) -> bool:
     if isinstance(value, bool):
         return False
@@ -87,15 +78,17 @@ def _validate_tool_input(tool_input: Any, fast_children: bool) -> str | None:
         return "Provide Agent tool_input with a role-prefixed Greek task_name."
 
     task_name = tool_input.get("task_name")
-    error = _task_name_error(task_name)
-    if error is not None:
-        return error
+    match = LABEL_PATTERN.fullmatch(task_name) if isinstance(task_name, str) else None
+    if match is None:
+        return "Set task_name to a role-prefixed Greek label, for example scout_beta."
 
-    task_prefix = LABEL_PATTERN.fullmatch(task_name).group("prefix").casefold()
-    if task_prefix == "engineer":
+    role, _, extra = match.group("prefix").partition("_")
+    if role == "engineer":
         return "Use host-managed worktree isolation for authorized Engineers, never a shared Agent checkout."
-    if task_prefix not in ROLE_PREFIXES:
+    if role not in ROLE_PREFIXES:
         return None
+    if extra:
+        return f"Use only the support role and one Greek letter: {role}_{match.group('label')}."
 
     model = tool_input.get("model")
     reasoning_effort = tool_input.get("reasoning_effort")
