@@ -26,7 +26,7 @@ The user controls what may change and which delivery actions are authorized. A s
 
 Ask for Parallel Engineers in the current request to let independent tasks run at the same time. The requested count is a maximum. The Lead uses only as many Engineers as the work and available resources support. The Lead starts queued tasks when slots are free and their accepted inputs are available.
 
-Each Engineer uses the Lead model and reasoning effort in a separate checkout. The Lead combines the accepted changes and checks the combined result before delivery. If the user authorizes a push, the Lead pushes the accepted destination once. The Lead does not publish Engineer branches.
+Thread titles and progress updates identify each Engineer by the assigned task ID. Each Engineer uses the Lead model and reasoning effort in a separate checkout. The Lead combines the accepted changes and checks the combined result before delivery. If the user authorizes a push, the Lead pushes the accepted destination once. The Lead does not publish Engineer branches.
 
 The Lead removes only recorded temporary checkouts after their processes stop and their results are retained. The Lead keeps unfinished or disputed work for recovery. See the [parallel rules](plugins/lean-sdlc/skills/lean-sdlc/protocols/parallel.md).
 
@@ -34,10 +34,10 @@ The Lead removes only recorded temporary checkouts after their processes stop an
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-These commands install the immutable v1.36.0 release.
+These commands install the immutable v1.36.1 release.
 
 ~~~bash
-git clone --depth 1 --branch v1.36.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.36.1 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc

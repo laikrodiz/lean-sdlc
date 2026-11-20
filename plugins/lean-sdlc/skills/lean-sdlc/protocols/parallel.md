@@ -6,7 +6,7 @@ Lead uses the primary ledger only. Settle interfaces and give shared files, gene
 
 Use `tasks.py --repo REPOSITORY ready --slots FREE TASK-ID ...` for this request's eligible tasks. Limit free slots by requested width, host capacity, resources, and pending integration. Zero slots means wait. Claim each selected task with the normal before-write gate. Refill on completion events. Do not start dependent work until its accepted inputs exist in its checkout.
 
-Launch one host-managed worktree per Engineer. In T3, use `delegate_task` with `isolation:"worktree"` and the Lead model and effort. Never substitute a shared checkout. Use task IDs, not a fixed name pool. Give each Engineer its base commit, allowed files, interface, acceptance, check, and stop condition. Verify checkout identity and base before edits. If the host cannot supply that base or isolation, stop the affected dispatch.
+Launch one host-managed worktree per Engineer. In T3, use `delegate_task` with `isolation:"worktree"` and the Lead model and effort. Never substitute a shared checkout. Set the `delegate_task` title to `Engineer <task ID>` using the exact ID from the ledger. Use the same name in progress updates. Give each Engineer its base commit, allowed files, interface, acceptance, check, and stop condition. Verify checkout identity and base before edits. If the host cannot supply that base or isolation, stop the affected dispatch.
 
 Give Engineers the Lead's startup context and successful task gate with the assignment. The primary repository owns the ledger; the assigned worktree owns the edits. Do not initialize a worker ledger or rediscover the project there.
 

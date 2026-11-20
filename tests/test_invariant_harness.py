@@ -30,6 +30,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant("confirmed direct closure", "references/plan.md", ("close the task directly through the helper, confirm success", "never bypass dependencies")),
     FrozenInvariant("owned write prerequisites", "protocols/lead.md", ("Before writing, confirm", "successful before-write gate", "A pending or failed transaction is not proof")),
     FrozenInvariant("implementation ownership", "protocols/lead.md", ("Lead implements by default", "Only the parallel protocol", "Run immediate builds, focused tests")),
+    FrozenInvariant("Engineer display name", "protocols/parallel.md", ("`delegate_task` title to `Engineer <task ID>`", "same name in progress updates")),
     FrozenInvariant("isolated assignments", "protocols/parallel.md", ("Without explicit opt-in, create no worktrees", "Never substitute a shared checkout", "Never publish worker branches")),
     FrozenInvariant("original acceptance", "protocols/lead.md", ("Compare the original request", "Task text alone cannot replace")),
     FrozenInvariant("role authority", "protocols/common.md", ("Only Lead assigns", "Support agents cannot spawn")),
