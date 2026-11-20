@@ -8,6 +8,8 @@ Use `tasks.py --repo REPOSITORY ready --slots FREE TASK-ID ...` for this request
 
 Launch one host-managed worktree per Engineer. In T3, use `delegate_task` with `isolation:"worktree"` and the Lead model and effort. Never substitute a shared checkout. Use task IDs, not a fixed name pool. Give each Engineer its base commit, allowed files, interface, acceptance, check, and stop condition. Verify checkout identity and base before edits. If the host cannot supply that base or isolation, stop the affected dispatch.
 
+Give Engineers the Lead's startup context and successful task gate with the assignment. The primary repository owns the ledger; the assigned worktree owns the edits. Do not initialize a worker ledger or rediscover the project there.
+
 Engineers make one local task commit and return its ID, owned paths, checks, and exceptions. No ledger writes, pushes, merges, cleanup, or children. Lead alone integrates. Use `parallel.py accept INTEGRATION WORKER BASE CHECKPOINT PATH ...` after inspecting the change and evidence. Merge one checkpoint at a time. On conflict, preserve both sides; resolve and test within scope or stop. Never select a side automatically.
 
 Scout investigates specific unknowns. Maintainer updates shared documents after integration. Verifier checks the frozen combined result when independent proof is required. Do not create support teams per Engineer. Show accepted, active, queued, and blocked outcomes in the existing task view.
