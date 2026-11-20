@@ -24,7 +24,7 @@ Return one useful final result. Verifier names PASS or failure, covered acceptan
 
 ## Sequential execution and interruption
 
-Run one task at a time. Finish or explicitly pause active work before moving to another task. Lead waits during support work. Do not overlap support assignments, implementation, or next-task preparation. No implementation workers or parallel scheduling are part of this workflow.
+Run one task at a time by default. Lead waits during support work. Do not overlap support assignments. Only an explicit request for multiple Engineers activates the parallel protocol for that request.
 
 One writer owns each mutable path or external target. A ledger lock protects only the ledger. Include generated outputs, caches, fixtures, services, ports, and devices in resource boundaries.
 

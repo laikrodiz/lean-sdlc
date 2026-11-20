@@ -29,7 +29,8 @@ FROZEN_INVARIANTS = (
     FrozenInvariant("visible task state", "references/plan.md", ("real task IDs, outcomes, completion criteria, grades, and confirmed status", "actual final states after ledger reconciliation", "ledger remains authoritative")),
     FrozenInvariant("confirmed direct closure", "references/plan.md", ("close the task directly through the helper, confirm success", "never bypass dependencies")),
     FrozenInvariant("owned write prerequisites", "protocols/lead.md", ("Before writing, confirm", "successful before-write gate", "A pending or failed transaction is not proof")),
-    FrozenInvariant("implementation ownership", "protocols/lead.md", ("Lead implements all code and domain changes", "Run immediate builds, focused tests")),
+    FrozenInvariant("implementation ownership", "protocols/lead.md", ("Lead implements by default", "Only the parallel protocol", "Run immediate builds, focused tests")),
+    FrozenInvariant("isolated assignments", "protocols/parallel.md", ("Without explicit opt-in, create no worktrees", "Never substitute a shared checkout", "Never publish worker branches")),
     FrozenInvariant("original acceptance", "protocols/lead.md", ("Compare the original request", "Task text alone cannot replace")),
     FrozenInvariant("role authority", "protocols/common.md", ("Only Lead assigns", "Support agents cannot spawn")),
     FrozenInvariant("resource isolation", "protocols/common.md", ("One writer owns each mutable", "A ledger lock protects only")),
@@ -63,7 +64,7 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
     def test_entry_routes_all_instructions_without_obsolete_paths(self) -> None:
         entry = (SKILL / "SKILL.md").read_text(encoding="utf-8")
         paths = [SKILL / "SKILL.md", *sorted((SKILL / "protocols").glob("*.md")), *sorted((SKILL / "references").glob("*.md"))]
-        self.assertEqual(len(paths), 11)
+        self.assertEqual(len(paths), 12)
         for path in paths[1:]:
             self.assertIn(path.relative_to(SKILL).as_posix(), entry)
         combined = "\n".join(path.read_text(encoding="utf-8") for path in paths)

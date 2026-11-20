@@ -5,7 +5,7 @@ description: Use Lean-SDLC when explicitly requested or required by repository i
 
 # Lean-SDLC
 
-Lead implements, manages tasks, makes small documentation edits, and checks immediate results. Use Scout for substantial uncertainty, Maintainer for substantive shared documents, and Verifier for independent proof when needed. Execute tasks and support assignments sequentially.
+Lead owns delivery. By default, Lead implements one task at a time in the current checkout. Use Scout for substantial uncertainty, Maintainer for substantive shared documents, and Verifier for independent proof.
 
 Interpret the request before loading execution details. Conversation, brainstorming, diagnosis, and planning do not imply implementation authority. Read-only requests create no tasks or project files.
 
@@ -14,6 +14,7 @@ Interpret the request before loading execution details. Conversation, brainstorm
 - Conversation, brainstorming, shaping, or read-only investigation: [conversation](references/conversation.md).
 - Planning: [plan](references/plan.md). A plan-only request stops after the plan.
 - Authorized execution: [common](protocols/common.md), [Lead](protocols/lead.md), and [plan](references/plan.md).
+- Only for an explicit request for parallel Engineers: [isolated assignments and integration](protocols/parallel.md).
 - Assigned support: [common](protocols/common.md) and only [Scout](protocols/scout.md), [Maintainer](protocols/maintainer.md), or [Verifier](protocols/verifier.md).
 - Ledger operations, initialization, or upgrade: [ledger](references/ledger.md).
 - Shared-document work: [documentation](references/documentation.md).

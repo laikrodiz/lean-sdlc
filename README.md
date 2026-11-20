@@ -14,7 +14,7 @@ Each task has one result that the Lead can accept on its own. It states what mus
 
 ## How
 
-The Lead owns the result and works on one task at a time. Before changes start, the task must have an owner and pass the required check. If another outcome appears during work, the Lead separates it before implementing it. The original task still needs its unfinished requirements and proof.
+The Lead owns the result and works on one task at a time by default. Before changes start, the task must have an owner and pass the required check. If another outcome appears during work, the Lead separates it before implementing it. The original task still needs its unfinished requirements and proof.
 
 The Lead makes small documentation edits and runs focused checks. A Scout investigates important uncertainty. A Maintainer updates shared documents when the change is substantial. A Verifier provides required independent proof or checks material risk. The Lead uses support only as needed and waits for each assignment before doing more work.
 
@@ -22,14 +22,22 @@ The Lead checks that valid evidence covers the request and examines gaps or exce
 
 The user controls what may change and which delivery actions are authorized. A source change does not authorize a commit, push, installation, publication, or deployment. If work is canceled, the Lead confirms that its process stopped before work resumes on that target.
 
+### Parallel Engineers
+
+Ask for Parallel Engineers in the current request to let independent tasks run at the same time. The requested count is a maximum. The Lead uses only as many Engineers as the work and available resources support. The Lead starts queued tasks when slots are free and their accepted inputs are available.
+
+Each Engineer uses the Lead model and reasoning effort in a separate checkout. The Lead combines the accepted changes and checks the combined result before delivery. If the user authorizes a push, the Lead pushes the accepted destination once. The Lead does not publish Engineer branches.
+
+The Lead removes only recorded temporary checkouts after their processes stop and their results are retained. The Lead keeps unfinished or disputed work for recovery. See the [parallel rules](plugins/lean-sdlc/skills/lean-sdlc/protocols/parallel.md).
+
 ## Install
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-These commands install the immutable v1.35.0 release with the sequential workflow and fixed Sol support profile.
+These commands install the immutable v1.36.0 release.
 
 ~~~bash
-git clone --depth 1 --branch v1.35.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.36.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc
@@ -44,6 +52,7 @@ Start with `Use $lean-sdlc to`, then say what you want:
 - Discuss this idea without changing files.
 - Make a plan only.
 - Plan and implement this change.
+- Plan and implement this change with up to three Parallel Engineers.
 - Continue this repository task.
 - Upgrade this repository to the current contract.
 

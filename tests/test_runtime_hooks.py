@@ -172,13 +172,13 @@ class RuntimeHookTests(unittest.TestCase):
             )
         )
 
-    def test_retired_engineer_role_is_rejected(self) -> None:
+    def test_shared_checkout_engineer_is_rejected(self) -> None:
         denied = self.guard({
             "task_name": "engineer_beta", "model": "gpt-6.2-sol",
             "reasoning_effort": "medium", "fork_turns": "none",
         })
         self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
-        self.assertIn("Lead owns implementation", denied["hookSpecificOutput"]["permissionDecisionReason"])
+        self.assertIn("worktree isolation", denied["hookSpecificOutput"]["permissionDecisionReason"])
 
     def test_legacy_state_does_not_select_workflow_and_upgrade_preserves_tier(self) -> None:
         path = self.codex_home / "state/lean-sdlc" / f"{self.owner()}.json"

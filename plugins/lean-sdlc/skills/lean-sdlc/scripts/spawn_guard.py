@@ -93,7 +93,7 @@ def _validate_tool_input(tool_input: Any, fast_children: bool) -> str | None:
 
     task_prefix = LABEL_PATTERN.fullmatch(task_name).group("prefix").casefold()
     if task_prefix == "engineer":
-        return "Lead owns implementation. Use Scout, Maintainer, or Verifier for support."
+        return "Use host-managed worktree isolation for authorized Engineers, never a shared Agent checkout."
     if task_prefix not in ROLE_PREFIXES:
         return None
 

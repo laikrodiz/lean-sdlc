@@ -26,6 +26,8 @@ REQUIRED_PACKAGE_PATHS = (
     ".codex-plugin/plugin.json",
     "hooks/hooks.json",
     "skills/lean-sdlc/SKILL.md",
+    "skills/lean-sdlc/protocols/parallel.md",
+    "skills/lean-sdlc/scripts/parallel.py",
 )
 EMPTY_LEDGER = "Task ID,Title,Status,Context,Dependencies,Owner,Acceptance Criteria,Proof,Evidence\n"
 

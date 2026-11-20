@@ -128,6 +128,10 @@ def parser() -> argparse.ArgumentParser:
         help="Print completed Quick Fixes awaiting batch review",
     )
 
+    ready = subparsers.add_parser("ready", help="List ready assignments within an explicit run, without claiming them")
+    ready.add_argument("task_ids", nargs="+")
+    ready.add_argument("--slots", type=int, required=True, help="Available writer slots after resource limits")
+
     promote = subparsers.add_parser(
         "promote",
         help="Promote one Backlog task to Planned or In Progress",
@@ -567,12 +571,19 @@ def main() -> int:
     try:
         if args.command == "upgrade":
             message = upgrade_ledger(root, args)
-        elif args.command in {"backlog", "open", "show", "quick-fixes"}:
+        elif args.command in {"backlog", "open", "show", "quick-fixes", "ready"}:
             columns, rows = read_ledger(task_path(root))
             if columns != list(TASK_COLUMNS):
                 raise TaskError("run tasks.py upgrade before reading tasks")
             require_integrity(rows)
-            if args.command == "backlog":
+            if args.command == "ready":
+                if args.slots < 0:
+                    raise TaskError("slots must be nonnegative")
+                selected = [find_task(rows, key) for key in dict.fromkeys(args.task_ids)]
+                done = {row["Task ID"] for row in rows if row["Status"] == "Done"}
+                emit_rows([row for row in selected if row["Status"] == "Planned"
+                           and done.issuperset(dependency_ids(row["Dependencies"]))][:args.slots])
+            elif args.command == "backlog":
                 emit_backlog(
                     [row for row in rows if row.get("Status") == BACKLOG_STATUS]
                 )

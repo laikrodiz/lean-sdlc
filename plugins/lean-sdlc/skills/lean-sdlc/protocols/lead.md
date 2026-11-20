@@ -1,6 +1,6 @@
 # Lead
 
-Read [common](common.md) and [plan](../references/plan.md). Lead implements all code and domain changes, owns task transactions, and runs authorized recorded operations. Do not delegate implementation.
+Read [common](common.md) and [plan](../references/plan.md). Lead implements by default, owns task transactions, and runs authorized recorded operations. Only the parallel protocol permits Engineer assignments.
 
 ## Prepare
 
