@@ -18,6 +18,13 @@ def require(ok, reason):
         raise ValueError(reason)
 
 
+def path_summary(entries):
+    names = [ascii(os.fsdecode(entry)) for entry in entries[:8]]
+    if len(entries) > 8:
+        names.append(f"(+{len(entries) - 8} more)")
+    return ", ".join(names)
+
+
 def checkout(path):
     path = Path(path).resolve(strict=True)
     require(Path(os.fsdecode(git(path, "rev-parse", "--show-toplevel")).strip()).resolve() == path,
@@ -60,8 +67,12 @@ def clean(root, ignored=False):
     entries = git(root, "ls-files", "-v", "-z").split(b"\0")
     require(not any(entry[:1].islower() or entry.startswith(b"S ") for entry in entries),
             f"Index flags can hide changes: {root}")
-    require(not git(root, "-c", "core.fsmonitor=false", "status", "--porcelain", "-z", "--untracked-files=all",
-                    "--ignore-submodules=none", *options), f"Preserved nonempty changes: {root}")
+    status = git(root, "-c", "core.fsmonitor=false", "status", "--porcelain=v1", "--no-renames", "-z",
+                 "--untracked-files=normal", "--ignore-submodules=none", *options)
+    if status:
+        kinds = {b"!!": b"ignored: ", b"??": b"untracked: "}
+        entries = [kinds.get(item[:2], b"tracked: ") + item[3:] for item in status.split(b"\0")[:-1]]
+        raise ValueError(f"Preserved changes in {root}: {path_summary(entries)}")
 
 
 def check_integration(root):
@@ -147,8 +158,15 @@ def main(argv=None):
         git(integration, "merge-base", "--is-ancestor", args.base, "HEAD")
         changed = git(worker, "diff", "--no-renames", "--name-only", "-z", args.base, "HEAD").split(b"\0")[:-1]
         require(bool(changed) and set(map(os.fsdecode, changed)) <= set(args.paths), "Changes outside assignment or empty checkpoint")
-        git(integration, "-c", "rerere.enabled=false", "merge", "--no-overwrite-ignore",
-            "--no-ff", "--no-edit", args.checkpoint)
+        try:
+            git(integration, "-c", "rerere.enabled=false", "merge", "--no-overwrite-ignore",
+                "--no-ff", "--no-edit", args.checkpoint)
+        except subprocess.CalledProcessError as error:
+            conflicts = git(integration, "diff", "--name-only", "--diff-filter=U", "-z").split(b"\0")[:-1]
+            if not conflicts:
+                raise
+            raise ValueError(f"Conflicts in {integration}: {path_summary(conflicts)}. "
+                             "Resolve and commit in integration, verify the result, then rerun accept before retire.") from error
         record(worker, dict(path=str(worker), ref=ref(worker), repo=run["repo"],
                             integration=str(integration), accepted=args.checkpoint))
     else:

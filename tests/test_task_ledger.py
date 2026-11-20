@@ -108,6 +108,29 @@ def write_document_family(
 
 
 class TaskLedgerTests(unittest.TestCase):
+    def test_document_creator_unblocks_only_its_explicit_dependents(self) -> None:
+        for prefix, folder in (("FEAT", "features"), ("DEC", "decisions")):
+            with self.subTest(prefix=prefix), tempfile.TemporaryDirectory() as tmp:
+                repo = Path(tmp)
+                ctx = prefix + "-001"
+                rows = (f"TASK-001,Follow up,Planned,{ctx},TASK-000,,Works,Test,\n"
+                        f"TASK-000,Create document,Planned,{ctx},,,Works,Test,\n")
+                start = ("start", "TASK-000", "--check", "--owner", "12345678")
+                for unrelated in (rows.replace("TASK-000,,Works", ",,Works", 1),
+                                  rows.replace(ctx, prefix + "-002", 1)):
+                    write_ledger(repo, unrelated)
+                    self.assertNotEqual(task(repo, *start).returncode, 0)
+                ledger = write_ledger(repo, rows)
+                result = task(repo, *start)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                close = ("close", "TASK-000", "--owner", "12345678", "--evidence", "Verified")
+                before = ledger.read_bytes()
+                self.assertNotEqual(task(repo, *close).returncode, 0)
+                self.assertEqual(ledger.read_bytes(), before)
+                write_document_family(repo, folder, prefix)
+                self.assertEqual(task(repo, *close).returncode, 0)
+                self.assertEqual(task(repo, "start", "TASK-001", "--check", "--owner", "12345678").returncode, 0)
+
     def test_checked_start_creates_or_claims_and_returns_owned_task(self) -> None:
         for existing in (False, True):
             with self.subTest(existing=existing), tempfile.TemporaryDirectory() as directory:
@@ -1878,7 +1901,7 @@ class PackageContractTests(unittest.TestCase):
     def test_release_version_is_consistent(self) -> None:
         manifest = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         version = manifest["version"]
-        self.assertEqual(version, "1.36.2")
+        self.assertEqual(version, "1.36.3")
         self.assertIn(f"v{version}", (ROOT / "README.md").read_text(encoding="utf-8"))
         self.assertIn(f"- Version: {version}", (ROOT / "docs/PROJECT.md").read_text(encoding="utf-8"))
 

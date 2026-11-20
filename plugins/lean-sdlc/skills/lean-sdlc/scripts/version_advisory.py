@@ -217,7 +217,7 @@ def check_for_update(
             saved["notified_for"] = notification_key
             message = (
                 f"Lean-SDLC v{_version_text(latest)} is available. "
-                "Architect should propose an upgrade and review repo contract compatibility."
+                "Lead should propose an upgrade and review repo contract compatibility."
             )
     if not fresh or message is not None:
         try:

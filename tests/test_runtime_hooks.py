@@ -610,7 +610,7 @@ class RuntimeHookTests(unittest.TestCase):
         ), patch.object(VERSION.urllib.request, "urlopen", side_effect=opener):
             message = VERSION.check_for_update(manifest=manifest)
         self.assertIn("Lean-SDLC v1.10.0 is available", message)
-        self.assertIn("propose an upgrade", message)
+        self.assertIn("Lead should propose an upgrade", message)
         self.assertIn("repo contract compatibility", message)
         self.assertEqual(len(calls), 1)
         cache = self.codex_home / "state/lean-sdlc/version_advisory.json"

@@ -33,6 +33,6 @@ Hosted task services, dashboards, telemetry, and automatic discovery or proposal
 ## Current stage and version
 
 - Stage: Evolution.
-- Version: 1.36.2.
+- Version: 1.36.3.
 - Version goal: Let users opt in to parallel work on independent tasks without weakening ownership, proof, or delivery controls. Keep sequential work as the default. This is a workflow goal, not a measured speed improvement.
 - Exit evidence: Require fresh [candidate checks](OPERATIONS.md), version checks, exact remote commit and tag on `origin/main`, and byte-for-byte installed/source equality. Confirm selected-repository isolation, upgrade and structural checks, a live support-profile check, and final ledger reconciliation.

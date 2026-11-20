@@ -17,6 +17,7 @@ from task_ledger import (
     TASK_STATUSES,
     THREAD_OWNER_PATTERN,
     TaskError,
+    dependency_ids,
     integrity_errors,
     read_ledger,
     task_path,
@@ -345,6 +346,7 @@ def check_repository(
         errors.append(f"tasks.csv: {error}")
 
     tasks_by_id: dict[str, dict[str, str]] = {}
+    active_contexts = {row["Task ID"]: row["Context"] for row in tasks if row.get("Status") == "In Progress"}
     bootstrap_tasks = 0
     for number, task in enumerate(tasks, start=2):
         task_id = task.get("Task ID", "") or f"row {number}"
@@ -370,6 +372,9 @@ def check_repository(
         elif (
             CONTEXT_PATTERN.fullmatch(context)
             and status != "In Progress"
+            and not (status == "Planned" and any(
+                active_contexts.get(dep) == context for dep in dependency_ids(task.get("Dependencies", ""))
+            ))
             and not context_document_exists(root, context)
         ):
             errors.append(

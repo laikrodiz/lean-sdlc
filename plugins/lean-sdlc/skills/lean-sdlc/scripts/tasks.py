@@ -10,10 +10,11 @@ from pathlib import Path
 
 sys.dont_write_bytecode = True
 
-from lean_check import check_repository
+from lean_check import check_repository, context_document_exists
 from task_ledger import (
     BACKLOG_FORBIDDEN_CONTEXTS,
     BACKLOG_STATUS,
+    CONTEXT_PATTERN,
     QUICK_FIX_CONTEXT,
     QUICK_FIX_PENDING_MARKER,
     TASK_COLUMNS,
@@ -370,13 +371,15 @@ def promote_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
     return f"promoted {args.task_id} to {task['Status']}"
 
 
-def close_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
+def close_task(args: argparse.Namespace, rows: list[dict[str, str]], root: Path) -> str:
     task = find_task(rows, args.task_id)
     if task.get("Status") != "In Progress":
         raise TaskError(f"{args.task_id} must be In Progress before it can close")
 
     require_finished_dependencies(task, rows)
     quick_fix_review_cursor(rows)
+    if CONTEXT_PATTERN.fullmatch(task["Context"]) and not context_document_exists(root, task["Context"]):
+        raise TaskError(f"{args.task_id} has no document for context {task['Context']}")
 
     review_target = None
     if args.review_through is not None:
@@ -616,7 +619,7 @@ def main() -> int:
                 elif args.command == "update":
                     message = update_task(args, rows)
                 else:
-                    message = close_task(args, rows)
+                    message = close_task(args, rows, root)
                 if args.command == "start" and args.check:
                     selected_id = args.task_id or rows[0]["Task ID"]
                     errors, _ = check_repository(

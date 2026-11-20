@@ -32,7 +32,7 @@ class ParallelTests(unittest.TestCase):
         result = subprocess.run(args, cwd=path, env=dict(ENV, TMPDIR=str(self.root)),
                                 text=True, capture_output=True)
         self.assertEqual(result.returncode == 0, ok, (args, result.stderr, result.stdout))
-        return result.stdout.strip()
+        return (result.stdout if ok else result.stderr).strip()
 
     def git(self, path, *args):
         return self.run_at(path, "git", *args)
@@ -55,8 +55,16 @@ class ParallelTests(unittest.TestCase):
             self.op("accept", self.integration, path, self.base, sha, "wrong", ok=False)
             self.op("accept", self.integration, path, self.base, sha, name)
             (path / "ignored").write_text("keep")
-            self.op("retire", self.integration, path, sha, ok=False)
+            (path / "local").write_text("keep this too")
+            (path / name).write_text("edited")
+            error = self.op("retire", self.integration, path, sha, ok=False)
+            for entry in ("ignored: ignored", "untracked: local", f"tracked: {name}"):
+                self.assertIn(entry, error)
             self.assertEqual((path / "ignored").read_text(), "keep")
+            self.assertEqual((path / "local").read_text(), "keep this too")
+            self.assertEqual((path / name).read_text(), "edited")
+            (path / "local").unlink()
+            (path / name).write_text(name)
             (path / "ignored").unlink()
             self.op("retire", self.integration, path, sha)
             self.assertFalse(path.exists())
@@ -86,11 +94,21 @@ class ParallelTests(unittest.TestCase):
         first, a = self.worker("one", "shared")
         second, b = self.worker("two", "shared")
         self.op("accept", self.integration, first, self.base, a, "shared")
-        self.op("accept", self.integration, second, self.base, b, "shared", ok=False)
+        error = self.op("accept", self.integration, second, self.base, b, "shared", ok=False)
+        self.assertIn("'shared'", error)
+        self.assertIn("rerun accept before retire", error)
         self.assertIn("shared", self.git(self.integration, "diff", "--diff-filter=U", "--name-only"))
         self.assertEqual((second / "shared").read_text(), "two")
         self.assertEqual(self.git(self.repo, "rev-parse", "HEAD"), self.base)
         self.op("retire", self.integration, second, b, ok=False)
+        (self.integration / "shared").write_text("one and two")
+        self.git(self.integration, "add", "shared")
+        self.git(self.integration, "commit", "--no-edit")
+        self.op("retire", self.integration, second, b, ok=False)
+        self.op("accept", self.integration, second, self.base, b, "shared")
+        self.op("retire", self.integration, second, b)
+        self.assertFalse(second.exists())
+        self.assertEqual((self.integration / "shared").read_text(), "one and two")
 
     def test_retire_preserves_hidden_edits_and_unrelated_checkouts(self):
         other = self.root / "unrelated"
