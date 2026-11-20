@@ -114,6 +114,7 @@ def parser() -> argparse.ArgumentParser:
         help="Record shared review through one completed Quick Fix task",
     )
 
+    subparsers.add_parser("overview", help="Summarize current work, backlog and pending reviews")
     subparsers.add_parser(
         "open",
         help="Print Planned and In Progress tasks",
@@ -491,6 +492,18 @@ def pending_quick_fixes(rows: list[dict[str, str]]) -> list[dict[str, str]]:
     ]
 
 
+def emit_overview(rows: list[dict[str, str]]) -> None:
+    writer = csv.writer(sys.stdout, lineterminator="\n")
+    writer.writerow(("View", "Task ID", "Title", "Status", "Owner", "Dependencies"))
+    for view, selected in (
+        ("Current", (r for r in rows if r["Status"] in {"Planned", "In Progress"})),
+        ("Backlog", (r for r in rows if r["Status"] == BACKLOG_STATUS)),
+        ("Pending review", pending_quick_fixes(rows)),
+    ):
+        for row in selected:
+            writer.writerow((view, row["Task ID"], row["Title"], row["Status"], row["Owner"], row["Dependencies"]))
+
+
 def authorize_upgrade(
     rows: list[dict[str, str]],
     task_id: str,
@@ -574,12 +587,14 @@ def main() -> int:
     try:
         if args.command == "upgrade":
             message = upgrade_ledger(root, args)
-        elif args.command in {"backlog", "open", "show", "quick-fixes", "ready"}:
+        elif args.command in {"backlog", "open", "show", "quick-fixes", "ready", "overview"}:
             columns, rows = read_ledger(task_path(root))
             if columns != list(TASK_COLUMNS):
                 raise TaskError("run tasks.py upgrade before reading tasks")
             require_integrity(rows)
-            if args.command == "ready":
+            if args.command == "overview":
+                emit_overview(rows)
+            elif args.command == "ready":
                 if args.slots < 0:
                     raise TaskError("slots must be nonnegative")
                 selected = [find_task(rows, key) for key in dict.fromkeys(args.task_ids)]

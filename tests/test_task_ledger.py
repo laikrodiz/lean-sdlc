@@ -108,6 +108,25 @@ def write_document_family(
 
 
 class TaskLedgerTests(unittest.TestCase):
+    def test_overview_is_compact_and_read_only(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            ledger = write_ledger(repo, "")
+            def overview():
+                before = ledger.read_bytes()
+                result = task(repo, "overview")
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(ledger.read_bytes(), before)
+                self.assertNotIn("private detail", result.stdout)
+                return list(csv.DictReader(StringIO(result.stdout)))
+            self.assertEqual(overview(), [])
+            write_ledger(repo, "TASK-003,New idea,Backlog,Project,,,,,\n"
+                         "TASK-002,Next,Planned,Project,TASK-001,,Works,private detail,\n"
+                         "TASK-001,Small fix,Done,Quick Fix,,12345678,Works,Check,private detail\n"
+                         "TASK-000,Old,Done,Project,,12345678,Works,Check,private detail\n")
+            self.assertEqual([(r["Task ID"], r["View"]) for r in overview()],
+                             [("TASK-002", "Current"), ("TASK-003", "Backlog"), ("TASK-001", "Pending review")])
+
     def test_document_creator_unblocks_only_its_explicit_dependents(self) -> None:
         for prefix, folder in (("FEAT", "features"), ("DEC", "decisions")):
             with self.subTest(prefix=prefix), tempfile.TemporaryDirectory() as tmp:
@@ -1901,7 +1920,7 @@ class PackageContractTests(unittest.TestCase):
     def test_release_version_is_consistent(self) -> None:
         manifest = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         version = manifest["version"]
-        self.assertEqual(version, "1.36.3")
+        self.assertEqual(version, "1.37.0")
         self.assertIn(f"v{version}", (ROOT / "README.md").read_text(encoding="utf-8"))
         self.assertIn(f"- Version: {version}", (ROOT / "docs/PROJECT.md").read_text(encoding="utf-8"))
 

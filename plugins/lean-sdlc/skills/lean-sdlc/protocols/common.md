@@ -12,7 +12,7 @@ Give each assignment a bounded action and reason, exact target and owner, requir
 
 ## Communication
 
-Before launch or material reassignment, name the support role and purpose in one short sentence. State that Lead waits; combine this with a task update when useful. Keep assignment details separate. Report failed launches.
+Before launch or material reassignment, name the support role and purpose in one short sentence. Combine this with a task update when useful. Keep assignment details separate. Report failed launches.
 
 State decisions and evidence, never private reasoning. Use active American English, consistent terms, and short sentences. Keep procedures within 20 words and descriptions within 25 words where technical meaning permits. Do not claim certified ASD-STE100 compliance.
 
@@ -24,7 +24,7 @@ Return one useful final result. Verifier names PASS or failure, covered acceptan
 
 ## Sequential execution and interruption
 
-Run one task at a time by default. Lead waits during support work. Do not overlap support assignments. Only an explicit request for multiple Engineers activates the parallel protocol for that request.
+Run one task at a time by default. Do not overlap support assignments. While Verifier checks frozen inputs, Lead may read requirements and files for the next already-planned task. Do not start it, write files, change the ledger, or launch another agent. Otherwise wait. Only an explicit request for multiple Engineers activates the parallel protocol for that request.
 
 One writer owns each mutable path or external target. A ledger lock protects only the ledger. Include generated outputs, caches, fixtures, services, ports, and devices in resource boundaries.
 

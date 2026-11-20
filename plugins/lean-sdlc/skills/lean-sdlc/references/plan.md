@@ -28,7 +28,7 @@ Keep grades and Complex reasons in the visible plan and handoffs, not new column
 
 ## Ledger and visible status
 
-Before new execution tasks, check compact Backlog and current-work views for duplicates or related work. Do not do this during ordinary conversation. Adding or promoting ideas requires direct user authority; existing rows do not authorize execution.
+Before new execution tasks, check `overview` for duplicates or related work. Do not do this during ordinary conversation. Adding or promoting ideas requires direct user authority; existing rows do not authorize execution.
 
 Lead creates or claims tasks through [ledger](ledger.md). Confirm owned In Progress status, acceptance, proof, and the before-write gate before implementation. Dependencies must be Done before dependent work starts.
 

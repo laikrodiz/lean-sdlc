@@ -5,8 +5,10 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import json
 import os
 import stat
+import subprocess
 import sys
 from pathlib import Path
 
@@ -20,6 +22,8 @@ class CheckpointError(ValueError):
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", required=True, help="repository root")
+    parser.add_argument("--result", type=Path, help="New result file outside the checkout")
+    parser.add_argument("--run", nargs=argparse.REMAINDER, help="Run this command with the repository as its working directory")
     parser.add_argument(
         "paths",
         nargs="+",
@@ -119,11 +123,38 @@ def checkpoint(repository: str, values: list[str]) -> str:
     return _digest(files)
 
 
+def check_command(args) -> int:
+    root = _repository_root(args.repo)
+    if args.result.resolve().is_relative_to(root):
+        raise CheckpointError("result file must be outside the repository")
+    # Exclusive creation binds one receipt to one invocation, even after a lost wait.
+    with args.result.open("x", encoding="utf-8") as receipt:
+        code = None
+        inputs = "unavailable"
+        try:
+            before = checkpoint(args.repo, args.paths)
+            code = subprocess.run(args.run, cwd=root, check=False).returncode
+            inputs = "unchanged" if before == checkpoint(args.repo, args.paths) else "changed"
+        except (CheckpointError, OSError) as exc:
+            print(f"Checkpoint failed: {exc}", file=sys.stderr)
+        summary = json.dumps({"command_exit": code, "inputs": inputs})
+        receipt.write(summary + "\n")
+        receipt.flush()
+        os.fsync(receipt.fileno())
+    print(summary, flush=True)
+    return 0 if code == 0 and inputs == "unchanged" else 1
+
+
 def main(arguments: list[str] | None = None) -> int:
-    args = _parser().parse_args(arguments)
+    parser = _parser()
+    args = parser.parse_args(arguments)
+    if (args.result is None) != (args.run is None) or args.run == []:
+        parser.error("use --result FILE with --run COMMAND [ARG ...]")
     try:
+        if args.run:
+            return check_command(args)
         print(checkpoint(args.repo, args.paths))
-    except CheckpointError as exc:
+    except (CheckpointError, OSError) as exc:
         print(f"Checkpoint failed: {exc}", file=sys.stderr)
         return 2
     return 0

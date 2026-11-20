@@ -1,8 +1,12 @@
 {
   "format": 1,
   "observations": {
+    "acceptance-original-requirement-and-command": {
+      "accept_now": false, "recover_requirement": "CLI help",
+      "check_documented_launcher": true, "run_deployment": false
+    },
     "delegation-announcement": {
-      "announcement_fields": ["agent", "purpose", "Lead waits"],
+      "announcement_fields": ["agent", "purpose"],
       "announcement_length": "one short sentence",
       "report_back_alone_sufficient": false
     },
@@ -209,7 +213,7 @@
       "automatic_recovery": false
     },
     "verification-conclusion": {
-      "while_verifying": "Lead waits",
+      "while_verifying": "may read planned inputs; no start, writes, ledger changes or delegation",
       "dependent_work": "waits for required result",
       "lead_repeats_checks": false,
       "closure_owner": "Lead"

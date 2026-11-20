@@ -1,6 +1,6 @@
 # Ledger and project control
 
-Root `tasks.csv` is the only durable task plan. Lead performs all task writes directly through the packaged `tasks.py` helper. Do not delegate routine transactions or add a mandatory final reconciliation agent. All roles can use read-only `open`, `show TASK-ID`, `backlog`, and `quick-fixes`. Do not load full Done history for ordinary work.
+Root `tasks.csv` is the only durable task plan. Lead performs all task writes directly through the packaged `tasks.py` helper. Do not delegate routine transactions or add a mandatory final reconciliation agent. Use read-only `overview` for current work, backlog titles, and pending reviews. Use `show TASK-ID` for details.
 
 ## Exact context
 

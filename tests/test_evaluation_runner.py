@@ -58,6 +58,15 @@ class EvaluationRunnerTests(unittest.TestCase):
         self.assertEqual(checked, self.assertion_count)
         self.assertIn("extra observation: unlisted-scenario", failures)
 
+    def test_acceptance_rejects_reduced_scope_and_substitute_command(self):
+        key = "acceptance-original-requirement-and-command"
+        observations = copy.deepcopy(self.observations)
+        observations["observations"][key].update(
+            accept_now=True, recover_requirement="none", check_documented_launcher=False, run_deployment=True,
+        )
+        _, failures = evaluate(self.scenarios, observations)
+        self.assertEqual(len([f for f in failures if f.startswith(key + ":")]), 4)
+
     def test_task_shaping_rejects_bundles_fragments_and_premature_closure(self) -> None:
         for scenario, key, wrong in (
             ("shaping-bundled-outcomes", "task_count", 1),

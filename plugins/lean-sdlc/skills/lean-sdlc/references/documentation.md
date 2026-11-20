@@ -12,7 +12,7 @@ Lead identifies documentation changes from affected facts and document owners. L
 
 Lead supplies the behavior and decision delta and approves meaning or document splits. Maintainer owns assigned narrative changes and indexes. Lead owns code-local tests, comments, docstrings, annotations, and examples. Resolve conflicts in the authoritative source before copying facts elsewhere.
 
-Finalize documentation against accepted implementation. Required safety and usage instructions must exist before the user relies on the result. A Simple task may defer a broader review, not a known necessary correction.
+Finalize required usage and safety instructions before handoff. Verify changed commands needed for acceptance exactly as documented, only when safe and authorized. A different launcher or flag is not proof. Report unverified commands; missing essential proof blocks closure.
 
 ## Optional families and triggers
 

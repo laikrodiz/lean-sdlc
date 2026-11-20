@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import json
 import subprocess
 import sys
 import tempfile
@@ -27,6 +28,41 @@ def run_checkpoint(
 
 
 class CheckpointTests(unittest.TestCase):
+    def test_receipt_reports_command_and_inputs_separately(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp) / "repo"
+            repo.mkdir()
+            for i, (command, code, inputs) in enumerate((
+                ("pass", 0, "unchanged"), ("raise SystemExit(9)", 9, "unchanged"),
+                ("open('src','w').write('different')", 0, "changed"),
+                ("import os; os.unlink('src'); raise SystemExit(3)", 3, "unavailable"),
+            )):
+                (repo / "src").write_text("original")
+                receipt = Path(tmp) / str(i)
+                result = run_checkpoint(repo, "src", "--result", str(receipt), "--run", sys.executable, "-c", command)
+                self.assertEqual(result.returncode == 0, code == 0 and inputs == "unchanged", result.stderr)
+                self.assertEqual(json.loads(receipt.read_text()), {"command_exit": code, "inputs": inputs})
+            for target in (receipt, repo / "new"):
+                result = run_checkpoint(repo, "src", "--result", str(target), "--run", sys.executable, "-V")
+                self.assertNotEqual(result.returncode, 0)
+            self.assertFalse((repo / "new").exists())
+
+    def test_resume_same_process_after_an_early_wait(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp) / "repo"
+            repo.mkdir()
+            (repo / "src").touch()
+            receipt = Path(tmp) / "result"
+            command = [sys.executable, str(CHECKPOINT), "--repo", str(repo), "src", "--result", str(receipt),
+                       "--run", sys.executable, "-c", "input(); open('runs','a').write('1')"]
+            with subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True) as proc:
+                with self.assertRaises(subprocess.TimeoutExpired):
+                    proc.wait(timeout=0.02)
+                proc.communicate("\n", timeout=10)
+                self.assertEqual(proc.returncode, 0)
+            self.assertEqual((repo / "runs").read_text(), "1")
+            self.assertEqual(json.loads(receipt.read_text()), {"command_exit": 0, "inputs": "unchanged"})
+
     def test_hash_is_stable_for_order_and_duplicate_inputs(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             repository = Path(directory) / "repository"
@@ -92,11 +128,11 @@ class CheckpointTests(unittest.TestCase):
         verify = (ROOT / "plugins/lean-sdlc/skills/lean-sdlc/protocols/verifier.md").read_text(
             encoding="utf-8"
         )
-        command = '`python3 "<skill-root>/scripts/checkpoint.py" --repo "<repo-root>" PATH [PATH ...]`'
+        command = '`python3 "<skill-root>/scripts/checkpoint.py" --repo "<repo-root>" PATH [PATH ...] --result FILE --run COMMAND [ARG ...]`'
         self.assertIn(command, verify)
-        self.assertIn("same explicit scope", verify)
+        self.assertIn("same scope before and after", verify)
         self.assertIn("outside tracked truth", verify)
-        self.assertIn("Keep checkpoint values local", verify)
+        self.assertIn("resume the same session", verify)
         self.assertIn("does not identify external state", verify)
 
     def test_declared_config_is_an_input_but_independent_work_is_not(self) -> None:

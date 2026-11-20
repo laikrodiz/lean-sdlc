@@ -16,7 +16,7 @@ Each task has one result that the Lead can accept on its own. It states what mus
 
 The Lead owns the result and works on one task at a time by default. Before changes start, the task must have an owner and pass the required check. If another outcome appears during work, the Lead separates it before implementing it. The original task still needs its unfinished requirements and proof.
 
-The Lead makes small documentation edits and runs focused checks. A Scout investigates important uncertainty. A Maintainer updates shared documents when the change is substantial. A Verifier provides required independent proof or checks material risk. The Lead uses support only as needed and waits for each assignment before doing more work.
+The Lead makes small documentation edits and runs focused checks. A Scout investigates important uncertainty. A Maintainer updates shared documents when the change is substantial. A Verifier provides required independent proof or checks material risk. During verification, the Lead may read ahead on an already-planned task. Implementation waits for the result.
 
 The Lead checks that valid evidence covers the request and examines gaps or exceptions. The Lead does not repeat an accepted review. Essential checks, safety proof, and required usage instructions cannot wait. Eligible Simple work can defer broader review only if the Lead marks that review as pending.
 
@@ -34,10 +34,10 @@ The Lead removes only recorded temporary checkouts after their processes stop an
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-These commands install the immutable v1.36.3 release.
+These commands install the immutable v1.37.0 release.
 
 ~~~bash
-git clone --depth 1 --branch v1.36.3 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.37.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc

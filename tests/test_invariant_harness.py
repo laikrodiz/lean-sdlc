@@ -35,7 +35,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant("original acceptance", "protocols/lead.md", ("Compare the original request", "Task text alone cannot replace")),
     FrozenInvariant("role authority", "protocols/common.md", ("Only Lead assigns", "Support agents cannot spawn")),
     FrozenInvariant("resource isolation", "protocols/common.md", ("One writer owns each mutable", "A ledger lock protects only")),
-    FrozenInvariant("sequential execution", "protocols/common.md", ("Run one task at a time", "Lead waits during support work", "Do not overlap support assignments")),
+    FrozenInvariant("sequential execution", "protocols/common.md", ("Run one task at a time", "next already-planned task", "Do not start it, write files, change the ledger, or launch another agent", "Do not overlap support assignments")),
     FrozenInvariant("cancellation", "protocols/common.md", ("underlying command or process", "Late results cannot restore canceled authority")),
     FrozenInvariant("model profile", "protocols/common.md", ("user-selected Lead model", "model=gpt-6.2-sol", "reasoning_effort=medium", "No automatic model fallback", "Do not vary reasoning effort")),
     FrozenInvariant("ledger ownership", "references/ledger.md", ("Lead performs all task writes directly", "using the Lead owner", "helper validates records, not whether the original request was fulfilled")),
