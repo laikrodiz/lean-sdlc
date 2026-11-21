@@ -14,7 +14,7 @@ Interpret the request before loading execution details. Conversation, brainstorm
 - Conversation, brainstorming, shaping, or read-only investigation: [conversation](references/conversation.md).
 - Planning: [plan](references/plan.md). A plan-only request stops after the plan.
 - Authorized execution: [common](protocols/common.md), [Lead](protocols/lead.md), and [plan](references/plan.md).
-- Only for an explicit request for parallel Engineers: [isolated assignments and integration](protocols/parallel.md).
+- Only when the user requests or offers parallel Engineers: [isolated assignments and integration](protocols/parallel.md).
 - Assigned support: [common](protocols/common.md) and only [Scout](protocols/scout.md), [Maintainer](protocols/maintainer.md), or [Verifier](protocols/verifier.md).
 - Ledger operations, initialization, or upgrade: [ledger](references/ledger.md).
 - Shared-document work: [documentation](references/documentation.md).

@@ -293,6 +293,24 @@ def startup_contract_errors(root: Path, *, report_missing: bool) -> list[str]:
     return [f"AGENTS.md: {error}"] if error else []
 
 
+def awaits_context_document(task: dict[str, str], by_id: dict[str, dict[str, str]]) -> bool:
+    pending = dependency_ids(task.get("Dependencies", ""))
+    seen = set()
+    while pending:
+        dep = pending.pop()
+        if dep in seen:
+            continue
+        seen.add(dep)
+        row = by_id.get(dep)
+        if not row or row.get("Context") != task["Context"]:
+            continue
+        if row.get("Status") == "In Progress":
+            return True
+        if row.get("Status") == "Planned":
+            pending.extend(dependency_ids(row.get("Dependencies", "")))
+    return False
+
+
 def check_repository(
     root: Path,
     *,
@@ -345,13 +363,10 @@ def check_repository(
     for error in integrity_errors(tasks):
         errors.append(f"tasks.csv: {error}")
 
-    tasks_by_id: dict[str, dict[str, str]] = {}
-    active_contexts = {row["Task ID"]: row["Context"] for row in tasks if row.get("Status") == "In Progress"}
+    tasks_by_id = {row["Task ID"]: row for row in tasks if row.get("Task ID")}
     bootstrap_tasks = 0
     for number, task in enumerate(tasks, start=2):
         task_id = task.get("Task ID", "") or f"row {number}"
-        if task.get("Task ID"):
-            tasks_by_id[task_id] = task
         if not task.get("Title"):
             errors.append(f"tasks.csv:{number}: {task_id} has empty title")
 
@@ -372,10 +387,8 @@ def check_repository(
         elif (
             CONTEXT_PATTERN.fullmatch(context)
             and status != "In Progress"
-            and not (status == "Planned" and any(
-                active_contexts.get(dep) == context for dep in dependency_ids(task.get("Dependencies", ""))
-            ))
             and not context_document_exists(root, context)
+            and not (status == "Planned" and awaits_context_document(task, tasks_by_id))
         ):
             errors.append(
                 f"tasks.csv:{number}: {task_id} has no document for context {context}"

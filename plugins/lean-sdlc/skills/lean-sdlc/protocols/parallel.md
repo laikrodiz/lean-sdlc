@@ -1,6 +1,6 @@
 # Parallel Engineers
 
-Use only for the current request. Without explicit opt-in, create no worktrees. Engineer count is a maximum, not a quota. Keep coupled outcomes together. Explain any lower useful count once.
+Without explicit opt-in, create no worktrees. When the user requests or offers Engineers, state the chosen count, including zero, in the plan before implementation. Explain which work can run independently or why it cannot. The requested count is a maximum. At zero, Lead implements without worktrees.
 
 Lead uses the primary ledger only. Settle interfaces and give shared files, generated outputs, and external resources one owner. Start from a clean, named destination branch. Record its name and commit. Never stash user changes automatically. Use `scripts/parallel.py begin REPOSITORY RUN` for a temporary local integration checkout. Record its returned path.
 

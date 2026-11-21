@@ -494,14 +494,15 @@ def pending_quick_fixes(rows: list[dict[str, str]]) -> list[dict[str, str]]:
 
 def emit_overview(rows: list[dict[str, str]]) -> None:
     writer = csv.writer(sys.stdout, lineterminator="\n")
-    writer.writerow(("View", "Task ID", "Title", "Status", "Owner", "Dependencies"))
+    fields = ("Task ID", "Title", "Status", "Owner", "Dependencies", "Context")
+    writer.writerow(("View", *fields))
     for view, selected in (
         ("Current", (r for r in rows if r["Status"] in {"Planned", "In Progress"})),
         ("Backlog", (r for r in rows if r["Status"] == BACKLOG_STATUS)),
         ("Pending review", pending_quick_fixes(rows)),
     ):
         for row in selected:
-            writer.writerow((view, row["Task ID"], row["Title"], row["Status"], row["Owner"], row["Dependencies"]))
+            writer.writerow((view, *(row[field] for field in fields)))
 
 
 def authorize_upgrade(

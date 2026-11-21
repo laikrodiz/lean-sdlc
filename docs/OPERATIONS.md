@@ -62,13 +62,9 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/release_check.py
 
 ### Success
 
-The historical guided command exited with status 0. That result included 122 unit tests, the structural check, 60 saved-fixture assertions, and release checks.
+The canonical command must exit with status 0 for the unchanged candidate. All unit tests, structural checks, saved-fixture assertions, and release checks must pass.
 
-Later test and documentation changes invalidate that checkpoint. The final accepted candidate must pass a fresh run.
-
-This historical result is not fresh evidence for the current candidate.
-
-This procedure validates the selected local candidate only. It does not establish a commit, remote identity, tag, push, installation, or installed/source equality.
+This result covers only the selected local candidate. It does not establish publication or installation.
 
 ### Failure and Recovery
 
@@ -80,14 +76,10 @@ If cancellation occurs, confirm that the underlying Python process stopped. Keep
 
 ### Identity and Invalidation
 
-The historical guided checkpoint covered candidate version 1.28.0 before a commit identity was available. This record does not assert the current candidate's commit identity.
-
-The earlier guided result does not cover the changed final candidate.
-
 A change to source, tests, scripts, AGENTS.md, README.md, docs/PROJECT.md, the plugin manifest, tasks.csv, Python or test dependencies, release-check logic, or the selected repository target invalidates the previous result because an input changed. It does not invalidate this procedure by itself.
 
 Invalidate this procedure when its canonical command, prerequisites, ordered steps, success or failure contract, authority, or target contract changes.
 
 ### Last Verified
 
-2026-09-08. The historical candidate version was 1.28.0. The selected repository passed 122 unit tests, the structural check, 60 saved-fixture assertions, and release checks. This local procedure does not establish publication or installation.
+Historical guided run, 2026-09-08: candidate v1.28.0 passed 122 unit tests, the structural check, 60 saved-fixture assertions, and release checks. No commit identity was available. This result does not cover later candidates.

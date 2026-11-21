@@ -118,27 +118,36 @@ class TaskLedgerTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertEqual(ledger.read_bytes(), before)
                 self.assertNotIn("private detail", result.stdout)
-                return list(csv.DictReader(StringIO(result.stdout)))
+                reader = csv.DictReader(StringIO(result.stdout))
+                self.assertIn("Context", reader.fieldnames)
+                return list(reader)
             self.assertEqual(overview(), [])
             write_ledger(repo, "TASK-003,New idea,Backlog,Project,,,,,\n"
-                         "TASK-002,Next,Planned,Project,TASK-001,,Works,private detail,\n"
+                         "TASK-002,Next,Planned,FEAT-001,TASK-001,,Works,private detail,\n"
                          "TASK-001,Small fix,Done,Quick Fix,,12345678,Works,Check,private detail\n"
                          "TASK-000,Old,Done,Project,,12345678,Works,Check,private detail\n")
-            self.assertEqual([(r["Task ID"], r["View"]) for r in overview()],
-                             [("TASK-002", "Current"), ("TASK-003", "Backlog"), ("TASK-001", "Pending review")])
+            self.assertEqual([(r["Task ID"], r["View"], r["Context"]) for r in overview()],
+                             [("TASK-002", "Current", "FEAT-001"), ("TASK-003", "Backlog", "Project"),
+                              ("TASK-001", "Pending review", "Quick Fix")])
 
     def test_document_creator_unblocks_only_its_explicit_dependents(self) -> None:
         for prefix, folder in (("FEAT", "features"), ("DEC", "decisions")):
             with self.subTest(prefix=prefix), tempfile.TemporaryDirectory() as tmp:
                 repo = Path(tmp)
                 ctx = prefix + "-001"
-                rows = (f"TASK-001,Follow up,Planned,{ctx},TASK-000,,Works,Test,\n"
+                rows = (f"TASK-002,Use result,Planned,{ctx},TASK-001,,Works,Test,\n"
+                        f"TASK-001,Follow up,Planned,{ctx},TASK-000,,Works,Test,\n"
                         f"TASK-000,Create document,Planned,{ctx},,,Works,Test,\n")
                 start = ("start", "TASK-000", "--check", "--owner", "12345678")
                 for unrelated in (rows.replace("TASK-000,,Works", ",,Works", 1),
-                                  rows.replace(ctx, prefix + "-002", 1)):
-                    write_ledger(repo, unrelated)
-                    self.assertNotEqual(task(repo, *start).returncode, 0)
+                                  rows.replace(ctx, prefix + "-002", 1),
+                                  rows.replace(f"Follow up,Planned,{ctx}", "Follow up,Planned,Project")):
+                    ledger = write_ledger(repo, unrelated)
+                    before = ledger.read_bytes()
+                    result = task(repo, *start)
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn("no document for context", result.stderr)
+                    self.assertEqual(ledger.read_bytes(), before)
                 ledger = write_ledger(repo, rows)
                 result = task(repo, *start)
                 self.assertEqual(result.returncode, 0, result.stderr)
@@ -148,7 +157,11 @@ class TaskLedgerTests(unittest.TestCase):
                 self.assertEqual(ledger.read_bytes(), before)
                 write_document_family(repo, folder, prefix)
                 self.assertEqual(task(repo, *close).returncode, 0)
+                last = ("start", "TASK-002", "--check", "--owner", "12345678")
+                self.assertNotEqual(task(repo, *last).returncode, 0)
                 self.assertEqual(task(repo, "start", "TASK-001", "--check", "--owner", "12345678").returncode, 0)
+                self.assertEqual(task(repo, "close", "TASK-001", *close[2:]).returncode, 0)
+                self.assertEqual(task(repo, *last).returncode, 0)
 
     def test_checked_start_creates_or_claims_and_returns_owned_task(self) -> None:
         for existing in (False, True):
@@ -1920,7 +1933,7 @@ class PackageContractTests(unittest.TestCase):
     def test_release_version_is_consistent(self) -> None:
         manifest = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         version = manifest["version"]
-        self.assertEqual(version, "1.37.0")
+        self.assertEqual(version, "1.37.1")
         self.assertIn(f"v{version}", (ROOT / "README.md").read_text(encoding="utf-8"))
         self.assertIn(f"- Version: {version}", (ROOT / "docs/PROJECT.md").read_text(encoding="utf-8"))
 

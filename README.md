@@ -2,42 +2,32 @@
 
 ## Why
 
-Fast code is not useful if it solves the wrong problem or no one can show that it works. Lean-SDLC keeps the user's purpose, the owner, and the evidence visible from request to result.
+Before Codex changes code, you should be able to tell whether it understood your goal. Afterward, you should be able to see what changed and how it was checked. Lean-SDLC connects those two questions.
 
 ## What
 
-Lean-SDLC gives Codex one workflow for discussion, planning, and authorized changes. You can discuss an idea or ask for a plan without changing files or creating tasks. A request to plan and implement lets Codex proceed within the agreed limits.
+You choose how far Codex goes. Ask a question or request a plan, and Codex leaves your files unchanged. Ask it to implement, and you get a plan you can follow: who needs the change, what should improve, and how Codex proposes to do it.
 
-The Lead starts in plain prose. The opening explains who needs the change, what must improve, and why. It states the proposed approach, shared limits, and important unknowns. No fixed headings are required.
-
-Each task has one result that the Lead can accept on its own. It states what must be true when done and which checks will show it. The Lead checks every candidate for separate outcomes before grading it, even when it looks Normal. One sizing pass settles the boundaries and assigns Simple, Normal, or Complex. Related steps stay with their result. A genuinely Complex task stays together, with a short reason why another split would not help.
+Each task has a result you can recognize and a check that shows whether it works. You can see which tasks are planned, in progress, or done.
 
 ## How
 
-The Lead owns the result and works on one task at a time by default. Before changes start, the task must have an owner and pass the required check. If another outcome appears during work, the Lead separates it before implementing it. The original task still needs its unfinished requirements and proof.
+One **Lead** handles your request. By default, the Lead works on one task at a time in your project. It checks the result against your original request and tells you what passed and what remains unverified.
 
-The Lead makes small documentation edits and runs focused checks. A Scout investigates important uncertainty. A Maintainer updates shared documents when the change is substantial. A Verifier provides required independent proof or checks material risk. During verification, the Lead may read ahead on an already-planned task. Implementation waits for the result.
+The Lead calls on specialists when needed. A **Scout** investigates an open question. A **Maintainer** updates shared project documents. A **Verifier** provides an independent check.
 
-The Lead checks that valid evidence covers the request and examines gaps or exceptions. The Lead does not repeat an accepted review. Essential checks, safety proof, and required usage instructions cannot wait. Eligible Simple work can defer broader review only if the Lead marks that review as pending.
+If you ask for or offer **Parallel Engineers**, the plan states how many the Lead will use and why. Your limit is a maximum. If the tasks depend on each other, the Lead can choose zero. Otherwise, Engineers can work on independent tasks in separate working directories. The Lead combines their changes and checks the result as a whole. See the [parallel rules](plugins/lean-sdlc/skills/lean-sdlc/protocols/parallel.md) for details.
 
-The user controls what may change and which delivery actions are authorized. A source change does not authorize a commit, push, installation, publication, or deployment. If work is canceled, the Lead confirms that its process stopped before work resumes on that target.
-
-### Parallel Engineers
-
-Ask for Parallel Engineers in the current request to let independent tasks run at the same time. The requested count is a maximum. The Lead uses only as many Engineers as the work and available resources support. The Lead starts queued tasks when slots are free and their accepted inputs are available.
-
-Thread titles and progress updates identify each Engineer by the assigned task ID. Each Engineer uses the Lead model and reasoning effort in a separate checkout. The Lead combines the accepted changes and checks the combined result before delivery. If the user authorizes a push, the Lead pushes the accepted destination once. The Lead does not publish Engineer branches.
-
-The Lead removes only recorded temporary checkouts after their processes stop and their results are retained. The Lead keeps unfinished or disputed work for recovery. See the [parallel rules](plugins/lean-sdlc/skills/lean-sdlc/protocols/parallel.md).
+Asking for edits does not authorize a commit, push, installation, publication, or deployment. Ask for the delivery steps you want.
 
 ## Install
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-These commands install the immutable v1.37.0 release.
+These commands install the immutable v1.37.1 release.
 
 ~~~bash
-git clone --depth 1 --branch v1.37.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.37.1 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc
@@ -47,16 +37,9 @@ Restart Codex. Then start a new chat.
 
 ## Use
 
-Start with `Use $lean-sdlc to`, then say what you want:
+In your own project, start with `Use $lean-sdlc to` and say what you need. Ask to discuss an idea, make a plan, or plan and implement a change. To allow parallel work, add “use multiple Engineers if useful.”
 
-- Discuss this idea without changing files.
-- Make a plan only.
-- Plan and implement this change.
-- Plan and implement this change with up to three Parallel Engineers.
-- Continue this repository task.
-- Upgrade this repository to the current contract.
-
-Upgrades preserve existing project documents, custom rules, and task history. See the [upgrade rules](plugins/lean-sdlc/skills/lean-sdlc/references/ledger.md#initialization-and-upgrade).
+For an existing Lean-SDLC project, you can ask to continue a task or [upgrade the project](plugins/lean-sdlc/skills/lean-sdlc/references/ledger.md#initialization-and-upgrade). Upgrades preserve project documents, custom rules, and task history.
 
 ## Details
 

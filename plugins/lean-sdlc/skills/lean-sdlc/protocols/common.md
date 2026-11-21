@@ -24,7 +24,7 @@ Return one useful final result. Verifier names PASS or failure, covered acceptan
 
 ## Sequential execution and interruption
 
-Run one task at a time by default. Do not overlap support assignments. While Verifier checks frozen inputs, Lead may read requirements and files for the next already-planned task. Do not start it, write files, change the ledger, or launch another agent. Otherwise wait. Only an explicit request for multiple Engineers activates the parallel protocol for that request.
+Run one task at a time by default. Do not overlap support assignments. While Verifier checks frozen inputs, Lead may read requirements and files for the next already-planned task. Do not start it, write files, change the ledger, or launch another agent. Otherwise wait. Parallel Engineers require explicit opt-in for the current request.
 
 One writer owns each mutable path or external target. A ledger lock protects only the ledger. Include generated outputs, caches, fixtures, services, ports, and devices in resource boundaries.
 
