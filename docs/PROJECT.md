@@ -33,6 +33,6 @@ Hosted task services, dashboards, telemetry, and automatic discovery or proposal
 ## Current stage and version
 
 - Stage: Evolution.
-- Version: 1.39.0.
-- Version goal: Prevent disposable build output from accumulating and offer evidence-based storage reviews without authorizing deletion.
+- Version: 1.40.0.
+- Version goal: Reduce instruction overhead and match planning, implementation checks, and evidence claims to the actual request.
 - Exit evidence: Require fresh [candidate checks](OPERATIONS.md), version checks, exact remote commit and tag on `origin/main`, and byte-for-byte installed/source equality. Confirm selected-repository isolation, upgrade and structural checks, a live support-profile check, and final ledger reconciliation.

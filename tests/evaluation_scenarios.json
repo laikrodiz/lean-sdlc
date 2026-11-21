@@ -707,6 +707,60 @@
       ]
     },
     {
+      "id": "plan-only-inactive-ponytail",
+      "category": "routing",
+      "prompt": "Use $lean-sdlc. Plan only: a retention change has no agreed expiry. The configuration is readable. The proposed experiment writes a database. Ponytail is installed but inactive. Contrast authorized implementation with Ponytail already active. Return only JSON fields: inspect_configuration, run_experiment_now, activate_ponytail, lead_with_expiry_choice, reuse_when_active, permission_changes (booleans).",
+      "assertions": [
+        {
+          "path": "inspect_configuration",
+          "equals": true
+        },
+        {
+          "path": "run_experiment_now",
+          "equals": false
+        },
+        {
+          "path": "activate_ponytail",
+          "equals": false
+        },
+        {
+          "path": "lead_with_expiry_choice",
+          "equals": true
+        },
+        {
+          "path": "reuse_when_active",
+          "equals": true
+        },
+        {
+          "path": "permission_changes",
+          "equals": false
+        }
+      ]
+    },
+    {
+      "id": "traced-not-reproduced",
+      "category": "proof",
+      "prompt": "Use $lean-sdlc. During independent verification you traced an incorrect return value from the caller to its callee. No executable check ran. Acceptance requires observation on an unavailable device. Return only JSON fields: evidence_level (integer), report_source_defect, claim_target_observation, close_task (booleans).",
+      "assertions": [
+        {
+          "path": "evidence_level",
+          "equals": 3
+        },
+        {
+          "path": "report_source_defect",
+          "equals": true
+        },
+        {
+          "path": "claim_target_observation",
+          "equals": false
+        },
+        {
+          "path": "close_task",
+          "equals": false
+        }
+      ]
+    },
+    {
       "id": "small-documentation-edit",
       "category": "delegation",
       "prompt": "Use $lean-sdlc. A small code change needs one factual sentence corrected in its existing README. The decision and behavior are settled. Return only JSON fields: writer, mandatory_handoff, required_correction.",

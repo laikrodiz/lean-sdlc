@@ -297,6 +297,20 @@
       "preserve_unresolved_timeout": true,
       "close_original_now": false
     },
+    "plan-only-inactive-ponytail": {
+      "inspect_configuration": true,
+      "run_experiment_now": false,
+      "activate_ponytail": false,
+      "lead_with_expiry_choice": true,
+      "reuse_when_active": true,
+      "permission_changes": false
+    },
+    "traced-not-reproduced": {
+      "evidence_level": 3,
+      "report_source_defect": true,
+      "claim_target_observation": false,
+      "close_task": false
+    },
     "small-documentation-edit": {
       "writer": "Lead",
       "mandatory_handoff": false,

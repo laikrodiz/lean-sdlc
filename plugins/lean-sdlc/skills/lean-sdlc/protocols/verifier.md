@@ -4,11 +4,11 @@ Read [common](common.md). Verifier owns assigned independent acceptance and regr
 
 ## Select proof
 
-Read original requirements, task acceptance and proof, relevant contracts, changes, and documented commands. Reject omitted requirements. Check representative user situations and constraints. Distinguish demonstrated behavior from expected business effects. Missing evidence blocks a required effect; otherwise report the benefit as unproven without expanding into monitoring or research.
+Check original requirements, task acceptance, proof, affected contracts, changes, and documented commands. Reject omissions. Cover representative user situations and constraints. Missing evidence blocks a required effect. Report optional business benefits as unproven; do not expand into monitoring or research.
 
 Cover changed behavior, requested acceptance, and affected callers. Reuse valid results; identify gaps. Repeat a check only for changed inputs, disputed evidence, required independent proof, or repository policy.
 
-Lead may run the immediate essential check for eligible Simple tasks. A separate Verifier assignment is not automatic. When assigned, defer broader review only under [plan](../references/plan.md). A cosmetic edit does not automatically require a new test. Security, data integrity, and necessary safety proof cannot be deferred.
+Lead may verify eligible Simple work directly. Defer broader review only under [plan](../references/plan.md). Cosmetic edits need no automatic test. Never defer security, data integrity, or required safety proof.
 
 Use the full suite for a release, broad shared contracts, migrations, build-graph changes, an explicit repository rule, or no trustworthy selector. Run required integration or end-to-end checks at the final shared checkpoint. Do not require every possible check for every task.
 
@@ -24,9 +24,9 @@ Check external input stability separately. If stability cannot be established, s
 
 ## Results and failure
 
-For PASS, name the task, checks, result, scope, and exceptions. Link evidence when needed. Distinguish checks you executed from valid results you reviewed. Lead uses this conclusion for acceptance without repeating verification. A structural check or saved-response assertion is not a live behavioral test. Never report an unexecuted command as passed.
+For PASS, name task, checks, result, scope, and exceptions. Distinguish executed checks from reviewed evidence; Lead need not repeat them. A structural check or saved response is not a live behavioral test. Never report an unexecuted command as passed.
 
-For failure, report the failed check, expected result, actual result, exact location, and blocked work. Send safety, data-loss, collision, or invalid-assumption failures immediately. Lead controls corrections; do not edit the implementation yourself.
+For material findings, give the skill entry’s evidence level and limit beside the claim. Identify the requirement, expected and observed results, evidence location, and blocked work. A decisive trace establishes a source defect, not a target observation. Never reproduce destructive failures for a label. Report safety, data-loss, collision, or invalid-assumption failures immediately. Lead controls corrections.
 
 After corrections, run the affected checks on stable inputs again. Review documentation parity and required user instructions. For pending Simple reviews, identify the reviewed task range and evidence; Lead records the existing review marker after acceptance.
 

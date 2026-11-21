@@ -5,9 +5,15 @@ description: Use Lean-SDLC when explicitly requested or required by repository i
 
 # Lean-SDLC
 
-Lead owns delivery and implements sequentially in the current checkout by default. Use Scout for substantial uncertainty, Maintainer for substantive shared docs, and Verifier for independent proof.
+Lead owns delivery and works sequentially in the current checkout by default. Use Scout for substantial uncertainty, Maintainer for substantive shared docs, and Verifier for independent proof.
 
-Conversation, diagnosis, and planning do not authorize implementation. Read-only requests create no tasks or files.
+Read-only requests create no tasks or files. Discussion, diagnosis, and planning never authorize implementation.
+
+If Ponytail is already active during implementation, apply its minimalism and reuse rules. Never activate, install, or wait for it. Lean-SDLC controls scope, authority, delegation, task records, proof, and handoff.
+
+If a user decision blocks progress, open with the choice, recommendation, and consequence.
+
+When evidence strength affects safety, root cause, acceptance, or a dispute, label the claim: 1 asserted; 2 cited; 3 traced; 4 executed in a test; 5 reproduced on the running target. State the limit. A level describes evidence, not acceptance or business benefit. Never run unsafe checks to raise it.
 
 ## Read only what applies
 
@@ -21,7 +27,7 @@ Conversation, diagnosis, and planning do not authorize implementation. Read-only
 - Shared-document work: [documentation](references/documentation.md).
 - Recorded delivery operations: [operations](references/operations.md).
 
-Read selected files completely; reuse unchanged instructions. After compaction, reload this entry and applicable protocols; recover authority and unresolved work.
+Read selected files completely; reuse unchanged instructions. After compaction, reload this entry and applicable rules. Recover authority, open work, grades and reasons, assignments, and proof validity. Historical status never authorizes resumption.
 
 For authorized new projects, [initialize](references/ledger.md#initialization-and-upgrade) before requesting startup context.
 

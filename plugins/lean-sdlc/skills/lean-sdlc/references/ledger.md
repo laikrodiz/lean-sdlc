@@ -1,12 +1,12 @@
 # Ledger and project control
 
-Root `tasks.csv` is the only durable task plan. Lead performs all task writes directly through the packaged `tasks.py` helper. Do not delegate routine transactions or add a mandatory final reconciliation agent. Use read-only `overview` for current work, backlog titles, and pending reviews. Use `show TASK-ID` for details.
+Root `tasks.csv` is the only durable task plan. Lead performs all task writes directly through packaged `tasks.py`. Never delegate routine transactions or require a reconciliation agent. Use `overview` for current work, backlog titles, and pending reviews; `show TASK-ID` for missing details. Reuse returned facts. Refresh affected state after ambiguous results, possible concurrent changes, interruption, or lost context.
 
 ## Exact context
 
-Use startup fields for repository root, skill root, Tasks helper, Check helper, State helper, Owner, and Child tier. If absent, run `python3 "<directory containing the loaded SKILL.md>/scripts/session_state.py" --context` from the selected repository. Returned keys are `repository_root`, `skill_root`, `tasks_helper`, `check_helper`, `state_helper`, `owner`, and `tier`. Use them exactly. Preserve `CODEX_SESSION_ID`; do not invent an owner or guess between repositories.
+Use the entry’s exact startup values: `repository_root`, `skill_root`, `tasks_helper`, `check_helper`, `state_helper`, `owner`, and `tier`.
 
-Commands below use supplied paths. Grades do not add columns. The schema stays:
+Grades add no columns:
 
 `Task ID,Title,Status,Context,Dependencies,Owner,Acceptance Criteria,Proof,Evidence`
 
@@ -25,7 +25,7 @@ Backlog rows remain sparse. They contain only ID, title, status, and context; no
 
 Dependencies must exist, be cycle-free, and be Done before start or close. The helper locks, rereads, validates, and atomically replaces the ledger. Preserve durability warnings. Owner IDs coordinate work; they are not a security boundary. A ledger lock does not protect source files.
 
-Use `start --check` before the first non-control write. It returns the owned task and gate result in one transaction. Validation failure leaves the ledger unchanged. For an already-active task or control-only promotion, run `python3 "<check-helper>" "<repo-root>" --before-write --task TASK-ID --owner OWNER`. Stop on failure. Confirm closure before starting dependent work. Reconcile compact rows against accepted results before completion. The helper validates records, not whether the original request was fulfilled. Lead applies missing authorized transactions; Maintainer may investigate substantial discrepancies without writing records.
+For one ready authorized task, use `start --check` directly before the first non-control write. Its returned row confirms ownership and the gate; skip redundant `plan` and `show`. Failed validation leaves the ledger unchanged. For already-active work or control-only promotion, run `python3 "<check-helper>" "<repo-root>" --before-write --task TASK-ID --owner OWNER`. Stop on failure. Confirm closure before dependent work. Reconcile records against accepted results. The helper validates records, not whether the original request was fulfilled. Lead corrects omissions; Maintainer may investigate substantial discrepancies without writing records.
 
 ## Initialization and upgrade
 
