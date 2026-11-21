@@ -8,13 +8,15 @@ Compare the plan with every explicit user requirement. Restore missing coverage 
 
 Check every candidate for bundled outcomes before assigning a grade. One task has one independently acceptable outcome, coherent contract boundary, proof cluster, and close decision. Split outcomes that can succeed or fail independently, even when the original candidate looks Simple or Normal. Keep implementation steps, tests, documentation, and corrections with their outcome unless independently deliverable.
 
-Use one sizing pass before creating tasks or showing their table. Stop at independently acceptable outcomes, not implementation fragments. Preserve real dependencies and responsibility for combined-result proof. Do not split by file count, time estimate, agent availability, or a target grade. Resolve only uncertainty that could materially change boundaries.
+Use one sizing pass before creating tasks or showing their table. Preserve real dependencies and combined-result proof. Do not split by file count, time, available agents, or target grade.
 
-Retain Complex for intrinsic difficulty or inseparable coupling, not accumulated scope. Give each retained Complex task a one-sentence reason explaining why further splitting would not help. A broad feature name is not a reason. Do not repeat splitting because Complex remains.
+Use Complex for intrinsic difficulty or inseparable coupling, not accumulated scope. Explain in one sentence why another split would not help. Do not repeat sizing.
 
 Each task carries its own observable outcome, acceptance criteria, required checks, and task-specific limits in existing ledger fields. State shared constraints once and refer to them where needed. Do not add fields, documents, or an approval stage for sizing.
 
-If implementation reveals a new independently acceptable outcome, define a separate task before implementing that outcome. Update the affected boundary and dependency if needed. Preserve existing evidence and unresolved original requirements. Do not close the original task merely because some work moved elsewhere. Revisit only the changed boundary, not the whole plan.
+Split only work within the approved scope. For a new independent outcome, define a separate task before implementing that outcome. Update affected dependencies. Preserve existing evidence and unresolved original requirements. Moving work does not close the original task.
+
+If a required refactor exceeds scope, pause affected work. Explain why and propose the smallest viable refactor. Wait for user approval before editing it. Unaffected authorized work can continue.
 
 ## Grades
 

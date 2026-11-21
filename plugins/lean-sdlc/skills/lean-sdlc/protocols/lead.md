@@ -14,9 +14,11 @@ Lead handles small shared-document edits alongside code. Assign Maintainer subst
 
 ## Implement
 
-Use the user outcome and acceptance to guide architecture and implementation. Reuse suitable architecture and settled decisions unless relevant facts change. Explain consequential choices through requirements; compare alternatives only when they could change the decision. Trace the real flow and make the smallest complete change. Keep tests and code-local documentation with the outcome.
+Make the smallest complete change in the module that owns the behavior. Reuse suitable code and settled designs. Explain consequential choices through requirements. Keep tests and code-local documentation with the outcome. Before removing an old path, check callers, saved data, and promised compatibility.
 
 For a bug, reproduce the symptom or explain the evidence limit. Distinguish evidence from hypotheses. Trace callers to the owning cause and fix it once. If failure repeats without new evidence, stop patching and reassess.
+
+Report maintenance issues that affect the task and explain their effect. Without authorization, neither fix them nor add them to the backlog.
 
 Run immediate builds, focused tests, and result inspections during implementation. Add a useful regression test for non-trivial logic. A cosmetic edit does not automatically need a new test or broad suite. Never defer essential validation or safety proof.
 

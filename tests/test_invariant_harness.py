@@ -25,7 +25,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant("conversation authority", "references/conversation.md", ("A detailed idea is not implementation authority",)),
     FrozenInvariant("requirement coverage", "references/plan.md", ("every explicit user requirement", "plan-only request stops", "Each task carries its own observable outcome", "State shared constraints once")),
     FrozenInvariant("task boundaries", "references/plan.md", ("Check every candidate", "before assigning a grade", "one sizing pass", "intrinsic difficulty or inseparable coupling")),
-    FrozenInvariant("new scope", "references/plan.md", ("before implementing that outcome", "Preserve existing evidence and unresolved original requirements")),
+    FrozenInvariant("new scope", "references/plan.md", ("within the approved scope", "before implementing that outcome", "Preserve existing evidence and unresolved original requirements", "Wait for user approval before editing it", "Unaffected authorized work can continue")),
     FrozenInvariant("visible task state", "references/plan.md", ("real task IDs, outcomes, completion criteria, grades, and confirmed status", "actual final states after ledger reconciliation", "ledger remains authoritative")),
     FrozenInvariant("confirmed direct closure", "references/plan.md", ("close the task directly through the helper, confirm success", "never bypass dependencies")),
     FrozenInvariant("owned write prerequisites", "protocols/lead.md", ("Before writing, confirm", "successful before-write gate", "A pending or failed transaction is not proof")),
@@ -78,7 +78,8 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
 
     def test_technical_english_and_no_implicit_profile_changes(self) -> None:
         common = (SKILL / "protocols/common.md").read_text(encoding="utf-8")
-        for term in ("American English", "20 words", "25 words", "ASD-STE100", "user opt-in", "non-full-history", "role-prefixed Greek"):
+        for term in ("American English", "20 words", "25 words", "ASD-STE100 Issue 9", "Preserve exact code",
+                     "only after verification with a checker", "user opt-in", "non-full-history", "role-prefixed Greek"):
             self.assertIn(term, common)
         self.assertNotRegex(common, r"reasoning_effort=(?:low|minimal)")
 

@@ -33,6 +33,6 @@ Hosted task services, dashboards, telemetry, and automatic discovery or proposal
 ## Current stage and version
 
 - Stage: Evolution.
-- Version: 1.37.1.
-- Version goal: Allow dependent work to be planned before its feature or decision document exists. Make task context and optional Engineer assignments visible.
+- Version: 1.37.2.
+- Version goal: Keep refactors within user authority, preserve migration compatibility, and use clear technical English.
 - Exit evidence: Require fresh [candidate checks](OPERATIONS.md), version checks, exact remote commit and tag on `origin/main`, and byte-for-byte installed/source equality. Confirm selected-repository isolation, upgrade and structural checks, a live support-profile check, and final ledger reconciliation.

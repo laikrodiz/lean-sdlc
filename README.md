@@ -49,10 +49,10 @@ Your requested number is a cap, not a quota. Tasks that depend on each other or 
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-These commands install the immutable v1.37.1 release:
+These commands install the immutable v1.37.2 release:
 
 ~~~bash
-git clone --depth 1 --branch v1.37.1 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.37.2 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc
