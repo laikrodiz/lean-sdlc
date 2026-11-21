@@ -31,6 +31,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant("owned write prerequisites", "protocols/lead.md", ("Before writing, confirm", "successful before-write gate", "A pending or failed transaction is not proof")),
     FrozenInvariant("implementation ownership", "protocols/lead.md", ("Lead implements by default", "Only the parallel protocol", "Run immediate builds, focused tests")),
     FrozenInvariant("Engineer display name", "protocols/parallel.md", ("`delegate_task` title to `Engineer <task ID>`", "same name in progress updates")),
+    FrozenInvariant("archive only a verified worker", "protocols/parallel.md", ("commit and checks recorded", "thread/read", "exact assigned worktree", "no descendants", "thread/archive", "skip without blocking delivery")),
     FrozenInvariant("optional Engineer decision", "protocols/parallel.md", ("when the user requests or offers Engineers", "including zero", "in the plan before implementation", "which work can run independently")),
     FrozenInvariant("isolated assignments", "protocols/parallel.md", ("Without explicit opt-in, create no worktrees", "Never substitute a shared checkout", "Never publish worker branches")),
     FrozenInvariant("original acceptance", "protocols/lead.md", ("Compare the original request", "Task text alone cannot replace")),

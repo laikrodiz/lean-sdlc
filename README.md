@@ -47,14 +47,16 @@ Your requested number is a cap, not a quota. Tasks that depend on each other or 
 
 In T3, the trusted Lean-SDLC hook checks names on the direct agent launcher. Support names use the role and one Greek letter. An Engineer’s name must match an active task owned by the Lead. The launcher must request a separate worktree. Start Engineers from the project’s repository root without a project or environment override.
 
+After accepting a T3 Engineer’s work and recording its checks, the Lead archives its verified Codex chat. The result stays available in T3. If the Lead cannot confirm the chat’s identity, it leaves the chat visible.
+
 ## Install and use
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-These commands install the immutable v1.38.0 release:
+These commands install the immutable v1.38.1 release:
 
 ~~~bash
-git clone --depth 1 --branch v1.38.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.38.1 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc

@@ -33,6 +33,6 @@ Hosted task services, dashboards, telemetry, and automatic discovery or proposal
 ## Current stage and version
 
 - Stage: Evolution.
-- Version: 1.38.0.
-- Version goal: Reject incorrect T3 agent names and prevent Engineers from starting in shared checkouts or against another task.
+- Version: 1.38.1.
+- Version goal: Remove accepted T3 Engineer chats from the main Codex list without hiding unresolved work or losing evidence.
 - Exit evidence: Require fresh [candidate checks](OPERATIONS.md), version checks, exact remote commit and tag on `origin/main`, and byte-for-byte installed/source equality. Confirm selected-repository isolation, upgrade and structural checks, a live support-profile check, and final ledger reconciliation.
