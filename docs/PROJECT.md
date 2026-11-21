@@ -33,6 +33,6 @@ Hosted task services, dashboards, telemetry, and automatic discovery or proposal
 ## Current stage and version
 
 - Stage: Evolution.
-- Version: 1.38.1.
-- Version goal: Remove accepted T3 Engineer chats from the main Codex list without hiding unresolved work or losing evidence.
+- Version: 1.39.0.
+- Version goal: Prevent disposable build output from accumulating and offer evidence-based storage reviews without authorizing deletion.
 - Exit evidence: Require fresh [candidate checks](OPERATIONS.md), version checks, exact remote commit and tag on `origin/main`, and byte-for-byte installed/source equality. Confirm selected-repository isolation, upgrade and structural checks, a live support-profile check, and final ledger reconciliation.

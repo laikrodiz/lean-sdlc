@@ -39,6 +39,8 @@ Lean-SDLC keeps project memory in three core files:
 
 Lean-SDLC does **not** create a new document for every task. Every durable fact belongs in one authoritative place. Small doc edits happen alongside code under the Lead; substantial shared-doc work goes to the Maintainer. Optional documents are added only when a subject needs lasting shared detail: feature specs (`docs/features/FEAT-*.md`), technical decisions (`docs/decisions/DEC-*.md`), architecture notes (`docs/ARCHITECTURE.md` or `docs/architecture/ARCH-*.md`), or shared contracts for interfaces, data, and state machines. Operational instructions (`docs/OPERATIONS.md` or `docs/operations/OPS-*.md`) are recorded only after a build, package, deploy, or smoke procedure actually succeeds, never as unverified guesses. See the [documentation rules](plugins/lean-sdlc/skills/lean-sdlc/references/documentation.md) for the full layout.
 
+To check an existing project, ask: `Use $lean-sdlc to review storage in this project.` [Storage Review](plugins/lean-sdlc/skills/lean-sdlc/references/storage-review.md) investigates what takes space and proposes specific cleanup batches. It makes no changes and needs no project setup.
+
 ## When Parallel Engineers help
 
 Parallel work is opt-in for the current request only. If you ask for or offer **Parallel Engineers** (for example, by adding "use multiple Engineers if useful"), the plan states the chosen count (including `0`) and why before work begins.
@@ -53,10 +55,10 @@ After accepting a T3 Engineer’s work and recording its checks, the Lead archiv
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-These commands install the immutable v1.38.1 release:
+These commands install the immutable v1.39.0 release:
 
 ~~~bash
-git clone --depth 1 --branch v1.38.1 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.39.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc

@@ -1,20 +1,18 @@
 # Recorded operations
 
-Read this reference when learning or replaying a project procedure. Lead runs authorized bounded operations directly, including built-in build, test, and smoke checks. Maintainer documents confirmed procedures when shared-document work is needed. Do not split a valid procedure among agents merely because it includes tests. Use Verifier for missing independent proof, changed behavior or risk, or disputed evidence.
-
-Verifier may run an assigned read-only validation procedure for independent proof. Lead does not repeat that run.
+Lead runs authorized procedures, including built-in checks. Maintainer documents confirmed procedures when needed. Do not split procedures among agents merely for tests. Assign Verifier read-only validation for missing independent proof, changed behavior or risk, or disputed evidence. Lead does not repeat that run.
 
 ## Learn and record
 
-A procedure progresses from unknown, through guided success and a verified record, to repeatable use. Changed inputs or contracts make it stale.
+Record guided success before replay. Changed inputs or contracts make a result stale.
 
-For the first guided build, package, deploy, flash, runtime, or smoke procedure, record the successful commands and result in `docs/OPERATIONS.md`. Use an `OPS-*` document when independent target or recovery detail needs its own subject. Follow the documentation reference for indexes and sizing.
+Record the first successful build, package, deploy, flash, runtime, or smoke procedure in `docs/OPERATIONS.md` with commands and results. Use `OPS-*` for independent targets or recovery details. Follow documentation rules for indexes and sizing.
 
 A record contains purpose, maintenance owner, status, canonical command, explicit inputs, safe defaults, prerequisites, ordered steps, exact target, artifacts, success signal, known failure signal, authorized recovery, and last verified context. Do not record an unsuccessful guess as a working procedure.
 
 ## Replay and authority
 
-Read the existing valid procedure first. Reuse project commands and scripts. An operation record or script never grants permission.
+Read the valid procedure; reuse project commands. An operation record or script never grants permission.
 
 Honor explicit current or standing authority for the same scope and target. This can include build, deployment, publication, commits, and pushes. Do not ask again when the authority remains valid. Do not infer those actions from a request for an idea or code change.
 
@@ -26,7 +24,7 @@ Cancellation follows the common protocol: check the underlying process or comman
 
 ## Reusable commands
 
-Automatic routine discovery and automatic script-creation suggestions are not part of this workflow. Existing commands remain usable and documented. Create a new reusable script only when the user explicitly requests it.
+Do not automatically discover routines or suggest scripts. Retain documented commands. Create reusable scripts only on explicit request.
 
 Lead implements such a script using an existing command, installed tool, or the smallest necessary code. Verifier runs a focused check. Require explicit inputs, target validation, stable exit status, noninteractive behavior, atomic output where practical, and bounded output. Use dry-run when mutation risk warrants it.
 

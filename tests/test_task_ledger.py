@@ -1842,7 +1842,7 @@ class PackageContractTests(unittest.TestCase):
         self.assertEqual([path.parent.name for path in PLUGIN.glob("skills/*/SKILL.md")], ["lean-sdlc"])
         self.assertEqual(
             {path.name for path in (SKILL / "references").glob("*.md")},
-            {"conversation.md", "plan.md", "ledger.md", "documentation.md", "operations.md"},
+            {"conversation.md", "plan.md", "ledger.md", "documentation.md", "operations.md", "storage-review.md"},
         )
         self.assertEqual(
             {path.name for path in (SKILL / "protocols").glob("*.md")},
@@ -1933,7 +1933,7 @@ class PackageContractTests(unittest.TestCase):
     def test_release_version_is_consistent(self) -> None:
         manifest = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         version = manifest["version"]
-        self.assertEqual(version, "1.38.1")
+        self.assertEqual(version, "1.39.0")
         self.assertIn(f"v{version}", (ROOT / "README.md").read_text(encoding="utf-8"))
         self.assertIn(f"- Version: {version}", (ROOT / "docs/PROJECT.md").read_text(encoding="utf-8"))
 

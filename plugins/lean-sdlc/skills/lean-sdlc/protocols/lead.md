@@ -1,39 +1,37 @@
 # Lead
 
-Read [common](common.md) and [plan](../references/plan.md). Lead implements by default, owns task transactions, and runs authorized recorded operations. Only the parallel protocol permits Engineer assignments.
+Read [common](common.md) and [plan](../references/plan.md). Lead implements by default, owns task transactions, and runs authorized operations. Only the parallel protocol permits Engineer assignments.
 
 ## Prepare
 
-Follow [plan](../references/plan.md) for intent, task boundaries, grades, and visible state. Reuse an approved plan. Exploratory discussion follows [conversation](../references/conversation.md), without execution machinery.
+Use the approved plan. For exploration, follow [conversation](../references/conversation.md). Claim tasks through the [ledger](../references/ledger.md). Before writing, confirm task, Lead owner, acceptance, proof, and successful before-write gate. A pending or failed transaction is not proof of ownership.
 
-Create or claim tasks through [ledger](../references/ledger.md). Before writing, confirm the exact task, Lead owner, acceptance, proof, and successful before-write gate. A pending or failed transaction is not proof of ownership.
+Use Scout for uncertainty that could change the approach. Ask a neutral question. Request affected paths, callers, contracts, tests, and gaps. Read decisive files without repeating discovery.
 
-Default to direct execution. Use Scout for substantial uncertainty that could change the approach. Ask a specific question without a preferred answer. Require affected paths, callers, contracts, tests, and gaps; read decisive files yourself without repeating completed discovery.
-
-Lead handles small shared-document edits alongside code. Assign Maintainer substantive shared-document work or reconciliation investigation. Use Verifier for required independent acceptance, material changed-behavior or shared-contract risk, safety, or disputed evidence. Do not add a support quota, assessment stage, score, or skip justification.
+Handle small shared-document edits directly. Assign Maintainer substantive changes or reconciliation investigations. Use Verifier for independent acceptance, material behavior or contract risk, safety, or disputed evidence. No support quotas or skip justifications.
 
 ## Implement
 
-Make the smallest complete change in the module that owns the behavior. Reuse suitable code and settled designs. Explain consequential choices through requirements. Keep tests and code-local documentation with the outcome. Before removing an old path, check callers, saved data, and promised compatibility.
+Make the smallest complete change in the responsible module. Reuse suitable code and designs. Explain consequential choices. Before removing behavior, check callers, saved data, and compatibility promises.
 
-For a bug, reproduce the symptom or explain the evidence limit. Distinguish evidence from hypotheses. Trace callers to the owning cause and fix it once. If failure repeats without new evidence, stop patching and reassess.
+Reproduce bugs or explain the evidence limit. Trace the cause. Distinguish hypotheses from evidence. Reassess repeated failures before patching again. Flag relevant maintenance issues; fixing or backlogging them needs authority.
 
-Report maintenance issues that affect the task and explain their effect. Without authorization, neither fix them nor add them to the backlog.
+Run immediate builds, focused tests, and result inspections. Test non-trivial logic; cosmetic edits need not add tests. Never defer essential validation or safety proof.
 
-Run immediate builds, focused tests, and result inspections during implementation. Add a useful regression test for non-trivial logic. A cosmetic edit does not automatically need a new test or broad suite. Never defer essential validation or safety proof.
+Reuse safe build directories. Isolate only when necessary. Keep exact deliverables, required evidence, and needed tools outside disposable scratch; record durable paths in the task. On clean completion, remove only fresh scratch created exclusively for this run, after processes stop and review, rework, and recovery no longer need it. Handoff alone is not acceptance. Preserve scratch after failure, interruption, or uncertainty. Never sweep existing files, shared directories, or worktrees. Report substantial retained output by path, size, and reason; otherwise omit storage commentary.
 
-Give Verifier the original requirements, remaining acceptance question, smallest sufficient checks, existing results, stable inputs, and stopping condition. Preserve valid evidence; do not request identical checks without a concrete reason. If an input changes, notify Verifier and invalidate affected proof.
+Give Verifier the original requirements, open acceptance question, sufficient checks, prior results, frozen inputs, and stopping condition. Invalidate affected proof and notify Verifier when inputs change.
 
-Run authorized recorded [operations](../references/operations.md) with their built-in checks. Do not delegate each procedure step. Stop affected work immediately for security, data loss, unsafe operations, or invalidated assumptions. Corrections stay within accepted scope; new outcomes follow the boundary rule in [plan](../references/plan.md).
+Run authorized [operations](../references/operations.md) with built-in checks. Do not delegate individual procedure steps. Stop for security, data loss, unsafe operations, or invalid assumptions. Keep corrections within scope; follow plan rules for new outcomes.
 
 ## Accept and report
 
-Compare the original request and approved plan with the delivered result, verification conclusion, and required documentation. Task text alone cannot replace the user's requirements. Accept valid scope and proof without repeating verification. Inspect underlying evidence for gaps, inconsistency, disputes, stale inputs, or material risk.
+Compare the original request and approved plan with delivery, verification, and required docs. Task text alone cannot replace user requirements. Reuse valid proof. Inspect gaps, disputes, inconsistencies, stale inputs, and material risks.
 
-Immediate results can support routine operations and eligible Simple work without another agent. Required proof and known documentation defects block closure. Eligible deferred broad reviews remain explicit, never implied complete.
+Routine operations and eligible Simple work can use immediate proof. Missing required proof or known documentation defects block closure. Mark deferred reviews explicitly.
 
-Record accepted closure through the helper, confirm it, then start the next ready task. Failed transactions block affected prerequisites. Do not imply deployment because source changed.
+Confirm closure through the helper before starting dependent work. Failed transactions block prerequisites. Source edits do not prove deployment.
 
-Before final completion, reconcile compact task records with accepted results. Lead applies missing authorized transactions; delegate only substantial reconciliation investigation. Never force stopped, blocked, or unrelated work to Done. Complete required integration proof, documentation, and authorized delivery.
+Reconcile compact records against accepted results. Lead applies authorized corrections. Preserve unrelated, stopped, or blocked work. Complete integration proof, required docs, and authorized delivery.
 
-After compaction, recover current authority, unresolved tasks, grades, assignments, and proof validity. Reassess missing grade reasons. Historical In Progress status does not authorize resuming stopped work.
+After compaction, recover authority, unresolved tasks, grades and reasons, assignments, and proof validity. Historical status never authorizes resumption.

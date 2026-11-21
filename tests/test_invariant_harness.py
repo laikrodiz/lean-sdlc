@@ -30,6 +30,8 @@ FROZEN_INVARIANTS = (
     FrozenInvariant("confirmed direct closure", "references/plan.md", ("close the task directly through the helper, confirm success", "never bypass dependencies")),
     FrozenInvariant("owned write prerequisites", "protocols/lead.md", ("Before writing, confirm", "successful before-write gate", "A pending or failed transaction is not proof")),
     FrozenInvariant("implementation ownership", "protocols/lead.md", ("Lead implements by default", "Only the parallel protocol", "Run immediate builds, focused tests")),
+    FrozenInvariant("run-owned scratch", "protocols/lead.md", ("fresh scratch created exclusively for this run", "after processes stop", "Preserve scratch after failure, interruption, or uncertainty")),
+    FrozenInvariant("storage review authority", "references/storage-review.md", ("without writes, initialization, tasks", "Stop at the proposal", "separate approval", "Skip changed or uncertain targets")),
     FrozenInvariant("Engineer display name", "protocols/parallel.md", ("`delegate_task` title to `Engineer <task ID>`", "same name in progress updates")),
     FrozenInvariant("archive only a verified worker", "protocols/parallel.md", ("commit and checks recorded", "thread/read", "exact assigned worktree", "no descendants", "thread/archive", "skip without blocking delivery")),
     FrozenInvariant("optional Engineer decision", "protocols/parallel.md", ("when the user requests or offers Engineers", "including zero", "in the plan before implementation", "which work can run independently")),
@@ -67,7 +69,7 @@ class FrozenInvariantHarnessTests(unittest.TestCase):
     def test_entry_routes_all_instructions_without_obsolete_paths(self) -> None:
         entry = (SKILL / "SKILL.md").read_text(encoding="utf-8")
         paths = [SKILL / "SKILL.md", *sorted((SKILL / "protocols").glob("*.md")), *sorted((SKILL / "references").glob("*.md"))]
-        self.assertEqual(len(paths), 12)
+        self.assertEqual(len(paths), 13)
         for path in paths[1:]:
             self.assertIn(path.relative_to(SKILL).as_posix(), entry)
         combined = "\n".join(path.read_text(encoding="utf-8") for path in paths)
