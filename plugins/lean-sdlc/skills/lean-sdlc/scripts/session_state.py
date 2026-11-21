@@ -25,15 +25,17 @@ def owner_id(session_id: str) -> str:
     return f"{int.from_bytes(digest[:8], 'big') % 100_000_000:08d}"
 
 
-def _is_lean_repository(candidate: Path) -> bool:
+def _has_lean_instructions(candidate: Path) -> bool:
     agents = candidate / "AGENTS.md"
-    if not agents.is_file() or not (candidate / "tasks.csv").is_file():
-        return False
     try:
         instructions = agents.read_text(encoding="utf-8")
     except OSError:
         return False
     return "$lean-sdlc" in instructions or "Lean-SDLC" in instructions
+
+
+def _is_lean_repository(candidate: Path) -> bool:
+    return (candidate / "tasks.csv").is_file() and _has_lean_instructions(candidate)
 
 
 def _descendant_repositories(root: Path) -> tuple[Path, ...]:
@@ -52,10 +54,10 @@ def _descendant_repositories(root: Path) -> tuple[Path, ...]:
     return tuple(sorted(candidates, key=str))
 
 
-def _repository_resolution(cwd: str) -> tuple[Path | None, bool]:
+def repository_resolution(cwd: str, *, require_ledger: bool = True) -> tuple[Path | None, bool]:
     current = Path(cwd).resolve()
     for candidate in (current, *current.parents):
-        if _is_lean_repository(candidate):
+        if (_is_lean_repository(candidate) if require_ledger else _has_lean_instructions(candidate)):
             return candidate, False
         if (candidate / ".git").exists():
             break
@@ -67,7 +69,7 @@ def _repository_resolution(cwd: str) -> tuple[Path | None, bool]:
 
 
 def lean_repository(cwd: str) -> Path | None:
-    repository, _ = _repository_resolution(cwd)
+    repository, _ = repository_resolution(cwd)
     return repository
 
 
@@ -82,7 +84,7 @@ def _startup_context(
     session_id: str,
     cwd: str,
 ) -> tuple[dict[str, str] | None, bool]:
-    repository, ambiguous = _repository_resolution(cwd)
+    repository, ambiguous = repository_resolution(cwd)
     if repository is None:
         return None, ambiguous
 

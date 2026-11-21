@@ -27,7 +27,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "Agent",
+        "matcher": "Agent|mcp__t3_code_direct__delegate_task",
         "hooks": [
           {
             "type": "command",

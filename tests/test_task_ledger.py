@@ -1600,7 +1600,7 @@ class TaskLedgerTests(unittest.TestCase):
         self.assertIn("session_state.py", command)
         self.assertNotIn("CODEX_HOME", command)
         pre_tool_use = hooks["hooks"]["PreToolUse"][0]
-        self.assertEqual(pre_tool_use["matcher"], "Agent")
+        self.assertEqual(pre_tool_use["matcher"], "Agent|mcp__t3_code_direct__delegate_task")
         self.assertIn("spawn_guard.py", pre_tool_use["hooks"][0]["command"])
 
     def test_initializer_creates_only_minimal_contract_and_is_idempotent(self) -> None:
@@ -1933,7 +1933,7 @@ class PackageContractTests(unittest.TestCase):
     def test_release_version_is_consistent(self) -> None:
         manifest = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         version = manifest["version"]
-        self.assertEqual(version, "1.37.2")
+        self.assertEqual(version, "1.38.0")
         self.assertIn(f"v{version}", (ROOT / "README.md").read_text(encoding="utf-8"))
         self.assertIn(f"- Version: {version}", (ROOT / "docs/PROJECT.md").read_text(encoding="utf-8"))
 

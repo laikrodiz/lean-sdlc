@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import csv
 import hashlib
 import importlib.util
 import io
@@ -90,10 +91,10 @@ class RuntimeHookTests(unittest.TestCase):
         digest = hashlib.sha256(self.session_id.encode("utf-8")).digest()
         return f"{int.from_bytes(digest[:8], 'big') % 100_000_000:08d}"
 
-    def guard(self, tool_input: dict[str, object]) -> dict[str, object] | None:
+    def guard(self, tool_input: dict[str, object], **event_fields) -> dict[str, object] | None:
         result = run_script(
             SPAWN_GUARD,
-            self.event(tool_input),
+            {**self.event(tool_input), **event_fields},
             codex_home=self.codex_home,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -111,6 +112,56 @@ class RuntimeHookTests(unittest.TestCase):
     def test_bare_beta_is_rejected(self) -> None:
         denied = self.guard({"task_name": "beta"})
         self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
+
+    def t3(self, args, **event_fields):
+        result = self.guard(args, tool_name="mcp__t3_code_direct__delegate_task", **event_fields)
+        if result:
+            self.assertEqual(result["hookSpecificOutput"]["permissionDecision"], "deny")
+            return result["hookSpecificOutput"]["permissionDecisionReason"]
+        return None
+
+    def test_t3_titles_and_provider_independence(self):
+        for name in ("Scout Alpha", "Verifier Tau", "Maintainer Xi", "Design Researcher Beta"):
+            with self.subTest(name=name):
+                self.assertIsNone(self.t3({"title": name, "target": {"model": "another-provider"}}))
+        for name in (None, "Alpha", "scout_alpha", "Scout  Alpha", "Scout Alpha ",
+                     "Scout Naming Tau", "Engineer Alpha", "Engineer TASK-001 extra"):
+            with self.subTest(name=name):
+                self.assertTrue(self.t3({"title": name}))
+        self.assertTrue(self.t3({"title": "Scout Nu", "role": "implementation"}))
+
+    def test_t3_engineer_uses_callers_own_active_task(self):
+        (self.repository / ".git").mkdir()
+        ledger = self.repository / "tasks.csv"
+        with ledger.open("w", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow(("Task ID", "Title", "Status", "Context", "Dependencies", "Owner",
+                             "Acceptance Criteria", "Proof", "Evidence"))
+            for number, status, owner in ((1, "In Progress", self.owner()), (2, "Planned", ""),
+                                          (3, "Done", self.owner()), (4, "In Progress", "12345678"),
+                                          (5, "In Progress", self.owner()), (5, "In Progress", self.owner())):
+                writer.writerow((f"TASK-{number:03}", "Fixture", status, "Project", "", owner, "A", "P", ""))
+        args = {"title": "Engineer TASK-001", "role": "implementation", "isolation": "worktree"}
+        self.assertIsNone(self.t3(args))
+        for number in (2, 3, 4, 5, 999):
+            self.assertTrue(self.t3({**args, "title": f"Engineer TASK-{number:03}"}))
+        for isolation in (None, "shared"):
+            self.assertIn("worktree", self.t3({**args, "isolation": isolation}))
+        self.assertTrue(self.t3({k: v for k, v in args.items() if k != "isolation"}))
+        for key in ("environmentId", "projectId"):
+            self.assertTrue(self.t3({**args, "target": {key: "different"}}))
+        self.assertTrue(self.t3(args, cwd=str(self.root)))
+        sibling = self.root / "other"
+        sibling.mkdir()
+        (sibling / "AGENTS.md").write_text("Use $lean-sdlc")
+        (sibling / "tasks.csv").touch()
+        self.assertIn("Select one", self.t3(args, cwd=str(self.root)))
+        ledger.write_text("invalid header\n")
+        self.assertTrue(self.t3(args))
+        ledger.unlink()
+        self.assertTrue(self.t3(args))
+        (self.repository / "AGENTS.md").unlink()
+        self.assertIsNone(self.t3(args))
 
     def test_ambiguous_task_names_are_rejected(self) -> None:
         for task_name in ("_beta", "engineer__beta", "Engineer_beta", "engineer-beta"):

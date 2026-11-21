@@ -45,20 +45,22 @@ Parallel work is opt-in for the current request only. If you ask for or offer **
 
 Your requested number is a cap, not a quota. Tasks that depend on each other or touch the same files are sequenced, while other independent assignments can still run concurrently, with each Engineer working in its own isolated git worktree. When there is no useful parallel work, the Lead picks zero and works sequentially without worktrees. The Lead alone integrates their changes, resolves conflicts when safe, and checks the combined result before delivery. If a conflict cannot be resolved safely, the Lead stops. See the [parallel rules](plugins/lean-sdlc/skills/lean-sdlc/protocols/parallel.md) for details.
 
+In T3, the trusted Lean-SDLC hook checks names on the direct agent launcher. Support names use the role and one Greek letter. An Engineer’s name must match an active task owned by the Lead. The launcher must request a separate worktree. Start Engineers from the project’s repository root without a project or environment override.
+
 ## Install and use
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-These commands install the immutable v1.37.2 release:
+These commands install the immutable v1.38.0 release:
 
 ~~~bash
-git clone --depth 1 --branch v1.37.2 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.38.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc
 ~~~
 
-Restart Codex, then start a new chat in your target project.
+After installation or an upgrade, review the Lean-SDLC hooks in Codex. Trust the reviewed hooks, restart Codex, and start a new chat in your project. An untrusted launch hook cannot block an agent.
 
 Begin with `Use $lean-sdlc to` and say what you need: discuss an idea, make a plan, or plan and implement a change. In an existing Lean-SDLC project, you can ask to continue a task or [upgrade the project](plugins/lean-sdlc/skills/lean-sdlc/references/ledger.md#initialization-and-upgrade); upgrades preserve your project documents, custom rules, and task history.
 
