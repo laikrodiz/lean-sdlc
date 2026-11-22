@@ -118,8 +118,12 @@ def upgrade_text(text: str, replacement: str) -> str:
         raise StartupContractError(
             "modified or unsupported Lean-SDLC contract; review custom rules before upgrade"
         )
-    if extract_managed_block(text) == expected:
+    actual = extract_managed_block(text)
+    if actual == expected:
         return text
+    # Upgrade only the exact v1.40.0 managed block, preserving project-owned text.
+    if actual and hashlib.sha256(actual.replace("\r\n", "\n").encode()).hexdigest() == "b753083881bf342f9cd753452b71ef300bed95b0814c279f9ea346168481fe3c":
+        return repair_text(text, expected)
     if "Lean-SDLC" in text or "$lean-sdlc" in text or START_MARKER in text or END_MARKER in text:
         raise StartupContractError(
             "modified or unsupported Lean-SDLC contract; review custom rules before upgrade"

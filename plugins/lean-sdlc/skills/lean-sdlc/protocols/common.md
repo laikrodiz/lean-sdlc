@@ -36,6 +36,6 @@ For a material direction change, stop affected work, preserve evidence, and obta
 
 ## Child profile
 
-Preserve the user-selected Lead model. All support roles use `model=gpt-6.2-sol`, `reasoning_effort=medium`, and non-full-history `fork_turns`; omit `agent_type`. Use unique role-prefixed Greek names: the support role, one underscore, and one Greek letter name. Put assignment details in progress updates. On collision, choose another letter or reuse the existing agent for compatible work. Do not vary reasoning effort by assignment.
+Preserve the user-selected Lead model. All support roles use `model=gpt-6.2-sol`, `reasoning_effort=medium`, and non-full-history `fork_turns`; omit `agent_type`. Use unique role-prefixed Greek names: native `scout_beta`, T3 title `Scout Beta`. Put details only in progress updates. On collision, choose another letter or reuse the existing agent for compatible work. Do not vary reasoning effort by assignment.
 
 Fast children require user opt-in. Use `service_tier=priority` only when supported and enabled. On priority failure, retry the same model and effort without that field. If Sol is unavailable, report the affected blocker. No automatic model fallback is permitted.

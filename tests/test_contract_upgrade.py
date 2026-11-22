@@ -45,6 +45,17 @@ class ContractUpgradeTests(unittest.TestCase):
             "03211c7f07b3829744aceafe8893ff6c8ae83414c85e036deac5e57b74937805",
         )
 
+    def test_previous_managed_block_preserves_custom_rules_and_refuses_unknown_edits(self) -> None:
+        old = (BASELINE.parent / "AGENTS-v1.40.0.txt").read_text()
+        custom = "\nKeep my local policy.\n"
+        self.agents.write_text(old + custom)
+        self.assertEqual(self.upgrade().returncode, 0)
+        self.assertEqual(self.agents.read_text(), self.current + custom)
+        modified = old.replace("Use returned paths", "Use alternate paths") + custom
+        self.agents.write_text(modified)
+        self.assertNotEqual(self.upgrade().returncode, 0)
+        self.assertEqual(self.agents.read_text(), modified)
+
     def test_upgrade_preserves_custom_text_permissions_and_project_data(self) -> None:
         prefix = "# Custom project rules\r\n\r\nUse American English.\r\n"
         suffix = "\r\n## Device calibration\r\nPreserve offset 1.25 and café labels.\r\n"

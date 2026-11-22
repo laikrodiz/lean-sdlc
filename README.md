@@ -14,7 +14,7 @@ Asking for edits does **not** authorize a commit, push, installation, publicatio
 
 ## Follow a change
 
-Before touching files, Codex restates your goal in plain language: who needs the change, what should improve, and how it proposes to do it. Multi-step work is broken into tasks with an observable outcome, completion criteria, a complexity grade (`Simple`, `Normal`, or `Complex`), and a live status (`Planned`, `In Progress`, or `Done`).
+Before inspecting the project, Codex explains who needs the change, why, and what must stay true. For one small fix, it opens with the change and its check in one sentence. Multi-step work has a visible task plan. Each task has an outcome, completion criteria, a grade (`Simple`, `Normal`, or `Complex`), and a status (`Planned`, `In Progress`, or `Done`).
 
 One **Lead** handles your request one task at a time in your checkout by default. When a task benefits from focused help, the Lead calls on specialists one at a time:
 
@@ -26,6 +26,8 @@ One **Lead** handles your request one task at a time in your checkout by default
 ## Reading "Done"
 
 At handoff, the Lead reports what changed, confirmed task states, what actually ran, and any gaps or unverified effects. Checks that were not run are never reported as passed.
+
+For one simple fix, you get the result, what passed, and anything pending. No table is needed. If a Verifier finds a defect in completed work, the Lead claims a correction linked to the original task before editing and rechecks the repair.
 
 Only eligible small, reversible tasks (those with settled boundaries and a passing immediate check) may defer broader regression or documentation/interaction review. When deferred, that review stays **explicitly marked as pending** (never implied fully reviewed) and is checked by Verifier at the next shared checkpoint, and before release. Essential checks, safety proof, known documentation defects, and required usage instructions cannot wait.
 
@@ -55,10 +57,10 @@ After accepting a T3 Engineer’s work and recording its checks, the Lead archiv
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-These commands install the immutable v1.40.0 release:
+These commands install the immutable v1.41.0 release:
 
 ~~~bash
-git clone --depth 1 --branch v1.40.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.41.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc

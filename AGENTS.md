@@ -1,6 +1,7 @@
 # Lean-SDLC Repository Rules
 
 <!-- lean-sdlc:startup v1 -->
+Before inspecting the project, delegating, or creating tasks, Lead explains who needs what, why, and what must stay true. For one small fix, open with one sentence naming the user-visible change and its check. Continue unless blocked.
 Use $lean-sdlc for repository work. Read SKILL.md and only the instructions for the current request or assigned role.
 Conversation and planning remain read-only unless the user authorizes implementation.
 For execution, use exact Repository root, Skill root, Tasks helper, Check helper, State helper, Owner, and Child tier from startup context.

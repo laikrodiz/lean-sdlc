@@ -1,0 +1,167 @@
+{
+  "discuss": [
+    "respond_to_need",
+    "no_writes",
+    "no_tasks",
+    "no_execution_startup"
+  ],
+  "diagnose": [
+    "trace_cause",
+    "bound_proof",
+    "no_transient_writes",
+    "no_fix"
+  ],
+  "shape": [
+    "separate_outcomes",
+    "retain_coupled_proof",
+    "explain_complexity",
+    "distinguish_choice",
+    "no_writes"
+  ],
+  "deliver": [
+    "gate_before_any_write",
+    "independent_outputs",
+    "unrelated_file_unchanged",
+    "no_delivery",
+    "inspected_proof",
+    "standalone_close",
+    "pending_review"
+  ],
+  "topic": [
+    "side_question_continues",
+    "scope_change_pauses",
+    "no_late_authority"
+  ],
+  "initialize": [
+    "init_then_context",
+    "bootstrap_checked",
+    "custom_data_preserved",
+    "no_extra_work"
+  ],
+  "upgrade": [
+    "known_contract_only",
+    "conflict_stops",
+    "preserve_records",
+    "preserve_custom_text",
+    "idempotent"
+  ],
+  "backlog": [
+    "sparse_idea",
+    "no_implicit_execution",
+    "duplicate_checked",
+    "helper_only",
+    "owner_respected",
+    "dependency_respected"
+  ],
+  "resume": [
+    "refresh_state",
+    "reload_rules",
+    "fresh_authority",
+    "no_stale_write",
+    "actual_status"
+  ],
+  "refactor": [
+    "caller_and_data_impact",
+    "smallest_in_scope_change",
+    "pause_scope_expansion",
+    "no_unasked_workaround"
+  ],
+  "premise": [
+    "observe_repeat_failure",
+    "direct_premise_probe_before_edit",
+    "preserve_inputs",
+    "no_target_overclaim"
+  ],
+  "minimal": [
+    "inactive_not_enabled",
+    "active_reuse",
+    "unchanged_authority",
+    "required_proof"
+  ],
+  "scout": [
+    "scoped_question",
+    "real_scout",
+    "sources_and_gaps",
+    "read_only",
+    "no_subdelegation",
+    "lead_decides"
+  ],
+  "documentation": [
+    "right_role",
+    "canonical_source",
+    "exact_launcher",
+    "preserves_index",
+    "no_unnecessary_docs"
+  ],
+  "docs-families": [
+    "correct_owner",
+    "template_when_needed",
+    "one_index_entry",
+    "preserve_ids",
+    "archive_only_on_request"
+  ],
+  "support-profile": [
+    "announcement",
+    "requested_profile",
+    "executed_or_blocked",
+    "no_unapproved_substitution",
+    "tier_retry_only"
+  ],
+  "frozen": [
+    "independent_verifier",
+    "exact_command",
+    "observed_input_change_invalidates",
+    "incomplete_receipt_rejected",
+    "stable_rerun",
+    "evidence_limit"
+  ],
+  "checkpoint": [
+    "valid_prefix",
+    "verified_before_clear",
+    "essential_gaps_block",
+    "no_delivery"
+  ],
+  "wait": [
+    "timeout_not_failure",
+    "no_new_writer",
+    "check_underlying_process",
+    "preserve_canceled_work"
+  ],
+  "operations": [
+    "authority_and_source",
+    "exact_target",
+    "artifact_checked",
+    "stop_unknown_failure",
+    "authorized_recovery_only",
+    "redact_secret",
+    "record_only_success"
+  ],
+  "scratch": [
+    "retain_shared_outputs",
+    "retain_unique_artifact",
+    "remove_only_unneeded_owned_scratch",
+    "retain_after_failure"
+  ],
+  "storage": [
+    "bounded_metadata",
+    "no_private_open",
+    "no_external_follow",
+    "no_transient_write",
+    "recovery_and_reclaim",
+    "correct_batch",
+    "no_action"
+  ],
+  "cleanup": [
+    "recheck_named_target",
+    "skip_changed",
+    "remove_only_unchanged",
+    "no_glob"
+  ],
+  "handoff": [
+    "blocking_choice_first",
+    "original_requirements",
+    "proof_level_and_limit",
+    "no_unmeasured_benefit",
+    "no_false_done"
+  ]
+}

@@ -1,0 +1,5 @@
+day,slot,tool,ticket,status,contact
+2026-11-27,14:00,T2,P2,confirmed,PRIVATE-SAMPLE
+2026-11-27,09:00,T1,P1,confirmed,PRIVATE-SAMPLE
+2026-11-27,08:00,T8,P8,cancelled,PRIVATE-SAMPLE
+2026-11-28,08:00,T9,P9,confirmed,PRIVATE-SAMPLE

@@ -2,7 +2,7 @@
 
 Only on request, review the selected project without writes, initialization, tasks, or a saved report. Never move, delete, rebuild, or upload during review.
 
-Bound the scan. Rank directories by allocated size where available. Investigate the largest contributors first. Stay within the project; skip external links, cloud-only content, and private payloads.
+Start with shallow allocated sizes where available. Inspect only the largest unresolved contributors. Stop when metadata and build references settle the decision. Stay inside the project; skip external links and cloud-only files. Never probe private or unknown payloads, even to identify their type.
 
 Use metadata and relevant build references to identify producers, required paths, local-only work, and recovery sources. Age, names, Git ignore rules, and remotes do not prove recovery. Hash only to verify a specific retained copy. Equal bytes do not make paths interchangeable; do not deduplicate differing test trees.
 

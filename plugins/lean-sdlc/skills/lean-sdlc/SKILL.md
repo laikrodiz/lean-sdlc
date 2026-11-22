@@ -1,6 +1,6 @@
 ---
 name: lean-sdlc
-description: Use Lean-SDLC when explicitly requested or required by repository instructions. Support conversation and planning without writes; implement authorized work through owned tasks, focused support roles, and evidence-based completion.
+description: Use Lean-SDLC when explicitly requested or required by repository instructions. Before inspecting the project, delegating, or creating tasks, Lead explains who needs what, why, and what must stay true. For one small fix, open with one sentence naming the user-visible change and its check. Continue unless blocked.
 ---
 
 # Lean-SDLC
@@ -31,4 +31,4 @@ Read selected files completely; reuse unchanged instructions. After compaction, 
 
 For authorized new projects, [initialize](references/ledger.md#initialization-and-upgrade) before requesting startup context.
 
-For execution, use exact startup repository, skill, helpers, owner, and child tier. If absent, run `python3 "<directory containing this SKILL.md>/scripts/session_state.py" --context` from the selected repository. Preserve `CODEX_SESSION_ID`; never invent paths or owners.
+For execution, use exact startup repository, skill, helpers, owner, and child tier. If absent, run `python3 "<directory containing this SKILL.md>/scripts/session_state.py" --context` from the selected repository. Preserve `CODEX_SESSION_ID`; never invent paths or owners. If context is still missing, stop. Report the missing field, not its value. Never enumerate environment variables to recover context.

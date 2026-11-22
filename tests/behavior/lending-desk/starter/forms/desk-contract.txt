@@ -1,0 +1,9 @@
+The shift terminal already has two menu buttons. Each runs from the project root.
+python3 desk.py out COUNTER.csv KIOSK.jsonl
+python3 desk.py pickups BOOKINGS.csv YYYY-MM-DD
+out: print open tool IDs, one per line, sorted by ID. Empty list has empty stdout.
+Use sequence, not file order; positive sequence values are unique per distinct event in valid exports. Latest event controls the tool state.
+Replay of the same normalized receipt is harmless. Same event ID with conflicting normalized data: exit nonzero, empty stdout, name the receipt on stderr. Never echo a raw row.
+pickups: exactly confirmed rows on that date; print slot|tool|ticket, sorted by those fields. No heading; no matches means empty stdout.
+The pickup table reads three fields with no escaping. If a selected field contains the separator, reject the import without partial output or private details.
+These are read-only menus. They must not modify source sheets.

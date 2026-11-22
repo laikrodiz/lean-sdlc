@@ -2,15 +2,15 @@
 
 ## Understand and shape
 
-Before creating or claiming tasks, restate who needs what and why. Use natural prose, not fixed headings. Distinguish outcomes, constraints, authority, and proposed approaches. When uncertainty matters, identify the primary source, relevant failure, and observable proof. Resolve facts safely; ask about consequential choices, unavailable facts, or missing permission.
+Distinguish constraints from proposals. For material uncertainty, identify the primary source, failure and observable proof. Resolve facts safely; ask about consequential choices, unavailable facts or missing permission.
 
 Cover every explicit user requirement before task creation. A plan-only request stops after the plan; propose write-requiring experiments without running them. Implement an approved plan without reprinting it or seeking redundant approval.
 
 Check every candidate for bundled outcomes before assigning a grade. Split independently acceptable outcomes, even for apparent Simple or Normal work. Keep implementation, tests, docs, and corrections together when they share a contract, proof, and closure decision.
 
-Use one sizing pass before task creation or display. Preserve dependencies and combined proof. Never split by file count, duration, agent availability, or target grade.
+Use one sizing pass before creation or display. Dependencies represent required results, not execution order. Preserve combined proof. Never split by file count, duration, staffing or grade.
 
-Use Complex for intrinsic difficulty or inseparable coupling. Explain in one sentence why further splitting cannot help.
+Reserve Complex for intrinsic difficulty or inseparable coupling. Explain why splitting cannot help.
 
 Each task carries its own observable outcome, acceptance, required checks, and limits in existing ledger fields. State shared constraints once. Add no sizing fields, documents, or approvals.
 
@@ -20,26 +20,26 @@ If a required refactor exceeds scope, pause affected work. Explain why and propo
 
 ## Grades
 
-Assign Simple, Normal, or Complex after settling boundaries. Grades describe complexity, not authority or safety.
+Grade settled tasks Simple, Normal, or Complex. Grades describe complexity, not authority or safety.
 
 - Simple: settled, bounded work with known paths and an immediate narrow check. Avoid routine Scout use and unnecessary broad tests.
-- Normal: one understood behavior with several related implementation or verification steps.
-- Complex: one coherent outcome with intrinsic uncertainty, difficult reasoning, or inseparable cross-boundary changes needing stronger proof.
+- Normal: understood behavior with related implementation or verification steps.
+- Complex: intrinsic uncertainty, difficult reasoning, or inseparable coupling needing stronger proof.
 
-Show grades and Complex reasons in plans and handoffs, not new columns or files.
+Show grades and Complex reasons in plans and handoffs without adding columns or files.
 
 ## Ledger and visible status
 
-Before creating execution tasks, use the current `overview` to check for duplicates and related work. Never query it for ordinary discussion. Adding or promoting ideas needs direct authority; existing rows grant none.
+Before task creation, check current `overview` for duplicates and related work. Skip this during discussion. Adding or promoting ideas requires direct authority.
 
-Claim work through the [ledger](ledger.md). Before implementation confirm ownership, In Progress status, acceptance, proof, and the gate. Dependencies must be Done.
+Claim through the [ledger](ledger.md). Before implementation confirm owner, In Progress status, acceptance, proof and gate. Dependencies must be Done.
 
-Use real task IDs, outcomes, completion criteria, grades, and confirmed status. For one task, a short task line is sufficient. For multiple tasks, show the settled current work before implementation:
+Use real task IDs, outcomes, completion criteria, grades, and confirmed status. One Simple fix: state the result, what passed, and anything pending. No table. Before multi-task implementation, show:
 
 | Task ID | Outcome | Done when | Grade | Status |
 | --- | --- | --- | --- | --- |
 
-Exclude unrelated and stopped work. Show actual final states after ledger reconciliation. Between checkpoints, report only changes, decisions, failures, or results. Combine related support announcements with updates.
+Exclude unrelated and stopped work. Show actual final states after ledger reconciliation. Between checkpoints report only changes, decisions, failures or results. Combine related announcements.
 
 After accepting proof, close the task directly through the helper, confirm success, and show Done. Report transaction failures immediately. Pause affected work; never bypass dependencies. Follow [common](../protocols/common.md) for sequencing and waits.
 
