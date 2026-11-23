@@ -31,7 +31,13 @@ PROJECT = """# Project
 
 ## Problem and User
 
+Who relies on this project, and what problem brings them here?
+
 ## Intended Outcome and Value
+
+## Find a topic
+
+Use reader vocabulary. Link each active promise to its reason and owning code, guide or test. Record unknowns as unknown.
 
 ## Scope
 

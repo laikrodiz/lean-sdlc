@@ -4,7 +4,7 @@
 
 An initialized project needs `AGENTS.md`, `docs/PROJECT.md`, and root `tasks.csv`. Keep `/tasks.csv` and `/.tasks.lock` in `.gitignore`. Initialization creates missing files without overwriting project work. README remains project-owned.
 
-`AGENTS.md` is a small workflow entry plus custom project rules, not a copy of the skill. `docs/PROJECT.md` is the only mandatory shared project document. It owns problem and user, intended outcome, scope, constraints, assumptions, observable success, current stage, version promise, and exit evidence. Implementation mechanisms belong in code, tests, or technical documents.
+`AGENTS.md` is a small workflow entry plus custom project rules, not a copy of the skill. `docs/PROJECT.md` is the only mandatory shared project document. It owns problem and user, intended outcome, scope, constraints, assumptions, observable success, current stage, version promise, and exit evidence. Use the terms users search for. Name the active promise and reason once, then point to the owning guide, entry point or test. Separate expected benefit from measured value. Never invent a missing reason.
 
 ## Changed documentation
 
@@ -30,7 +30,7 @@ Create a document only when its subject needs durable shared detail:
 
 Use the matching template in `assets/`: `feature.md`, `decision.md`, `architecture.md`, `state-machine.md`, `interface.md`, `data.md`, or `operation.md`. Templates guide necessary content; they are not extra workflow stages.
 
-Keep the existing `PREFIX-NNN-lowercase-slug.md` convention for numbered documents. Never reuse IDs. Create `INDEX.md` with the first numbered document, using `collection-index.md`. Its columns are ID, Title, Status, Owns, and Related. Link each current numbered document exactly once. The index provides navigation, not a duplicate specification.
+Keep the existing `PREFIX-NNN-lowercase-slug.md` convention for numbered documents. Never reuse IDs. An index is optional. Keep existing indexes valid; add one when it makes topics easier to find. Use `collection-index.md`. Its columns are ID, Title, Status, Owns, and Related. Link each current numbered document exactly once. The index provides navigation, not a duplicate specification.
 
 ## Conditional overview documents
 

@@ -414,6 +414,7 @@ class RuntimeHookTests(unittest.TestCase):
         self.assertEqual(
             json.loads(result.stdout),
             {
+                "contract_status": "review",  # Fixture deliberately omits a managed contract.
                 "repository_root": str(repository),
                 "skill_root": str(skill),
                 "tasks_helper": str(skill / "scripts/tasks.py"),

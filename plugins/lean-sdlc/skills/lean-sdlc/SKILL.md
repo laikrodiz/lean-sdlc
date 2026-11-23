@@ -15,15 +15,18 @@ If a user decision blocks progress, open with the choice, recommendation, and co
 
 When evidence strength affects safety, root cause, acceptance, or a dispute, label the claim: 1 asserted; 2 cited; 3 traced; 4 executed in a test; 5 reproduced on the running target. State the limit. A level describes evidence, not acceptance or business benefit. Never run unsafe checks to raise it.
 
+On first project contact, after restating intent, read `docs/PROJECT.md` first. Follow only the topic relevant to the request. Use named files, symbols and tests to explore how. If no source records why, say unknown; do not turn an inference into project policy.
+
 ## Read only what applies
 
 - Discussion or investigation: [conversation](references/conversation.md).
 - Requested storage review: [Storage Review](references/storage-review.md), even without initialization.
 - Planning only: [plan](references/plan.md), then stop.
-- Authorized execution: [common](protocols/common.md), [Lead](protocols/lead.md), and [plan](references/plan.md).
+- One settled, reversible local repair: use [ordinary fix](references/ordinary.md) alone. Before changing saved data, a public contract, permissions or shared state, switch to the full execution path. For data changes trace existing readers, persisted formats and recovery before editing.
+- Other authorized execution: [common](protocols/common.md), [Lead](protocols/lead.md), and [plan](references/plan.md).
 - User requests or offers parallel Engineers: [isolated assignments](protocols/parallel.md).
 - Assigned support: [common](protocols/common.md) and only [Scout](protocols/scout.md), [Maintainer](protocols/maintainer.md), or [Verifier](protocols/verifier.md).
-- Ledger operations, initialization, or upgrade: [ledger](references/ledger.md).
+- Non-routine ledger operations, initialization, or upgrade: [ledger](references/ledger.md).
 - Shared-document work: [documentation](references/documentation.md).
 - Recorded delivery operations: [operations](references/operations.md).
 

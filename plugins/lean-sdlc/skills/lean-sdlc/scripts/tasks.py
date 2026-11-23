@@ -114,6 +114,8 @@ def parser() -> argparse.ArgumentParser:
         help="Record shared review through one completed Quick Fix task",
     )
 
+    table = subparsers.add_parser("table", help="Render selected confirmed tasks in request order")
+    table.add_argument("task_ids", nargs="+")
     subparsers.add_parser("overview", help="Summarize current work, backlog and pending reviews")
     subparsers.add_parser(
         "open",
@@ -588,12 +590,20 @@ def main() -> int:
     try:
         if args.command == "upgrade":
             message = upgrade_ledger(root, args)
-        elif args.command in {"backlog", "open", "show", "quick-fixes", "ready", "overview"}:
+        elif args.command in {"backlog", "open", "show", "quick-fixes", "ready", "overview", "table"}:
             columns, rows = read_ledger(task_path(root))
             if columns != list(TASK_COLUMNS):
                 raise TaskError("run tasks.py upgrade before reading tasks")
             require_integrity(rows)
-            if args.command == "overview":
+            if args.command == "table":
+                selected = [find_task(rows, key) for key in dict.fromkeys(args.task_ids)]
+                def cell(value):
+                    return " ".join(value.splitlines()).replace("\\", "\\\\").replace("|", "\\|")
+                print("| Task ID | Outcome | Done when | Status |")
+                print("| --- | --- | --- | --- |")
+                for row in selected:
+                    print("| " + " | ".join(cell(row[k]) for k in ("Task ID", "Title", "Acceptance Criteria", "Status")) + " |")
+            elif args.command == "overview":
                 emit_overview(rows)
             elif args.command == "ready":
                 if args.slots < 0:

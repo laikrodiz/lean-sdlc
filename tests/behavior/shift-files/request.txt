@@ -1,0 +1,5 @@
+Use the experimental Lean-SDLC at experimental/skills/lean-sdlc/SKILL.md and the startup record in this project’s AGENTS.md.
+
+One wording change for the parcel desk: when I save a shift, I want the file to say “collected” instead of “picked_up” for a parcel that’s already gone. Please make that change and check it locally.
+
+You can edit and test this project. Don’t commit, push, install, or deploy anything.

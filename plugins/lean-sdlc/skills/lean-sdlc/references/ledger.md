@@ -38,3 +38,11 @@ For an authorized contract upgrade, use `init_repo.py ... --upgrade-contract --t
 Use `session_state.py --owner OWNER --upgrade` to remove retired fields while preserving the child-tier preference. No field selects a workflow. Repeating a completed upgrade must not change project data.
 
 After upgrade, read the current entry and applicable instructions, run the structural check, and continue the authorized task. An upgrade alone does not authorize unrelated work. Preserve recovery copies when changing existing contracts; never fabricate historical evidence or silently reassign unfinished work.
+
+### Existing projects and release notices
+
+Startup compares the project's managed block with the loaded template offline. On review or conflicting ledgers, stop affected writes. Never use repair to bypass review. Keep historical documents and local rules. During an authorized documentation upgrade, add topic pointers to PROJECT from existing sources; do not reconstruct missing reasons. Preview any proposed move or deletion separately.
+
+Default: pinned. At the user's explicit request, run `scripts/updates.py follow-stable` once on the workstation using Python; `pin` turns it off. In follow-stable mode, on authorized execution run `updates.py refresh`. It checks official stable tags at most once per day. Offline, use the cached result. If the reported version exceeds the installed version, notify; do not install packages or trust hooks. Read-only work never refreshes or migrates.
+
+Follow-stable is standing permission to upgrade an exact recognized managed block on the next authorized edit, only from the reviewed, installed stable plugin. Do not migrate from an experimental checkout, an untrusted install, or a project that declares a version pin. Claim a separate control task with `start` (no product edits). Recheck the exact known block before the existing upgrade command above; never use the control exception for product writes. Inspect preserved custom rules and check the project before product edits. Unknown edits and legacy ledger conflicts need a user decision.

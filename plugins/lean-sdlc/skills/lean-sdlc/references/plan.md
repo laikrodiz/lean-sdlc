@@ -26,7 +26,7 @@ Grade settled tasks Simple, Normal, or Complex. Grades describe complexity, not 
 - Normal: understood behavior with related implementation or verification steps.
 - Complex: intrinsic uncertainty, difficult reasoning, or inseparable coupling needing stronger proof.
 
-Show grades and Complex reasons in plans and handoffs without adding columns or files.
+Explain the grade when it affects execution; state why any remaining Complex task cannot split.
 
 ## Ledger and visible status
 
@@ -34,10 +34,7 @@ Before task creation, check current `overview` for duplicates and related work. 
 
 Claim through the [ledger](ledger.md). Before implementation confirm owner, In Progress status, acceptance, proof and gate. Dependencies must be Done.
 
-Use real task IDs, outcomes, completion criteria, grades, and confirmed status. One Simple fix: state the result, what passed, and anything pending. No table. Before multi-task implementation, show:
-
-| Task ID | Outcome | Done when | Grade | Status |
-| --- | --- | --- | --- | --- |
+Use real task IDs, outcomes, completion criteria, grades, and confirmed status. One Simple fix: state the result, what passed, and anything pending. No table. After granularity settles, use `tasks.py table TASK-ID ...` for recorded multi-task work. Show the returned rows unchanged; report grades separately because the ledger does not store them. In plan-only work describe proposed outcomes without synthetic IDs.
 
 Exclude unrelated and stopped work. Show actual final states after ledger reconciliation. Between checkpoints report only changes, decisions, failures or results. Combine related announcements.
 

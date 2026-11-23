@@ -94,7 +94,13 @@ def _startup_context(
     tier = "Fast" if state["fast_children"] else "Standard"
     repository_root = str(repository)
     skill_path = str(loaded_skill)
+    from startup_contract import contract_status
+    from updates import load as load_policy, settings
+    policy = load_policy(settings())
+    status = contract_status(repository)
     return {
+        **({"release_policy": "follow-stable"} if policy.get("follow") else {}),
+        **({"contract_status": status} if status != "current" else {}),
         "repository_root": repository_root,
         "skill_root": skill_path,
         "tasks_helper": str(loaded_skill / "scripts/tasks.py"),
@@ -294,6 +300,10 @@ def _run_hook() -> int:
         "Read SKILL.md and only the instructions for the current request or role. "
         "Discussion remains read-only. Recover current authority before resuming work."
     )
+    if context.get("release_policy"):
+        message += " Follow-stable enabled. Use references/ledger.md on authorized execution."
+    if "contract_status" in context:
+        message += f" Project contract: {context['contract_status']}. Consult references/ledger.md before writes."
     print(json.dumps({
         "systemMessage": message,
         "hookSpecificOutput": {

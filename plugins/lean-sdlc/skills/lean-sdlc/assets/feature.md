@@ -1,31 +1,13 @@
-# <FEAT-001> <Title>
+# <FEAT-001> <Topic in the user's words>
 
-## Outcome
+## User promise
 
-State one durable user-visible behavior and its value.
+Who needs what, and why? Distinguish expected value from evidence.
 
 ## Boundary
 
-State the included behavior, constraints, and exclusions.
+State the behavior that must survive, including meaningful exclusions.
 
-## Edge Cases
+## Where to look
 
-- <Relevant case>: <Treatment or reason for an important omission>
-
-## Acceptance
-
-- <Observable acceptance condition>
-
-## Verification
-
-State the proof that demonstrates the acceptance conditions.
-
-## Status
-
-<Draft, active, superseded, or complete>
-
-## Links
-
-- Decisions: <DEC links or none>
-- Tasks: <TASK links>
-- Related documents: <links or none>
+Point to an owning interface, scenario or test when it helps. Omit empty sections.

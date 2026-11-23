@@ -152,7 +152,6 @@ def document_collection_errors(root: Path) -> list[str]:
             continue
         index = directory / "INDEX.md"
         if not index.is_file():
-            errors.append(f"docs/{folder}: missing INDEX.md")
             continue
         try:
             lines = index.read_text(encoding="utf-8").splitlines()

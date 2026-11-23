@@ -1431,14 +1431,18 @@ class TaskLedgerTests(unittest.TestCase):
                 self.assertNotEqual(checked.returncode, 0)
                 self.assertIn(expected, checked.stdout)
 
+    def test_optional_document_index(self) -> None:
+        with tempfile.TemporaryDirectory() as folder:
+            repository = Path(folder)
+            initialize_repository(repository)
+            path = repository / "docs/features/FEAT-001-example.md"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("# Example\n")
+            result = run(str(CHECK), str(repository))
+            self.assertEqual(result.returncode, 0, result.stdout)
+
     def test_checker_rejects_broken_document_index_links(self) -> None:
         cases = {
-            "missing INDEX.md": lambda repository: (
-                repository.joinpath("docs/features").mkdir(parents=True),
-                repository.joinpath("docs/features/FEAT-001-example.md").write_text(
-                    "# Example\n", encoding="utf-8"
-                ),
-            ),
             "missing link to FEAT-001-example.md": lambda repository: write_document_family(
                 repository, "features", "FEAT", links=[]
             ),
@@ -1842,7 +1846,7 @@ class PackageContractTests(unittest.TestCase):
         self.assertEqual([path.parent.name for path in PLUGIN.glob("skills/*/SKILL.md")], ["lean-sdlc"])
         self.assertEqual(
             {path.name for path in (SKILL / "references").glob("*.md")},
-            {"conversation.md", "plan.md", "ledger.md", "documentation.md", "operations.md", "storage-review.md"},
+            {"conversation.md", "plan.md", "ledger.md", "documentation.md", "operations.md", "storage-review.md", "ordinary.md"},
         )
         self.assertEqual(
             {path.name for path in (SKILL / "protocols").glob("*.md")},
@@ -1933,7 +1937,7 @@ class PackageContractTests(unittest.TestCase):
     def test_release_version_is_consistent(self) -> None:
         manifest = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         version = manifest["version"]
-        self.assertEqual(version, "1.42.0")
+        self.assertEqual(version, "1.43.0")
         self.assertIn(f"v{version}", (ROOT / "README.md").read_text(encoding="utf-8"))
         self.assertIn(f"- Version: {version}", (ROOT / "docs/PROJECT.md").read_text(encoding="utf-8"))
 

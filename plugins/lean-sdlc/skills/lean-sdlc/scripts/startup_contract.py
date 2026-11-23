@@ -121,8 +121,8 @@ def upgrade_text(text: str, replacement: str) -> str:
     actual = extract_managed_block(text)
     if actual == expected:
         return text
-    # Upgrade only the exact v1.40.0 managed block, preserving project-owned text.
-    if actual and hashlib.sha256(actual.replace("\r\n", "\n").encode()).hexdigest() == "b753083881bf342f9cd753452b71ef300bed95b0814c279f9ea346168481fe3c":
+    # Upgrade only the exact released managed blocks, preserving project-owned text.
+    if actual and hashlib.sha256(actual.replace("\r\n", "\n").encode()).hexdigest() in {"b753083881bf342f9cd753452b71ef300bed95b0814c279f9ea346168481fe3c", "55401707368b2fec44b85d631c08050c474997ce8af8436ffc49977197b56cc0"}:
         return repair_text(text, expected)
     if "Lean-SDLC" in text or "$lean-sdlc" in text or START_MARKER in text or END_MARKER in text:
         raise StartupContractError(
@@ -130,3 +130,17 @@ def upgrade_text(text: str, replacement: str) -> str:
         )
     separator = "" if not text or text.endswith(("\n", "\r")) else "\n"
     return text + separator + replacement
+
+def contract_status(root: Path) -> str:
+    """Inspect the local project without writes, network access or migration."""
+    agents = root / "AGENTS.md"
+    if agents.is_symlink() or (root / "planning" / "tasks.csv").exists():
+        return "review"
+    try:
+        current = agents.read_text(encoding="utf-8")
+        expected = read_template_block()
+        if extract_managed_block(current) is None:
+            return "review"
+        return "current" if upgrade_text(current, expected) == current else "upgrade-available"
+    except (OSError, ValueError, StartupContractError):
+        return "review"

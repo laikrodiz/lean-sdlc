@@ -4,6 +4,12 @@
 
 Lean-SDLC helps people use Codex to make repository changes without losing the reason for the work, the owner, or proof of the result. It turns an authorized request into work that the user can review and accept.
 
+## Find a topic
+
+- **Safe edits:** discussion grants no write authority. [Routing rules](../plugins/lean-sdlc/skills/lean-sdlc/references/conversation.md).
+- **Recovering unfinished Engineer work:** keep disputed work inspectable. [Parallel protocol](../plugins/lean-sdlc/skills/lean-sdlc/protocols/parallel.md).
+- **Avoiding duplicate checks:** a passing check remains useful only while its relevant inputs and conditions match. [Verifier](../plugins/lean-sdlc/skills/lean-sdlc/protocols/verifier.md).
+
 ## Scope
 
 Lean-SDLC has one workflow. Discussion, investigation, and plan-only requests do not change files or create tasks. Authorized implementation uses one task at a time by default. The Lead owns the result and makes the final decisions. Support is conditional and sequential. See the [plan rules](../plugins/lean-sdlc/skills/lean-sdlc/references/plan.md) and [role rules](../plugins/lean-sdlc/skills/lean-sdlc/protocols/common.md).
@@ -33,6 +39,6 @@ Hosted task services, dashboards, telemetry, and automatic discovery or proposal
 ## Current stage and version
 
 - Stage: Evolution.
-- Version: 1.42.0.
-- Version goal: Let Lead prepare independent work during Scout investigations and reuse the latest valid evidence for each verification check.
+- Version: 1.43.0.
+- Version goal: Help fresh sessions find the reason for a change quickly. Use a short path for ordinary repairs and full verification for changes to saved data or shared contracts.
 - Exit evidence: Require fresh [candidate checks](OPERATIONS.md), version checks, exact remote commit and tag on `origin/main`, and byte-for-byte installed/source equality. Confirm selected-repository isolation, upgrade and structural checks, a live support-profile check, and final ledger reconciliation.
