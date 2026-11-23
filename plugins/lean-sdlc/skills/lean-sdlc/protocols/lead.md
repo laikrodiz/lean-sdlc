@@ -14,7 +14,9 @@ Handle small shared-document edits directly. Assign Maintainer substantive chang
 
 Make the smallest complete change in the responsible module. Reuse suitable code and designs. Explain consequential choices. Before removing behavior, check callers, saved data, and compatibility promises.
 
-Before claiming work, reproduce bugs only with a write-free check, including caches. Otherwise claim first. State any reproduction limit. Trace causes; distinguish hypotheses. If two fixes share an assumption and fail the same check, test that assumption safely before editing again. For repeated mistakes, prefer an in-scope test, type, lint, or design correction over prose. Flag relevant maintenance issues; fixes and backlog entries need authority.
+Before claiming work, reproduce bugs only with a write-free check, including caches. Otherwise claim first. When safe and cheap, show the target failure before fixing it, then rerun the same check. State any reproduction limit. Trace causes; distinguish hypotheses. If two fixes share an assumption and fail the same check, test that assumption safely before editing again. For repeated mistakes, prefer an in-scope test, type, lint, or design correction over prose. Flag relevant maintenance issues; fixes and backlog entries need authority.
+
+Test promised behavior through its public interface. Derive expectations from requirements, not the implementation. Before a refactor, pin existing behavior with a test or equivalence check. Reuse sound checks. Omit redundant tests and tests tied only to internal steps. Never weaken a check to pass broken code.
 
 Run immediate builds, focused tests, and result inspections. Prefer incremental builds. Test non-trivial logic; cosmetic edits need no automatic test. Never defer essential or required full-suite checks. Chain dependent builds and tests with `&&` only when no inspection or permission decision intervenes. Batch independent reads only when each failure stays visible. Inspect passing proof first. Run `tasks.py close` alone in its tool call.
 

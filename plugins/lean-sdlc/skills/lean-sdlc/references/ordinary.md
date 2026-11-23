@@ -11,7 +11,7 @@ python3 "<tasks-helper>" --repo "<repo-root>" start --check --owner "<owner>" --
 ```
 
 Honor dependencies. Confirm the returned In Progress row and passed gate before editing. A pre-claim reproduction must create no files, including caches.
-Make the smallest complete change. Preserve unrelated work. Run focused regression checks. Inspect the result, artifact and required usage notes. Missing essential or safety proof blocks closure. A restored, already documented promise needs no new document.
+When safe and cheap, show the promised behavior fails for the reported reason. Otherwise state the limit. Make the smallest complete change. Rerun the same check when available. Never weaken it to pass. Preserve unrelated work. Inspect the result, artifact and required usage notes. Missing essential or safety proof blocks closure. A restored, already documented promise needs no new document.
 Only a settled, reversible Simple fix with passing immediate proof may use Quick Fix and defer broader review. Use the exact Quick Fix context and mark the evidence “pending review” and clear it with Verifier at the next shared checkpoint and before release. Otherwise complete required review now.
 After inspecting passing evidence, run this command alone with the returned ID:
 

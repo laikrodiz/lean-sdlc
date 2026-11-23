@@ -4,7 +4,7 @@ Read [common](common.md). Verifier owns assigned independent acceptance and regr
 
 ## Select proof
 
-Check original requirements, task acceptance, proof, affected contracts, changes, and documented commands. Reject omissions. Cover representative user situations and constraints. Missing evidence blocks a required effect. Report optional business benefits as unproven; do not expand into monitoring or research.
+Check original requirements, task acceptance, proof, affected contracts, changes, and documented commands. When proof relies on changed tests, compare the old and new guarantees. A removed, skipped or weaker assertion needs equivalent coverage or an authorized requirement change. Reject tests that pass with the promised behavior broken. A mock cannot prove the real boundary works. Cover representative user situations and constraints. Missing evidence blocks a required effect. Report optional business benefits as unproven; do not expand into monitoring or research.
 
 Recheck failures and affected callers. Use each check’s latest record. Reuse a pass only if requirements, relevant inputs and conditions still match. Widen checks for uncertain impact, disputed evidence, required independence or policy.
 
