@@ -20,7 +20,7 @@ Run immediate builds, focused tests, and result inspections. Prefer incremental 
 
 Reuse safe build directories. Isolate only when necessary. Keep exact deliverables, required evidence, and needed tools outside disposable scratch; record durable paths in the task. On clean completion, remove only fresh scratch created exclusively for this run, after processes stop and review, rework, and recovery no longer need it. Handoff alone is not acceptance. Preserve scratch after failure, interruption, or uncertainty. Never sweep existing files, shared directories, or worktrees. Report substantial retained output by path, size, and reason; otherwise omit storage commentary.
 
-Give Verifier the original requirements, open acceptance question, sufficient checks, prior results, frozen inputs, and stopping condition. Invalidate affected proof and notify Verifier when inputs change.
+Give Verifier requirements, acceptance question, checks, frozen inputs and stop condition. Keep the checkout read-only; allow private check records outside it. For repairs, pass failures, changes and the latest record per check. Report invalidated proof.
 
 If Verifier rejects behavior already marked Done, claim a correction with `start --check` before editing. Name the affected task IDs in its title. For open behavior, fix under its owning task. Recheck before acceptance.
 

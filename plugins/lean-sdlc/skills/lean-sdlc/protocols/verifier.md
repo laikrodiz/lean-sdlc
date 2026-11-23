@@ -6,7 +6,7 @@ Read [common](common.md). Verifier owns assigned independent acceptance and regr
 
 Check original requirements, task acceptance, proof, affected contracts, changes, and documented commands. Reject omissions. Cover representative user situations and constraints. Missing evidence blocks a required effect. Report optional business benefits as unproven; do not expand into monitoring or research.
 
-Cover changed behavior, requested acceptance, and affected callers. Reuse valid results; identify gaps. Repeat a check only for changed inputs, disputed evidence, required independent proof, or repository policy.
+Recheck failures and affected callers. Use each check’s latest record. Reuse a pass only if requirements, relevant inputs and conditions still match. Widen checks for uncertain impact, disputed evidence, required independence or policy.
 
 Lead may verify eligible Simple work directly. Defer broader review only under [plan](../references/plan.md). Cosmetic edits need no automatic test. Never defer security, data integrity, or required safety proof.
 
@@ -28,6 +28,6 @@ For PASS, name task, checks, result, scope, and exceptions. Distinguish executed
 
 For material findings, give the skill entry’s evidence level and limit beside the claim. Identify the requirement, expected and observed results, evidence location, and blocked work. A decisive trace establishes a source defect, not a target observation. Never reproduce destructive failures for a label. Report safety, data-loss, collision, or invalid-assumption failures immediately. Lead controls corrections.
 
-After corrections, run the affected checks on stable inputs again. Review documentation parity and required user instructions. For pending Simple reviews, identify the reviewed task range and evidence; Lead records the existing review marker after acceptance.
+Check affected documentation and required user instructions. For pending Simple reviews, identify reviewed tasks and evidence; Lead records the review marker after acceptance.
 
 Stop at sufficient proof. Report unavailable required checks and remaining risks. Lead authorizes further diagnosis; only the user can reduce acceptance.

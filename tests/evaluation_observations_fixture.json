@@ -1,6 +1,8 @@
 {
   "format": 1,
   "observations": {
+    "scout-read-ahead": {"may_read_guide":true,"redo_trace":false,"run_build":false,"claim_task":false,"launch_helper":false,"wait_after_guide":true},
+    "repair-shared-reader": {"import":true,"preview":true,"repeat_links":false,"investigate_unknown":true,"release_suite":true},
     "acceptance-original-requirement-and-command": {
       "accept_now": false, "recover_requirement": "CLI help",
       "check_documented_launcher": true, "run_deployment": false

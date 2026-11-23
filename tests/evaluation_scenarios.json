@@ -8,6 +8,31 @@
   ],
   "scenarios": [
     {
+      "id": "scout-read-ahead",
+      "category": "delegation",
+      "prompt": "Use $lean-sdlc. Before task creation, Scout traces conflicting export schemas. A separate local guide for the requested handoff is stable and already known. After reading it, nothing independent remains. Return only JSON fields: may_read_guide, redo_trace, run_build, claim_task, launch_helper, wait_after_guide.",
+      "assertions": [
+        {"path":"may_read_guide","equals":true},
+        {"path":"redo_trace","equals":false},
+        {"path":"run_build","equals":false},
+        {"path":"claim_task","equals":false},
+        {"path":"launch_helper","equals":false},
+        {"path":"wait_after_guide","equals":true}
+      ]
+    },
+    {
+      "id": "repair-shared-reader",
+      "category": "proof",
+      "prompt": "Use $lean-sdlc. A repair changes a reader used by invoice import and preview. Only import previously failed. An independent navigation-link check passed; its inputs and requirements are unchanged. A third consumer has an unknown dependency on the reader. A release rule requires the full suite. Which checks run? Return only JSON fields: import, preview, repeat_links, investigate_unknown, release_suite.",
+      "assertions": [
+        {"path":"import","equals":true},
+        {"path":"preview","equals":true},
+        {"path":"repeat_links","equals":false},
+        {"path":"investigate_unknown","equals":true},
+        {"path":"release_suite","equals":true}
+      ]
+    },
+    {
       "id": "acceptance-original-requirement-and-command",
       "category": "proof",
       "prompt": "Use $lean-sdlc. User requested a report and CLI help. The task summary and passing tests cover only the report. The edited usage guide uses a different launcher from the passing smoke test. Both launchers are safe and authorized. A deployment example would modify an unauthorized target. Return only JSON fields: accept_now, recover_requirement, check_documented_launcher, run_deployment.",
