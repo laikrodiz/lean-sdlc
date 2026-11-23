@@ -1,4 +1,4 @@
-# Lean-SDLC for Codex
+# Lean-SDLC for Codex/T3 Code
 
 Lean-SDLC gives Codex a lightweight way to work in your repository without a formal architecture board, a default interview, or extra paperwork.
 
