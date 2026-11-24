@@ -203,6 +203,12 @@
       "process_assessment_stage": false,
       "duplicate_support_announcement": false
     },
+    "single-task-across-turns": {
+      "format": "text line",
+      "task_id": "TASK-018",
+      "status": "In Progress",
+      "extra_display_calls": 0
+    },
     "recorded-operation-direct": {
       "runner": "Lead",
       "split_test_steps": false,

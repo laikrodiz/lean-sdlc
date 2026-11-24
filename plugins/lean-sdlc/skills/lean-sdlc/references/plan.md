@@ -34,15 +34,17 @@ Before task creation, check current `overview` for duplicates and related work. 
 
 Claim through the [ledger](ledger.md). Before implementation confirm owner, In Progress status, acceptance, proof and gate. Dependencies must be Done.
 
-Use real task IDs, outcomes, completion criteria, grades, and confirmed status. One Simple fix: state the result, what passed, and anything pending. No table. After granularity settles, use `tasks.py table TASK-ID ...` for recorded multi-task work. Show the returned rows unchanged; report grades separately because the ledger does not store them. In plan-only work describe proposed outcomes without synthetic IDs.
+Use real task IDs, outcomes, completion criteria, grades, and confirmed status. One quick fix: one sentence with result, check and gaps. When tracking one task across turns, use one text line: ID, confirmed status, result or next step. Reuse confirmed facts; never call tools solely to format it. Put blocking user decisions first.
+
+Once multiple tasks are settled and recorded, show `tasks.py table TASK-ID ...` rows unchanged. Give grades separately; the ledger omits them. Plans without records use no synthetic IDs.
 
 Exclude unrelated and stopped work. Show actual final states after ledger reconciliation. Between checkpoints report only changes, decisions, failures or results. Combine related announcements.
 
-Only for a recorded multi-task table in T3 with both `html_preview` and `html_render`, add `--html`. Pass the helper output unchanged as inline HTML to preview, then render. On missing tools or display failure, show the default Markdown table and continue. Never duplicate a displayed table. Refresh on request, material plan changes, or useful handoff; keep blockers in plain text.
+In T3, add `--html` only for multi-task tables with both `html_preview` and `html_render`. Preview then render the unchanged inline HTML. If either tool is missing or fails, show Markdown and continue. Never duplicate tables. Refresh on request, material plan changes, or useful handoff; keep blockers in plain text.
 
 After accepting proof, close the task directly through the helper, confirm success, and show Done. Report transaction failures immediately. Pause affected work; never bypass dependencies. Follow [common](../protocols/common.md) for sequencing and waits.
 
-If `update_plan` is available, mirror unresolved tasks as `TASK-NNN — Title`. Map Planned to `pending`, In Progress to `in_progress`, and Done to `completed`. The ledger remains authoritative; the native view is optional.
+For multiple tasks, optionally mirror `TASK-NNN — Title` in `update_plan` when available. Map Planned/In Progress/Done to `pending`/`in_progress`/`completed`. The ledger remains authoritative.
 
 ## Simple tasks and deferred review
 

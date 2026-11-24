@@ -603,6 +603,17 @@
       ]
     },
     {
+      "id": "single-task-across-turns",
+      "category": "lifecycle",
+      "prompt": "Use $lean-sdlc. In T3, the user asks for a progress update on yesterday's only task. In this turn the ledger confirmed TASK-018 is In Progress. The export check passed; checking import is next. No user decision is needed. Return only JSON fields: format (text line, table, or HTML), task_id, status, and extra_display_calls (number).",
+      "assertions": [
+        {"path": "format", "equals": "text line"},
+        {"path": "task_id", "equals": "TASK-018"},
+        {"path": "status", "equals": "In Progress"},
+        {"path": "extra_display_calls", "equals": 0}
+      ]
+    },
+    {
       "id": "recorded-operation-direct",
       "category": "delegation",
       "prompt": "Use $lean-sdlc. The user authorizes a valid recorded deployment against the same target and accepted source. Its built-in checks establish the required result. No input, risk, or independent-proof requirement changed. Return only JSON fields: runner, split_test_steps, mandatory_verifier, mandatory_maintainer.",

@@ -39,6 +39,6 @@ Hosted task services, dashboards, telemetry, and automatic discovery or proposal
 ## Current stage and version
 
 - Stage: Evolution.
-- Version: 1.44.1.
-- Version goal: Keep task outcomes, criteria, and status legible together on desktop and phone in T3.
+- Version: 1.44.2.
+- Version goal: Report a single task across turns without adding rendering or status calls.
 - Exit evidence: Require fresh [candidate checks](OPERATIONS.md), version checks, exact remote commit and tag on `origin/main`, and byte-for-byte installed/source equality. Confirm selected-repository isolation, upgrade and structural checks, a live support-profile check, and final ledger reconciliation.

@@ -16,7 +16,7 @@ Asking for edits does **not** authorize a commit, push, installation, publicatio
 
 Before inspecting the project, Codex explains who needs the change, why, and what must stay true. For one small fix, it opens with the change and its check in one sentence. Multi-step work has a visible task plan. Each task has an outcome, completion criteria, a grade (`Simple`, `Normal`, or `Complex`), and a status (`Planned`, `In Progress`, or `Done`).
 
-In T3, recorded tasks can appear as a table that also fits a phone screen. Codex and other hosts keep the same rows in Markdown. A single fix needs no table.
+One task that spans several turns gets a short status line with its ID, status, and result or next step. Multiple recorded tasks appear together: a responsive table in T3, or Markdown in other hosts.
 
 One **Lead** handles your request one task at a time in your checkout by default. When a task benefits from focused help, the Lead calls on specialists one at a time:
 
@@ -61,10 +61,10 @@ After accepting a T3 Engineer’s work and recording its checks, the Lead archiv
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-These commands install the immutable v1.44.1 release:
+These commands install the immutable v1.44.2 release:
 
 ~~~bash
-git clone --depth 1 --branch v1.44.1 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.44.2 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc

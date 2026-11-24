@@ -19,4 +19,4 @@ After inspecting passing evidence, run this command alone with the returned ID:
 python3 "<tasks-helper>" --repo "<repo-root>" close "<task-id>" --owner "<owner>" --evidence "<observed result and limits>"
 ```
 
-Confirm success. In one short handoff state the result, what actually passed, and any pending review. No table for a single fix.
+Confirm closure. Give the result, check and pending review in one sentence. Across turns, include the known ID and status. No table.
