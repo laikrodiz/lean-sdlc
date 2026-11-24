@@ -472,18 +472,28 @@ def emit_table(rows: list[dict[str, str]], html: bool) -> None:
         print("""<!doctype html><html lang="en"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>Task snapshot</title>
 <style>
-table{width:100%;border-collapse:collapse;font-family:var(--font-sans,system-ui);text-align:left}
-th,td{padding:.55em .4em;vertical-align:top;border-bottom:1px solid var(--border,GrayText);overflow-wrap:anywhere;white-space:pre-line}
-th{font-weight:600}td:first-child{font-family:var(--font-mono,monospace)}td:last-child{font-weight:600}
-th:first-child,td:first-child,td:last-child{white-space:nowrap}
-@media(max-width:530px){thead{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden}
-tbody tr{display:grid;grid-template-columns:1fr auto;padding:.65em 0;border-bottom:1px solid var(--border,GrayText)}
-td{border:0;padding:.15em 0}td:nth-child(2),td:nth-child(3){grid-column:1/-1}
-td:nth-child(3)::before{content:"Done when: ";font-weight:600}td:last-child{grid-area:1/2}}
+table{width:100%;border-spacing:0;text-align:left;color:var(--foreground,CanvasText);font:14px/1.45 var(--font-sans,system-ui)}
+thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+tbody{display:block}
+tbody tr{display:grid;grid-template-columns:minmax(76px,max-content) minmax(0,1fr) 98px;
+ grid-template-areas:"id outcome state" ". criteria .";align-items:baseline;gap:2px 14px;
+ border-top:1px solid var(--border,GrayText);padding:9px 0}
+td{padding:0;overflow-wrap:anywhere;white-space:pre-line}
+td:first-child{grid-area:id;color:var(--muted-foreground,GrayText);font:12px/1.5 var(--font-mono,monospace);white-space:nowrap}
+td:nth-child(2){grid-area:outcome}
+td:nth-child(3){grid-area:criteria;color:var(--muted-foreground,GrayText);font-size:13px}
+td:nth-child(3)::before{content:"Done when: "}
+td:last-child{grid-area:state;white-space:nowrap;font-size:13px}
+td:last-child::before{content:"";display:inline-block;box-sizing:border-box;width:8px;height:8px;
+ border-radius:50%;border:1.5px solid var(--muted-foreground,GrayText);margin-right:6px}
+tr[data-state="Done"] td:last-child::before{background:var(--success,teal);border:0}
+tr[data-state="In Progress"] td:last-child::before{background:var(--info,steelblue);border:0}
+@media(max-width:505px){tbody tr{grid-template-columns:minmax(0,1fr) auto;
+ grid-template-areas:"id state" "outcome outcome" "criteria criteria"}td:nth-child(2){margin-top:3px}}
 </style><table aria-label="Task snapshot"><thead><tr>""")
         print("".join(f'<th scope="col">{h}</th>' for h in headers) + "</tr></thead><tbody>")
         for values in cells:
-            print("<tr>" + "".join(f"<td>{escape(v)}</td>" for v in values) + "</tr>")
+            print(f'<tr data-state="{escape(values[-1])}">' + "".join(f"<td>{escape(v)}</td>" for v in values) + "</tr>")
         print("</tbody></table></html>")
         return
     print("| " + " | ".join(headers) + " |")

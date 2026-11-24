@@ -66,9 +66,12 @@ class OrientationTests(unittest.TestCase):
             def __init__(self):
                 super().__init__()
                 self.cells = []
+                self.row_states = []
                 self.in_cell = False
 
             def handle_starttag(self, tag, attrs):
+                if tag == "tr" and "data-state" in dict(attrs):
+                    self.row_states.append(dict(attrs)["data-state"])
                 if tag in {"td", "th"}:
                     self.in_cell = True
                     self.cells.append("")
@@ -85,7 +88,7 @@ class OrientationTests(unittest.TestCase):
             root = Path(tmp)
             initialize_repository(root)
             write_ledger(root, "TASK-001,Ship A | B,Planned,Project,,,Keep <em>A & B</em>,private proof,\n"
-                               "TASK-002,Review,Planned,Project,,,Accepted,Check,\n"
+                               "TASK-002,Review,Done,Project,,reviewer,Accepted,Check,Passed\n"
                                "TASK-003,Omitted,Planned,Project,,,Works,Check,\n")
             ledger = root / "tasks.csv"
             before = ledger.read_bytes()
@@ -96,15 +99,16 @@ class OrientationTests(unittest.TestCase):
             parsed = Cells()
             parsed.feed(result.stdout)
             self.assertEqual(parsed.cells, ["Task ID", "Outcome", "Done when", "Status",
-                             "TASK-002", "Review", "Accepted", "Planned",
+                             "TASK-002", "Review", "Accepted", "Done",
                              "TASK-001", "Ship A | B", "Keep <em>A & B</em>", "Planned"])
             self.assertNotIn("private proof", result.stdout)
+            self.assertEqual(parsed.row_states, ["Done", "Planned"])
             invalid = run(*command, "--html", *ids, "TASK-999")
             self.assertNotEqual(invalid.returncode, 0)
             self.assertEqual(invalid.stdout, "")
             fallback = run(*command, *ids)
             self.assertEqual(fallback.returncode, 0, fallback.stderr)
             self.assertEqual(fallback.stdout.splitlines(), ["| Task ID | Outcome | Done when | Status |",
-                             "| --- | --- | --- | --- |", "| TASK-002 | Review | Accepted | Planned |",
+                             "| --- | --- | --- | --- |", "| TASK-002 | Review | Accepted | Done |",
                              r"| TASK-001 | Ship A \| B | Keep <em>A & B</em> | Planned |"])
             self.assertEqual(ledger.read_bytes(), before)
