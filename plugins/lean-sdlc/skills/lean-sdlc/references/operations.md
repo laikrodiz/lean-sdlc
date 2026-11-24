@@ -18,7 +18,7 @@ Honor explicit current or standing authority for the same scope and target. This
 
 Run one state-changing operation at a time for the same target. Use the accepted source identity. Do not guess a target, silently alter steps, or retry a state-changing failure without an authorized recovery rule. Reuse valid artifact proof; do not repeat it solely to add a support handoff. A successful exit is sufficient only when the procedure's success checks establish the required result. Missing required proof blocks completion.
 
-If a recorded failure matches, use only its already-authorized recovery. For an unknown failure, changed target, stale procedure, or source defect, stop the procedure and preserve the evidence. Lead diagnoses within current authority; a changed target or unapproved recovery requires user direction.
+Design recovery to inspect the destination’s durable state. On an authorized retry, apply only confirmed missing effects. If completion is uncertain, stop before repeating the action. If a recorded failure matches, use only its already-authorized recovery. For an unknown failure, changed target, stale procedure, or source defect, stop the procedure and preserve the evidence. Lead diagnoses within current authority; a changed target or unapproved recovery requires user direction.
 
 Cancellation follows the common protocol: check the underlying process or command, not only the agent status. Keep uncertain targets blocked. Relevant source or target changes invalidate previous operation results.
 

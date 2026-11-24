@@ -39,6 +39,6 @@ Hosted task services, dashboards, telemetry, and automatic discovery or proposal
 ## Current stage and version
 
 - Stage: Evolution.
-- Version: 1.43.1.
-- Version goal: Make passing tests evidence of the promised behavior. Reject lost coverage without blocking equivalent replacement tests.
+- Version: 1.43.2.
+- Version goal: Avoid speculative repairs, unsupported review claims, and duplicate effects after an interrupted operation.
 - Exit evidence: Require fresh [candidate checks](OPERATIONS.md), version checks, exact remote commit and tag on `origin/main`, and byte-for-byte installed/source equality. Confirm selected-repository isolation, upgrade and structural checks, a live support-profile check, and final ledger reconciliation.

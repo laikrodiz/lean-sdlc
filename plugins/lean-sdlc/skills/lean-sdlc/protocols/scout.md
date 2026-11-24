@@ -16,4 +16,4 @@ Use existing manifests, build graphs, and indexes before constructing a new map.
 
 Follow [common](common.md) for partial results and exceptions. End with one final result naming findings, evidence, unresolved gaps, and their decision impact.
 
-Do not fit evidence to a preferred answer. Distinguish observed facts from hypotheses. If the source changes, identify which findings are stale. Stop when the bounded question is answered or the missing evidence requires a Lead decision.
+For historical intent, consult the relevant decision record or Git history. If neither records why, report the reason as unknown. Distinguish observed facts from hypotheses. If the source changes, identify which findings are stale. Stop when the bounded question is answered or the missing evidence requires a Lead decision.
