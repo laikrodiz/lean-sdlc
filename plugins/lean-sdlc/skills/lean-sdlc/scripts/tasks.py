@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+from html import escape
 import sys
 from pathlib import Path
 
@@ -116,6 +117,7 @@ def parser() -> argparse.ArgumentParser:
 
     table = subparsers.add_parser("table", help="Render selected confirmed tasks in request order")
     table.add_argument("task_ids", nargs="+")
+    table.add_argument("--html", action="store_true", help="Print a self-contained, read-only HTML task table instead of Markdown")
     subparsers.add_parser("overview", help="Summarize current work, backlog and pending reviews")
     subparsers.add_parser(
         "open",
@@ -462,6 +464,35 @@ def dependency_closure(
     return ordered
 
 
+def emit_table(rows: list[dict[str, str]], html: bool) -> None:
+    headers = ("Task ID", "Outcome", "Done when", "Status")
+    fields = ("Task ID", "Title", "Acceptance Criteria", "Status")
+    cells = ([row[key] for key in fields] for row in rows)
+    if html:
+        print("""<!doctype html><html lang="en"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Task snapshot</title>
+<style>
+table{width:100%;border-collapse:collapse;font-family:var(--font-sans,system-ui);text-align:left}
+th,td{padding:.55em .4em;vertical-align:top;border-bottom:1px solid var(--border,GrayText);overflow-wrap:anywhere;white-space:pre-line}
+th{font-weight:600}td:first-child{font-family:var(--font-mono,monospace)}td:last-child{font-weight:600}
+th:first-child,td:first-child,td:last-child{white-space:nowrap}
+@media(max-width:530px){thead{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden}
+tbody tr{display:grid;grid-template-columns:1fr auto;padding:.65em 0;border-bottom:1px solid var(--border,GrayText)}
+td{border:0;padding:.15em 0}td:nth-child(2),td:nth-child(3){grid-column:1/-1}
+td:nth-child(3)::before{content:"Done when: ";font-weight:600}td:last-child{grid-area:1/2}}
+</style><table aria-label="Task snapshot"><thead><tr>""")
+        print("".join(f'<th scope="col">{h}</th>' for h in headers) + "</tr></thead><tbody>")
+        for values in cells:
+            print("<tr>" + "".join(f"<td>{escape(v)}</td>" for v in values) + "</tr>")
+        print("</tbody></table></html>")
+        return
+    print("| " + " | ".join(headers) + " |")
+    print("| --- | --- | --- | --- |")
+    for values in cells:
+        encoded = (" ".join(v.splitlines()).replace("\\", "\\\\").replace("|", "\\|") for v in values)
+        print("| " + " | ".join(encoded) + " |")
+
+
 def emit_rows(rows: list[dict[str, str]]) -> None:
     writer = csv.DictWriter(
         sys.stdout,
@@ -597,12 +628,7 @@ def main() -> int:
             require_integrity(rows)
             if args.command == "table":
                 selected = [find_task(rows, key) for key in dict.fromkeys(args.task_ids)]
-                def cell(value):
-                    return " ".join(value.splitlines()).replace("\\", "\\\\").replace("|", "\\|")
-                print("| Task ID | Outcome | Done when | Status |")
-                print("| --- | --- | --- | --- |")
-                for row in selected:
-                    print("| " + " | ".join(cell(row[k]) for k in ("Task ID", "Title", "Acceptance Criteria", "Status")) + " |")
+                emit_table(selected, args.html)
             elif args.command == "overview":
                 emit_overview(rows)
             elif args.command == "ready":

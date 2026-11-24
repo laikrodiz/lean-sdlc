@@ -1,4 +1,5 @@
 from pathlib import Path
+from html.parser import HTMLParser
 import sys
 import tempfile
 import unittest
@@ -59,3 +60,51 @@ class OrientationTests(unittest.TestCase):
             invalid = table("TASK-001", "TASK-999")
             self.assertNotEqual(invalid.returncode, 0)
             self.assertNotIn("| Outcome |", invalid.stdout)
+
+    def test_html_table_is_a_read_only_alternative(self):
+        class Cells(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.cells = []
+                self.in_cell = False
+
+            def handle_starttag(self, tag, attrs):
+                if tag in {"td", "th"}:
+                    self.in_cell = True
+                    self.cells.append("")
+
+            def handle_endtag(self, tag):
+                if tag in {"td", "th"}:
+                    self.in_cell = False
+
+            def handle_data(self, data):
+                if self.in_cell:
+                    self.cells[-1] += data
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            initialize_repository(root)
+            write_ledger(root, "TASK-001,Ship A | B,Planned,Project,,,Keep <em>A & B</em>,private proof,\n"
+                               "TASK-002,Review,Planned,Project,,,Accepted,Check,\n"
+                               "TASK-003,Omitted,Planned,Project,,,Works,Check,\n")
+            ledger = root / "tasks.csv"
+            before = ledger.read_bytes()
+            command = (str(TASKS), "--repo", str(root), "table")
+            ids = ("TASK-002", "TASK-001", "TASK-002")
+            result = run(*command, "--html", *ids)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            parsed = Cells()
+            parsed.feed(result.stdout)
+            self.assertEqual(parsed.cells, ["Task ID", "Outcome", "Done when", "Status",
+                             "TASK-002", "Review", "Accepted", "Planned",
+                             "TASK-001", "Ship A | B", "Keep <em>A & B</em>", "Planned"])
+            self.assertNotIn("private proof", result.stdout)
+            invalid = run(*command, "--html", *ids, "TASK-999")
+            self.assertNotEqual(invalid.returncode, 0)
+            self.assertEqual(invalid.stdout, "")
+            fallback = run(*command, *ids)
+            self.assertEqual(fallback.returncode, 0, fallback.stderr)
+            self.assertEqual(fallback.stdout.splitlines(), ["| Task ID | Outcome | Done when | Status |",
+                             "| --- | --- | --- | --- |", "| TASK-002 | Review | Accepted | Planned |",
+                             r"| TASK-001 | Ship A \| B | Keep <em>A & B</em> | Planned |"])
+            self.assertEqual(ledger.read_bytes(), before)

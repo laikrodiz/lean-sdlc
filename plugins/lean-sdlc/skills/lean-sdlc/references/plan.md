@@ -38,6 +38,8 @@ Use real task IDs, outcomes, completion criteria, grades, and confirmed status. 
 
 Exclude unrelated and stopped work. Show actual final states after ledger reconciliation. Between checkpoints report only changes, decisions, failures or results. Combine related announcements.
 
+Only for a recorded multi-task table in T3 with both `html_preview` and `html_render`, add `--html`. Pass the helper output unchanged as inline HTML to preview, then render. On missing tools or display failure, show the default Markdown table and continue. Never duplicate a displayed table. Refresh on request, material plan changes, or useful handoff; keep blockers in plain text.
+
 After accepting proof, close the task directly through the helper, confirm success, and show Done. Report transaction failures immediately. Pause affected work; never bypass dependencies. Follow [common](../protocols/common.md) for sequencing and waits.
 
 If `update_plan` is available, mirror unresolved tasks as `TASK-NNN — Title`. Map Planned to `pending`, In Progress to `in_progress`, and Done to `completed`. The ledger remains authoritative; the native view is optional.
