@@ -799,7 +799,7 @@
     {
       "id": "support-reuse-before-spawn",
       "category": "delegation",
-      "prompt": "Use $lean-sdlc. A known native Verifier in this thread reviewed the last candidate. Its workspace and model profile still match. You fixed its finding. What should you do first? Separately, what if the user wants a blind review, the host requires a new delegated task, or your proposed name collides with an agent whose identity is uncertain? Return only JSON fields: native_action (tool name), list_known_first, blind_fresh, host_required_fresh, check_collision_before_renaming (booleans).",
+      "prompt": "Use $lean-sdlc. A known native Verifier in this thread reviewed the last candidate. Its workspace and model profile still match. You fixed its finding. What should you do first? Separately, what if the user wants a blind review, the host requires a new thread, or your proposed name collides with an agent whose identity is uncertain? Return only JSON fields: native_action (tool name), list_known_first, blind_fresh, host_required_fresh, check_collision_before_renaming (booleans).",
       "assertions": [
         {
           "path": "native_action",
@@ -821,6 +821,17 @@
           "path": "check_collision_before_renaming",
           "equals": true
         }
+      ]
+    },
+    {
+      "id": "t3-discussion-continuity",
+      "category": "delegation",
+      "prompt": "Use $lean-sdlc. On T3 a delegated specialist has finished proposing a design. The user wants another round with that specialist to explore an objection. The host assigns another task ID when a finished child receives a message. Separately, the user wants a new delegated review of a repaired candidate. Return only JSON fields: discussion_tool, same_thread (boolean), reset_context (boolean), review_tool.",
+      "assertions": [
+        {"path": "discussion_tool", "equals": "t3_thread_send"},
+        {"path": "same_thread", "equals": true},
+        {"path": "reset_context", "equals": false},
+        {"path": "review_tool", "equals": "delegate_task"}
       ]
     },
     {

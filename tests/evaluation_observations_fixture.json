@@ -326,6 +326,12 @@
       "host_required_fresh": true,
       "check_collision_before_renaming": true
     },
+    "t3-discussion-continuity": {
+      "discussion_tool": "t3_thread_send",
+      "same_thread": true,
+      "reset_context": false,
+      "review_tool": "delegate_task"
+    },
     "small-documentation-edit": {
       "writer": "Lead",
       "mandatory_handoff": false,

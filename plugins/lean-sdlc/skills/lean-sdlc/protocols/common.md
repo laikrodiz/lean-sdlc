@@ -10,7 +10,9 @@ Only Lead assigns, cancels, replaces, or resumes agents. Support agents cannot s
 
 Specify purpose, target, owner, inputs, acceptance question, proof, stop condition, allowed paths, exclusions, constraints and authority. Supply exact startup repository, skill and helper paths. Read selected instructions and decisive contracts completely. Reuse unchanged context.
 
-Before spawning support, give a known agent in this thread a bounded follow-up if role, model profile, workspace and context fit. On native Codex, use `followup_task` to start its next turn. If identity is uncertain or a name collides, check the existing agent once before choosing another name. Start fresh if reuse is unavailable, the host requires a new assignment, or independence requires fresh context.
+Before spawning support, give a known agent in this thread a bounded follow-up if role, model profile, workspace and context fit. On native Codex, use `followup_task` to start its next turn. If identity is uncertain or a name collides, check the existing agent once before choosing another name. Start fresh if reuse is unavailable, the host requires a new thread, or independence requires fresh context.
+
+On T3, continue a discussion with `t3_thread_send` to the same child thread. Leave `freshContext` unset. A new task ID does not require a new thread. For a new delegated review or re-check, use `delegate_task`, not `t3_thread_send`.
 
 ## Communication
 

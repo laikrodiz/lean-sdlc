@@ -1937,7 +1937,7 @@ class PackageContractTests(unittest.TestCase):
     def test_release_version_is_consistent(self) -> None:
         manifest = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         version = manifest["version"]
-        self.assertEqual(version, "1.45.1")
+        self.assertEqual(version, "1.45.2")
         self.assertIn(f"v{version}", (ROOT / "README.md").read_text(encoding="utf-8"))
         self.assertIn(f"- Version: {version}", (ROOT / "docs/PROJECT.md").read_text(encoding="utf-8"))
 

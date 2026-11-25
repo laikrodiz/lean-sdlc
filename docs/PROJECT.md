@@ -39,6 +39,6 @@ Hosted task services, dashboards, telemetry, and automatic discovery or proposal
 ## Current stage and version
 
 - Stage: Evolution.
-- Version: 1.45.1.
-- Version goal: Reuse compatible support before spawning a new agent.
+- Version: 1.45.2.
+- Version goal: Continue T3 discussions in the same thread; start new delegated reviews separately.
 - Exit evidence: Require fresh [candidate checks](OPERATIONS.md), version checks, exact remote commit and tag on `origin/main`, and byte-for-byte installed/source equality. Confirm selected-repository isolation, upgrade and structural checks, a live support-profile check, and final ledger reconciliation.
