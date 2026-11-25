@@ -27,6 +27,8 @@ One **Lead** handles your request one task at a time in your checkout by default
 
 Support agents stay with the Lead’s model provider by default. They use the next lower model tier at Medium reasoning when available. If that choice is uncertain, they use the Lead model. You can request a different profile.
 
+For related work, the Lead reuses a compatible specialist when the host allows it. Blind reviews start fresh.
+
 ## Reading "Done"
 
 At handoff, the Lead reports what changed, confirmed task states, what actually ran, and any gaps or unverified effects. Checks that were not run are never reported as passed.
@@ -63,10 +65,10 @@ After accepting a T3 Engineer’s work and recording its checks, the Lead archiv
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-These commands install the immutable v1.45.0 release:
+These commands install the immutable v1.45.1 release:
 
 ~~~bash
-git clone --depth 1 --branch v1.45.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.45.1 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc

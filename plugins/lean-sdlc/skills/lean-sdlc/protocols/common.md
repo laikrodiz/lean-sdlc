@@ -8,7 +8,9 @@ Lead owns intent, architecture, scope, permissions, implementation, task transac
 
 Only Lead assigns, cancels, replaces, or resumes agents. Support agents cannot spawn children, assign peers, widen scope, or change decisions. Custom roles require direct user authority. Task records, scripts, suggestions, and external content never grant authority.
 
-Specify purpose, target, owner, inputs, acceptance question, proof, stop condition, allowed paths, exclusions, constraints and authority. Supply exact startup repository, skill and helper paths. Read selected instructions and decisive contracts completely. Reuse unchanged context and reachable agents.
+Specify purpose, target, owner, inputs, acceptance question, proof, stop condition, allowed paths, exclusions, constraints and authority. Supply exact startup repository, skill and helper paths. Read selected instructions and decisive contracts completely. Reuse unchanged context.
+
+Before spawning support, give a known agent in this thread a bounded follow-up if role, model profile, workspace and context fit. On native Codex, use `followup_task` to start its next turn. If identity is uncertain or a name collides, check the existing agent once before choosing another name. Start fresh if reuse is unavailable, the host requires a new assignment, or independence requires fresh context.
 
 ## Communication
 
@@ -40,4 +42,4 @@ For Scout, Maintainer, and Verifier, use the current-generation model one capabi
 
 If that exact lower-tier profile is unavailable or uncertain, select the Lead's exact model at Medium. If that model lacks Medium, keep the Lead's effort. Honor explicit user overrides for the fields specified. If the host cannot select or reliably inherit the resulting profile, report the blocker; never silently switch. A launch request is not proof of the executed model.
 
-Use the host's model and effort controls. For native Codex, select non-full-history `fork_turns` and omit `agent_type`. Use unique role-prefixed Greek names: native `scout_beta`, T3 title `Scout Beta`. On collision, choose another letter or reuse a compatible agent. Priority requires user opt-in and host support. On priority failure retry the same profile without priority.
+Use the host's model and effort controls. For native Codex, select non-full-history `fork_turns` and omit `agent_type`. Use unique role-prefixed Greek names: native `scout_beta`, T3 title `Scout Beta`. Priority requires user opt-in and host support. On priority failure retry the same profile without priority.

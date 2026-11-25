@@ -319,6 +319,13 @@
       "claim_target_observation": false,
       "close_task": false
     },
+    "support-reuse-before-spawn": {
+      "native_action": "followup_task",
+      "list_known_first": false,
+      "blind_fresh": true,
+      "host_required_fresh": true,
+      "check_collision_before_renaming": true
+    },
     "small-documentation-edit": {
       "writer": "Lead",
       "mandatory_handoff": false,

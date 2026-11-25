@@ -797,6 +797,33 @@
       ]
     },
     {
+      "id": "support-reuse-before-spawn",
+      "category": "delegation",
+      "prompt": "Use $lean-sdlc. A known native Verifier in this thread reviewed the last candidate. Its workspace and model profile still match. You fixed its finding. What should you do first? Separately, what if the user wants a blind review, the host requires a new delegated task, or your proposed name collides with an agent whose identity is uncertain? Return only JSON fields: native_action (tool name), list_known_first, blind_fresh, host_required_fresh, check_collision_before_renaming (booleans).",
+      "assertions": [
+        {
+          "path": "native_action",
+          "equals": "followup_task"
+        },
+        {
+          "path": "list_known_first",
+          "equals": false
+        },
+        {
+          "path": "blind_fresh",
+          "equals": true
+        },
+        {
+          "path": "host_required_fresh",
+          "equals": true
+        },
+        {
+          "path": "check_collision_before_renaming",
+          "equals": true
+        }
+      ]
+    },
+    {
       "id": "small-documentation-edit",
       "category": "delegation",
       "prompt": "Use $lean-sdlc. A small code change needs one factual sentence corrected in its existing README. The decision and behavior are settled. Return only JSON fields: writer, mandatory_handoff, required_correction.",
