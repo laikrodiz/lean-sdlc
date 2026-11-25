@@ -41,7 +41,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant("resource isolation", "protocols/common.md", ("One writer owns each mutable", "A ledger lock protects only")),
     FrozenInvariant("sequential execution", "protocols/common.md", ("Run one task at a time", "independent of Scout’s question", "next already-planned task", "no starts, writes, ledger changes, tests, builds or delegation", "Do not overlap support assignments")),
     FrozenInvariant("cancellation", "protocols/common.md", ("underlying command or process", "Late results cannot restore canceled authority")),
-    FrozenInvariant("model profile", "protocols/common.md", ("user-selected Lead model", "model=gpt-6.2-sol", "reasoning_effort=medium", "No automatic model fallback", "Do not vary reasoning effort")),
+    FrozenInvariant("model profile", "protocols/common.md", ("one capability tier below", "same model provider", "Lead's exact model at Medium", "keep the Lead's effort", "Honor explicit user overrides", "never silently switch")),
     FrozenInvariant("ledger ownership", "references/ledger.md", ("Lead performs all task writes directly", "using the Lead owner", "helper validates records, not whether the original request was fulfilled")),
     FrozenInvariant("proof ownership", "protocols/verifier.md", ("Verifier owns assigned independent acceptance", "You do not change tracked source")),
     FrozenInvariant("stable proof inputs", "protocols/verifier.md", ("before and after proof", "even if a later fingerprint matches")),

@@ -36,6 +36,8 @@ For a material direction change, stop affected work, preserve evidence, and obta
 
 ## Child profile
 
-Preserve the user-selected Lead model. All support roles use `model=gpt-6.2-sol`, `reasoning_effort=medium`, and non-full-history `fork_turns`; omit `agent_type`. Use unique role-prefixed Greek names: native `scout_beta`, T3 title `Scout Beta`. Put details only in progress updates. On collision, choose another letter or reuse the existing agent for compatible work. Do not vary reasoning effort by assignment.
+For Scout, Maintainer, and Verifier, use the current-generation model one capability tier below the Lead from the same model provider, at Medium reasoning. Keep the Lead's connection; a gateway is not a model family. Use the active catalog and known tier relationships. Never infer rank from list order, price, or similar names. Reuse the choice until the Lead or available profiles change.
 
-Fast children require user opt-in. Use `service_tier=priority` only when supported and enabled. On priority failure, retry the same model and effort without that field. If Sol is unavailable, report the affected blocker. No automatic model fallback is permitted.
+If that exact lower-tier profile is unavailable or uncertain, select the Lead's exact model at Medium. If that model lacks Medium, keep the Lead's effort. Honor explicit user overrides for the fields specified. If the host cannot select or reliably inherit the resulting profile, report the blocker; never silently switch. A launch request is not proof of the executed model.
+
+Use the host's model and effort controls. For native Codex, select non-full-history `fork_turns` and omit `agent_type`. Use unique role-prefixed Greek names: native `scout_beta`, T3 title `Scout Beta`. On collision, choose another letter or reuse a compatible agent. Priority requires user opt-in and host support. On priority failure retry the same profile without priority.

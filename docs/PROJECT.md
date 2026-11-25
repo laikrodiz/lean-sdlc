@@ -14,7 +14,7 @@ Lean-SDLC helps people use Codex to make repository changes without losing the r
 
 Lean-SDLC has one workflow. Discussion, investigation, and plan-only requests do not change files or create tasks. Authorized implementation uses one task at a time by default. The Lead owns the result and makes the final decisions. Support is conditional and sequential. See the [plan rules](../plugins/lean-sdlc/skills/lean-sdlc/references/plan.md) and [role rules](../plugins/lean-sdlc/skills/lean-sdlc/protocols/common.md).
 
-The user chooses the Lead model and tier. Scout, Maintainer, and Verifier use `gpt-6.2-sol` with Medium reasoning. Priority service for support requires user opt-in and host support. If Sol is unavailable, the Lead reports the blocker and does not switch models.
+Support stays on the Lead’s provider by default. Use a known lower tier at Medium reasoning, or the Lead model when unavailable. Explicit user choices take precedence. See the [support profile](../plugins/lean-sdlc/skills/lean-sdlc/protocols/common.md#child-profile) for effort fallback and priority.
 
 The user can opt in to Parallel Engineers for the current request only. Engineers use the Lead model and reasoning effort in separate checkouts. The Lead limits concurrency to useful independent work within the requested count and available resources. Queued tasks start only when a slot and their accepted inputs are available. See the [parallel rules](../plugins/lean-sdlc/skills/lean-sdlc/protocols/parallel.md).
 
@@ -39,6 +39,6 @@ Hosted task services, dashboards, telemetry, and automatic discovery or proposal
 ## Current stage and version
 
 - Stage: Evolution.
-- Version: 1.44.2.
-- Version goal: Report a single task across turns without adding rendering or status calls.
+- Version: 1.45.0.
+- Version goal: Keep support on the Lead’s provider without maintaining a model ranking.
 - Exit evidence: Require fresh [candidate checks](OPERATIONS.md), version checks, exact remote commit and tag on `origin/main`, and byte-for-byte installed/source equality. Confirm selected-repository isolation, upgrade and structural checks, a live support-profile check, and final ledger reconciliation.

@@ -193,7 +193,7 @@ class RuntimeHookTests(unittest.TestCase):
                     self.assertIsNotNone(result)
                     self.assertEqual(result["hookSpecificOutput"]["permissionDecision"], "deny")
 
-    def test_all_standard_roles_use_fixed_sol_fields(self) -> None:
+    def test_all_standard_roles_accept_an_explicit_profile(self) -> None:
         for role in ("maintainer", "verifier", "scout"):
             with self.subTest(role=role):
                 self.assertIsNone(
@@ -280,48 +280,26 @@ class RuntimeHookTests(unittest.TestCase):
             )
         )
 
-    def test_missing_native_model_is_rejected(self) -> None:
-        denied = self.guard(
-            {
-                "task_name": "scout_beta",
-                "fork_turns": "all",
-            }
-        )
-        self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
+    def test_native_support_requires_explicit_profile_fields(self) -> None:
+        profile = {"task_name": "scout_beta", "model": "fixture-model",
+                   "reasoning_effort": "medium", "fork_turns": "none"}
+        for field in ("model", "reasoning_effort"):
+            for invalid in (None, " ", False):
+                with self.subTest(field=field, invalid=invalid):
+                    candidate = dict(profile)
+                    if invalid is None:
+                        del candidate[field]
+                    else:
+                        candidate[field] = invalid
+                    denied = self.guard(candidate)
+                    self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
 
-    def test_wrong_native_model_is_rejected(self) -> None:
-        denied = self.guard(
-            {
-                "task_name": "scout_beta",
-                "model": "gpt-5.6-sol",
-                "reasoning_effort": "medium",
-                "fork_turns": "none",
-            }
-        )
-        self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
-
-    def test_previous_models_are_rejected_without_fallback(self) -> None:
-        for model in ("gpt-5.6-luna", "gpt-6-luna", "gpt-5.6-terra", "gpt-6.2-astra"):
-            with self.subTest(model=model):
-                denied = self.guard({
-                    "task_name": "scout_beta", "model": model,
-                    "reasoning_effort": "medium", "fork_turns": "none",
-                })
-                decision = denied["hookSpecificOutput"]
-                self.assertEqual(decision["permissionDecision"], "deny")
-                self.assertIn("gpt-6.2-sol", decision["permissionDecisionReason"])
-                self.assertIn("No automatic fallback", decision["permissionDecisionReason"])
-
-    def test_sol_wrong_reasoning_is_rejected(self) -> None:
-        denied = self.guard(
-            {
-                "task_name": "scout_beta",
-                "model": "gpt-6.2-sol",
-                "reasoning_effort": "high",
-                "fork_turns": "none",
-            }
-        )
-        self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
+    def test_native_guard_accepts_resolved_lower_or_lead_profile(self) -> None:
+        for model, effort in (("fixture-lower", "medium"), ("fixture-lead", "medium"),
+                              ("fixture-lead", "high"), ("explicit-choice", "low")):
+            with self.subTest(model=model, effort=effort):
+                self.assertIsNone(self.guard({"task_name": "scout_beta", "model": model,
+                                             "reasoning_effort": effort, "fork_turns": "none"}))
 
     def test_agent_type_is_rejected_for_standard_role(self) -> None:
         denied = self.guard(

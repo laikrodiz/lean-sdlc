@@ -42,8 +42,6 @@ GREEK_LABELS = (
     "omega",
 )
 ROLE_PREFIXES = frozenset({"maintainer", "verifier", "scout"})
-SUPPORT_MODEL = "gpt-6.2-sol"
-SUPPORT_REASONING = "medium"
 T3_DELEGATE = "mcp__t3_code_direct__delegate_task"
 LABEL_PATTERN = re.compile(
     r"^(?P<prefix>[a-z0-9]+(?:_[a-z0-9]+)*)_(?P<label>"
@@ -95,11 +93,11 @@ def _validate_tool_input(tool_input: Any, fast_children: bool) -> str | None:
 
     model = tool_input.get("model")
     reasoning_effort = tool_input.get("reasoning_effort")
-    if model != SUPPORT_MODEL:
-        return f"Set model to {SUPPORT_MODEL} for support roles. No automatic fallback is permitted."
-
-    if reasoning_effort != SUPPORT_REASONING:
-        return f"Set reasoning_effort to {SUPPORT_REASONING} for {model}."
+    # This native event has no trusted parent profile, catalog or user override.
+    if not isinstance(model, str) or not model.strip():
+        return "Select the resolved support model explicitly."
+    if not isinstance(reasoning_effort, str) or not reasoning_effort.strip():
+        return "Select the resolved support reasoning effort explicitly."
     if "agent_type" in tool_input:
         return "Remove agent_type from direct native model spawns."
     if "fork_turns" not in tool_input or not _fork_turns_is_non_full_history(

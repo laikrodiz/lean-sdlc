@@ -25,6 +25,8 @@ One **Lead** handles your request one task at a time in your checkout by default
 - **Maintainer** handles substantial shared documentation updates once behavior or decisions settle, and investigates significant mismatches between accepted work and task records. It does not handle generic code upkeep, implement features, run tests, or write to the ledger.
 - **Verifier** provides an independent check when risk or acceptance calls for it. It checks the result against your original request, contracts, and evidence, and runs checks on frozen inputs as needed. It never patches code or edits tracked files; if something fails, it reports the failure back to the Lead to fix.
 
+Support agents stay with the Lead’s model provider by default. They use the next lower model tier at Medium reasoning when available. If that choice is uncertain, they use the Lead model. You can request a different profile.
+
 ## Reading "Done"
 
 At handoff, the Lead reports what changed, confirmed task states, what actually ran, and any gaps or unverified effects. Checks that were not run are never reported as passed.
@@ -61,10 +63,10 @@ After accepting a T3 Engineer’s work and recording its checks, the Lead archiv
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-These commands install the immutable v1.44.2 release:
+These commands install the immutable v1.45.0 release:
 
 ~~~bash
-git clone --depth 1 --branch v1.44.2 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.45.0 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc
