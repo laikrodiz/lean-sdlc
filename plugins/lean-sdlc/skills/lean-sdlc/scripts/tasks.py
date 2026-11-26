@@ -477,7 +477,7 @@ def emit_table(rows: list[dict[str, str]], html: bool, html_json: bool) -> None:
     headers = ("Task ID", "Outcome", "Done when", "Status")
     cells = (
         (row["Task ID"], row["Title"] + (f" ({row['Grade']})" if row.get("Grade") else ""),
-         row["Acceptance Criteria"], row["Status"])
+         "" if row["Acceptance Criteria"] == row["Title"] else row["Acceptance Criteria"], row["Status"])
         for row in rows
     )
     if html or html_json:
@@ -494,7 +494,7 @@ td{padding:0;overflow-wrap:anywhere;white-space:pre-line}
 td:first-child{grid-area:id;color:var(--muted-foreground,GrayText);font:12px/1.5 var(--font-mono,monospace);white-space:nowrap}
 td:nth-child(2){grid-area:outcome}
 td:nth-child(3){grid-area:criteria;color:var(--muted-foreground,GrayText);font-size:13px}
-td:nth-child(3)::before{content:"Done when: "}
+td:nth-child(3):not(:empty)::before{content:"Done when: "}
 td:last-child{grid-area:state;white-space:nowrap;font-size:13px}
 td:last-child::before{content:"";display:inline-block;box-sizing:border-box;width:8px;height:8px;
  border-radius:50%;border:1.5px solid var(--muted-foreground,GrayText);margin-right:6px}

@@ -109,6 +109,22 @@ def write_document_family(
 
 
 class TaskLedgerTests(unittest.TestCase):
+    def test_table_omits_only_identical_acceptance_without_changing_ledger(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            ledger = write_ledger(repo,
+                "TASK-001,Output is OK,Planned,Project,,,Output is OK,Check,\n"
+                "TASK-002,Output is OK,Planned,Project,,,Output is ok,Check,\n")
+            before = ledger.read_bytes()
+            args = ("table", "TASK-001", "TASK-002")
+            markdown = task(repo, *args).stdout
+            self.assertIn("| TASK-001 | Output is OK |  | Planned |", markdown)
+            self.assertIn("| TASK-002 | Output is OK | Output is ok | Planned |", markdown)
+            html = json.loads(task(repo, *args, "--html-json").stdout)["html"]
+            self.assertIn("<td>Output is OK</td><td></td><td>Planned</td>", html)
+            self.assertIn("<td>Output is OK</td><td>Output is ok</td>", html)
+            self.assertEqual(ledger.read_bytes(), before)
+
     def test_grade_survives_transactions_and_renders_only_if_known(self):
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(tmp)
@@ -1960,7 +1976,7 @@ class PackageContractTests(unittest.TestCase):
     def test_release_version_is_consistent(self) -> None:
         manifest = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         version = manifest["version"]
-        self.assertEqual(version, "1.46.1")
+        self.assertEqual(version, "1.46.2")
         self.assertIn(f"v{version}", (ROOT / "README.md").read_text(encoding="utf-8"))
         self.assertIn(f"- Version: {version}", (ROOT / "docs/PROJECT.md").read_text(encoding="utf-8"))
 

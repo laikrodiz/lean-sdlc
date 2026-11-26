@@ -14,6 +14,8 @@ Reserve Complex for intrinsic difficulty or inseparable coupling. Explain why sp
 
 Each task carries its own observable outcome, acceptance, required checks, limits and grade. State shared constraints once. Add no sizing documents or approvals.
 
+Use a plain title for the requested change. Under “Done when,” state observable results and what must stay unchanged, not steps or a restatement. Put how to verify the result in Proof. If the title already states the entire testable result, reuse it verbatim as acceptance.
+
 Split only work within the approved scope. For a new independent outcome, define a separate task before implementing that outcome. Update affected dependencies. Preserve existing evidence and unresolved original requirements. Moving work does not close the original task.
 
 If a required refactor exceeds scope, pause affected work. Explain why and propose the smallest viable refactor. Wait for user approval before editing it. Unaffected authorized work can continue.
