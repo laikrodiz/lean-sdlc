@@ -1850,7 +1850,7 @@ class PackageContractTests(unittest.TestCase):
         )
         self.assertEqual(
             {path.name for path in (SKILL / "protocols").glob("*.md")},
-            {"common.md", "lead.md", "scout.md", "maintainer.md", "verifier.md", "parallel.md"},
+            {"common.md", "delegation.md", "lead.md", "scout.md", "maintainer.md", "verifier.md", "parallel.md"},
         )
         self.assertFalse(any(path.name in {"__pycache__", ".DS_Store"} or path.suffix == ".pyc" for path in PLUGIN.rglob("*")))
 
@@ -1937,7 +1937,7 @@ class PackageContractTests(unittest.TestCase):
     def test_release_version_is_consistent(self) -> None:
         manifest = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         version = manifest["version"]
-        self.assertEqual(version, "1.45.2")
+        self.assertEqual(version, "1.45.3")
         self.assertIn(f"v{version}", (ROOT / "README.md").read_text(encoding="utf-8"))
         self.assertIn(f"- Version: {version}", (ROOT / "docs/PROJECT.md").read_text(encoding="utf-8"))
 

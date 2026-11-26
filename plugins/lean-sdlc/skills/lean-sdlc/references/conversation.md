@@ -16,6 +16,6 @@ Establish who needs progress, in what situation, and what improvement matters, a
 
 If a material choice is unresolved, explain the choice and request direction. If the request is clear, avoid another approval round. Preserve valid standing authority for operations within its recorded scope.
 
-Read relevant project facts only when the discussion needs them. Do not load the ledger, all role protocols, or helper state just because an idea concerns a project. For a bounded read-only Scout inquiry, read the shared child profile and Scout protocol before launch. No execution startup or task owner is required for this inquiry.
+Read relevant project facts only when the discussion needs them. Do not load the ledger, all role protocols, or helper state just because an idea concerns a project. For a bounded read-only Scout inquiry, read [delegation](../protocols/delegation.md) and [Scout](../protocols/scout.md) before launch. No execution startup or task owner is required for this inquiry.
 
 A side question does not cancel ongoing work. Answer it and continue unaffected authorized work. If the user changes direction, pause affected work and confirm the new boundary. Never resume canceled work from old task status alone.

@@ -25,6 +25,7 @@ On first project contact, after restating intent, read `docs/PROJECT.md` first. 
 - One settled, reversible local repair: use [ordinary fix](references/ordinary.md) alone. Before changing saved data, a public contract, permissions or shared state, switch to the full execution path. For data changes trace existing readers, persisted formats and recovery before editing.
 - Other authorized execution: [common](protocols/common.md), [Lead](protocols/lead.md), and [plan](references/plan.md).
 - User requests or offers parallel Engineers: [isolated assignments](protocols/parallel.md).
+- Lead assigning or resuming support: [delegation](protocols/delegation.md).
 - Assigned support: [common](protocols/common.md) and only [Scout](protocols/scout.md), [Maintainer](protocols/maintainer.md), or [Verifier](protocols/verifier.md).
 - Non-routine ledger operations, initialization, or upgrade: [ledger](references/ledger.md).
 - Shared-document work: [documentation](references/documentation.md).

@@ -23,7 +23,7 @@ One **Lead** handles your request one task at a time in your checkout by default
 - **Lead** owns the work from start to finish: shapes the plan, implements code and small shared-doc edits, runs immediate checks and authorized procedures, updates the task ledger, and makes the final acceptance call.
 - **Scout** investigates substantial open questions in read-only mode. It searches local files, traces callers, contracts, tests, and usage, and consults authoritative online sources when relevant and in scope. It returns sources, concrete findings, and unresolved gaps without editing files or implementing changes.
 - **Maintainer** handles substantial shared documentation updates once behavior or decisions settle, and investigates significant mismatches between accepted work and task records. It does not handle generic code upkeep, implement features, run tests, or write to the ledger.
-- **Verifier** provides an independent check when risk or acceptance calls for it. It checks the result against your original request, contracts, and evidence, and runs checks on frozen inputs as needed. It never patches code or edits tracked files; if something fails, it reports the failure back to the Lead to fix.
+- **Verifier** provides an independent check when risk or acceptance calls for it. It checks the result against your original request, contracts, and evidence, and runs checks on frozen inputs as needed. When access changes, it checks who should get access and who should not. It never patches code or edits tracked files; if something fails, it reports the failure back to the Lead to fix.
 
 Support agents stay with the Lead’s model provider by default. They use the next lower model tier at Medium reasoning when available. If that choice is uncertain, they use the Lead model. You can request a different profile.
 
@@ -65,10 +65,10 @@ After accepting a T3 Engineer’s work and recording its checks, the Lead archiv
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-These commands install the immutable v1.45.2 release:
+These commands install the immutable v1.45.3 release:
 
 ~~~bash
-git clone --depth 1 --branch v1.45.2 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.45.3 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc

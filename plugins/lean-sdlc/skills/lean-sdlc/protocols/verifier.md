@@ -6,6 +6,8 @@ Read [common](common.md). Verifier owns assigned independent acceptance and regr
 
 Check original requirements, task acceptance, proof, affected contracts, changes, and documented commands. When proof relies on changed tests, compare the old and new guarantees. A removed, skipped or weaker assertion needs equivalent coverage or an authorized requirement change. Reject tests that pass with the promised behavior broken. A mock cannot prove the real boundary works. For a newly disabled correctness or safety check, require a narrow exception and evidence that the condition is safe. Cover representative user situations and constraints. Missing evidence blocks a required effect. Report optional business benefits as unproven; do not expand into monitoring or research.
 
+When a change affects access, trace affected callers to the project's access rule. Check both permitted and denied access. Report any path you could not verify.
+
 Recheck failures and affected callers. Use each check’s latest record. Reuse a pass only if requirements, relevant inputs and conditions still match. Widen checks for uncertain impact, disputed evidence, required independence or policy.
 
 Lead may verify eligible Simple work directly. Defer broader review only under [plan](../references/plan.md). Cosmetic edits need no automatic test. Never defer security, data integrity, or required safety proof.
