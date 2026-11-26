@@ -16,7 +16,7 @@ Asking for edits does **not** authorize a commit, push, installation, publicatio
 
 Before inspecting the project, Codex explains who needs the change, why, and what must stay true. For one small fix, it opens with the change and its check in one sentence. Multi-step work has a visible task plan. Each task has an outcome, completion criteria, a grade (`Simple`, `Normal`, or `Complex`), and a status (`Planned`, `In Progress`, or `Done`).
 
-One task that spans several turns gets a short status line. When a request has a second recorded task, you see both. Each known grade appears beside its task ID in T3 and Markdown. Between tables, the Lead tells you what finished and what comes next.
+One task that spans several turns gets a short status line. When a request has a second recorded task, you see both. Each known grade appears in parentheses after the task title in T3 and Markdown. Between tables, the Lead tells you what finished and what comes next.
 
 One **Lead** handles your request one task at a time in your checkout by default. When a task benefits from focused help, the Lead calls on specialists one at a time:
 
@@ -65,10 +65,10 @@ After accepting a T3 Engineer’s work and recording its checks, the Lead archiv
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-These commands install the immutable v1.46.0 release:
+These commands install the immutable v1.46.1 release:
 
 ~~~bash
-git clone --depth 1 --branch v1.46.0 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.46.1 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc

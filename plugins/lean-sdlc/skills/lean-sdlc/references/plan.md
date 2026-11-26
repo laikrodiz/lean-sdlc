@@ -36,7 +36,7 @@ Claim through the [ledger](ledger.md). Before implementation confirm owner, In P
 
 Use real task IDs, outcomes, completion criteria, grades, and confirmed status. One quick fix: one sentence with result, check and gaps. When tracking one task across turns, use one text line: ID, confirmed status, result or next step. Reuse confirmed facts; never call tools solely to format it. Put blocking user decisions first.
 
-When a request has a second recorded task, show its related rows before continuing work, even if the first is Done. Include this request's completed prerequisites. Keep rows unchanged. The helper shows recorded grades beside IDs. Plans without records use no synthetic IDs.
+When a request has a second recorded task, show its related rows before continuing work, even if the first is Done. Include this request's completed prerequisites. Keep rows unchanged. The helper appends recorded grades to task titles in parentheses. Plans without records use no synthetic IDs.
 
 Exclude unrelated and stopped work. Show actual final states after ledger reconciliation. When a task closes and work remains, report its ID, confirmed result and next step before continuing. Use one plain-text line, not another table or status check. Report blockers immediately. Use the final handoff for the last task.
 

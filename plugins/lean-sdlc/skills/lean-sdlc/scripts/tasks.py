@@ -475,10 +475,9 @@ def dependency_closure(
 
 def emit_table(rows: list[dict[str, str]], html: bool, html_json: bool) -> None:
     headers = ("Task ID", "Outcome", "Done when", "Status")
-    fields = ("Task ID", "Title", "Acceptance Criteria", "Status")
     cells = (
-        [row["Task ID"] + (f" · {row['Grade']}" if row.get("Grade") else ""),
-         *(row[key] for key in fields[1:])]
+        (row["Task ID"], row["Title"] + (f" ({row['Grade']})" if row.get("Grade") else ""),
+         row["Acceptance Criteria"], row["Status"])
         for row in rows
     )
     if html or html_json:

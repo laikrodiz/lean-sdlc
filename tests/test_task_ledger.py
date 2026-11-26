@@ -123,8 +123,8 @@ class TaskLedgerTests(unittest.TestCase):
                 key = result.stdout.split()[-1]
                 self.assertEqual(task(repo, "start", key, "--owner", "12345678").returncode, 0)
                 self.assertEqual(task(repo, "close", key, "--owner", "12345678", "--evidence", "Passed").returncode, 0)
-                self.assertIn(f"| {key} · {grade} |", task(repo, "table", key).stdout)
-                self.assertIn(f"<td>{key} · {grade}</td>", json.loads(task(repo, "table", "--html-json", key).stdout)["html"])
+                self.assertIn(f"| {key} | New ({grade}) |", task(repo, "table", key).stdout)
+                self.assertIn(f"<td>{key}</td><td>New ({grade})</td>", json.loads(task(repo, "table", "--html-json", key).stdout)["html"])
             old = read_rows(repo)[-1]
             self.assertEqual((old["Grade"], old["Evidence"]), ("", "Retain"))
             before = ledger.read_bytes()
@@ -1960,7 +1960,7 @@ class PackageContractTests(unittest.TestCase):
     def test_release_version_is_consistent(self) -> None:
         manifest = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         version = manifest["version"]
-        self.assertEqual(version, "1.46.0")
+        self.assertEqual(version, "1.46.1")
         self.assertIn(f"v{version}", (ROOT / "README.md").read_text(encoding="utf-8"))
         self.assertIn(f"- Version: {version}", (ROOT / "docs/PROJECT.md").read_text(encoding="utf-8"))
 
