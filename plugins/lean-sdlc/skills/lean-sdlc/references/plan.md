@@ -40,7 +40,7 @@ When a request has a second recorded task, show its related rows before continui
 
 Exclude unrelated and stopped work. Show actual final states after ledger reconciliation. Between checkpoints report only changes, decisions, failures or results. Combine related announcements.
 
-In T3, add `--html` only for multi-task tables with both `html_preview` and `html_render`. Preview then render the unchanged inline HTML. If either tool is missing or fails, show Markdown and continue. Never duplicate tables. Refresh on request, material plan changes, or useful handoff; keep blockers in plain text.
+In T3, use `table --html-json` only with both `html_preview` and `html_render`. Wait for exit 0. Parse the complete JSON result; preview only its nonempty `html` string. Render that same string only after preview succeeds. Never display raw command output as HTML. For a missing helper after upgrade, refresh its path from the new installation's startup context and retry once. If the view is unavailable or fails, show a successful Markdown table instead. If that also fails, report the display issue in text. Never duplicate tables. Refresh on request, material plan changes, or useful handoff; keep blockers in plain text.
 
 After accepting proof, close the task directly through the helper, confirm success, and show Done. Report transaction failures immediately. Pause affected work; never bypass dependencies. Follow [common](../protocols/common.md) for sequencing and waits.
 

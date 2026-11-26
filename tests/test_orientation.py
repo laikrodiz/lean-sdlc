@@ -1,5 +1,6 @@
 from pathlib import Path
 from html.parser import HTMLParser
+import json
 import sys
 import tempfile
 import unittest
@@ -106,6 +107,15 @@ class OrientationTests(unittest.TestCase):
             invalid = run(*command, "--html", *ids, "TASK-999")
             self.assertNotEqual(invalid.returncode, 0)
             self.assertEqual(invalid.stdout, "")
+            packet = run(*command, "--html-json", *ids)
+            self.assertEqual(packet.returncode, 0, packet.stderr)
+            self.assertEqual(json.loads(packet.stdout), {"html": result.stdout})
+            for helper, requested in [(str(TASKS), (*ids, "TASK-999")), (str(root / "retired" / "tasks.py"), ids)]:
+                failed = run(helper, "--repo", str(root), "table", "--html-json", *requested)
+                self.assertNotEqual(failed.returncode, 0)
+                self.assertEqual(failed.stdout, "")
+                with self.assertRaises(json.JSONDecodeError):
+                    json.loads(failed.stdout + failed.stderr)
             fallback = run(*command, *ids)
             self.assertEqual(fallback.returncode, 0, fallback.stderr)
             self.assertEqual(fallback.stdout.splitlines(), ["| Task ID | Outcome | Done when | Status |",

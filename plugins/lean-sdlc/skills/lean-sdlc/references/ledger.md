@@ -37,7 +37,7 @@ For an authorized contract upgrade, use `init_repo.py ... --upgrade-contract --t
 
 Use `session_state.py --owner OWNER --upgrade` to remove retired fields while preserving the child-tier preference. No field selects a workflow. Repeating a completed upgrade must not change project data.
 
-After upgrade, read the current entry and applicable instructions, run the structural check, and continue the authorized task. An upgrade alone does not authorize unrelated work. Preserve recovery copies when changing existing contracts; never fabricate historical evidence or silently reassign unfinished work.
+After a plugin upgrade, discard cached helper paths. From the selected repository, refresh startup context using the new installation's `session_state.py --context` before any helper call. After upgrade, read the current entry and applicable instructions, run the structural check, and continue the authorized task. An upgrade alone does not authorize unrelated work. Preserve recovery copies when changing existing contracts; never fabricate historical evidence or silently reassign unfinished work.
 
 ### Existing projects and release notices
 

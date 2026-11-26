@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 from html import escape
 import sys
 from pathlib import Path
@@ -117,7 +118,9 @@ def parser() -> argparse.ArgumentParser:
 
     table = subparsers.add_parser("table", help="Render selected confirmed tasks in request order")
     table.add_argument("task_ids", nargs="+")
-    table.add_argument("--html", action="store_true", help="Print a self-contained, read-only HTML task table instead of Markdown")
+    output = table.add_mutually_exclusive_group()
+    output.add_argument("--html", action="store_true", help="Print a self-contained, read-only HTML task table instead of Markdown")
+    output.add_argument("--html-json", action="store_true", help="Return the HTML task table in a JSON object for preview tools")
     subparsers.add_parser("overview", help="Summarize current work, backlog and pending reviews")
     subparsers.add_parser(
         "open",
@@ -464,12 +467,12 @@ def dependency_closure(
     return ordered
 
 
-def emit_table(rows: list[dict[str, str]], html: bool) -> None:
+def emit_table(rows: list[dict[str, str]], html: bool, html_json: bool) -> None:
     headers = ("Task ID", "Outcome", "Done when", "Status")
     fields = ("Task ID", "Title", "Acceptance Criteria", "Status")
     cells = ([row[key] for key in fields] for row in rows)
-    if html:
-        print("""<!doctype html><html lang="en"><meta charset="utf-8">
+    if html or html_json:
+        lines = ["""<!doctype html><html lang="en"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>Task snapshot</title>
 <style>
 table{width:100%;border-spacing:0;text-align:left;color:var(--foreground,CanvasText);font:14px/1.45 var(--font-sans,system-ui)}
@@ -490,11 +493,15 @@ tr[data-state="Done"] td:last-child::before{background:var(--success,teal);borde
 tr[data-state="In Progress"] td:last-child::before{background:var(--info,steelblue);border:0}
 @media(max-width:505px){tbody tr{grid-template-columns:minmax(0,1fr) auto;
  grid-template-areas:"id state" "outcome outcome" "criteria criteria"}td:nth-child(2){margin-top:3px}}
-</style><table aria-label="Task snapshot"><thead><tr>""")
-        print("".join(f'<th scope="col">{h}</th>' for h in headers) + "</tr></thead><tbody>")
+</style><table aria-label="Task snapshot"><thead><tr>"""]
+        lines.append("".join(f'<th scope="col">{h}</th>' for h in headers) + "</tr></thead><tbody>")
         for values in cells:
-            print(f'<tr data-state="{escape(values[-1])}">' + "".join(f"<td>{escape(v)}</td>" for v in values) + "</tr>")
-        print("</tbody></table></html>")
+            lines.append(f'<tr data-state="{escape(values[-1])}">' + "".join(f"<td>{escape(v)}</td>" for v in values) + "</tr>")
+        document = "\n".join([*lines, "</tbody></table></html>", ""])
+        if html_json:
+            print(json.dumps({"html": document}))
+        else:
+            sys.stdout.write(document)
         return
     print("| " + " | ".join(headers) + " |")
     print("| --- | --- | --- | --- |")
@@ -638,7 +645,7 @@ def main() -> int:
             require_integrity(rows)
             if args.command == "table":
                 selected = [find_task(rows, key) for key in dict.fromkeys(args.task_ids)]
-                emit_table(selected, args.html)
+                emit_table(selected, args.html, args.html_json)
             elif args.command == "overview":
                 emit_overview(rows)
             elif args.command == "ready":
