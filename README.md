@@ -65,10 +65,10 @@ After accepting a T3 Engineer’s work and recording its checks, the Lead archiv
 
 Requirements: Git, Python 3, and Codex with plugin support.
 
-These commands install the immutable v1.45.5 release:
+These commands install the immutable v1.45.6 release:
 
 ~~~bash
-git clone --depth 1 --branch v1.45.5 https://github.com/laikrodiz/lean-sdlc.git
+git clone --depth 1 --branch v1.45.6 https://github.com/laikrodiz/lean-sdlc.git
 cd lean-sdlc
 codex plugin marketplace add .
 codex plugin add lean-sdlc@lean-sdlc
