@@ -39,6 +39,6 @@ Hosted task services, dashboards, telemetry, and automatic discovery or proposal
 ## Current stage and version
 
 - Stage: Evolution.
-- Version: 1.45.7.
-- Version goal: Recover missing plugin helpers in active sessions without changing task ownership or replaying uncertain writes.
+- Version: 1.45.8.
+- Version goal: Plan the smallest end-to-end check first when integration is uncertain. Trace benchmark misses before changing instructions.
 - Exit evidence: Require fresh [candidate checks](OPERATIONS.md), version checks, exact remote commit and tag on `origin/main`, and byte-for-byte installed/source equality. Confirm selected-repository isolation, upgrade and structural checks, a live support-profile check, and final ledger reconciliation.

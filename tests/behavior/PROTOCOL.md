@@ -33,8 +33,9 @@ ordinary user request. Keep the real project and user profile off the worker.
    model names and allow equivalent wording. Distinguish a bad dispatch
    blocked by a hook from a correct model decision. Do not interpret a
    record of the requested model as proof of the executed model.
-6. Run the baseline on both models. Diagnose misses, change only instructions
-   responsible for them, repeat affected cases and a nearby regression. Change
+6. Run the baseline on both models. For each miss, find the first observed
+   difference between expected and actual behavior. Change instructions only
+   if they caused the miss. Repeat affected cases and a nearby regression. Change
    neither the expected behavior nor the public rubric to make a result green.
    Stop after three rounds without progress. Keep DeepSeek optional. Exclude
    parallel Engineers from the behavioral score.

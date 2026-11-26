@@ -2,7 +2,7 @@
 
 ## Understand and shape
 
-Distinguish constraints from proposals. For material uncertainty, identify the primary source, failure and observable proof. Resolve facts safely; ask about consequential choices, unavailable facts or missing permission.
+Distinguish constraints from proposals. For material uncertainty, identify the primary source, failure and observable proof. When the main uncertainty is whether components work together, plan the smallest end-to-end check first. Resolve facts safely; ask about consequential choices, unavailable facts or missing permission.
 
 Cover every explicit user requirement before task creation. A plan-only request stops after the plan; propose write-requiring experiments without running them. Implement an approved plan without reprinting it or seeking redundant approval.
 
