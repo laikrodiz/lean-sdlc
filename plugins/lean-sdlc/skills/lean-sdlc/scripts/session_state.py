@@ -183,11 +183,14 @@ def _parse_bool(value: str) -> bool:
 
 def _arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument(
         "--context",
         action="store_true",
         help="print exact startup repository, helper, owner, and child-tier context",
     )
+    modes.add_argument("--recover-context", nargs=2, metavar=("PREVIOUS_REPO", "PREVIOUS_OWNER"),
+                       help="validate recovered context against Codex plugin list JSON on stdin")
     parser.add_argument("--owner", help="eight-digit session owner")
     parser.add_argument(
         "--upgrade", action="store_true",
@@ -211,7 +214,35 @@ def _arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def _run_context() -> int:
+def _verify_recovery(context: dict[str, str], repo: str, owner: str) -> None:
+    from updates import stable
+
+    if (repo, owner) != (context["repository_root"], context["owner"]):
+        raise ValueError("repository or session owner changed; stop before writing")
+    catalog = json.load(sys.stdin)
+    rows = catalog.get("installed") if isinstance(catalog, dict) else None
+    if not isinstance(rows, list) or not all(isinstance(row, dict) for row in rows):
+        raise ValueError("invalid installed plugin list")
+    matches = [row for row in rows if row.get("pluginId") == "lean-sdlc@lean-sdlc"]
+    if len(matches) != 1 or any(matches[0].get(k) is not True for k in ("enabled", "installed")):
+        raise ValueError("expected one enabled Lean-SDLC installation")
+    version = matches[0].get("version")
+    if not isinstance(version, str) or not version.isascii() or version.startswith("v") or not stable(version):
+        raise ValueError("unrecognized installed release version")
+    package = _codex_home().resolve() / "plugins/cache/lean-sdlc/lean-sdlc" / version
+    if Path(context["skill_root"]) != package / "skills/lean-sdlc":
+        raise ValueError("loaded skill is not the selected installed version")
+    manifest_path = package / ".codex-plugin/plugin.json"
+    files = [manifest_path, Path(context["skill_root"]) / "SKILL.md",
+             *(Path(context[key]) for key in ("tasks_helper", "state_helper", "check_helper"))]
+    if any(not path.is_file() or path.resolve() != path for path in files):
+        raise ValueError("recovered metadata or helper missing or redirected")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if not isinstance(manifest, dict) or (manifest.get("name"), manifest.get("version")) != ("lean-sdlc", version):
+        raise ValueError("installed plugin manifest does not match")
+
+
+def _run_context(recover: list[str] | None = None) -> int:
     session_id = os.environ.get("CODEX_SESSION_ID", "")
     if not session_id:
         raise ValueError("CODEX_SESSION_ID is unavailable")
@@ -230,12 +261,14 @@ def _run_context() -> int:
         raise ValueError(
             "Lean-SDLC repository is unavailable from the current directory"
         )
+    if recover:
+        _verify_recovery(context, *recover)
     print(json.dumps(context))
     return 0
 
 
 def _run_cli(arguments: argparse.Namespace) -> int:
-    if arguments.context:
+    if arguments.context or arguments.recover_context:
         if (
             arguments.owner is not None
             or arguments.upgrade
@@ -244,7 +277,7 @@ def _run_cli(arguments: argparse.Namespace) -> int:
             raise ValueError(
                 "--context cannot be combined with --owner, --upgrade, or child-tier options"
             )
-        return _run_context()
+        return _run_context(arguments.recover_context)
     if arguments.owner is None:
         return 0
     try:
@@ -315,9 +348,9 @@ def _run_hook() -> int:
 
 def main() -> int:
     arguments = _arguments()
-    if arguments.context or arguments.owner is not None or arguments.upgrade or arguments.fast_children is not None:
+    if arguments.context or arguments.recover_context or arguments.owner is not None or arguments.upgrade or arguments.fast_children is not None:
         try:
-            if arguments.owner is None and not arguments.context:
+            if arguments.owner is None and not (arguments.context or arguments.recover_context):
                 raise ValueError("state changes require --owner")
             return _run_cli(arguments)
         except (OSError, ValueError) as exc:

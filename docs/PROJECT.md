@@ -39,6 +39,6 @@ Hosted task services, dashboards, telemetry, and automatic discovery or proposal
 ## Current stage and version
 
 - Stage: Evolution.
-- Version: 1.45.6.
-- Version goal: Select the native T3 task view before running the table command; preserve Markdown for other hosts and failures.
+- Version: 1.45.7.
+- Version goal: Recover missing plugin helpers in active sessions without changing task ownership or replaying uncertain writes.
 - Exit evidence: Require fresh [candidate checks](OPERATIONS.md), version checks, exact remote commit and tag on `origin/main`, and byte-for-byte installed/source equality. Confirm selected-repository isolation, upgrade and structural checks, a live support-profile check, and final ledger reconciliation.

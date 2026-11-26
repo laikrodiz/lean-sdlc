@@ -6,6 +6,7 @@ import importlib.util
 import io
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -112,6 +113,45 @@ class RuntimeHookTests(unittest.TestCase):
     def test_bare_beta_is_rejected(self) -> None:
         denied = self.guard({"task_name": "beta"})
         self.assertEqual(denied["hookSpecificOutput"]["permissionDecision"], "deny")
+
+    def test_recover_after_installed_helper_disappears(self):
+        package = ROOT / "plugins/lean-sdlc"
+        manifest = ".codex-plugin/plugin.json"
+        version = json.loads((package / manifest).read_text())["version"]
+        cache = self.codex_home / "plugins/cache/lean-sdlc/lean-sdlc"
+        old = cache / "old/skills/lean-sdlc/scripts/session_state.py"
+        new = cache / version
+        shutil.copytree(package, new)
+        helper = new / "skills/lean-sdlc/scripts/session_state.py"
+        row = dict(pluginId="lean-sdlc@lean-sdlc", installed=True, enabled=True, version=version)
+        self.assertFalse(old.exists())
+
+        def recover(rows, repo=None, owner=None):
+            return subprocess.run(
+                [sys.executable, "-B", str(helper), "--recover-context",
+                 str(repo or self.repository.resolve()), owner or self.owner()],
+                cwd=self.repository, input=json.dumps({"installed": rows}), text=True,
+                capture_output=True, env=dict(os.environ, CODEX_HOME=str(self.codex_home),
+                                              CODEX_SESSION_ID=self.session_id))
+
+        result = recover([row])
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(Path(json.loads(result.stdout)["state_helper"]), helper.resolve())
+        for rejected in (recover([]), recover([row, row]), recover([dict(row, enabled=False)]),
+                         recover([dict(row, version="old")]), recover([row], repo=self.root),
+                         recover([row], owner="00000000")):
+            self.assertNotEqual(rejected.returncode, 0)
+            self.assertFalse(rejected.stdout)
+        for relative in (manifest, "skills/lean-sdlc/SKILL.md", "skills/lean-sdlc/scripts/tasks.py"):
+            path = new / relative
+            path.rename(self.root / "retained")
+            path.symlink_to(self.root / "retained")
+            self.assertNotEqual(recover([row]).returncode, 0, relative)
+            path.unlink()
+            (self.root / "retained").rename(path)
+        (new / manifest).write_text('{"name":"other"}')
+        self.assertNotEqual(recover([row]).returncode, 0)
+        self.assertEqual((self.repository / "tasks.csv").read_bytes(), b"")
 
     def t3(self, args, **event_fields):
         result = self.guard(args, tool_name="mcp__t3_code_direct__delegate_task", **event_fields)

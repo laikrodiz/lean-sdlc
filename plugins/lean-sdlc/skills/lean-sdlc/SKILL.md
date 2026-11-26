@@ -35,4 +35,6 @@ Read selected files completely; reuse unchanged instructions. After compaction, 
 
 For authorized new projects, [initialize](references/ledger.md#initialization-and-upgrade) before requesting startup context.
 
+If an installed helper file disappears, pause edits. Run `codex plugin list --marketplace lean-sdlc --json`. Require one installed, enabled `lean-sdlc@lean-sdlc` with a numeric dotted release version. Under the previous plugin cache parent, use only that version's directory. Verify its manifest name and version before running code. Reject redirected paths. Read the replacement skill's [recovery steps](references/ledger.md#missing-installed-helper). If uncertain, stop. Other failures do not trigger lookup.
+
 For execution, use exact startup repository, skill, helpers, owner, and child tier. If absent, run `python3 "<directory containing this SKILL.md>/scripts/session_state.py" --context` from the selected repository. Preserve `CODEX_SESSION_ID`; never invent paths or owners. If context is still missing, stop. Report the missing field, not its value. Never enumerate environment variables to recover context.

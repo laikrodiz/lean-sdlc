@@ -45,7 +45,7 @@ Choose the display path before running the table command. In T3, look up `html_p
 - **T3 with both tools:** Run `tasks.py table --html-json TASK-ID ...` first. After exit 0, parse the complete JSON and preview its nonempty `html` string. Render that same string after preview succeeds. Never send raw command output to either tool.
 - **Other hosts, a missing tool, or a failed HTML path:** Run `tasks.py table TASK-ID ...` and show Markdown only on success. Otherwise report the display issue in text.
 
-If an upgrade removed the helper, refresh its path from the new installation's startup context and retry once. Show only one table. Refresh on request, material plan changes, or useful handoff; keep blockers in plain text.
+If an upgrade removed the helper, follow [helper recovery](ledger.md#missing-installed-helper) and retry the display once. Show only one table. Refresh on request, material plan changes, or useful handoff; keep blockers in plain text.
 
 After accepting proof, close the task directly through the helper, confirm success, and show Done. Report transaction failures immediately. Pause affected work; never bypass dependencies. Follow [common](../protocols/common.md) for sequencing and waits.
 

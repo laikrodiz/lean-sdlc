@@ -39,6 +39,17 @@ Use `session_state.py --owner OWNER --upgrade` to remove retired fields while pr
 
 After a plugin upgrade, discard cached helper paths. From the selected repository, refresh startup context using the new installation's `session_state.py --context` before any helper call. After upgrade, read the current entry and applicable instructions, run the structural check, and continue the authorized task. An upgrade alone does not authorize unrelated work. Preserve recovery copies when changing existing contracts; never fabricate historical evidence or silently reassign unfinished work.
 
+### Missing installed helper
+
+After verifying the replacement installation, run from the original repository. Pass the successful listing unchanged on standard input:
+
+```sh
+catalog=$(codex plugin list --marketplace lean-sdlc --json) &&
+  printf '%s\n' "$catalog" | python3 -B "<verified-skill-root>/scripts/session_state.py" --recover-context "<previous-repository-root>" "<previous-owner>"
+```
+
+Keep the same session. On failure, stop without edits. On success, reload the entry and applicable rules, honor contract checks, and inspect the affected task. Retry a missing start once only if still authorized and not already applied. For an owned active task, run the before-write gate. Never replay a close, create, or delivery with uncertain effects.
+
 ### Existing projects and release notices
 
 Startup compares the project's managed block with the loaded template offline. On review or conflicting ledgers, stop affected writes. Never use repair to bypass review. Keep historical documents and local rules. During an authorized documentation upgrade, add topic pointers to PROJECT from existing sources; do not reconstruct missing reasons. Preview any proposed move or deletion separately.
