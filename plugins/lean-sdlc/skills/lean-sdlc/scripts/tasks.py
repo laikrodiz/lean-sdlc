@@ -17,6 +17,7 @@ from task_ledger import (
     BACKLOG_FORBIDDEN_CONTEXTS,
     BACKLOG_STATUS,
     CONTEXT_PATTERN,
+    GRADES,
     QUICK_FIX_CONTEXT,
     QUICK_FIX_PENDING_MARKER,
     TASK_COLUMNS,
@@ -43,7 +44,7 @@ from task_ledger import (
 )
 
 
-DEFINITION_FIELDS = ("title", "context", "dependencies", "acceptance", "proof")
+DEFINITION_FIELDS = ("title", "context", "dependencies", "acceptance", "proof", "grade")
 CONTEXT_HELP = "Valid context: Project, Bootstrap, Quick Fix, FEAT-*, or DEC-*."
 
 
@@ -57,6 +58,7 @@ def add_definition_arguments(
     command.add_argument("--dependencies", default="" if required else None)
     command.add_argument("--acceptance", required=required)
     command.add_argument("--proof", required=required)
+    command.add_argument("--grade", choices=GRADES)
 
 
 def parser() -> argparse.ArgumentParser:
@@ -153,6 +155,7 @@ def parser() -> argparse.ArgumentParser:
     promote.add_argument("--owner")
     promote.add_argument("--acceptance", required=True)
     promote.add_argument("--proof", required=True)
+    promote.add_argument("--grade", choices=GRADES)
 
     show = subparsers.add_parser(
         "show",
@@ -183,6 +186,7 @@ def new_task(
         {
             "Task ID": task_id,
             "Title": clean(args.title or "", "Title"),
+            "Grade": args.grade or "",
             "Status": status,
             "Context": task_context(args.context or ""),
             "Dependencies": (args.dependencies or "").strip(),
@@ -292,7 +296,7 @@ def update_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
             raise TaskError("Backlog update accepts only --title and --context")
         if any(
             getattr(args, field) is not None
-            for field in ("dependencies", "acceptance", "proof")
+            for field in ("dependencies", "acceptance", "proof", "grade")
         ):
             raise TaskError("Backlog update accepts only --title and --context")
         if args.title is None and args.context is None:
@@ -315,6 +319,7 @@ def update_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
         raise TaskError(f"{args.task_id} is Done and cannot be updated")
 
     changes = {
+        "Grade": args.grade,
         "Title": args.title,
         "Context": args.context,
         "Dependencies": args.dependencies,
@@ -363,6 +368,7 @@ def promote_task(args: argparse.Namespace, rows: list[dict[str, str]]) -> str:
         "Title",
     )
     task["Status"] = "Planned" if args.to == "planned" else "In Progress"
+    task["Grade"] = args.grade or ""
     task["Context"] = context
     task["Dependencies"] = (
         args.dependencies.strip()
@@ -470,7 +476,11 @@ def dependency_closure(
 def emit_table(rows: list[dict[str, str]], html: bool, html_json: bool) -> None:
     headers = ("Task ID", "Outcome", "Done when", "Status")
     fields = ("Task ID", "Title", "Acceptance Criteria", "Status")
-    cells = ([row[key] for key in fields] for row in rows)
+    cells = (
+        [row["Task ID"] + (f" · {row['Grade']}" if row.get("Grade") else ""),
+         *(row[key] for key in fields[1:])]
+        for row in rows
+    )
     if html or html_json:
         lines = ["""<!doctype html><html lang="en"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>Task snapshot</title>

@@ -28,6 +28,7 @@ FROZEN_INVARIANTS = (
     FrozenInvariant("new scope", "references/plan.md", ("within the approved scope", "before implementing that outcome", "Preserve existing evidence and unresolved original requirements", "Wait for user approval before editing it", "Unaffected authorized work can continue")),
     FrozenInvariant("visible task state", "references/plan.md", ("real task IDs, outcomes, completion criteria, grades, and confirmed status", "actual final states after ledger reconciliation", "ledger remains authoritative")),
     FrozenInvariant("confirmed direct closure", "references/plan.md", ("close the task directly through the helper, confirm success", "never bypass dependencies")),
+    FrozenInvariant("visible task transitions", "references/plan.md", ("When a task closes and work remains", "confirmed result and next step before continuing", "not another table or status check")),
     FrozenInvariant("owned write prerequisites", "protocols/lead.md", ("Before writing, confirm", "successful before-write gate", "A pending or failed transaction is not proof")),
     FrozenInvariant("implementation ownership", "protocols/lead.md", ("Lead implements by default", "Only the parallel protocol", "Run immediate builds, focused tests")),
     FrozenInvariant("run-owned scratch", "protocols/lead.md", ("fresh scratch created exclusively for this run", "after processes stop", "Preserve scratch after failure, interruption, or uncertainty")),

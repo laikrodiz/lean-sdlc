@@ -39,6 +39,6 @@ Hosted task services, dashboards, telemetry, and automatic discovery or proposal
 ## Current stage and version
 
 - Stage: Evolution.
-- Version: 1.45.8.
-- Version goal: Plan the smallest end-to-end check first when integration is uncertain. Trace benchmark misses before changing instructions.
+- Version: 1.46.0.
+- Version goal: Show recorded complexity beside task IDs and report confirmed progress between task tables.
 - Exit evidence: Require fresh [candidate checks](OPERATIONS.md), version checks, exact remote commit and tag on `origin/main`, and byte-for-byte installed/source equality. Confirm selected-repository isolation, upgrade and structural checks, a live support-profile check, and final ledger reconciliation.

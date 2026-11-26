@@ -7,7 +7,7 @@ For known contract drift, follow the upgrade rules in ledger.md first. Never aut
 Use startup values for the quoted placeholders. Run `overview` once to exclude duplicates. For a new eligible fix:
 
 ```sh
-python3 "<tasks-helper>" --repo "<repo-root>" start --check --owner "<owner>" --title "<outcome>" --context "Quick Fix" --acceptance "<done when>" --proof "<planned check>"
+python3 "<tasks-helper>" --repo "<repo-root>" start --check --owner "<owner>" --grade Simple --title "<outcome>" --context "Quick Fix" --acceptance "<done when>" --proof "<planned check>"
 ```
 
 Honor dependencies. Confirm the returned In Progress row and passed gate before editing. A pre-claim reproduction must create no files, including caches.

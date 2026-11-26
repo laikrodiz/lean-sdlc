@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Iterator
 
 
-TASK_COLUMNS = (
+UNGRADED_COLUMNS = (
     "Task ID",
     "Title",
     "Status",
@@ -27,6 +27,8 @@ TASK_COLUMNS = (
     "Proof",
     "Evidence",
 )
+TASK_COLUMNS = (*UNGRADED_COLUMNS, "Grade")
+GRADES = ("Simple", "Normal", "Complex")
 LEGACY_COLUMNS = (
     "task_id",
     "title",
@@ -60,6 +62,7 @@ QUICK_FIX_CONTEXT = "Quick Fix"
 BACKLOG_STATUS = "Backlog"
 BACKLOG_FORBIDDEN_CONTEXTS = {"Bootstrap", QUICK_FIX_CONTEXT}
 BACKLOG_EMPTY_FIELDS = (
+    "Grade",
     "Dependencies",
     "Owner",
     "Acceptance Criteria",
@@ -194,7 +197,7 @@ def read_ledger(
         with path.open(encoding="utf-8-sig", newline="") as handle:
             reader = csv.DictReader(handle)
             columns = list(reader.fieldnames or [])
-            accepted = [list(TASK_COLUMNS)]
+            accepted = [list(TASK_COLUMNS), list(UNGRADED_COLUMNS)]
             if allow_legacy:
                 accepted.append(list(LEGACY_COLUMNS))
                 accepted.append(list(PREVIOUS_COLUMNS))
@@ -216,6 +219,8 @@ def read_ledger(
                     rows.append(normalized)
     except (OSError, csv.Error) as exc:
         raise TaskError(f"cannot read {path}: {exc}") from exc
+    if not allow_legacy and columns == list(UNGRADED_COLUMNS):
+        return list(TASK_COLUMNS), current_rows(columns, rows)
     return columns, rows
 
 
@@ -225,6 +230,8 @@ def current_rows(
 ) -> list[dict[str, str]]:
     if columns == list(TASK_COLUMNS):
         return rows
+    if columns == list(UNGRADED_COLUMNS):
+        return [dict(row, Grade="") for row in rows]
     if columns == list(LEGACY_COLUMNS):
         mapping = LEGACY_TO_CURRENT
     elif columns == list(PREVIOUS_COLUMNS):
@@ -238,7 +245,7 @@ def current_rows(
         converted["Context"] = LEGACY_CONTEXTS.get(
             converted["Context"], converted["Context"]
         )
-        migrated.append(converted)
+        migrated.append(dict(converted, Grade=""))
     return migrated
 
 
@@ -449,6 +456,8 @@ def integrity_errors(rows: list[dict[str, str]]) -> list[str]:
 
     graph: dict[str, list[str]] = {}
     for task_id, row in row_by_id.items():
+        if row.get("Grade") and row["Grade"] not in GRADES:
+            errors.append(f"{task_id} has invalid grade {row['Grade']}")
         context = row.get("Context", "")
         try:
             task_context(context)

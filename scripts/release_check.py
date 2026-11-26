@@ -29,7 +29,7 @@ REQUIRED_PACKAGE_PATHS = (
     "skills/lean-sdlc/protocols/parallel.md",
     "skills/lean-sdlc/scripts/parallel.py",
 )
-EMPTY_LEDGER = "Task ID,Title,Status,Context,Dependencies,Owner,Acceptance Criteria,Proof,Evidence\n"
+EMPTY_LEDGER = "Task ID,Title,Status,Context,Dependencies,Owner,Acceptance Criteria,Proof,Evidence,Grade\n"
 
 
 class ReleaseCheckError(RuntimeError):

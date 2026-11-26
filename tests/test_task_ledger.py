@@ -24,11 +24,12 @@ CHECK = SCRIPTS / "lean_check.py"
 INIT = SCRIPTS / "init_repo.py"
 OWNER_HOOK = SCRIPTS / "session_state.py"
 PLUGIN_HOOKS = PLUGIN / "hooks/hooks.json"
-HEADER = (
+UNGRADED_HEADER = (
     "Task ID,Title,Status,Context,Dependencies,Owner,"
     "Acceptance Criteria,Proof,Evidence\n"
 )
 STARTUP_START = "<!-- lean-sdlc:startup v1 -->"
+HEADER = UNGRADED_HEADER.rstrip() + ",Grade\n"
 STARTUP_END = "<!-- /lean-sdlc:startup -->"
 
 
@@ -55,7 +56,7 @@ def write_ledger(repository: Path, body: str, *, legacy_path: bool = False) -> P
         else repository / "tasks.csv"
     )
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(HEADER + body, encoding="utf-8")
+    path.write_text(UNGRADED_HEADER + body, encoding="utf-8")
     return path
 
 
@@ -108,6 +109,28 @@ def write_document_family(
 
 
 class TaskLedgerTests(unittest.TestCase):
+    def test_grade_survives_transactions_and_renders_only_if_known(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            ledger = write_ledger(repo, "TASK-001,Old,Done,Project,,12345678,Done,Check,Retain\n")
+            original = ledger.read_bytes()
+            self.assertIn("| TASK-001 |", task(repo, "table", "TASK-001").stdout)
+            self.assertEqual(ledger.read_bytes(), original)
+            definition = ("--title", "New", "--acceptance", "Works", "--proof", "Inspect", "--context", "Project")
+            for grade in ("Simple", "Normal", "Complex"):
+                result = task(repo, "plan", *definition, "--grade", grade)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                key = result.stdout.split()[-1]
+                self.assertEqual(task(repo, "start", key, "--owner", "12345678").returncode, 0)
+                self.assertEqual(task(repo, "close", key, "--owner", "12345678", "--evidence", "Passed").returncode, 0)
+                self.assertIn(f"| {key} · {grade} |", task(repo, "table", key).stdout)
+                self.assertIn(f"<td>{key} · {grade}</td>", json.loads(task(repo, "table", "--html-json", key).stdout)["html"])
+            old = read_rows(repo)[-1]
+            self.assertEqual((old["Grade"], old["Evidence"]), ("", "Retain"))
+            before = ledger.read_bytes()
+            self.assertNotEqual(task(repo, "plan", *definition, "--grade", "Huge").returncode, 0)
+            self.assertEqual(ledger.read_bytes(), before)
+
     def test_overview_is_compact_and_read_only(self):
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(tmp)
@@ -1019,8 +1042,8 @@ class TaskLedgerTests(unittest.TestCase):
             self.assertEqual(
                 result.stdout,
                 HEADER
-                + "TASK-002,Planned,Planned,Project,,,Ready,Check,\n"
-                + "TASK-001,Active,In Progress,Project,,12345678,Ready,Check,\n",
+                + "TASK-002,Planned,Planned,Project,,,Ready,Check,,\n"
+                + "TASK-001,Active,In Progress,Project,,12345678,Ready,Check,,\n",
             )
             self.assertEqual(
                 repository.joinpath("tasks.csv").read_text(encoding="utf-8"),
@@ -1937,7 +1960,7 @@ class PackageContractTests(unittest.TestCase):
     def test_release_version_is_consistent(self) -> None:
         manifest = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         version = manifest["version"]
-        self.assertEqual(version, "1.45.8")
+        self.assertEqual(version, "1.46.0")
         self.assertIn(f"v{version}", (ROOT / "README.md").read_text(encoding="utf-8"))
         self.assertIn(f"- Version: {version}", (ROOT / "docs/PROJECT.md").read_text(encoding="utf-8"))
 

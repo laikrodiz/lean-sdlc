@@ -6,9 +6,7 @@ Root `tasks.csv` is the only durable task plan. Lead performs all task writes di
 
 Use the entry’s exact startup values: `repository_root`, `skill_root`, `tasks_helper`, `check_helper`, `state_helper`, `owner`, and `tier`.
 
-Grades add no columns:
-
-`Task ID,Title,Status,Context,Dependencies,Owner,Acceptance Criteria,Proof,Evidence`
+Record the settled grade with `--grade Simple|Normal|Complex` on plan, new start, or promotion. Correct it through update if scope changes. Older ledgers remain readable. The next write adds the Grade column and leaves unknown historical grades blank.
 
 ## Transactions
 
