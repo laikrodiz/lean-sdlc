@@ -6,7 +6,7 @@ Distinguish constraints from proposals. For material uncertainty, identify the p
 
 Cover every explicit user requirement before task creation. A plan-only request stops after the plan; propose write-requiring experiments without running them. Implement an approved plan without reprinting it or seeking redundant approval.
 
-Check every candidate for bundled outcomes before assigning a grade. Split independently acceptable outcomes, even for apparent Simple or Normal work. Keep implementation, tests, docs, and corrections together when they share a contract, proof, and closure decision.
+Check every candidate for bundled outcomes before assigning a grade. If one requested result could pass while another fails, split them when each has its own acceptance decision. Apply this to a reusable capability and its first use, even when the second depends on the first. Keep implementation, tests, docs, and corrections together when they prove one outcome.
 
 Use one sizing pass before creation or display. Dependencies represent required results, not execution order. Preserve combined proof. Never split by file count, duration, staffing or grade.
 
@@ -36,7 +36,7 @@ Claim through the [ledger](ledger.md). Before implementation confirm owner, In P
 
 Use real task IDs, outcomes, completion criteria, grades, and confirmed status. One quick fix: one sentence with result, check and gaps. When tracking one task across turns, use one text line: ID, confirmed status, result or next step. Reuse confirmed facts; never call tools solely to format it. Put blocking user decisions first.
 
-Once multiple tasks are settled and recorded, show `tasks.py table TASK-ID ...` rows unchanged. Give grades separately; the ledger omits them. Plans without records use no synthetic IDs.
+When a request has a second recorded task, show its related rows before continuing work, even if the first is Done. Include completed prerequisites from this request. Show `tasks.py table TASK-ID ...` rows unchanged. Give grades separately; the ledger omits them. Plans without records use no synthetic IDs.
 
 Exclude unrelated and stopped work. Show actual final states after ledger reconciliation. Between checkpoints report only changes, decisions, failures or results. Combine related announcements.
 

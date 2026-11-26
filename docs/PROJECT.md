@@ -39,6 +39,6 @@ Hosted task services, dashboards, telemetry, and automatic discovery or proposal
 ## Current stage and version
 
 - Stage: Evolution.
-- Version: 1.45.3.
-- Version goal: Load launch rules only for delegation. Verify both sides of an access change.
+- Version: 1.45.4.
+- Version goal: Show related tasks when the second is recorded. Split outcomes that can be accepted separately.
 - Exit evidence: Require fresh [candidate checks](OPERATIONS.md), version checks, exact remote commit and tag on `origin/main`, and byte-for-byte installed/source equality. Confirm selected-repository isolation, upgrade and structural checks, a live support-profile check, and final ledger reconciliation.
